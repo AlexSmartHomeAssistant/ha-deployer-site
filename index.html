@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HA-Deployer Pro - Déploiement Domotique</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #121418;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --primary-blue: #5DADE2;
+      --accent-green: #52BE80;
+      --text-main: #FFFFFF;
+      --text-muted: #808080;
+      --radius: 12px;
+      
+      /* Couleurs des catégories */
+      --col-lumiere: #F4D03F;
+      --col-ouverture: #FFFFFF;
+      --col-chauffage: #EC7063;
+      --col-securite: #BB8FCE;
+      --col-appareil: #52BE80;
+      --col-service: #808080;
+      --col-eau: #5DADE2;
+      --col-interface: #E59866;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image:
+        radial-gradient(circle at 12% 15%, rgba(93, 173, 226, 0.14), transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(82, 190, 128, 0.10), transparent 45%),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='110' height='110'><path d='M0 22 H42 V0 M66 110 V64 H110 M22 110 V88 H64 V38 H110' fill='none' stroke='%235DADE2' stroke-opacity='0.07' stroke-width='1.4'/><circle cx='42' cy='22' r='2.6' fill='%235DADE2' fill-opacity='0.14'/><circle cx='64' cy='64' r='2.6' fill='%2352BE80' fill-opacity='0.14'/><circle cx='22' cy='88' r='2.6' fill='%235DADE2' fill-opacity='0.14'/></svg>");
+      background-size: cover, cover, 110px 110px;
+      background-attachment: fixed, fixed, fixed;
+      color: var(--text-main);
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 80px;
+    }
+
+    /* BANDEAU DE NAVIGATION HAUT */
+    nav {
+      width: 100%;
+      background: rgba(18, 20, 24, 0.95);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 12px 20px;
+      gap: 15px;
+    }
+
+    .nav-left {
+      justify-self: start;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-self: center;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    nav button.active, nav button:hover {
+      color: var(--primary-blue);
+    }
+
+    /* DROITE DU BANDEAU : CONTACTS */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-self: end;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 1.1rem;
+    }
+
+    .social-icons a {
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .social-icons a.fa-phone:hover { color: #52BE80; }
+    .social-icons a.fa-envelope:hover { color: #5DADE2; }
+    .social-icons a.fa-linkedin { color: #3498DB; }
+    .social-icons a.fa-whatsapp { color: #2ECC71; }
+    .social-icons a.fa-instagram { color: #E84393; }
+    .social-icons a.fa-facebook { color: #2980B9; }
+
+    /* SÉLECTEUR DE LANGUE PERSONNALISÉ (avec drapeaux) */
+    .lang-dropdown {
+      position: relative;
+    }
+
+    .lang-current {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--card-border);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .lang-current .fi {
+      border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .lang-current i.fa-chevron-down {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+
+    .lang-dropdown.open .lang-current i.fa-chevron-down {
+      transform: rotate(180deg);
+    }
+
+    .lang-options {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: rgba(18, 20, 24, 0.98);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+      min-width: 190px;
+      z-index: 1500;
+      list-style: none;
+      padding: 6px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .lang-dropdown.open .lang-options {
+      display: block;
+    }
+
+    .lang-options li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .lang-options li:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .lang-options li .fi {
+      border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    /* CONTENEUR DES PAGES */
+    .page-section {
+      display: none;
+      width: 100%;
+      max-width: 650px;
+      padding: 20px 15px;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .page-section.active {
+      display: flex;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: var(--primary-blue);
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--primary-blue);
+      letter-spacing: 0.2px;
+      line-height: 1.4;
+      margin-top: 6px;
+      text-shadow: 0 0 22px rgba(93, 173, 226, 0.35);
+    }
+
+    /* CARTE GLOBALE */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .notice-box {
+      background: rgba(93, 173, 226, 0.1);
+      border-left: 4px solid var(--primary-blue);
+      padding: 12px 15px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .notice-box ol {
+      margin-left: 18px;
+      margin-top: 5px;
+    }
+
+    /* FORMULAIRES */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary-blue);
+    }
+
+    /* ONGLET ACCUEIL */
+    .hero-slogan {
+      font-size: 1.1rem;
+      font-style: italic;
+      text-align: center;
+      line-height: 1.6;
+      color: var(--primary-blue);
+      background: rgba(93, 173, 226, 0.05);
+      border: 1px dashed var(--primary-blue);
+      padding: 20px;
+      border-radius: var(--radius);
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .donation-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .donation-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .donation-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* SYSTEME D'ONGLETS COLORÉS POUR MODULES */
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .cat-tab {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      background: rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+
+    .cat-tab.lumiere { color: var(--col-lumiere); border-color: var(--col-lumiere); }
+    .cat-tab.ouverture { color: var(--col-ouverture); border-color: var(--col-ouverture); }
+    .cat-tab.chauffage { color: var(--col-chauffage); border-color: var(--col-chauffage); }
+    .cat-tab.securite { color: var(--col-securite); border-color: var(--col-securite); }
+    .cat-tab.appareil { color: var(--col-appareil); border-color: var(--col-appareil); }
+    .cat-tab.service { color: var(--col-service); border-color: var(--col-service); }
+    .cat-tab.eau { color: var(--col-eau); border-color: var(--col-eau); }
+    .cat-tab.interface { color: var(--col-interface); border-color: var(--col-interface); }
+
+    .cat-tab.active {
+      background: currentColor;
+      color: #121418 !important;
+    }
+
+    /* Rempli en couleur pleine (comme un onglet actif) pour ne jamais se fondre dans le fond */
+    .active-category-label {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-blue);
+      color: #121418;
+    }
+
+    .module-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .module-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(0,0,0,0.2);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      font-size: 0.85rem;
+    }
+
+    .module-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .module-item input {
+      padding: 8px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.8rem;
+    }
+
+    .module-item button {
+      background: var(--accent-green);
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: bold;
+    }
+
+    /* MODULE EN DÉTAIL (vidéo de démonstration + descriptif) */
+    .module-item-detailed {
+      gap: 10px;
+    }
+
+    .module-video {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: #000;
+    }
+
+    .module-video video {
+      width: 100%;
+      max-height: 240px;
+      display: block;
+    }
+
+    .module-item-detailed strong {
+      font-size: 0.95rem;
+    }
+
+    .module-desc-full {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .btn-add-big {
+      background: var(--accent-green);
+      border: none;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.1s;
+    }
+
+    .btn-add-big:active { transform: scale(0.98); }
+
+    /* PANIER FLOTTANT BAS DROITE */
+    .floating-cart {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(18, 20, 24, 0.95);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 220px;
+    }
+
+    .cart-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cart-total {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--accent-green);
+    }
+
+    .btn-pay {
+      background: var(--accent-green);
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.1s;
+    }
+    .btn-pay:active { transform: scale(0.98); }
+
+    .floating-cart { cursor: pointer; }
+
+    .cart-title { cursor: pointer; }
+
+    @keyframes cartPulse {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    .cart-pulse { animation: cartPulse 0.4s ease; }
+
+    @keyframes priceFlash {
+      0% { color: #fff; }
+      100% { color: var(--accent-green); }
+    }
+
+    .price-flash { animation: priceFlash 0.5s ease; }
+
+    @keyframes inputShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+
+    .input-error {
+      border-color: var(--col-chauffage) !important;
+      box-shadow: 0 0 0 2px rgba(236, 112, 99, 0.35);
+      animation: inputShake 0.35s ease;
+    }
+
+    /* CLONE VOLANT (ANIMATION AJOUT AU PANIER) */
+    .flying-clone {
+      position: fixed;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      z-index: 3000;
+      pointer-events: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: transform 0.7s cubic-bezier(.2, .8, .2, 1), opacity 0.7s ease;
+    }
+
+    /* MODALE DE CONTENU DU PANIER */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 4000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-box {
+      background: #181b21;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .modal-header h3 {
+      font-size: 1rem;
+      color: var(--primary-blue);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { color: var(--col-chauffage); }
+
+    .cart-modal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .cart-modal-item .entity {
+      color: var(--accent-green);
+      font-size: 0.78rem;
+      margin-top: 2px;
+      display: block;
+    }
+
+    .cart-modal-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 25px 10px;
+      font-size: 0.85rem;
+    }
+
+    .modal-footer {
+      margin-top: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    @media (max-width: 768px) {
+      nav { grid-template-columns: 1fr; justify-items: center; }
+      .nav-links { order: 1; }
+      .nav-left { order: 2; width: 100%; justify-content: center; }
+      .nav-right { order: 3; width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BANDEAU DE NAVIGATION -->
+  <nav>
+    <div class="nav-left">
+      <!-- 20 Langues, chacune affichée dans sa propre langue avec son drapeau -->
+      <div class="lang-dropdown" id="lang-dropdown">
+        <button type="button" class="lang-current" onclick="toggleLangDropdown(event)">
+          <span class="fi fi-fr" id="lang-current-flag"></span>
+          <span id="lang-current-label">Français</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <ul class="lang-options" id="lang-options">
+          <li onclick="selectLang('fr', 'Français', 'fi-fr')"><span class="fi fi-fr"></span> Français</li>
+          <li onclick="selectLang('en', 'English', 'fi-gb')"><span class="fi fi-gb"></span> English</li>
+          <li onclick="selectLang('de', 'Deutsch', 'fi-de')"><span class="fi fi-de"></span> Deutsch</li>
+          <li onclick="selectLang('it', 'Italiano', 'fi-it')"><span class="fi fi-it"></span> Italiano</li>
+          <li onclick="selectLang('es', 'Español', 'fi-es')"><span class="fi fi-es"></span> Español</li>
+          <li onclick="selectLang('pt', 'Português', 'fi-pt')"><span class="fi fi-pt"></span> Português</li>
+          <li onclick="selectLang('ru', 'Русский', 'fi-ru')"><span class="fi fi-ru"></span> Русский</li>
+          <li onclick="selectLang('pl', 'Polski', 'fi-pl')"><span class="fi fi-pl"></span> Polski</li>
+          <li onclick="selectLang('nl', 'Nederlands', 'fi-nl')"><span class="fi fi-nl"></span> Nederlands</li>
+          <li onclick="selectLang('ar', 'العربية', 'fi-sa')"><span class="fi fi-sa"></span> العربية</li>
+          <li onclick="selectLang('tr', 'Türkçe', 'fi-tr')"><span class="fi fi-tr"></span> Türkçe</li>
+          <li onclick="selectLang('fa', 'فارسی', 'fi-ir')"><span class="fi fi-ir"></span> فارسی</li>
+          <li onclick="selectLang('hi', 'हिन्दी', 'fi-in')"><span class="fi fi-in"></span> हिन्दी</li>
+          <li onclick="selectLang('bn', 'বাংলা', 'fi-bd')"><span class="fi fi-bd"></span> বাংলা</li>
+          <li onclick="selectLang('zh', '中文', 'fi-cn')"><span class="fi fi-cn"></span> 中文</li>
+          <li onclick="selectLang('ko', '한국어', 'fi-kr')"><span class="fi fi-kr"></span> 한국어</li>
+          <li onclick="selectLang('ja', '日本語', 'fi-jp')"><span class="fi fi-jp"></span> 日本語</li>
+          <li onclick="selectLang('vi', 'Tiếng Việt', 'fi-vn')"><span class="fi fi-vn"></span> Tiếng Việt</li>
+          <li onclick="selectLang('th', 'ไทย', 'fi-th')"><span class="fi fi-th"></span> ไทย</li>
+          <li onclick="selectLang('he', 'עברית', 'fi-il')"><span class="fi fi-il"></span> עברית</li>
+        </ul>
+      </div>
+    </div>
+    <div class="nav-links">
+      <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
+      <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Déploiement</button>
+      <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
+      <button onclick="switchTab('tarif')" id="nav-tarif"><i class="fa-solid fa-tags"></i> Tarif</button>
+    </div>
+    <div class="nav-right">
+      <!-- Canaux de contacts (cf photo) -->
+      <div class="social-icons">
+        <a href="tel:+33600000000" class="fa-solid fa-phone" title="Téléphone"></a>
+        <a href="mailto:smarthomeassistant.alex@gmail.com" class="fa-solid fa-envelope" title="Email"></a>
+        <a href="https://linkedin.com" target="_blank" class="fa-brands fa-linkedin" title="LinkedIn"></a>
+        <a href="https://whatsapp.com" target="_blank" class="fa-brands fa-whatsapp" title="WhatsApp"></a>
+        <a href="https://instagram.com" target="_blank" class="fa-brands fa-instagram" title="Instagram"></a>
+        <a href="https://facebook.com" target="_blank" class="fa-brands fa-facebook" title="Facebook"></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SECTION 1 : ACCUEIL -->
+  <div id="section-accueil" class="page-section active">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-network-wired"></i> HA-Deployer Pro</h1>
+        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
+      </header>
+
+      <div class="hero-slogan">
+        "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-video"></i> Présentation Vidéo</h3>
+        <div class="video-container">
+          <iframe src="https://www.youtube.com/embed/LokQyLFPUOA?list=PLHCmYWBoMir-iFsAeatdl_xY1kTKdGPV3" title="Présentation HA-Deployer" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <div class="card" style="text-align: center;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Soutenir le Projet</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Ce projet est open-source. Vous pouvez soutenir son développement via les plateformes de dons :</p>
+        <div class="donation-links">
+          <a href="https://github.com/sponsors" target="_blank" class="donation-btn"><i class="fa-solid fa-mug-hot" style="color: #F4D03F;"></i> Buy Me a Coffee</a>
+          <a href="https://paypal.com" target="_blank" class="donation-btn"><i class="fa-brands fa-paypal" style="color: #5DADE2;"></i> PayPal</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 : MODULE -->
+  <div id="section-module" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-sliders"></i> Configuration & Modules</h1>
+        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
+      </header>
+
+      <div class="card">
+        <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage);">
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> Prérequis indispensable :</strong>
+          Votre instance Home Assistant doit être <b>accessible depuis l'extérieur</b> pour que le déploiement puisse s'y connecter (choisissez l'une des solutions suivantes) :
+          <ol>
+            <li>Abonnement <b>Nabu Casa</b> (Home Assistant Cloud)</li>
+            <li><b>VPN</b> (WireGuard, Tailscale, etc.)</li>
+            <li><b>DuckDNS</b> + redirection de port</li>
+            <li><b>Cloudflare Tunnel</b> + NGINX (reverse proxy)</li>
+          </ol>
+        </div>
+
+        <div class="notice-box">
+          <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
+          <ol>
+            <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
+            <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
+            <li>Saisissez le nom <code>HA-Deployer</code>.</li>
+          </ol>
+        </div>
+
+        <div class="form-group">
+          <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant</label>
+          <input type="url" id="ha-url" placeholder="https://votre-instance.duckdns.org:8123" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès (Long-Lived Access Token)</label>
+          <input type="password" id="ha-token" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-layer-group"></i> Catalogue des Modules (9€ / module)</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 15px;">Sélectionnez une catégorie :</p>
+
+        <!-- Onglets colorés -->
+        <div class="category-tabs">
+          <div class="cat-tab lumiere active" onclick="filterCategory('lumiere', 'Lumière', this)">Lumière (Jaune)</div>
+          <div class="cat-tab ouverture" onclick="filterCategory('ouverture', 'Ouverture', this)">Ouverture (Blanc)</div>
+          <div class="cat-tab chauffage" onclick="filterCategory('chauffage', 'Chauffage', this)">Chauffage (Rouge)</div>
+          <div class="cat-tab securite" onclick="filterCategory('securite', 'Sécurité', this)">Sécurité (Violet)</div>
+          <div class="cat-tab appareil" onclick="filterCategory('appareil', 'Appareil', this)">Appareil (Vert)</div>
+          <div class="cat-tab service" onclick="filterCategory('service', 'Services', this)">Services (Gris)</div>
+          <div class="cat-tab eau" onclick="filterCategory('eau', 'Eau', this)">Eau (Bleu)</div>
+          <div class="cat-tab interface" onclick="filterCategory('interface', 'Interface', this)">Interface (Orange)</div>
+        </div>
+
+        <!-- Texte de la catégorie active toujours visible -->
+        <span id="active-cat-display" class="active-category-label">Catégorie active : Lumière</span>
+
+        <!-- Liste filtrée -->
+        <div class="module-list-container" id="module-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 : TEST GRATUIT -->
+  <div id="section-test" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-vial"></i> Espace Test Gratuit</h1>
+        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
+      </header>
+
+      <div class="card">
+        <div class="notice-box">
+          <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un module de démonstration sur votre instance.
+        </div>
+        <div class="form-group">
+          <label>URL Home Assistant (Test)</label>
+          <input type="url" placeholder="https://test.duckdns.org:8123">
+        </div>
+        <div class="form-group">
+          <label>Jeton d'accès (Test)</label>
+          <input type="password" placeholder="Jeton temporaire...">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Module de Test Unique</h3>
+        <div class="module-item">
+          <div class="module-item-row">
+            <div>
+              <strong>module_test_decouverte</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Module de test gratuit sans engagement</div>
+            </div>
+          </div>
+          <input type="text" placeholder="Entrez l'entité (ex: sensor.test)" id="test-entity-input">
+          <button onclick="alert('🎉 Test gratuit injecté avec succès sur votre instance !')">Tester Gratuitement</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 : TARIF -->
+  <div id="section-tarif" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-tags"></i> Grille Tarifaire</h1>
+        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
+      </header>
+
+      <div class="card" style="text-align: center; padding: 30px;">
+        <h3 style="color: var(--primary-blue); margin-bottom: 10px;">Forfait d'Injection de Base</h3>
+        <div style="font-size: 2rem; font-weight: bold; margin: 15px 0; color: var(--accent-green);">29,00 € <span style="font-size: 0.9rem; color: var(--text-muted);">/ instance</span></div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+          Comprend l'infrastructure de base, l'accès au connecteur sécurisé et l'injection initiale. Chaque module supplémentaire est facturé 9,00 €.
+        </p>
+        <button type="button" class="btn-pay" onclick="checkout()">Payer l'injection de base (29€)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANIER FLOTTANT EN BAS À DROITE -->
+  <div class="floating-cart" onclick="openCartModal()" title="Voir le contenu du panier">
+    <div class="cart-title">
+      <span><i class="fa-solid fa-cart-shopping"></i> Panier</span>
+      <span id="cart-count">0 module(s)</span>
+    </div>
+    <div style="font-size: 0.8rem; color: var(--text-muted);">
+      <div>Injection base : <strong>29 €</strong></div>
+      <div>Modules : <span id="cart-modules-price">0 €</span></div>
+    </div>
+    <div class="cart-total" id="cart-total-price">Total : 29 €</div>
+    <button class="btn-pay" onclick="event.stopPropagation(); checkout()">Procéder au Paiement</button>
+  </div>
+
+  <!-- MODALE : CONTENU DÉTAILLÉ DU PANIER -->
+  <div class="modal-overlay" id="cart-modal-overlay" onclick="closeCartModalOverlay(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cart-shopping"></i> Contenu du panier</h3>
+        <button class="modal-close" onclick="closeCartModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="cart-modal-body"></div>
+    </div>
+  </div>
+
+<script>
+  function toggleLangDropdown(e) {
+    e.stopPropagation();
+    document.getElementById('lang-dropdown').classList.toggle('open');
+  }
+
+  function selectLang(code, label, flagClass) {
+    document.getElementById('lang-current-flag').className = `fi ${flagClass}`;
+    document.getElementById('lang-current-label').innerText = label;
+    document.documentElement.lang = code;
+    document.getElementById('lang-dropdown').classList.remove('open');
+  }
+
+  document.addEventListener('click', (e) => {
+    const dd = document.getElementById('lang-dropdown');
+    if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+  });
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+
+    document.getElementById(`section-${tabId}`).classList.add('active');
+    document.getElementById(`nav-${tabId}`).classList.add('active');
+  }
+
+  const modulesData = {
+    lumiere: [
+      { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
+    ],
+    ouverture: [
+      { name: 'ouverture_garage_porte', desc: 'Contrôle et état porte de garage' },
+      { name: 'ouverture_volet', desc: 'Gestion des volets roulants' }
+    ],
+    chauffage: [
+      { name: 'chauffage_thermostat', desc: 'Thermostat principal de régulation' },
+      { name: 'chauffage_cheminee', desc: 'Suivi et capteur cheminée' },
+      { name: 'chauffage_compteur_gaz', desc: 'Compteur de consommation gaz' }
+    ],
+    securite: [
+      { name: 'securite_alarme', desc: 'Centrale d\'alarme et statuts' },
+      { name: 'securite_camera', desc: 'Flux et détection caméras de surveillance' }
+    ],
+    appareil: [
+      { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
+      { name: 'appareil_box_internet', desc: 'Surveillance routeur et réseau' },
+      { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
+      { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
+      { name: 'appareil_machine_laver', desc: 'Suivi cycle machine à laver' },
+      { name: 'appareil_microwave', desc: 'Micro-ondes connecté' },
+      { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
+      { name: 'appareil_printer', desc: 'Imprimante et niveaux d\'encre' },
+      { name: 'appareil_raspberry', desc: 'Surveillance système Raspberry Pi' },
+      { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
+      { name: 'appareil_seche_linge', desc: 'Sèche-linge' },
+      { name: 'appareil_serpillere', desc: 'Robot serpillière' },
+      { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
+      { name: 'appareil_soundbar', desc: 'Barre de son' },
+      { name: 'appareil_television', desc: 'Téléviseur' },
+      { name: 'appareil_tondeuse', desc: 'Robot tondeuse' },
+      { name: 'appareil_voiture', desc: 'Véhicule connecté / Recharge' },
+      { name: 'appareil_zigbee', desc: 'Passerelle et réseau Zigbee' }
+    ],
+    service: [
+      { name: 'OK_service_meteo', desc: 'Service Météo & Prévisions' },
+      { name: 'OK_service_temps', desc: 'Gestion du temps et calendriers' },
+      { name: 'service_boite_aux_lettres', desc: 'Détecteur de courrier boite aux lettres' },
+      { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
+      { name: 'service_compteur_electricite', desc: 'Compteur électrique principal' },
+      { name: 'service_gestion_dechets', desc: 'Poubelles & calendrier de collecte' },
+      { name: 'service_person', desc: 'Présence des résidents' },
+      { name: 'service_transport', desc: 'Horaires transports en commun' }
+    ],
+    eau: [
+      { name: 'eau_compteur', desc: 'Suivi global consommation d\'eau' },
+      { name: 'eau_detecteur_fuite', desc: 'Détecteur d\'inondation / fuite' },
+      { name: 'eau_pool', desc: 'Gestion et température piscine' },
+      { name: 'eau_valve', desc: 'Vanne d\'arrêt automatique d\'eau' }
+    ],
+    interface: [
+      { name: 'interface_dashboard_principal', desc: 'Personnalisation des tuiles et vues Lovelace' }
+    ]
+  };
+
+  let cart = [];
+
+  const CAT_ICONS = {
+    lumiere: 'fa-lightbulb', ouverture: 'fa-warehouse', chauffage: 'fa-fire',
+    securite: 'fa-shield-halved', appareil: 'fa-plug', service: 'fa-gears',
+    eau: 'fa-droplet', interface: 'fa-table-cells'
+  };
+
+  const CAT_COLORS = {
+    lumiere: '#F4D03F', ouverture: '#FFFFFF', chauffage: '#EC7063', securite: '#BB8FCE',
+    appareil: '#52BE80', service: '#808080', eau: '#5DADE2', interface: '#E59866'
+  };
+
+  // Modules déjà finalisés en template (vidéo de démonstration + descriptif détaillé)
+  const MODULE_MEDIA = {
+    OK_service_meteo: {
+      video: 'templates/service_meteo/meteo.mp4',
+      placeholder: 'ex: weather.paris',
+      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée (clock-weather-card).'
+    },
+    OK_service_temps: {
+      video: 'templates/service_temps/temps_athee.mp4',
+      placeholder: 'ex: sun.sun',
+      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence. Calendrier standard par défaut (illustré ici) — également disponible en variante Islam, Judaïsme, Christianisme, Bouddhisme ou Hindouisme.'
+    }
+  };
+
+  function filterCategory(categoryKey, categoryName, tabEl) {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    (tabEl || document.querySelector(`.cat-tab.${categoryKey}`)).classList.add('active');
+
+    // Garde le nom de la catégorie toujours visible, en couleur pleine selon la catégorie active
+    const label = document.getElementById('active-cat-display');
+    label.style.background = CAT_COLORS[categoryKey] || 'var(--primary-blue)';
+    label.innerHTML = `<i class="fa-solid ${CAT_ICONS[categoryKey] || 'fa-tag'}"></i> Catégorie active : ${categoryName}`;
+
+    const container = document.getElementById('module-list');
+    container.innerHTML = '';
+
+    const list = modulesData[categoryKey] || [];
+    list.forEach(mod => {
+      const item = document.createElement('div');
+      const media = MODULE_MEDIA[mod.name];
+
+      if (media) {
+        item.className = 'module-item module-item-detailed';
+        item.innerHTML = `
+          <div class="module-video">
+            <video controls preload="metadata">
+              <source src="${media.video}" type="video/mp4">
+            </video>
+          </div>
+          <strong>${mod.name}</strong>
+          <p class="module-desc-full">${media.detail}</p>
+          <input type="text" placeholder="Entrez l'entité requise (${media.placeholder})" id="input-${mod.name}">
+          <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (9€)</button>
+        `;
+      } else {
+        item.className = 'module-item';
+        item.innerHTML = `
+          <div class="module-item-row">
+            <div>
+              <strong>${mod.name}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">${mod.desc}</div>
+            </div>
+            <button onclick="addModuleToCart('${mod.name}', this)">Ajouter (9€)</button>
+          </div>
+          <input type="text" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">
+        `;
+      }
+      container.appendChild(item);
+    });
+  }
+
+  function addModuleToCart(modName, btnEl) {
+    const inputEntity = document.getElementById(`input-${modName}`);
+    const entityVal = inputEntity ? inputEntity.value.trim() : '';
+
+    if (!entityVal) {
+      inputEntity.classList.remove('input-error');
+      void inputEntity.offsetWidth; // relance l'animation si déjà jouée
+      inputEntity.classList.add('input-error');
+      inputEntity.focus();
+      return;
+    }
+
+    cart.push({ name: modName, entity: entityVal, price: 9 });
+    flyToCart(btnEl.closest('.module-item'));
+    updateCartUI();
+    inputEntity.value = '';
+    inputEntity.classList.remove('input-error');
+  }
+
+  function flyToCart(sourceEl) {
+    const cartEl = document.querySelector('.floating-cart');
+    if (!sourceEl || !cartEl) return;
+
+    const startRect = sourceEl.getBoundingClientRect();
+    const endRect = cartEl.getBoundingClientRect();
+
+    const clone = document.createElement('div');
+    clone.className = 'flying-clone';
+    clone.innerHTML = '<i class="fa-solid fa-box"></i>';
+    clone.style.left = `${startRect.left + startRect.width / 2 - 17}px`;
+    clone.style.top = `${startRect.top + startRect.height / 2 - 17}px`;
+    document.body.appendChild(clone);
+
+    requestAnimationFrame(() => {
+      const dx = (endRect.left + endRect.width / 2) - (startRect.left + startRect.width / 2);
+      const dy = (endRect.top + endRect.height / 2) - (startRect.top + startRect.height / 2);
+      clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.15)`;
+      clone.style.opacity = '0';
+    });
+
+    clone.addEventListener('transitionend', () => {
+      clone.remove();
+      cartEl.classList.add('cart-pulse');
+      setTimeout(() => cartEl.classList.remove('cart-pulse'), 400);
+    }, { once: true });
+  }
+
+  function updateCartUI() {
+    const count = cart.length;
+    const modulesPrice = count * 9;
+    const total = 29 + modulesPrice;
+
+    document.getElementById('cart-count').innerText = `${count} module(s)`;
+    document.getElementById('cart-modules-price').innerText = `${modulesPrice} €`;
+
+    const totalEl = document.getElementById('cart-total-price');
+    totalEl.innerText = `Total : ${total} €`;
+    totalEl.classList.remove('price-flash');
+    void totalEl.offsetWidth;
+    totalEl.classList.add('price-flash');
+  }
+
+  function openCartModal(checkoutMode = false) {
+    const body = document.getElementById('cart-modal-body');
+    let itemsHtml;
+    if (cart.length === 0) {
+      itemsHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Votre panier est vide pour le moment.</div>`;
+    } else {
+      itemsHtml = cart.map(item => `
+        <div class="cart-modal-item">
+          <div>
+            <strong>${item.name}</strong>
+            <span class="entity"><i class="fa-solid fa-microchip"></i> ${item.entity}</span>
+          </div>
+          <div>${item.price} €</div>
+        </div>
+      `).join('');
+    }
+
+    let footerHtml = '';
+    if (checkoutMode) {
+      const total = 29 + (cart.length * 9);
+      footerHtml = `
+        <div class="modal-footer">
+          <div class="cart-total" style="margin-bottom: 10px;">Total à payer : ${total} € (Injection de base 29€ + ${cart.length} module(s))</div>
+          <button class="btn-pay" onclick="confirmPayment()">Confirmer et payer</button>
+        </div>
+      `;
+    }
+
+    body.innerHTML = itemsHtml + footerHtml;
+    document.getElementById('cart-modal-overlay').classList.add('active');
+  }
+
+  function closeCartModal() {
+    document.getElementById('cart-modal-overlay').classList.remove('active');
+  }
+
+  function closeCartModalOverlay(e) {
+    if (e.target.id === 'cart-modal-overlay') closeCartModal();
+  }
+
+  function confirmPayment() {
+    const total = 29 + (cart.length * 9);
+    closeCartModal();
+    alert(`🚀 Redirection vers le paiement sécurisé pour un montant total de ${total} € (${cart.length} module(s) + Injection de base 29€)...`);
+  }
+
+  function checkout() {
+    const url = document.getElementById('ha-url').value;
+    const token = document.getElementById('ha-token').value;
+
+    if (!url || !token) {
+      alert("Veuillez renseigner l'URL et le Jeton d'accès Home Assistant dans l'onglet Module.");
+      switchTab('module');
+      return;
+    }
+
+    openCartModal(true);
+  }
+
+  window.onload = () => {
+    filterCategory('lumiere', 'Lumière');
+  };
+</script>
+
+</body>
+</html>
