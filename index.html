@@ -1568,6 +1568,7 @@
         <div class="prose">
           <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos modules.</p>
           <p>Vous gardez la main : un jeton d'accès longue durée se révoque à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
+          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le module concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont transmis</strong> — seule une empreinte irréversible de cette adresse est conservée, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
         </div>
       </div>
 
@@ -2529,6 +2530,43 @@
   const TEST_DASHBOARD = 'accueil-modules';
   const TEST_VIEW_PATH = 'test-gratuit';
 
+  /* ---------------------------------------------------------------------
+     Télémétrie de déploiement (facultative).
+     Renseigner l'URL du Worker Cloudflare pour l'activer — voir
+     backend/README.md. Tant qu'elle est vide, rien n'est envoyé et le
+     déploiement fonctionne normalement.
+
+     Ce qui est transmis : le module, l'issue, l'étape atteinte, la version
+     de HA, la durée. Ce qui ne l'est JAMAIS : le jeton d'accès, et
+     l'adresse de l'instance en clair (seul un SHA-256 de l'origine part,
+     re-haché côté serveur avec un secret avant d'être stocké).
+     --------------------------------------------------------------------- */
+  const BACKEND_URL = '';
+
+  async function hashOrigin(rawUrl) {
+    try {
+      const origin = new URL(rawUrl).origin;
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(origin));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function reportDeployment(payload) {
+    if (!BACKEND_URL) return;
+    try {
+      await fetch(BACKEND_URL.replace(/\/+$/, '') + '/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true          // l'envoi survit à une fermeture d'onglet immédiate
+      });
+    } catch (e) {
+      /* La télémétrie ne doit jamais faire échouer un déploiement réussi. */
+    }
+  }
+
   async function runFreeTest() {
     const btn = document.getElementById('test-deploy-btn');
     const box = document.getElementById('test-log');
@@ -2558,15 +2596,25 @@
 
     btn.disabled = true;
     let ha = null;
+    const started = Date.now();
+    const instanceHash = await hashOrigin(rawUrl);
+    let stage = 'connect';
+    let haVersion = null;
     let step = logLine('run', 'Connexion à votre instance Home Assistant…');
 
     try {
       ha = await haConnect(parsed.url, token);
       replaceLine(step, 'ok', 'Connecté et authentifié.');
 
+      try {
+        const cfg = await ha.call({ type: 'get_config' });
+        haVersion = (cfg.result && cfg.result.version) || null;
+      } catch (e) { /* version non déterminante */ }
+
       // 1. Plugins HACS — au mieux : une entrée de ressource orpheline
       //    (URL déclarée mais fichier jamais téléchargé) fait échouer les
       //    cartes en silence, on vérifie donc l'état réel côté HACS.
+      stage = 'hacs';
       step = logLine('run', 'Vérification des cartes personnalisées…');
       let hacsOk = false;
       try {
@@ -2589,6 +2637,7 @@
       }
 
       // 2. Ressources Lovelace
+      stage = 'resources';
       step = logLine('run', 'Enregistrement des ressources Lovelace…');
       const resRes = await ha.call({ type: 'lovelace/resources' });
       const registered = (resRes.result || []).map(r => r.url).join(' ');
@@ -2599,6 +2648,7 @@
       replaceLine(step, 'ok', missingRes.length ? `${missingRes.length} ressource(s) ajoutée(s).` : 'Ressources déjà en place.');
 
       // 3. Tableau de bord partagé "Accueil"
+      stage = 'dashboard';
       step = logLine('run', 'Préparation du tableau de bord « Accueil »…');
       const dashRes = await ha.call({ type: 'lovelace/dashboards/list' });
       const exists = (dashRes.result || []).some(d => d.url_path === TEST_DASHBOARD);
@@ -2615,6 +2665,7 @@
       }
 
       // 4. Fusion dans les vues existantes — la racine n'est jamais réécrite
+      stage = 'inject';
       step = logLine('run', 'Injection de la carte…');
       const cfgRes = await ha.call({ type: 'lovelace/config', url_path: TEST_DASHBOARD });
       const config = cfgRes.success ? cfgRes.result : { title: 'Accueil', views: [] };
@@ -2637,8 +2688,19 @@
       const link = `${new URL(rawUrl).origin}/${TEST_DASHBOARD}/${TEST_VIEW_PATH}`;
       replaceLine(step, 'ok', idx >= 0 ? 'Carte mise à jour.' : 'Carte injectée.');
       logLine('ok', `Terminé — <a href="${link}" target="_blank" rel="noopener">ouvrir la carte sur votre instance</a>`);
+
+      reportDeployment({
+        module: 'test_gratuit', status: 'success', step: 'done',
+        instance: instanceHash, ha_version: haVersion, duration_ms: Date.now() - started
+      });
     } catch (e) {
-      logLine('err', e.message || "Le déploiement a échoué.");
+      const message = e.message || "Le déploiement a échoué.";
+      logLine('err', message);
+
+      reportDeployment({
+        module: 'test_gratuit', status: 'error', step: stage, error: message,
+        instance: instanceHash, ha_version: haVersion, duration_ms: Date.now() - started
+      });
     } finally {
       if (ha) ha.close();
       btn.disabled = false;
