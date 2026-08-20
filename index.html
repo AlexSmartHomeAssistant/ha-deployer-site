@@ -37,6 +37,12 @@
       --hover-bg: rgba(255, 255, 255, 0.07);
       --modal-bg: #0c0c0e;
 
+      /* Largeur du contenu : sert aussi à aligner les onglets et le panier du bandeau */
+      --content-max: 1200px;
+      --content-pad: 24px;
+      --content-half: 600px;   /* --content-max / 2 */
+      --nav-edge: 190px;       /* espace réservé à la marque / aux icônes de droite */
+
       /* Fond abstrait : même structure dans les 2 thèmes, seules les teintes changent */
       --pattern: rgba(255, 255, 255, 0.055);
       --glow-1: rgba(93, 173, 226, 0.13);
@@ -117,13 +123,23 @@
       box-shadow: 0 1px 24px rgba(0, 0, 0, 0.22);
     }
 
-    /* BLOC DE MARQUE (titre + sous-titre), sur la même ligne que le menu et le panier */
+    /* Barre unique : marque à gauche | onglets & panier alignés sur le contenu | langue & thème à droite */
+    .nav-bar {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 22px;
+      min-height: 64px;
+    }
+
     .nav-brand {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 11px;
-      justify-self: center;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .nav-brand-mark {
@@ -140,12 +156,6 @@
       box-shadow: 0 4px 14px rgba(93, 173, 226, 0.28);
     }
 
-    .nav-brand-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.15;
-    }
-
     .nav-brand-title {
       font-size: 1.28rem;
       font-weight: 800;
@@ -153,27 +163,12 @@
       color: var(--text-main);
     }
 
-    .nav-brand-subtitle {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--col-gold);
-      margin-top: 2px;
-    }
-
-    /* 6 colonnes : langue | onglets | marque | thème | panier | contacts */
-    .nav-controls {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr auto auto auto auto 1fr;
-      align-items: center;
-      padding: 12px 22px;
-      gap: 14px;
-    }
-
-    .nav-left {
-      justify-self: start;
+    /* Langue + thème, toujours collés au bord droit du bandeau */
+    .nav-side {
       display: flex;
       align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
     /* ÉLÉMENT RÉSERVÉ AU BANDEAU MOBILE (masqué sur bureau) */
@@ -199,7 +194,6 @@
       display: flex;
       gap: 6px;
       align-items: center;
-      justify-self: center;
       background: var(--hover-bg);
       border: 1px solid var(--card-border);
       border-radius: 999px;
@@ -256,8 +250,8 @@
     }
 
     .nav-cart-badge {
-      background: var(--accent-green);
-      color: #fff;
+      background: #F8C471;
+      color: #1a1206;
       border-radius: 50%;
       min-width: 21px;
       height: 21px;
@@ -283,9 +277,8 @@
       justify-content: center;
       background: var(--hover-bg);
       border: 1px solid var(--card-border);
-      border-radius: 50%;
+      border-radius: 10px;
       color: var(--text-main);
-      font-size: 0.95rem;
       cursor: pointer;
       transition: color 0.2s, background 0.2s, border-color 0.2s;
     }
@@ -295,12 +288,71 @@
       border-color: var(--col-gold);
     }
 
-    /* DROITE DU BANDEAU : CONTACTS */
-    .nav-right {
+    .theme-toggle svg { width: 19px; height: 19px; display: block; }
+
+    /* Une seule des deux icônes est visible selon le thème actif */
+    .theme-toggle .icon-moon { display: none; }
+    html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+    html[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+    /* ===== PIED DE PAGE ===== */
+    .site-footer {
+      width: 100%;
+      flex-shrink: 0;
+      margin-top: auto;
+      border-top: 1px solid var(--card-border);
+      background: var(--nav-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .footer-inner {
+      width: 100%;
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 14px var(--content-pad);
       display: flex;
       align-items: center;
-      gap: 12px;
-      justify-self: end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 7px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .footer-links button:hover,
+    .footer-links button.active {
+      color: var(--primary-blue);
+      background: var(--hover-bg);
+    }
+
+    .footer-copyright {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding-left: 10px;
     }
 
     .social-icons {
@@ -311,8 +363,8 @@
 
     /* Pastilles neutres, façon favicon : aucune couleur de marque en surbrillance */
     .social-icons a {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -328,57 +380,43 @@
       background: var(--hover-bg);
     }
 
-    .nav-copyright {
-      display: none;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-align: left;
-      margin-top: 10px;
-    }
-
     /* SÉLECTEUR DE LANGUE PERSONNALISÉ (avec drapeaux) */
     .lang-dropdown {
       position: relative;
     }
 
+    /* Bouton "favicon" : uniquement le drapeau de la langue courante */
     .lang-current {
+      width: 38px;
+      height: 38px;
+      padding: 0;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
       background: var(--hover-bg);
       border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
+      border-radius: 10px;
       outline: none;
       cursor: pointer;
+      overflow: hidden;
       transition: border-color 0.2s, background 0.2s;
     }
 
     .lang-current:hover { border-color: var(--primary-blue); }
 
     .lang-current .fi {
-      border-radius: 2px;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
-    }
-
-    .lang-current i.fa-chevron-down {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      transition: transform 0.2s;
-    }
-
-    .lang-dropdown.open .lang-current i.fa-chevron-down {
-      transform: rotate(180deg);
+      width: 22px;
+      height: 16px;
+      border-radius: 3px;
+      background-size: cover;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
     }
 
     .lang-options {
       display: none;
       position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
+      top: calc(100% + 8px);
+      right: 0;
       background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
@@ -424,6 +462,17 @@
       flex-direction: column;
       gap: 18px;
     }
+
+    /* Texte courant des pages statiques (À propos / FAQ / Aide) */
+    .prose { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+    .prose p { margin-bottom: 10px; }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--text-main); }
+    .prose ul { margin: 6px 0 10px 18px; }
+    .prose li { margin-bottom: 5px; }
+
+    .faq-item + .faq-item { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); }
+    .faq-q { font-size: 0.92rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
 
     .page-section.active {
       display: flex;
@@ -999,10 +1048,34 @@
       }
 
       .page-section {
-        max-width: 1260px;
+        max-width: var(--content-max);
         flex: 1;
         min-height: 0;
-        padding: 18px 28px 22px;
+        padding: 18px var(--content-pad) 22px;
+      }
+
+      /* Onglets calés sur le bord GAUCHE des cartes, panier sur leur bord DROIT.
+         Le max() évite tout chevauchement avec la marque / les icônes de droite
+         quand l'écran est trop étroit pour que l'alignement soit possible. */
+      .nav-links {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
+      }
+
+      .nav-cart {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
+      }
+
+      /* Le panier étant centré par translateY, la pulsation doit le conserver */
+      @keyframes cartPulse {
+        0%   { transform: translateY(-50%) scale(1); }
+        35%  { transform: translateY(-50%) scale(1.12); }
+        100% { transform: translateY(-50%) scale(1); }
       }
 
       /* Grille 2 colonnes : le contenu tient dans la hauteur de l'écran */
@@ -1075,83 +1148,48 @@
        BANDEAU COMPACT (≤1023px) : hamburger + menu déroulant
        ========================================================= */
     @media (max-width: 1023px) {
-      .nav-brand-title { font-size: 1.1rem; white-space: nowrap; }
-      .nav-brand-subtitle { font-size: 0.72rem; }
+      .nav-brand-title { font-size: 1.08rem; white-space: nowrap; }
       .nav-brand-mark { width: 32px; height: 32px; font-size: 0.9rem; }
 
-      /* Ligne 1 : la marque, centrée sur toute la largeur.
-         Ligne 2 : hamburger à gauche, thème + panier à droite. */
-      .nav-controls {
-        grid-template-columns: auto 1fr auto auto;
-        padding: 10px 12px 12px;
+      /* Une seule ligne : ☰ | marque | panier | langue | thème.
+         Les onglets se déplient en dessous, sur toute la largeur. */
+      .nav-bar {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        padding: 10px 14px;
+        min-height: 0;
         gap: 10px;
       }
 
-      .nav-brand { grid-column: 1 / -1; grid-row: 1; }
-      .nav-hamburger { display: flex; grid-column: 1; grid-row: 2; justify-self: start; }
-      .theme-toggle { grid-column: 3; grid-row: 2; width: 34px; height: 34px; }
-      .nav-cart { grid-column: 4; grid-row: 2; justify-self: end; padding: 7px 12px; font-size: 0.85rem; }
+      .nav-hamburger { display: flex; order: 1; }
+      .nav-brand { order: 2; flex: 1; min-width: 0; }
+      .nav-cart { order: 3; padding: 7px 12px; font-size: 0.85rem; }
+      .nav-side { order: 4; }
 
-      /* Titre/sous-titre et panier s'effacent pendant que le menu déroulant est ouvert */
-      nav.mobile-open .nav-brand,
-      nav.mobile-open .nav-cart {
+      /* Le conteneur "pilule" des onglets redevient une liste verticale dépliable */
+      .nav-links {
         display: none;
-      }
-
-      /* Empilés automatiquement sous la ligne 2 quand le menu est ouvert */
-      .nav-left, .nav-links, .nav-right {
-        display: none;
-        grid-column: 1 / -1;
+        order: 5;
+        flex-basis: 100%;
         width: 100%;
-      }
-
-      nav.mobile-open .nav-left,
-      nav.mobile-open .nav-links,
-      nav.mobile-open .nav-right {
-        display: flex;
         flex-direction: column;
         align-items: stretch;
-        padding-top: 10px;
-        border-top: 1px solid var(--card-border);
-      }
-
-      nav.mobile-open .nav-left { justify-self: stretch; }
-
-      /* Le conteneur "pilule" des onglets redevient une simple liste verticale */
-      nav.mobile-open .nav-links {
         gap: 4px;
         background: none;
         border: none;
         border-radius: 0;
-        padding: 10px 0 0;
+        border-top: 1px solid var(--card-border);
+        padding: 10px 0 2px;
       }
 
-      nav.mobile-open .nav-links button {
+      nav.mobile-open .nav-links { display: flex; }
+
+      .nav-links button {
         width: 100%;
         justify-content: flex-start;
         padding: 13px 12px;
         border-radius: 10px;
       }
-
-      nav.mobile-open .nav-right {
-        border-top: none;
-        padding-top: 4px;
-      }
-
-      nav.mobile-open .nav-right .social-icons {
-        justify-content: flex-start;
-        width: 100%;
-        padding: 6px 0;
-      }
-
-      nav.mobile-open .nav-copyright {
-        display: block;
-        width: 100%;
-      }
-
-      .lang-dropdown, .lang-current { width: 100%; }
-      .lang-current { justify-content: space-between; }
-      .lang-options { left: 0; right: 0; min-width: 100%; }
     }
 
     /* =========================================================
@@ -1163,13 +1201,23 @@
       .accueil-title { font-size: 1.12rem; }
       .hero-slogan { font-size: 0.95rem; padding: 16px; }
       header h1 { font-size: 1.25rem; }
-      .nav-brand-subtitle { font-size: 0.68rem; }
       .module-video { height: 180px; }
       .payment-methods { grid-template-columns: 1fr; }
       .modal-box { padding: 20px; max-height: 86vh; }
       .modal-header h3 { font-size: 1.1rem; }
       .donation-links { flex-direction: column; }
       .donation-btn { justify-content: center; }
+
+      /* Pied de page empilé et centré */
+      .footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+        padding: 14px 16px;
+      }
+      .footer-left { align-items: center; }
+      .footer-copyright { padding-left: 0; }
     }
   </style>
 </head>
@@ -1177,17 +1225,30 @@
 
   <!-- BANDEAU DE NAVIGATION -->
   <nav id="main-nav">
-    <div class="nav-controls">
+    <div class="nav-bar">
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu(event)" aria-label="Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
-    <div class="nav-left">
-      <!-- 20 Langues, chacune affichée dans sa propre langue avec son drapeau -->
+    <div class="nav-brand">
+      <div class="nav-brand-mark"><i class="fa-solid fa-house-signal"></i></div>
+      <span class="nav-brand-title">HA-Deployer</span>
+    </div>
+    <div class="nav-links">
+      <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
+      <button onclick="switchTab('fonctionnement')" id="nav-fonctionnement"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
+      <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Module</button>
+      <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
+    </div>
+    <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span class="nav-cart-badge" id="nav-cart-badge">0</span>
+      <span class="nav-cart-total" id="nav-cart-total">0 €</span>
+    </div>
+    <div class="nav-side">
+      <!-- Langue : bouton drapeau seul, les noms apparaissent au clic -->
       <div class="lang-dropdown" id="lang-dropdown">
-        <button type="button" class="lang-current" onclick="toggleLangDropdown(event)">
+        <button type="button" class="lang-current" onclick="toggleLangDropdown(event)" title="Choisir la langue" aria-label="Choisir la langue">
           <span class="fi fi-fr" id="lang-current-flag"></span>
-          <span id="lang-current-label">Français</span>
-          <i class="fa-solid fa-chevron-down"></i>
         </button>
         <ul class="lang-options" id="lang-options">
           <li onclick="selectLang('fr', 'Français', 'fi-fr')"><span class="fi fi-fr"></span> Français</li>
@@ -1212,39 +1273,16 @@
           <li onclick="selectLang('he', 'עברית', 'fi-il')"><span class="fi fi-il"></span> עברית</li>
         </ul>
       </div>
-    </div>
-    <div class="nav-links">
-      <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
-      <button onclick="switchTab('fonctionnement')" id="nav-fonctionnement"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
-      <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Module</button>
-      <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
-    </div>
-    <div class="nav-brand">
-      <div class="nav-brand-mark"><i class="fa-solid fa-house-signal"></i></div>
-      <div class="nav-brand-text">
-        <span class="nav-brand-title">HA-Deployer</span>
-        <span class="nav-brand-subtitle">Déployez vos modules sur Home Assistant en 1 clic.</span>
-      </div>
-    </div>
-    <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Basculer clair / sombre" aria-label="Basculer le thème clair ou sombre">
-      <i class="fa-solid fa-sun" id="theme-toggle-icon"></i>
-    </button>
-    <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
-      <i class="fa-solid fa-cart-shopping"></i>
-      <span class="nav-cart-badge" id="nav-cart-badge">0</span>
-      <span class="nav-cart-total" id="nav-cart-total">0 €</span>
-    </div>
-    <div class="nav-right">
-      <!-- Canaux de contacts -->
-      <div class="social-icons">
-        <a href="tel:+33600000000" title="Téléphone"><i class="fa-solid fa-phone"></i></a>
-        <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
-        <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-        <a href="https://whatsapp.com" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://facebook.com" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-      </div>
-      <div class="nav-copyright">© 2026 Alex Smart Home Assistant</div>
+      <button type="button" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Basculer clair / sombre" aria-label="Basculer le thème clair ou sombre">
+        <!-- Soleil franc (disque + 8 rayons), pas une roue crantée -->
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" fill="currentColor" stroke="none"/>
+          <path d="M12 1.6v2.6M12 19.8v2.6M1.6 12h2.6M19.8 12h2.6M4.5 4.5l1.9 1.9M17.6 17.6l1.9 1.9M4.5 19.5l1.9-1.9M17.6 6.4l1.9-1.9"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21.2 13.4A9.2 9.2 0 1 1 10.6 2.8a7.2 7.2 0 0 0 10.6 10.6Z" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
     </div>
   </nav>
@@ -1409,6 +1447,144 @@
     </div>
   </div>
 
+  <!-- SECTION 5 : À PROPOS -->
+  <div id="section-apropos" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-circle-user"></i> À propos</h1>
+      </header>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-seedling"></i> Le projet</h3>
+        <div class="prose">
+          <p>HA-Deployer est né d'un constat simple : Home Assistant est extraordinairement puissant, mais construire un tableau de bord soigné demande des heures de YAML, de cartes personnalisées et de réglages.</p>
+          <p>L'idée est de faire ce travail une fois, proprement, puis de le <strong>déployer automatiquement à distance</strong> sur l'instance de chacun — avec les bonnes entités, les bons scripts et les bonnes automatisations, adaptés à votre installation.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i> Vos données</h3>
+        <div class="prose">
+          <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos modules.</p>
+          <p>Vous gardez la main : un jeton d'accès longue durée se révoque à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-envelope-open-text"></i> Contact</h3>
+        <div class="prose">
+          <p>Une question, une suggestion de module, un partenariat ? Écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> ou passez par l'un des canaux en bas de page.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 : FAQ -->
+  <div id="section-faq" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-circle-question"></i> FAQ</h1>
+      </header>
+
+      <div class="card">
+        <div class="faq-item">
+          <div class="faq-q">Qu'est-ce qu'un module exactement ?</div>
+          <div class="prose"><p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Mon instance doit-elle être accessible depuis Internet ?</div>
+          <div class="prose"><p>Oui. C'est le seul prérequis technique. Nabu Casa, un VPN, DuckDNS avec redirection de port ou un tunnel Cloudflare conviennent tous. Le détail est sur l'onglet <strong>Fonctionnement</strong>.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Dois-je obligatoirement renseigner une entité ?</div>
+          <div class="prose"><p>Pas toujours. Les champs à bordure <strong>rouge</strong> sont obligatoires, ceux à bordure <strong>orange</strong> sont optionnels — dans ce cas l'entité est détectée automatiquement quand c'est possible.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Le déploiement peut-il casser ma configuration existante ?</div>
+          <div class="prose"><p>Non. Les modules sont ajoutés comme de nouvelles vues dans un tableau de bord dédié. Vos vues et automatisations actuelles ne sont jamais écrasées.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Combien de temps prend un déploiement ?</div>
+          <div class="prose"><p>Quelques minutes après le paiement. Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Puis-je essayer avant d'acheter ?</div>
+          <div class="prose"><p>Oui, l'onglet <strong>Test Gratuit</strong> permet d'injecter un module de démonstration sans engagement.</p></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Comment révoquer l'accès après coup ?</div>
+          <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les modules déjà déployés restent en place.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7 : AIDE -->
+  <div id="section-aide" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-life-ring"></i> Aide</h1>
+      </header>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-list-check"></i> Déployer un module, pas à pas</h3>
+        <div class="prose">
+          <ul>
+            <li>Ouvrez l'onglet <strong>Module</strong> et choisissez une catégorie.</li>
+            <li>Renseignez l'entité demandée, puis cliquez sur <strong>Ajouter</strong>.</li>
+            <li>Ouvrez le <strong>Panier</strong> en haut, vérifiez la liste, retirez au besoin.</li>
+            <li>Validez, saisissez l'URL et le jeton de votre instance.</li>
+            <li>Choisissez votre moyen de paiement : le déploiement démarre ensuite.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Obtenir un jeton d'accès</h3>
+        <div class="prose">
+          <ul>
+            <li>Dans Home Assistant, cliquez sur votre <strong>Profil</strong> (en bas à gauche).</li>
+            <li>Ouvrez l'onglet <strong>Sécurité</strong>.</li>
+            <li>Section <strong>Jetons d'accès longue durée</strong> → <strong>Créer un jeton</strong>.</li>
+            <li>Nommez-le <code>HA-Deployer</code> et copiez la valeur affichée : elle n'est montrée qu'une seule fois.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-triangle-exclamation"></i> Résoudre un problème</h3>
+        <div class="prose">
+          <p><strong>La connexion échoue :</strong> vérifiez que l'URL est complète (avec <code>https://</code> et le port), et qu'elle s'ouvre bien depuis un réseau extérieur — depuis votre mobile en 4G, Wi-Fi coupé, par exemple.</p>
+          <p><strong>Le jeton est refusé :</strong> il a peut-être expiré ou été révoqué. Générez-en un nouveau puis réessayez.</p>
+          <p><strong>Une carte affiche « Erreur de configuration » :</strong> une carte personnalisée est manquante. Elle est normalement installée automatiquement ; un rechargement forcé du navigateur (<code>Ctrl+Maj+R</code>) suffit le plus souvent.</p>
+          <p>Si le problème persiste, écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> en précisant le module concerné.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIED DE PAGE -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-links">
+          <button onclick="switchTab('apropos')" id="nav-apropos">À propos</button>
+          <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
+          <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
+        </div>
+        <div class="footer-copyright">© 2026 Alex Smart Home Assistant</div>
+      </div>
+      <div class="social-icons">
+        <a href="tel:+33600000000" title="Téléphone"><i class="fa-solid fa-phone"></i></a>
+        <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
+        <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://whatsapp.com" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://facebook.com" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      </div>
+    </div>
+  </footer>
+
   <!-- MODALE : PANIER (liste → connexion HA → paiement) -->
   <div class="modal-overlay" id="cart-modal-overlay" onclick="closeCartModalOverlay(event)">
     <div class="modal-box">
@@ -1486,11 +1662,11 @@
   }
 
   function selectLang(code, label, flagClass) {
-    document.getElementById('lang-current-flag').className = `fi ${flagClass}`;
-    document.getElementById('lang-current-label').innerText = label;
+    const flag = document.getElementById('lang-current-flag');
+    flag.className = `fi ${flagClass}`;
+    flag.parentElement.title = label;
     document.documentElement.lang = code;
     document.getElementById('lang-dropdown').classList.remove('open');
-    closeMobileMenu();
   }
 
   document.addEventListener('click', (e) => {
@@ -1512,11 +1688,18 @@
 
   function switchTab(tabId) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.nav-links button, .footer-links button').forEach(btn => btn.classList.remove('active'));
 
-    document.getElementById(`section-${tabId}`).classList.add('active');
-    document.getElementById(`nav-${tabId}`).classList.add('active');
+    const section = document.getElementById(`section-${tabId}`);
+    if (section) section.classList.add('active');
+
+    // Les pages du pied de page (À propos / FAQ / Aide) n'ont pas d'onglet dans le bandeau
+    const navBtn = document.getElementById(`nav-${tabId}`);
+    if (navBtn) navBtn.classList.add('active');
+
     closeMobileMenu();
+    document.querySelectorAll('.page-section').forEach(sec => { sec.scrollTop = 0; });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const modulesData = {
@@ -1939,10 +2122,8 @@
   /* ===== THÈME CLAIR / SOMBRE ===== */
   function applyTheme(theme) {
     const isLight = theme === 'light';
+    // Le CSS bascule seul l'icône soleil / lune via html[data-theme]
     document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-
-    const icon = document.getElementById('theme-toggle-icon');
-    if (icon) icon.className = isLight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
 
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', isLight ? '#eef1f6' : '#07080a');
