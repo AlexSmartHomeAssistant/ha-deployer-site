@@ -543,6 +543,9 @@
       margin-top: 5px;
     }
 
+    /* Encart du catalogue : l'espacement est déjà géré par le gap du conteneur */
+    .module-notice { margin-bottom: 0; }
+
     /* FORMULAIRES */
     .form-group {
       display: flex;
@@ -1130,6 +1133,7 @@
       .container > .accueil-title,
       .container > .hero-slogan,
       .container > .hero-pitch,
+      .container > .module-notice,
       .container > .subtabs {
         grid-column: 1 / -1;
       }
@@ -1141,9 +1145,10 @@
       }
 
       /* Onglet Module : la liste occupe toute la hauteur restante */
+      /* en-tête | encart | sous-onglets | catalogue extensible */
       #section-module .container {
         grid-template-columns: 1fr;
-        grid-template-rows: auto auto 1fr;
+        grid-template-rows: auto auto auto 1fr;
         overflow: hidden;
       }
 
@@ -1381,6 +1386,9 @@
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
           HA-Deployer se connecte à distance à votre instance Home Assistant pour y déployer automatiquement les modules que vous choisissez, sans aucune intervention manuelle de votre part. Un <b>module</b> correspond à un tableau de bord (dashboard) clé en main, dédié à un usage précis (éclairage, météo, sécurité...) : il peut regrouper plusieurs entités, mais aussi des scripts, des automatisations, des capteurs ou des helpers, configurés puis injectés automatiquement sur votre instance à partir des informations que vous renseignez (parfois optionnel).
         </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
+          <b style="color: var(--col-gold);">Tout le nécessaire est inclus :</b> l'installation du magasin <b>HACS</b> s'il n'est pas déjà présent, le téléchargement des <b>cartes personnalisées</b> (custom cards) utilisées par le tableau de bord, ainsi que la mise en place de <b>certaines intégrations</b> requises par le module. Vous n'avez rien à installer vous-même.
+        </p>
       </div>
 
       <div class="card">
@@ -1390,6 +1398,9 @@
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
           3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
           4. Procédez au paiement — le déploiement est alors effectué automatiquement à distance sur votre instance Home Assistant.
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
+          Lors de cette dernière étape, HACS, les cartes personnalisées et les intégrations dont le module a besoin sont installées automatiquement, avant l'injection du tableau de bord.
         </p>
       </div>
 
@@ -1423,6 +1434,11 @@
       <header>
         <h1><i class="fa-solid fa-sliders"></i> Configuration & Modules</h1>
       </header>
+
+      <div class="notice-box module-notice">
+        <strong><i class="fa-solid fa-box-open"></i> Chaque module est livré complet :</strong>
+        le tableau de bord, ses scripts et automatisations, mais aussi l'installation de <b>HACS</b>, des <b>cartes personnalisées</b> et des <b>intégrations</b> dont il a besoin. Rien à installer de votre côté.
+      </div>
 
       <!-- Sous-onglets de catégorie, horizontaux -->
       <div class="subtabs" id="category-subtabs">
@@ -1514,6 +1530,7 @@
         <div class="prose">
           <p>HA-Deployer est né d'un constat simple : Home Assistant est extraordinairement puissant, mais construire un tableau de bord soigné demande des heures de YAML, de cartes personnalisées et de réglages.</p>
           <p>L'idée est de faire ce travail une fois, proprement, puis de le <strong>déployer automatiquement à distance</strong> sur l'instance de chacun — avec les bonnes entités, les bons scripts et les bonnes automatisations, adaptés à votre installation.</p>
+          <p>La partie ingrate est comprise elle aussi : <strong>HACS</strong>, les <strong>cartes personnalisées</strong> et les <strong>intégrations</strong> nécessaires sont installées automatiquement. Aucune préparation technique n'est attendue de votre part.</p>
         </div>
       </div>
 
@@ -1543,7 +1560,18 @@
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-cube"></i> Qu'est-ce qu'un module exactement ?</h3>
-        <div class="prose"><p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p></div>
+        <div class="prose">
+          <p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p>
+          <p>S'y ajoutent les dépendances nécessaires : <strong>HACS</strong>, les <strong>cartes personnalisées</strong> et certaines <strong>intégrations</strong> — le tout compris dans le prix du module.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-puzzle-piece"></i> Dois-je installer HACS ou des cartes moi-même ?</h3>
+        <div class="prose">
+          <p>Non, rien n'est à installer manuellement. Si <strong>HACS</strong> n'est pas encore présent sur votre instance, il est mis en place automatiquement. Les <strong>cartes personnalisées</strong> utilisées par le tableau de bord sont téléchargées et déclarées dans les ressources Lovelace, et les <strong>intégrations</strong> requises par le module sont configurées dans la foulée.</p>
+          <p>Si une de ces dépendances est déjà installée chez vous, elle est réutilisée telle quelle : rien n'est écrasé ni dupliqué.</p>
+        </div>
       </div>
 
       <div class="card">
@@ -1879,12 +1907,12 @@
   const MODULE_MEDIA = {
     OK_service_meteo: {
       gif: 'templates/service_meteo/meteo.gif',
-      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée (clock-weather-card).',
+      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée. <b>Inclus :</b> installation de HACS si nécessaire et des cartes personnalisées requises (clock-weather-card, mushroom, swipe-card, card-mod…).',
       field: { type: 'entity', required: false, placeholder: 'ex: weather.paris (optionnel)' }
     },
     OK_service_temps: {
       gif: 'templates/service_temps/temps_athee.gif',
-      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous.',
+      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.',
       field: {
         type: 'calendar',
         options: [
