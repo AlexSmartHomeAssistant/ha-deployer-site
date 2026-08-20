@@ -37,7 +37,6 @@
       --input-bg: rgba(0, 0, 0, 0.22);
       --hover-bg: rgba(255, 255, 255, 0.08);
       --modal-bg: #2a2f36;
-      --media-bg: #16191d;
 
       /* Largeur du contenu : sert aussi à aligner les onglets et le panier du bandeau */
       --content-max: 1200px;
@@ -76,7 +75,6 @@
       --input-bg: rgba(255, 255, 255, 0.92);
       --hover-bg: rgba(0, 0, 0, 0.055);
       --modal-bg: #ffffff;
-      --media-bg: #e2e6ec;
 
       --pattern: rgba(0, 0, 0, 0.05);
       --glow-1: rgba(31, 111, 165, 0.12);
@@ -805,7 +803,8 @@
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid var(--card-border);
-      background: var(--media-bg);
+      /* Noir dans les deux thèmes : les bandes latérales se fondent avec le GIF */
+      background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
