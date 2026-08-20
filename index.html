@@ -64,20 +64,18 @@
       flex-direction: column;
     }
 
-    /* BLOC DE MARQUE PERMANENT (titre + sous-titre) */
-    .nav-brand-bar {
-      width: 100%;
+    /* BLOC DE MARQUE (titre + sous-titre), sur la même ligne que le menu et le panier */
+    .nav-brand {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 16px 20px 6px;
+      justify-self: center;
     }
 
     .nav-brand-title {
-      width: 100%;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--primary-blue);
       display: flex;
@@ -88,19 +86,18 @@
     }
 
     .nav-brand-subtitle {
-      width: 100%;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       font-weight: 600;
       color: var(--col-gold);
       text-align: center;
-      margin-top: 4px;
+      margin-top: 3px;
     }
 
     .nav-controls {
       display: grid;
-      grid-template-columns: 1fr auto auto 1fr;
+      grid-template-columns: 1fr auto auto auto 1fr;
       align-items: center;
-      padding: 10px 20px 14px;
+      padding: 14px 20px;
       gap: 15px;
     }
 
@@ -116,9 +113,17 @@
       background: none;
       border: none;
       color: white;
-      font-size: 1.25rem;
+      font-size: 1.4rem;
       cursor: pointer;
-      padding: 4px 6px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-hamburger:hover,
+    nav.mobile-open .nav-hamburger {
+      color: var(--primary-blue);
+      background: rgba(93, 173, 226, 0.12);
     }
 
     .nav-links {
@@ -146,36 +151,37 @@
       color: var(--primary-blue);
     }
 
-    /* PANIER DANS LE BANDEAU (entre les onglets et les contacts) */
+    /* PANIER DANS LE BANDEAU (entre le menu/titre et les contacts) */
     .nav-cart {
       display: flex;
       align-items: center;
       gap: 8px;
       background: rgba(0, 0, 0, 0.5);
       border: 1px solid var(--card-border);
-      padding: 7px 14px;
+      padding: 9px 16px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 0.82rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: white;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
     }
 
     .nav-cart:hover {
       border-color: var(--accent-green);
+      background: rgba(82, 190, 128, 0.12);
     }
 
     .nav-cart-badge {
       background: var(--accent-green);
       color: #121418;
       border-radius: 50%;
-      min-width: 18px;
-      height: 18px;
+      min-width: 21px;
+      height: 21px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
+      font-size: 0.78rem;
       padding: 0 4px;
     }
 
@@ -213,7 +219,7 @@
       display: none;
       font-size: 0.7rem;
       color: var(--text-muted);
-      text-align: center;
+      text-align: left;
       margin-top: 10px;
     }
 
@@ -361,7 +367,41 @@
       font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+
+    .help-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .help-icon:hover { background: var(--primary-blue); color: #121418; }
+
+    .field-help {
+      display: none;
+      background: rgba(93, 173, 226, 0.08);
+      border-left: 3px solid var(--primary-blue);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .field-help.open { display: block; }
 
     .form-group input, .form-group select {
       width: 100%;
@@ -380,6 +420,17 @@
     }
 
     /* ONGLET ACCUEIL */
+    .accueil-title {
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
     .hero-slogan {
       font-size: 1.1rem;
       font-style: italic;
@@ -773,27 +824,60 @@
       gap: 8px;
     }
 
+    .cart-modal-item-base {
+      background: rgba(93, 173, 226, 0.06);
+      border-color: rgba(93, 173, 226, 0.3);
+    }
+
+    /* SÉLECTION DU MOYEN DE PAIEMENT */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .payment-method-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .payment-method-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--primary-blue);
+    }
+
+    .payment-method-btn i {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
     /* BANDEAU MOBILE : barre compacte (hamburger / logo / panier) + menu déroulant */
     @media (max-width: 768px) {
-      .nav-brand-bar { padding: 12px 16px 4px; }
-      .nav-brand-title { font-size: 1.15rem; }
-      .nav-brand-subtitle { font-size: 0.72rem; }
+      .nav-brand-title { font-size: 1.2rem; white-space: nowrap; }
+      .nav-brand-subtitle { font-size: 0.78rem; }
 
       .nav-controls {
-        grid-template-columns: auto 1fr;
-        padding: 8px 16px 12px;
-        gap: 0;
-        row-gap: 4px;
+        grid-template-columns: auto 1fr auto;
+        padding: 10px 12px;
+        gap: 8px;
       }
 
-      .nav-hamburger { display: flex; grid-column: 1; grid-row: 1; justify-self: start; }
+      .nav-hamburger { display: flex; }
 
       .nav-cart {
-        grid-column: 2;
-        grid-row: 1;
-        justify-self: end;
-        padding: 6px 10px;
-        font-size: 0.75rem;
+        padding: 7px 12px;
+        font-size: 0.85rem;
       }
 
       .nav-left, .nav-links, .nav-right {
@@ -836,7 +920,7 @@
       }
 
       nav.mobile-open .nav-right .social-icons {
-        justify-content: center;
+        justify-content: flex-start;
         width: 100%;
         font-size: 1.3rem;
         padding: 8px 0;
@@ -857,10 +941,6 @@
 
   <!-- BANDEAU DE NAVIGATION -->
   <nav id="main-nav">
-    <div class="nav-brand-bar">
-      <div class="nav-brand-title"><i class="fa-solid fa-network-wired"></i> HA-Deployer</div>
-      <div class="nav-brand-subtitle">Déployez vos modules sur Home Assistant en 1 clic.</div>
-    </div>
     <div class="nav-controls">
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu(event)" aria-label="Menu">
       <i class="fa-solid fa-bars"></i>
@@ -903,10 +983,14 @@
       <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Module</button>
       <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
     </div>
+    <div class="nav-brand">
+      <div class="nav-brand-title"><i class="fa-solid fa-network-wired"></i> HA-Deployer</div>
+      <div class="nav-brand-subtitle">Déployez vos modules sur Home Assistant en 1 clic.</div>
+    </div>
     <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
       <i class="fa-solid fa-cart-shopping"></i>
       <span class="nav-cart-badge" id="nav-cart-badge">0</span>
-      <span class="nav-cart-total" id="nav-cart-total">29 €</span>
+      <span class="nav-cart-total" id="nav-cart-total">19 €</span>
     </div>
     <div class="nav-right">
       <!-- Canaux de contacts (cf photo) -->
@@ -926,6 +1010,8 @@
   <!-- SECTION 1 : ACCUEIL -->
   <div id="section-accueil" class="page-section active">
     <div class="container">
+      <h2 class="accueil-title"><i class="fa-solid fa-crown"></i> Home Assistant : Le Seigneur de la Domotique</h2>
+
       <div class="hero-slogan">
         "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
       </div>
@@ -958,7 +1044,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-diagram-project"></i> Le principe</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-          HA-Deployer Pro se connecte à distance à votre instance Home Assistant pour y déployer automatiquement les modules que vous choisissez, sans aucune intervention manuelle de votre part. Un <b>module</b> correspond à un tableau de bord (dashboard) clé en main, dédié à un usage précis (éclairage, météo, sécurité...) : il peut regrouper plusieurs entités, mais aussi des scripts, des automatisations, des capteurs ou des helpers, configurés puis injectés automatiquement sur votre instance à partir des informations que vous renseignez.
+          HA-Deployer se connecte à distance à votre instance Home Assistant pour y déployer automatiquement les modules que vous choisissez, sans aucune intervention manuelle de votre part. Un <b>module</b> correspond à un tableau de bord (dashboard) clé en main, dédié à un usage précis (éclairage, météo, sécurité...) : il peut regrouper plusieurs entités, mais aussi des scripts, des automatisations, des capteurs ou des helpers, configurés puis injectés automatiquement sur votre instance à partir des informations que vous renseignez (parfois optionnel).
         </p>
       </div>
 
@@ -968,7 +1054,7 @@
           1. Choisissez vos modules dans l'onglet <b>Module</b>, en renseignant l'entité concernée pour chacun.<br>
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
           3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
-          4. Procédez au paiement — le déploiement est alors effectué automatiquement à distance.
+          4. Procédez au paiement — le déploiement est alors effectué automatiquement à distance sur votre instance Home Assistant.
         </p>
       </div>
 
@@ -1035,11 +1121,11 @@
         </div>
         <div class="form-group">
           <label>URL Home Assistant (Test)</label>
-          <input type="url" placeholder="https://test.duckdns.org:8123">
+          <input type="url" class="field-required" placeholder="https://test.duckdns.org:8123">
         </div>
         <div class="form-group">
           <label>Jeton d'accès (Test)</label>
-          <input type="password" placeholder="Jeton temporaire...">
+          <input type="password" class="field-required" placeholder="Jeton temporaire...">
         </div>
       </div>
 
@@ -1048,12 +1134,34 @@
         <div class="module-item">
           <div class="module-item-row">
             <div>
-              <strong>module_test_decouverte</strong>
+              <strong>Module Découverte</strong>
               <div style="font-size: 0.75rem; color: var(--text-muted);">Module de test gratuit sans engagement</div>
             </div>
           </div>
           <input type="text" placeholder="Entrez l'entité (ex: sensor.test)" id="test-entity-input">
           <button onclick="alert('🎉 Test gratuit injecté avec succès sur votre instance !')">Tester Gratuitement</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage);">
+          <strong><i class="fa-solid fa-triangle-exclamation"></i> Prérequis indispensable :</strong>
+          Votre instance Home Assistant doit être <b>accessible depuis l'extérieur</b> pour que le déploiement puisse s'y connecter (choisissez l'une des solutions suivantes) :
+          <ol>
+            <li>Abonnement <b>Nabu Casa</b> (Home Assistant Cloud)</li>
+            <li><b>VPN</b> (WireGuard, Tailscale, etc.)</li>
+            <li><b>DuckDNS</b> + redirection de port</li>
+            <li><b>Cloudflare Tunnel</b> + NGINX (reverse proxy)</li>
+          </ol>
+        </div>
+
+        <div class="notice-box" style="margin-bottom: 0;">
+          <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
+          <ol>
+            <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
+            <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
+            <li>Saisissez le nom <code>HA-Deployer</code>.</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -1421,10 +1529,12 @@
     }, { once: true });
   }
 
+  const BASE_PRICE = 19;
+
   function updateCartUI() {
     const count = cart.length;
     const modulesPrice = count * 9;
-    const total = 29 + modulesPrice;
+    const total = BASE_PRICE + modulesPrice;
 
     document.getElementById('nav-cart-badge').innerText = count;
 
@@ -1435,7 +1545,7 @@
     totalEl.classList.add('price-flash');
   }
 
-  // Panier en 2 étapes : 1) liste des modules choisis 2) connexion HA + paiement
+  // Panier en 3 étapes : 1) liste (modules + injection de base) 2) connexion HA 3) moyen de paiement
   let cartModalStep = 'list';
 
   function openCartModal() {
@@ -1446,15 +1556,24 @@
 
   function renderCartModalBody() {
     const body = document.getElementById('cart-modal-body');
-    body.innerHTML = cartModalStep === 'list' ? cartListStepHtml() : cartCheckoutStepHtml();
+    if (cartModalStep === 'list') body.innerHTML = cartListStepHtml();
+    else if (cartModalStep === 'checkout') body.innerHTML = cartCheckoutStepHtml();
+    else body.innerHTML = cartPaymentStepHtml();
   }
 
   function cartListStepHtml() {
-    let itemsHtml;
+    const baseItemHtml = `
+      <div class="cart-modal-item cart-modal-item-base">
+        <div><strong><i class="fa-solid fa-server"></i> Injection de base</strong></div>
+        <div>${BASE_PRICE} €</div>
+      </div>
+    `;
+
+    let modulesHtml;
     if (cart.length === 0) {
-      itemsHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Votre panier est vide pour le moment.<br>Vous pouvez tout de même continuer pour ne payer que l'injection de base.</div>`;
+      modulesHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Aucun module sélectionné pour le moment.<br>Vous pouvez tout de même continuer pour ne payer que l'injection de base.</div>`;
     } else {
-      itemsHtml = cart.map((item, i) => `
+      modulesHtml = cart.map((item, i) => `
         <div class="cart-modal-item">
           <div>
             <strong>${item.name}</strong>
@@ -1468,11 +1587,12 @@
       `).join('');
     }
 
-    const modulesPrice = cart.length * 9;
+    const total = BASE_PRICE + (cart.length * 9);
     return `
-      ${itemsHtml}
+      ${baseItemHtml}
+      ${modulesHtml}
       <div class="modal-footer">
-        <div class="cart-total" style="margin-bottom: 10px;">Modules sélectionnés : ${modulesPrice} €</div>
+        <div class="cart-total" style="margin-bottom: 10px;">Total : ${total} €</div>
         <button class="btn-pay" onclick="goToCartCheckoutStep()">Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     `;
@@ -1484,21 +1604,32 @@
     renderCartModalBody();
   }
 
+  function toggleFieldHelp(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+
   function cartCheckoutStepHtml() {
-    const total = 29 + (cart.length * 9);
+    const modulesPrice = cart.length * 9;
+    const total = BASE_PRICE + modulesPrice;
     return `
       <button class="modal-back" onclick="backToCartListStep()"><i class="fa-solid fa-arrow-left"></i> Retour à la sélection</button>
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
-        <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant</label>
+        <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url')" title="Aide">?</button></label>
+        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici.</div>
         <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
-        <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès (Long-Lived Access Token)</label>
+        <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token')" title="Aide">?</button></label>
+        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.</div>
         <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
       </div>
       <div class="modal-footer">
-        <div class="cart-total" style="margin-bottom: 10px;">Total à payer : ${total} € (Injection de base 29€ + ${cart.length} module(s))</div>
+        <div class="cart-total" style="margin-bottom: 10px;">Total à payer : ${total} €</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">
+          <div>Injection de base : ${BASE_PRICE} €</div>
+          <div>Modules (${cart.length}) : ${modulesPrice} €</div>
+        </div>
         <button class="btn-pay" onclick="confirmPayment()">Confirmer et payer</button>
       </div>
     `;
@@ -1512,6 +1643,44 @@
   function backToCartListStep() {
     cartModalStep = 'list';
     renderCartModalBody();
+  }
+
+  const PAYMENT_METHODS = [
+    { label: 'PayPal', icon: 'fa-brands fa-paypal' },
+    { label: 'Stripe', icon: 'fa-brands fa-stripe' },
+    { label: 'Lemon Squeezy', icon: 'fa-solid fa-lemon' },
+    { label: 'Paddle', icon: 'fa-solid fa-credit-card' },
+    { label: 'Apple Pay', icon: 'fa-brands fa-apple-pay' },
+    { label: 'Google Pay', icon: 'fa-brands fa-google-pay' },
+    { label: 'NOWPayments', icon: 'fa-solid fa-bitcoin-sign' },
+    { label: 'CoinGate', icon: 'fa-solid fa-coins' }
+  ];
+
+  function cartPaymentStepHtml() {
+    const total = BASE_PRICE + (cart.length * 9);
+    return `
+      <button class="modal-back" onclick="backToCartCheckoutStep()"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+      <div class="modal-step-title"><i class="fa-solid fa-wallet"></i> Choisissez votre moyen de paiement</div>
+      <div class="cart-total" style="margin-bottom: 18px;">Total à payer : ${total} €</div>
+      <div class="payment-methods">
+        ${PAYMENT_METHODS.map(m => `
+          <button class="payment-method-btn" onclick="selectPaymentMethod('${m.label}')">
+            <i class="${m.icon}"></i> ${m.label}
+          </button>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function backToCartCheckoutStep() {
+    cartModalStep = 'checkout';
+    renderCartModalBody();
+  }
+
+  function selectPaymentMethod(methodName) {
+    const total = BASE_PRICE + (cart.length * 9);
+    closeCartModal();
+    alert(`🚀 Redirection vers ${methodName} pour un paiement sécurisé de ${total} €...`);
   }
 
   function closeCartModal() {
@@ -1531,9 +1700,8 @@
       return;
     }
 
-    const total = 29 + (cart.length * 9);
-    closeCartModal();
-    alert(`🚀 Redirection vers le paiement sécurisé pour un montant total de ${total} € (${cart.length} module(s) + Injection de base 29€)...`);
+    cartModalStep = 'payment';
+    renderCartModalBody();
   }
 
   window.onload = () => {
