@@ -42,7 +42,7 @@
       --content-max: 1200px;
       --content-pad: 24px;
       --content-half: 600px;   /* --content-max / 2 */
-      --nav-edge: 190px;       /* espace réservé à la marque / aux icônes de droite */
+      --nav-edge: 215px;       /* garde-fou : largeur réelle de la marque "HA-Deployer" */
 
       /* Fond abstrait : même structure dans les 2 thèmes, seules les teintes changent */
       --pattern: rgba(255, 255, 255, 0.055);
@@ -1116,32 +1116,15 @@
         max-width: var(--content-max);
         flex: 1;
         min-height: 0;
-        padding: 18px var(--content-pad) 22px;
+        padding: 14px var(--content-pad) 16px;
       }
 
-      /* Onglets calés sur le bord GAUCHE des cartes, panier sur leur bord DROIT.
-         Le max() évite tout chevauchement avec la marque / les icônes de droite
-         quand l'écran est trop étroit pour que l'alignement soit possible. */
-      .nav-links {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
-      }
-
-      .nav-cart {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        right: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
-      }
-
-      /* Le panier étant centré par translateY, la pulsation doit le conserver */
-      @keyframes cartPulse {
-        0%   { transform: translateY(-50%) scale(1); }
-        35%  { transform: translateY(-50%) scale(1.12); }
-        100% { transform: translateY(-50%) scale(1); }
-      }
+      /* Densité resserrée : le contenu doit tenir dans la hauteur de l'écran,
+         y compris sur un portable 1280x800. */
+      .card { padding: 16px; }
+      .form-group { margin-bottom: 14px; gap: 6px; }
+      .notice-box { padding: 10px 13px; margin-bottom: 12px; }
+      header { padding: 2px 0; }
 
       /* Grille 2 colonnes : le contenu tient dans la hauteur de l'écran */
       .container {
@@ -1150,9 +1133,16 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         align-content: start;
-        gap: 18px;
+        gap: 14px;
         overflow-y: auto;
         padding-right: 4px;
+        scrollbar-width: thin;
+      }
+
+      .container::-webkit-scrollbar { width: 8px; }
+      .container::-webkit-scrollbar-thumb {
+        background: var(--card-border);
+        border-radius: 4px;
       }
 
       .container > header,
@@ -1196,6 +1186,52 @@
       .accueil-title { font-size: 1.5rem; }
       .hero-slogan { font-size: 1.05rem; padding: 16px; }
       header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+    }
+
+    /* =========================================================
+       GRAND ÉCRAN (≥1600px) : onglets et panier calés sur les bords des cartes.
+
+       Ce calage n'est possible que si les marges latérales laissent la place
+       à la marque (~210px) et aux icônes de droite (~110px). Avec un contenu
+       de 1200px, il faut donc (largeur − 1200) / 2 ≥ 210, soit ≥ 1620px.
+       En dessous, la barre reste en disposition classique (marque à gauche,
+       onglets et panier répartis) : c'est ce qui évite que les onglets ne
+       viennent mordre sur le nom du site sur un écran 1280 ou 1440.
+       ========================================================= */
+    @media (min-width: 1600px) {
+      .nav-links {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
+      }
+
+      .nav-cart {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
+      }
+
+      /* Le panier étant centré par translateY, la pulsation doit le conserver */
+      @keyframes cartPulse {
+        0%   { transform: translateY(-50%) scale(1); }
+        35%  { transform: translateY(-50%) scale(1.12); }
+        100% { transform: translateY(-50%) scale(1); }
+      }
+    }
+
+    /* Écran peu haut : on resserre encore pour éviter un défilement interne. */
+    @media (min-width: 1024px) and (max-height: 900px) {
+      .card { padding: 14px; }
+      .container { gap: 12px; }
+      .page-section { padding: 10px var(--content-pad) 12px; }
+      header h1 { font-size: 1.4rem; margin-bottom: 2px; }
+      .hero-slogan { font-size: 0.95rem; padding: 12px; }
+      .hero-pitch { font-size: 1rem; padding: 12px 16px; }
+      .form-group { margin-bottom: 11px; }
+      .notice-box { font-size: 0.78rem; padding: 9px 12px; margin-bottom: 10px; }
+      .deploy-log { max-height: 150px; padding: 10px 12px; }
     }
 
     /* =========================================================
