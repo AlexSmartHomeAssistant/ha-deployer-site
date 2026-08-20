@@ -4,38 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HA-Deployer — Déploiement Domotique</title>
-  <meta name="theme-color" content="#07080a">
+  <meta name="theme-color" content="#24282e">
   <!-- Favicon du site (SVG inline : aucune requête réseau, net sur tous les écrans) -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235DADE2'/%3E%3Cstop offset='1' stop-color='%2352BE80'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M32 14 L50 28 v22 H38 V38 H26 v12 H14 V28 Z' fill='%23fff'/%3E%3C/svg%3E">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" rel="stylesheet">
   <style>
+    /* ===== THÈME SOMBRE — gris anthracite (par défaut) ===== */
     :root {
-      --bg-color: #000000;
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(255, 255, 255, 0.1);
-      --primary-blue: #5DADE2;
-      --accent-green: #52BE80;
-      --text-main: #FFFFFF;
-      --text-muted: #808080;
+      --bg-color: #24282e;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.13);
+      --primary-blue: #6FBBEC;
+      --accent-green: #5BC98A;
+      --text-main: #F2F4F7;
+      --text-muted: #9aa2ad;
       --radius: 12px;
-      
+
       /* Couleurs des catégories */
       --col-lumiere: #F8C471;
-      --col-ouverture: #FFFFFF;
-      --col-chauffage: #EC7063;
-      --col-securite: #BF71B2;
-      --col-appareil: #52BE80;
-      --col-service: #9aa0a8;
-      --col-eau: #5DADE2;
-      --col-interface: #B87A4B;
+      --col-ouverture: #E4E7EB;
+      --col-chauffage: #EF8377;
+      --col-securite: #C888BA;
+      --col-appareil: #5BC98A;
+      --col-service: #A6AEB9;
+      --col-eau: #6FBBEC;
+      --col-interface: #C08A5C;
       --col-gold: #F8C471;
-      --col-required: #EC7063;
+      --col-required: #EF8377;
 
-      --nav-bg: rgba(10, 11, 14, 0.72);
-      --input-bg: rgba(0, 0, 0, 0.4);
-      --hover-bg: rgba(255, 255, 255, 0.07);
-      --modal-bg: #0c0c0e;
+      --nav-bg: rgba(31, 35, 41, 0.86);
+      --input-bg: rgba(0, 0, 0, 0.22);
+      --hover-bg: rgba(255, 255, 255, 0.08);
+      --modal-bg: #2a2f36;
+      --media-bg: #16191d;
 
       /* Largeur du contenu : sert aussi à aligner les onglets et le panier du bandeau */
       --content-max: 1200px;
@@ -74,6 +76,7 @@
       --input-bg: rgba(255, 255, 255, 0.92);
       --hover-bg: rgba(0, 0, 0, 0.055);
       --modal-bg: #ffffff;
+      --media-bg: #e2e6ec;
 
       --pattern: rgba(0, 0, 0, 0.05);
       --glow-1: rgba(31, 111, 165, 0.12);
@@ -135,12 +138,26 @@
       min-height: 64px;
     }
 
+    /* Cliquable : renvoie vers l'accueil */
     .nav-brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-shrink: 0;
+      flex-shrink: 1;
+      min-width: 0;
+      background: none;
+      border: none;
+      padding: 4px 6px;
+      margin-left: -6px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      transition: background 0.2s;
     }
+
+    .nav-brand:hover { background: var(--hover-bg); }
 
     .nav-brand-mark {
       width: 38px;
@@ -252,15 +269,18 @@
     .nav-cart-badge {
       background: #F8C471;
       color: #1a1206;
-      border-radius: 50%;
-      min-width: 21px;
-      height: 21px;
-      display: flex;
+      border-radius: 999px;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       font-size: 0.78rem;
       font-weight: 800;
-      padding: 0 4px;
+      line-height: 1;          /* sans ça, le chiffre se décale verticalement */
+      font-variant-numeric: tabular-nums;
+      box-sizing: border-box;
     }
 
     .nav-cart-total {
@@ -306,23 +326,21 @@
       -webkit-backdrop-filter: blur(18px);
     }
 
+    /* 3 zones : liens à gauche | copyright centré | contacts à droite */
     .footer-inner {
       width: 100%;
       max-width: var(--content-max);
       margin: 0 auto;
       padding: 14px var(--content-pad);
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: space-between;
       gap: 16px;
-      flex-wrap: wrap;
     }
 
-    .footer-left {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .footer-links { justify-self: start; }
+    .footer-copyright { justify-self: center; text-align: center; }
+    .site-footer .social-icons { justify-self: end; }
 
     .footer-links {
       display: flex;
@@ -352,7 +370,6 @@
     .footer-copyright {
       font-size: 0.75rem;
       color: var(--text-muted);
-      padding-left: 10px;
     }
 
     .social-icons {
@@ -471,8 +488,16 @@
     .prose ul { margin: 6px 0 10px 18px; }
     .prose li { margin-bottom: 5px; }
 
-    .faq-item + .faq-item { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); }
-    .faq-q { font-size: 0.92rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+    /* Question de FAQ : même traitement que les titres de carte d'« À propos » */
+    .faq-q {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+    }
 
     .page-section.active {
       display: flex;
@@ -606,6 +631,18 @@
       border: 1px dashed var(--primary-blue);
       padding: 20px;
       border-radius: var(--radius);
+    }
+
+    /* Accroche dorée, sous le titre et la citation */
+    .hero-pitch {
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--col-gold);
+      background: rgba(248, 196, 113, 0.08);
+      border: 1px solid rgba(248, 196, 113, 0.4);
+      border-radius: var(--radius);
+      padding: 16px 20px;
     }
 
     .video-container {
@@ -768,7 +805,7 @@
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid var(--card-border);
-      background: #000;
+      background: var(--media-bg);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1093,6 +1130,7 @@
       .container > header,
       .container > .accueil-title,
       .container > .hero-slogan,
+      .container > .hero-pitch,
       .container > .subtabs {
         grid-column: 1 / -1;
       }
@@ -1148,8 +1186,14 @@
        BANDEAU COMPACT (≤1023px) : hamburger + menu déroulant
        ========================================================= */
     @media (max-width: 1023px) {
-      .nav-brand-title { font-size: 1.08rem; white-space: nowrap; }
+      .nav-brand-title {
+        font-size: 0.98rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .nav-brand-mark { width: 32px; height: 32px; font-size: 0.9rem; }
+      .nav-brand { gap: 8px; padding: 4px; margin-left: -4px; }
 
       /* Une seule ligne : ☰ | marque | panier | langue | thème.
          Les onglets se déplient en dessous, sur toute la largeur. */
@@ -1201,6 +1245,14 @@
       .accueil-title { font-size: 1.12rem; }
       .hero-slogan { font-size: 0.95rem; padding: 16px; }
       header h1 { font-size: 1.25rem; }
+      /* Police réduite : le nom était tronqué par le panier sur petits écrans */
+      .nav-brand-title { font-size: 0.86rem; }
+      .nav-brand-mark { width: 28px; height: 28px; font-size: 0.8rem; }
+      .nav-bar { gap: 7px; padding: 9px 10px; }
+      .nav-cart { padding: 6px 10px; font-size: 0.78rem; gap: 6px; }
+      .nav-cart-badge { min-width: 19px; height: 19px; font-size: 0.7rem; padding: 0 5px; }
+      .lang-current, .theme-toggle { width: 34px; height: 34px; }
+      .nav-hamburger { font-size: 1.2rem; padding: 5px 7px; }
       .module-video { height: 180px; }
       .payment-methods { grid-template-columns: 1fr; }
       .modal-box { padding: 20px; max-height: 86vh; }
@@ -1210,14 +1262,16 @@
 
       /* Pied de page empilé et centré */
       .footer-inner {
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
+        justify-items: center;
         text-align: center;
         gap: 10px;
         padding: 14px 16px;
       }
-      .footer-left { align-items: center; }
-      .footer-copyright { padding-left: 0; }
+      .footer-links,
+      .footer-copyright,
+      .site-footer .social-icons { justify-self: center; }
+      .footer-links { justify-content: center; }
     }
   </style>
 </head>
@@ -1229,10 +1283,10 @@
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu(event)" aria-label="Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
-    <div class="nav-brand">
-      <div class="nav-brand-mark"><i class="fa-solid fa-house-signal"></i></div>
+    <button type="button" class="nav-brand" onclick="switchTab('accueil')" title="Retour à l'accueil" aria-label="Retour à l'accueil">
+      <span class="nav-brand-mark"><i class="fa-solid fa-house-signal"></i></span>
       <span class="nav-brand-title">HA-Deployer</span>
-    </div>
+    </button>
     <div class="nav-links">
       <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
       <button onclick="switchTab('fonctionnement')" id="nav-fonctionnement"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
@@ -1295,6 +1349,8 @@
       <div class="hero-slogan">
         "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
       </div>
+
+      <div class="hero-pitch">Déployez vos modules sur Home Assistant en 1 clic</div>
 
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-video"></i> Présentation Vidéo</h3>
@@ -1487,34 +1543,38 @@
       </header>
 
       <div class="card">
-        <div class="faq-item">
-          <div class="faq-q">Qu'est-ce qu'un module exactement ?</div>
-          <div class="prose"><p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Mon instance doit-elle être accessible depuis Internet ?</div>
-          <div class="prose"><p>Oui. C'est le seul prérequis technique. Nabu Casa, un VPN, DuckDNS avec redirection de port ou un tunnel Cloudflare conviennent tous. Le détail est sur l'onglet <strong>Fonctionnement</strong>.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Dois-je obligatoirement renseigner une entité ?</div>
-          <div class="prose"><p>Pas toujours. Les champs à bordure <strong>rouge</strong> sont obligatoires, ceux à bordure <strong>orange</strong> sont optionnels — dans ce cas l'entité est détectée automatiquement quand c'est possible.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Le déploiement peut-il casser ma configuration existante ?</div>
-          <div class="prose"><p>Non. Les modules sont ajoutés comme de nouvelles vues dans un tableau de bord dédié. Vos vues et automatisations actuelles ne sont jamais écrasées.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Combien de temps prend un déploiement ?</div>
-          <div class="prose"><p>Quelques minutes après le paiement. Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Puis-je essayer avant d'acheter ?</div>
-          <div class="prose"><p>Oui, l'onglet <strong>Test Gratuit</strong> permet d'injecter un module de démonstration sans engagement.</p></div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Comment révoquer l'accès après coup ?</div>
-          <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les modules déjà déployés restent en place.</p></div>
-        </div>
+        <h3 class="faq-q"><i class="fa-solid fa-cube"></i> Qu'est-ce qu'un module exactement ?</h3>
+        <div class="prose"><p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-globe"></i> Mon instance doit-elle être accessible depuis Internet ?</h3>
+        <div class="prose"><p>Oui. C'est le seul prérequis technique. Nabu Casa, un VPN, DuckDNS avec redirection de port ou un tunnel Cloudflare conviennent tous. Le détail est sur l'onglet <strong>Fonctionnement</strong>.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-pen-to-square"></i> Dois-je obligatoirement renseigner une entité ?</h3>
+        <div class="prose"><p>Pas toujours. Les champs à bordure <strong>rouge</strong> sont obligatoires, ceux à bordure <strong>orange</strong> sont optionnels — dans ce cas l'entité est détectée automatiquement quand c'est possible.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-shield-halved"></i> Le déploiement peut-il casser ma configuration existante ?</h3>
+        <div class="prose"><p>Non. Les modules sont ajoutés comme de nouvelles vues dans un tableau de bord dédié. Vos vues et automatisations actuelles ne sont jamais écrasées.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-clock"></i> Combien de temps prend un déploiement ?</h3>
+        <div class="prose"><p>Quelques minutes après le paiement. Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-vial"></i> Puis-je essayer avant d'acheter ?</h3>
+        <div class="prose"><p>Oui, l'onglet <strong>Test Gratuit</strong> permet d'injecter un module de démonstration sans engagement.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="faq-q"><i class="fa-solid fa-key"></i> Comment révoquer l'accès après coup ?</h3>
+        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les modules déjà déployés restent en place.</p></div>
       </div>
     </div>
   </div>
@@ -1566,14 +1626,12 @@
   <!-- PIED DE PAGE -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-left">
-        <div class="footer-links">
-          <button onclick="switchTab('apropos')" id="nav-apropos">À propos</button>
-          <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
-          <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
-        </div>
-        <div class="footer-copyright">© 2026 Alex Smart Home Assistant</div>
+      <div class="footer-links">
+        <button onclick="switchTab('apropos')" id="nav-apropos">À propos</button>
+        <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
+        <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
       </div>
+      <div class="footer-copyright">© 2026 Alex Smart Home Assistant</div>
       <div class="social-icons">
         <a href="tel:+33600000000" title="Téléphone"><i class="fa-solid fa-phone"></i></a>
         <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
@@ -2126,7 +2184,7 @@
     document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
 
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', isLight ? '#eef1f6' : '#07080a');
+    if (meta) meta.setAttribute('content', isLight ? '#eef1f6' : '#24282e');
 
     try { localStorage.setItem('ha-deployer-theme', isLight ? 'light' : 'dark'); } catch (e) { /* stockage indisponible */ }
   }
