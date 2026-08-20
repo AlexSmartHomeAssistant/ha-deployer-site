@@ -1446,10 +1446,10 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-diagram-project"></i> Le principe</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-          HA-Deployer se connecte à distance à votre instance Home Assistant pour y déployer automatiquement les modules que vous choisissez, sans aucune intervention manuelle de votre part. Un <b>module</b> correspond à un tableau de bord (dashboard) clé en main, dédié à un usage précis (éclairage, météo, sécurité...) : il peut regrouper plusieurs entités, mais aussi des scripts, des automatisations, des capteurs ou des helpers, configurés puis injectés automatiquement sur votre instance à partir des informations que vous renseignez (parfois optionnel).
+          HA-Deployer se connecte à distance à votre instance pour y déployer les modules choisis, sans intervention de votre part. Un <b>module</b> est un tableau de bord clé en main dédié à un usage précis (éclairage, météo, sécurité…), qui embarque aussi ses scripts, automatisations, capteurs et helpers, configurés à partir des informations que vous renseignez (parfois optionnelles).
         </p>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-          <b style="color: var(--col-gold);">Tout le nécessaire est inclus :</b> l'installation du magasin <b>HACS</b> s'il n'est pas déjà présent, le téléchargement des <b>cartes personnalisées</b> (custom cards) utilisées par le tableau de bord, ainsi que la mise en place de <b>certaines intégrations</b> requises par le module. Vous n'avez rien à installer vous-même.
+          <b style="color: var(--col-gold);">Tout est inclus :</b> <b>HACS</b> s'il manque, les <b>cartes personnalisées</b> et les <b>intégrations</b> requises. Vous n'avez rien à installer.
         </p>
       </div>
 
@@ -1459,10 +1459,7 @@
           1. Choisissez vos modules dans l'onglet <b>Module</b>, en renseignant l'entité concernée pour chacun.<br>
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
           3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
-          4. Procédez au paiement — le déploiement est alors effectué automatiquement à distance sur votre instance Home Assistant.
-        </p>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-          Lors de cette dernière étape, HACS, les cartes personnalisées et les intégrations dont le module a besoin sont installées automatiquement, avant l'injection du tableau de bord.
+          4. Procédez au paiement — les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance.
         </p>
       </div>
 
