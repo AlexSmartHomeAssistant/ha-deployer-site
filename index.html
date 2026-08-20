@@ -880,6 +880,12 @@
         font-size: 0.85rem;
       }
 
+      /* Le titre/sous-titre et le panier s'effacent pendant que le menu déroulant est ouvert */
+      nav.mobile-open .nav-brand,
+      nav.mobile-open .nav-cart {
+        display: none;
+      }
+
       .nav-left, .nav-links, .nav-right {
         display: none;
         grid-column: 1 / -1;
