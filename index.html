@@ -25,7 +25,7 @@
       --col-appareil: #52BE80;
       --col-service: #808080;
       --col-eau: #5DADE2;
-      --col-interface: #E59866;
+      --col-interface: #8B5E3C;
       --col-gold: #F8C471;
       --col-required: #EC7063;
     }
@@ -67,24 +67,32 @@
     /* BLOC DE MARQUE PERMANENT (titre + sous-titre) */
     .nav-brand-bar {
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       text-align: center;
       padding: 16px 20px 6px;
     }
 
     .nav-brand-title {
+      width: 100%;
       font-size: 1.5rem;
       font-weight: 800;
       color: var(--primary-blue);
       display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
       gap: 10px;
     }
 
     .nav-brand-subtitle {
+      width: 100%;
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--col-gold);
+      text-align: center;
       margin-top: 4px;
     }
 
@@ -709,6 +717,24 @@
       display: block;
     }
 
+    .cart-modal-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .cart-remove-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .cart-remove-btn:hover { color: var(--col-required); }
+
     .cart-modal-empty {
       text-align: center;
       color: var(--text-muted);
@@ -833,7 +859,7 @@
   <nav id="main-nav">
     <div class="nav-brand-bar">
       <div class="nav-brand-title"><i class="fa-solid fa-network-wired"></i> HA-Deployer</div>
-      <div class="nav-brand-subtitle">Déploiement Automatique à distance sur votre instance Home Assistant</div>
+      <div class="nav-brand-subtitle">Déployez vos modules sur Home Assistant en 1 clic.</div>
     </div>
     <div class="nav-controls">
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu(event)" aria-label="Menu">
@@ -928,6 +954,13 @@
       <header>
         <h1><i class="fa-solid fa-circle-info"></i> Fonctionnement</h1>
       </header>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-diagram-project"></i> Le principe</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+          HA-Deployer Pro se connecte à distance à votre instance Home Assistant pour y déployer automatiquement les modules que vous choisissez, sans aucune intervention manuelle de votre part. Un <b>module</b> correspond à un tableau de bord (dashboard) clé en main, dédié à un usage précis (éclairage, météo, sécurité...) : il peut regrouper plusieurs entités, mais aussi des scripts, des automatisations, des capteurs ou des helpers, configurés puis injectés automatiquement sur votre instance à partir des informations que vous renseignez.
+        </p>
+      </div>
 
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-list-ol"></i> Comment ça marche</h3>
@@ -1038,6 +1071,65 @@
   </div>
 
 <script>
+  const LANG_INFO = {
+    fr: { label: 'Français', flag: 'fi-fr' },
+    en: { label: 'English', flag: 'fi-gb' },
+    de: { label: 'Deutsch', flag: 'fi-de' },
+    it: { label: 'Italiano', flag: 'fi-it' },
+    es: { label: 'Español', flag: 'fi-es' },
+    pt: { label: 'Português', flag: 'fi-pt' },
+    ru: { label: 'Русский', flag: 'fi-ru' },
+    pl: { label: 'Polski', flag: 'fi-pl' },
+    nl: { label: 'Nederlands', flag: 'fi-nl' },
+    ar: { label: 'العربية', flag: 'fi-sa' },
+    tr: { label: 'Türkçe', flag: 'fi-tr' },
+    fa: { label: 'فارسی', flag: 'fi-ir' },
+    hi: { label: 'हिन्दी', flag: 'fi-in' },
+    bn: { label: 'বাংলা', flag: 'fi-bd' },
+    zh: { label: '中文', flag: 'fi-cn' },
+    ko: { label: '한국어', flag: 'fi-kr' },
+    ja: { label: '日本語', flag: 'fi-jp' },
+    vi: { label: 'Tiếng Việt', flag: 'fi-vn' },
+    th: { label: 'ไทย', flag: 'fi-th' },
+    he: { label: 'עברית', flag: 'fi-il' }
+  };
+
+  // Pays (code ISO renvoyé par l'API de géolocalisation) -> langue prise en charge par le site
+  const COUNTRY_LANG_MAP = {
+    FR: 'fr', BE: 'fr', LU: 'fr', MC: 'fr', CH: 'fr', CI: 'fr', SN: 'fr', CM: 'fr',
+    GB: 'en', US: 'en', CA: 'en', AU: 'en', NZ: 'en', IE: 'en', ZA: 'en', SG: 'en', PH: 'en', NG: 'en', KE: 'en',
+    DE: 'de', AT: 'de',
+    IT: 'it', SM: 'it',
+    ES: 'es', MX: 'es', AR: 'es', CO: 'es', CL: 'es', PE: 'es', VE: 'es', EC: 'es', GT: 'es', CU: 'es', DO: 'es', UY: 'es', PY: 'es', BO: 'es',
+    PT: 'pt', BR: 'pt', AO: 'pt', MZ: 'pt',
+    RU: 'ru', BY: 'ru', KZ: 'ru', KG: 'ru',
+    PL: 'pl',
+    NL: 'nl',
+    SA: 'ar', AE: 'ar', EG: 'ar', MA: 'ar', DZ: 'ar', TN: 'ar', IQ: 'ar', JO: 'ar', KW: 'ar', QA: 'ar', LB: 'ar', OM: 'ar', BH: 'ar', LY: 'ar', SY: 'ar', YE: 'ar',
+    TR: 'tr',
+    IR: 'fa', AF: 'fa',
+    IN: 'hi',
+    BD: 'bn',
+    CN: 'zh', TW: 'zh', HK: 'zh', MO: 'zh',
+    KR: 'ko',
+    JP: 'ja',
+    VN: 'vi',
+    TH: 'th',
+    IL: 'he'
+  };
+
+  function detectLanguageByIP() {
+    fetch('https://ipapi.co/json/')
+      .then(res => res.json())
+      .then(data => {
+        const countryCode = ((data && data.country_code) || '').toUpperCase();
+        const lang = COUNTRY_LANG_MAP[countryCode];
+        const info = lang && LANG_INFO[lang];
+        if (info) selectLang(lang, info.label, info.flag);
+      })
+      .catch(() => { /* géolocalisation indisponible : on garde la langue par défaut */ });
+  }
+
   function toggleLangDropdown(e) {
     e.stopPropagation();
     document.getElementById('lang-dropdown').classList.toggle('open');
@@ -1362,13 +1454,16 @@
     if (cart.length === 0) {
       itemsHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Votre panier est vide pour le moment.<br>Vous pouvez tout de même continuer pour ne payer que l'injection de base.</div>`;
     } else {
-      itemsHtml = cart.map(item => `
+      itemsHtml = cart.map((item, i) => `
         <div class="cart-modal-item">
           <div>
             <strong>${item.name}</strong>
             <span class="entity"><i class="fa-solid fa-microchip"></i> ${item.entity}</span>
           </div>
-          <div>${item.price} €</div>
+          <div class="cart-modal-item-actions">
+            <span>${item.price} €</span>
+            <button class="cart-remove-btn" onclick="removeFromCart(${i})" title="Retirer du panier"><i class="fa-solid fa-trash"></i></button>
+          </div>
         </div>
       `).join('');
     }
@@ -1381,6 +1476,12 @@
         <button class="btn-pay" onclick="goToCartCheckoutStep()">Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     `;
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+    renderCartModalBody();
   }
 
   function cartCheckoutStepHtml() {
@@ -1437,6 +1538,7 @@
 
   window.onload = () => {
     filterCategory('interface');
+    detectLanguageByIP();
   };
 </script>
 
