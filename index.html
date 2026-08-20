@@ -18,14 +18,16 @@
       --radius: 12px;
       
       /* Couleurs des catégories */
-      --col-lumiere: #F4D03F;
+      --col-lumiere: #F8C471;
       --col-ouverture: #FFFFFF;
       --col-chauffage: #EC7063;
-      --col-securite: #BB8FCE;
+      --col-securite: #BF71B2;
       --col-appareil: #52BE80;
       --col-service: #808080;
       --col-eau: #5DADE2;
       --col-interface: #E59866;
+      --col-gold: #F8C471;
+      --col-required: #EC7063;
     }
 
     * {
@@ -58,10 +60,39 @@
       z-index: 1000;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* BLOC DE MARQUE PERMANENT (titre + sous-titre) */
+    .nav-brand-bar {
+      width: 100%;
+      text-align: center;
+      padding: 16px 20px 6px;
+    }
+
+    .nav-brand-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .nav-brand-subtitle {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--col-gold);
+      margin-top: 4px;
+    }
+
+    .nav-controls {
       display: grid;
       grid-template-columns: 1fr auto auto 1fr;
       align-items: center;
-      padding: 12px 20px;
+      padding: 10px 20px 14px;
       gap: 15px;
     }
 
@@ -71,7 +102,7 @@
       align-items: center;
     }
 
-    /* ÉLÉMENTS RÉSERVÉS AU BANDEAU MOBILE (masqués sur bureau) */
+    /* ÉLÉMENT RÉSERVÉ AU BANDEAU MOBILE (masqué sur bureau) */
     .nav-hamburger {
       display: none;
       background: none;
@@ -80,16 +111,6 @@
       font-size: 1.25rem;
       cursor: pointer;
       padding: 4px 6px;
-    }
-
-    .nav-brand-mobile {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: var(--primary-blue);
-      white-space: nowrap;
     }
 
     .nav-links {
@@ -179,6 +200,14 @@
     .social-icons a.fa-whatsapp { color: #2ECC71; }
     .social-icons a.fa-instagram { color: #E84393; }
     .social-icons a.fa-facebook { color: #2980B9; }
+
+    .nav-copyright {
+      display: none;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 10px;
+    }
 
     /* SÉLECTEUR DE LANGUE PERSONNALISÉ (avec drapeaux) */
     .lang-dropdown {
@@ -284,18 +313,8 @@
 
     header h1 {
       font-size: 1.5rem;
-      color: var(--primary-blue);
-      margin-bottom: 5px;
-    }
-
-    header p {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--primary-blue);
-      letter-spacing: 0.2px;
-      line-height: 1.4;
-      margin-top: 6px;
-      text-shadow: 0 0 22px rgba(93, 173, 226, 0.35);
+      color: #FFFFFF;
+      margin-bottom: 22px;
     }
 
     /* CARTE GLOBALE */
@@ -326,13 +345,13 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 15px;
+      gap: 8px;
+      margin-bottom: 20px;
     }
 
     .form-group label {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       color: var(--text-main);
     }
 
@@ -409,70 +428,63 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
-    /* SYSTEME D'ONGLETS COLORÉS POUR MODULES */
-    .category-tabs {
+    /* SOUS-ONGLETS DE CATÉGORIE (horizontaux, sous le titre de la page Module) */
+    .subtabs {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 15px;
+      overflow-x: auto;
+      gap: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      border-bottom: 1px solid var(--card-border);
     }
 
-    .cat-tab {
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: bold;
+    .subtab {
+      flex: 0 0 auto;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
       cursor: pointer;
-      border: 1px solid var(--card-border);
-      background: rgba(0,0,0,0.3);
-      transition: all 0.2s;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
 
-    .cat-tab.lumiere { color: var(--col-lumiere); border-color: var(--col-lumiere); }
-    .cat-tab.ouverture { color: var(--col-ouverture); border-color: var(--col-ouverture); }
-    .cat-tab.chauffage { color: var(--col-chauffage); border-color: var(--col-chauffage); }
-    .cat-tab.securite { color: var(--col-securite); border-color: var(--col-securite); }
-    .cat-tab.appareil { color: var(--col-appareil); border-color: var(--col-appareil); }
-    .cat-tab.service { color: var(--col-service); border-color: var(--col-service); }
-    .cat-tab.eau { color: var(--col-eau); border-color: var(--col-eau); }
-    .cat-tab.interface { color: var(--col-interface); border-color: var(--col-interface); }
+    .subtab.interface { color: var(--col-interface); }
+    .subtab.ouverture { color: var(--col-ouverture); }
+    .subtab.lumiere { color: var(--col-lumiere); }
+    .subtab.chauffage { color: var(--col-chauffage); }
+    .subtab.eau { color: var(--col-eau); }
+    .subtab.appareil { color: var(--col-appareil); }
+    .subtab.securite { color: var(--col-securite); }
+    .subtab.service { color: var(--col-service); }
 
-    .cat-tab.active {
-      background: currentColor;
-      color: #121418 !important;
-    }
-
-    /* Rempli en couleur pleine (comme un onglet actif) pour ne jamais se fondre dans le fond */
-    .active-category-label {
-      font-size: 0.95rem;
-      font-weight: 800;
-      margin-bottom: 14px;
-      padding: 10px 16px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--primary-blue);
-      color: #121418;
+    .subtab.active {
+      border-bottom-color: currentColor;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 6px 6px 0 0;
     }
 
     .module-list-container {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       max-height: 480px;
       overflow-y: auto;
-      padding-right: 5px;
+      padding: 4px 5px 4px 2px;
     }
 
     .module-item {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      background: rgba(0,0,0,0.2);
+      background: rgba(255, 255, 255, 0.03);
       padding: 12px;
       border-radius: 8px;
-      border: 1px solid var(--card-border);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       font-size: 0.85rem;
     }
 
@@ -482,7 +494,7 @@
       align-items: center;
     }
 
-    .module-item input {
+    .module-item input, .module-item select {
       padding: 8px;
       background: rgba(0,0,0,0.4);
       border: 1px solid var(--card-border);
@@ -490,6 +502,10 @@
       color: #fff;
       font-size: 0.8rem;
     }
+
+    /* Bordure indicative : champ obligatoire (rouge) vs optionnel (or) */
+    .field-required { border-color: var(--col-required) !important; }
+    .field-optional { border-color: var(--col-gold) !important; }
 
     .module-item button {
       background: var(--accent-green);
@@ -529,7 +545,8 @@
     }
 
     .module-item-detailed strong {
-      font-size: 0.95rem;
+      font-size: 1rem;
+      text-align: center;
     }
 
     .module-desc-full {
@@ -566,8 +583,9 @@
       background: var(--accent-green);
       border: none;
       color: white;
-      padding: 10px;
+      padding: 14px;
       border-radius: 6px;
+      font-size: 1.05rem;
       font-weight: bold;
       cursor: pointer;
       text-align: center;
@@ -643,7 +661,7 @@
       max-width: 480px;
       max-height: 80vh;
       overflow-y: auto;
-      padding: 20px;
+      padding: 26px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     }
 
@@ -651,13 +669,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--card-border);
     }
 
     .modal-header h3 {
-      font-size: 1rem;
+      font-size: 1.3rem;
       color: var(--primary-blue);
     }
 
@@ -679,8 +697,8 @@
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
       font-size: 0.85rem;
     }
 
@@ -699,8 +717,8 @@
     }
 
     .modal-footer {
-      margin-top: 12px;
-      padding-top: 14px;
+      margin-top: 20px;
+      padding-top: 20px;
       border-top: 1px solid var(--card-border);
     }
 
@@ -713,17 +731,17 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
       padding: 0;
     }
 
     .modal-back:hover { color: var(--primary-blue); }
 
     .modal-step-title {
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--primary-blue);
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -731,18 +749,21 @@
 
     /* BANDEAU MOBILE : barre compacte (hamburger / logo / panier) + menu déroulant */
     @media (max-width: 768px) {
-      nav {
-        grid-template-columns: auto 1fr auto;
-        padding: 10px 16px;
+      .nav-brand-bar { padding: 12px 16px 4px; }
+      .nav-brand-title { font-size: 1.15rem; }
+      .nav-brand-subtitle { font-size: 0.72rem; }
+
+      .nav-controls {
+        grid-template-columns: auto 1fr;
+        padding: 8px 16px 12px;
         gap: 0;
         row-gap: 4px;
       }
 
       .nav-hamburger { display: flex; grid-column: 1; grid-row: 1; justify-self: start; }
-      .nav-brand-mobile { display: flex; grid-column: 2; grid-row: 1; justify-self: center; }
 
       .nav-cart {
-        grid-column: 3;
+        grid-column: 2;
         grid-row: 1;
         justify-self: end;
         padding: 6px 10px;
@@ -795,6 +816,11 @@
         padding: 8px 0;
       }
 
+      nav.mobile-open .nav-copyright {
+        display: block;
+        width: 100%;
+      }
+
       .lang-dropdown, .lang-current { width: 100%; }
       .lang-current { justify-content: space-between; }
       .lang-options { left: 0; right: 0; min-width: 100%; }
@@ -805,10 +831,14 @@
 
   <!-- BANDEAU DE NAVIGATION -->
   <nav id="main-nav">
+    <div class="nav-brand-bar">
+      <div class="nav-brand-title"><i class="fa-solid fa-network-wired"></i> HA-Deployer</div>
+      <div class="nav-brand-subtitle">Déploiement Automatique à distance sur votre instance Home Assistant</div>
+    </div>
+    <div class="nav-controls">
     <button type="button" class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu(event)" aria-label="Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
-    <div class="nav-brand-mobile"><i class="fa-solid fa-network-wired"></i> HA-Deployer</div>
     <div class="nav-left">
       <!-- 20 Langues, chacune affichée dans sa propre langue avec son drapeau -->
       <div class="lang-dropdown" id="lang-dropdown">
@@ -846,7 +876,6 @@
       <button onclick="switchTab('fonctionnement')" id="nav-fonctionnement"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
       <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Module</button>
       <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
-      <button onclick="switchTab('tarif')" id="nav-tarif"><i class="fa-solid fa-tags"></i> Tarif</button>
     </div>
     <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
       <i class="fa-solid fa-cart-shopping"></i>
@@ -863,17 +892,14 @@
         <a href="https://instagram.com" target="_blank" class="fa-brands fa-instagram" title="Instagram"></a>
         <a href="https://facebook.com" target="_blank" class="fa-brands fa-facebook" title="Facebook"></a>
       </div>
+      <div class="nav-copyright">© 2026 Alex Smart Home Assistant</div>
+    </div>
     </div>
   </nav>
 
   <!-- SECTION 1 : ACCUEIL -->
   <div id="section-accueil" class="page-section active">
     <div class="container">
-      <header>
-        <h1><i class="fa-solid fa-network-wired"></i> HA-Deployer Pro</h1>
-        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
-      </header>
-
       <div class="hero-slogan">
         "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
       </div>
@@ -901,7 +927,6 @@
     <div class="container">
       <header>
         <h1><i class="fa-solid fa-circle-info"></i> Fonctionnement</h1>
-        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
       </header>
 
       <div class="card">
@@ -943,28 +968,21 @@
     <div class="container">
       <header>
         <h1><i class="fa-solid fa-sliders"></i> Configuration & Modules</h1>
-        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
       </header>
 
+      <!-- Sous-onglets de catégorie, horizontaux -->
+      <div class="subtabs" id="category-subtabs">
+        <button class="subtab interface active" onclick="filterCategory('interface', this)">Interface</button>
+        <button class="subtab ouverture" onclick="filterCategory('ouverture', this)">Ouverture</button>
+        <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Lumière</button>
+        <button class="subtab chauffage" onclick="filterCategory('chauffage', this)">Chauffage</button>
+        <button class="subtab eau" onclick="filterCategory('eau', this)">Eau</button>
+        <button class="subtab appareil" onclick="filterCategory('appareil', this)">Appareil</button>
+        <button class="subtab securite" onclick="filterCategory('securite', this)">Sécurité</button>
+        <button class="subtab service" onclick="filterCategory('service', this)">Services</button>
+      </div>
+
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-layer-group"></i> Catalogue des Modules (9€ / module)</h3>
-        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 15px;">Sélectionnez une catégorie :</p>
-
-        <!-- Onglets colorés -->
-        <div class="category-tabs">
-          <div class="cat-tab lumiere active" onclick="filterCategory('lumiere', 'Lumière', this)">Lumière (Jaune)</div>
-          <div class="cat-tab ouverture" onclick="filterCategory('ouverture', 'Ouverture', this)">Ouverture (Blanc)</div>
-          <div class="cat-tab chauffage" onclick="filterCategory('chauffage', 'Chauffage', this)">Chauffage (Rouge)</div>
-          <div class="cat-tab securite" onclick="filterCategory('securite', 'Sécurité', this)">Sécurité (Violet)</div>
-          <div class="cat-tab appareil" onclick="filterCategory('appareil', 'Appareil', this)">Appareil (Vert)</div>
-          <div class="cat-tab service" onclick="filterCategory('service', 'Services', this)">Services (Gris)</div>
-          <div class="cat-tab eau" onclick="filterCategory('eau', 'Eau', this)">Eau (Bleu)</div>
-          <div class="cat-tab interface" onclick="filterCategory('interface', 'Interface', this)">Interface (Orange)</div>
-        </div>
-
-        <!-- Texte de la catégorie active toujours visible -->
-        <span id="active-cat-display" class="active-category-label">Catégorie active : Lumière</span>
-
         <!-- Liste filtrée -->
         <div class="module-list-container" id="module-list"></div>
       </div>
@@ -976,7 +994,6 @@
     <div class="container">
       <header>
         <h1><i class="fa-solid fa-vial"></i> Espace Test Gratuit</h1>
-        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
       </header>
 
       <div class="card">
@@ -1005,25 +1022,6 @@
           <input type="text" placeholder="Entrez l'entité (ex: sensor.test)" id="test-entity-input">
           <button onclick="alert('🎉 Test gratuit injecté avec succès sur votre instance !')">Tester Gratuitement</button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 5 : TARIF -->
-  <div id="section-tarif" class="page-section">
-    <div class="container">
-      <header>
-        <h1><i class="fa-solid fa-tags"></i> Grille Tarifaire</h1>
-        <p>Déploiement Automatique à distance sur votre instance Home Assistant</p>
-      </header>
-
-      <div class="card" style="text-align: center; padding: 30px;">
-        <h3 style="color: var(--primary-blue); margin-bottom: 10px;">Forfait d'Injection de Base</h3>
-        <div style="font-size: 2rem; font-weight: bold; margin: 15px 0; color: var(--accent-green);">29,00 € <span style="font-size: 0.9rem; color: var(--text-muted);">/ instance</span></div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
-          Comprend l'infrastructure de base, l'accès au connecteur sécurisé et l'injection initiale. Chaque module supplémentaire est facturé 9,00 €.
-        </p>
-        <button type="button" class="btn-pay" onclick="openCartModal()">Payer l'injection de base (29€)</button>
       </div>
     </div>
   </div>
@@ -1139,39 +1137,89 @@
 
   let cart = [];
 
-  const CAT_ICONS = {
-    lumiere: 'fa-lightbulb', ouverture: 'fa-warehouse', chauffage: 'fa-fire',
-    securite: 'fa-shield-halved', appareil: 'fa-plug', service: 'fa-gears',
-    eau: 'fa-droplet', interface: 'fa-table-cells'
+  // Titres affichés (nettoyés du préfixe "OK_" et de la catégorie en tête)
+  const MODULE_TITLES = {
+    lumiere_lumiere: 'Lumière',
+    ouverture_garage_porte: 'Porte de Garage',
+    ouverture_volet: 'Volets Roulants',
+    chauffage_thermostat: 'Thermostat',
+    chauffage_cheminee: 'Cheminée',
+    chauffage_compteur_gaz: 'Compteur de Gaz',
+    securite_alarme: 'Alarme',
+    securite_camera: 'Caméra',
+    appareil_aspirateur: 'Aspirateur',
+    appareil_box_internet: 'Box Internet',
+    appareil_enceinte: 'Enceinte Connectée',
+    appareil_lave_vaisselle: 'Lave-Vaisselle',
+    appareil_machine_laver: 'Machine à Laver',
+    appareil_microwave: 'Micro-Ondes',
+    appareil_panneau_solaire: 'Panneau Solaire',
+    appareil_printer: 'Imprimante',
+    appareil_raspberry: 'Raspberry Pi',
+    appareil_refrigerateur: 'Réfrigérateur',
+    appareil_seche_linge: 'Sèche-Linge',
+    appareil_serpillere: 'Robot Serpillière',
+    appareil_sonnette: 'Sonnette',
+    appareil_soundbar: 'Barre de Son',
+    appareil_television: 'Téléviseur',
+    appareil_tondeuse: 'Robot Tondeuse',
+    appareil_voiture: 'Véhicule',
+    appareil_zigbee: 'Passerelle Zigbee',
+    OK_service_meteo: 'Météo',
+    OK_service_temps: 'Temps',
+    service_boite_aux_lettres: 'Boîte aux Lettres',
+    service_capteur: 'Capteur d\'Ambiance',
+    service_compteur_electricite: 'Compteur Électrique',
+    service_gestion_dechets: 'Gestion des Déchets',
+    service_person: 'Présence',
+    service_transport: 'Transports',
+    eau_compteur: 'Compteur d\'Eau',
+    eau_detecteur_fuite: 'Détecteur de Fuite',
+    eau_pool: 'Piscine',
+    eau_valve: 'Vanne d\'Eau',
+    interface_dashboard_principal: 'Tableau de Bord'
   };
 
-  const CAT_COLORS = {
-    lumiere: '#F4D03F', ouverture: '#FFFFFF', chauffage: '#EC7063', securite: '#BB8FCE',
-    appareil: '#52BE80', service: '#808080', eau: '#5DADE2', interface: '#E59866'
-  };
+  function cleanTitle(rawName) {
+    return rawName
+      .replace(/^OK_/, '')
+      .replace(/^(lumiere|ouverture|chauffage|securite|appareil|service|eau|interface)_/, '')
+      .split('_')
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+
+  function moduleTitle(rawName) {
+    return MODULE_TITLES[rawName] || cleanTitle(rawName);
+  }
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
     OK_service_meteo: {
       gif: 'templates/service_meteo/meteo.gif',
-      placeholder: 'ex: weather.paris',
-      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée (clock-weather-card).'
+      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée (clock-weather-card).',
+      field: { type: 'entity', required: false, placeholder: 'ex: weather.paris (optionnel)' }
     },
     OK_service_temps: {
       gif: 'templates/service_temps/temps_athee.gif',
-      placeholder: 'ex: sun.sun',
-      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence. Calendrier standard par défaut (illustré ici) — également disponible en variante Islam, Judaïsme, Christianisme, Bouddhisme ou Hindouisme.'
+      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous.',
+      field: {
+        type: 'calendar',
+        options: [
+          { value: 'standard', label: 'Standard / Universel (Par défaut)' },
+          { value: 'islam', label: 'Islamique / Musulman' },
+          { value: 'chretien', label: 'Chrétien (Catholique / Protestant / Orthodoxe)' },
+          { value: 'juif', label: 'Juif' },
+          { value: 'bouddhiste', label: 'Bouddhiste' },
+          { value: 'hindou', label: 'Hindou' }
+        ]
+      }
     }
   };
 
-  function filterCategory(categoryKey, categoryName, tabEl) {
-    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-    (tabEl || document.querySelector(`.cat-tab.${categoryKey}`)).classList.add('active');
-
-    // Garde le nom de la catégorie toujours visible, en couleur pleine selon la catégorie active
-    const label = document.getElementById('active-cat-display');
-    label.style.background = CAT_COLORS[categoryKey] || 'var(--primary-blue)';
-    label.innerHTML = `<i class="fa-solid ${CAT_ICONS[categoryKey] || 'fa-tag'}"></i> Catégorie active : ${categoryName}`;
+  function filterCategory(categoryKey, tabEl) {
+    document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+    (tabEl || document.querySelector(`.subtab.${categoryKey}`)).classList.add('active');
 
     const container = document.getElementById('module-list');
     container.innerHTML = '';
@@ -1180,16 +1228,30 @@
     list.forEach(mod => {
       const item = document.createElement('div');
       const media = MODULE_MEDIA[mod.name];
+      const title = moduleTitle(mod.name);
 
       if (media) {
         item.className = 'module-item module-item-detailed';
+
+        let fieldHtml;
+        if (media.field.type === 'calendar') {
+          fieldHtml = `
+            <select id="input-${mod.name}">
+              ${media.field.options.map((o, i) => `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}
+            </select>
+          `;
+        } else {
+          const cls = media.field.required === false ? 'field-optional' : 'field-required';
+          fieldHtml = `<input type="text" class="${cls}" placeholder="${media.field.placeholder}" id="input-${mod.name}">`;
+        }
+
         item.innerHTML = `
+          <strong>${title}</strong>
           <div class="module-video">
-            <img src="${media.gif}" alt="Démonstration ${mod.name}" loading="lazy">
+            <img src="${media.gif}" alt="Démonstration ${title}" loading="lazy">
           </div>
-          <strong>${mod.name}</strong>
           <p class="module-desc-full">${media.detail}</p>
-          <input type="text" placeholder="Entrez l'entité requise (${media.placeholder})" id="input-${mod.name}">
+          ${fieldHtml}
           <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (9€)</button>
         `;
       } else {
@@ -1197,12 +1259,12 @@
         item.innerHTML = `
           <div class="module-item-row">
             <div>
-              <strong>${mod.name}</strong>
+              <strong>${title}</strong>
               <div style="font-size: 0.75rem; color: var(--text-muted);">${mod.desc}</div>
             </div>
             <button onclick="addModuleToCart('${mod.name}', this)">Ajouter (9€)</button>
           </div>
-          <input type="text" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">
+          <input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">
         `;
       }
       container.appendChild(item);
@@ -1210,22 +1272,33 @@
   }
 
   function addModuleToCart(modName, btnEl) {
-    const inputEntity = document.getElementById(`input-${modName}`);
-    const entityVal = inputEntity ? inputEntity.value.trim() : '';
+    const media = MODULE_MEDIA[modName];
+    const fieldEl = document.getElementById(`input-${modName}`);
+    let entityVal;
 
-    if (!entityVal) {
-      inputEntity.classList.remove('input-error');
-      void inputEntity.offsetWidth; // relance l'animation si déjà jouée
-      inputEntity.classList.add('input-error');
-      inputEntity.focus();
-      return;
+    if (media && media.field.type === 'calendar') {
+      entityVal = `Calendrier : ${fieldEl.options[fieldEl.selectedIndex].textContent}`;
+    } else {
+      entityVal = fieldEl ? fieldEl.value.trim() : '';
+      const isOptional = media && media.field.required === false;
+
+      if (!entityVal && !isOptional) {
+        fieldEl.classList.remove('input-error');
+        void fieldEl.offsetWidth; // relance l'animation si déjà jouée
+        fieldEl.classList.add('input-error');
+        fieldEl.focus();
+        return;
+      }
+      if (!entityVal) entityVal = 'Non renseigné (détection automatique)';
     }
 
-    cart.push({ name: modName, entity: entityVal, price: 9 });
+    cart.push({ name: moduleTitle(modName), entity: entityVal, price: 9 });
     flyToCart(btnEl.closest('.module-item'));
     updateCartUI();
-    inputEntity.value = '';
-    inputEntity.classList.remove('input-error');
+    if (fieldEl && fieldEl.tagName === 'INPUT') {
+      fieldEl.value = '';
+      fieldEl.classList.remove('input-error');
+    }
   }
 
   function flyToCart(sourceEl) {
@@ -1317,11 +1390,11 @@
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant</label>
-        <input type="url" id="ha-url" placeholder="https://votre-instance.duckdns.org:8123" required>
+        <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
         <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès (Long-Lived Access Token)</label>
-        <input type="password" id="ha-token" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
+        <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
       </div>
       <div class="modal-footer">
         <div class="cart-total" style="margin-bottom: 10px;">Total à payer : ${total} € (Injection de base 29€ + ${cart.length} module(s))</div>
@@ -1363,7 +1436,7 @@
   }
 
   window.onload = () => {
-    filterCategory('lumiere', 'Lumière');
+    filterCategory('interface');
   };
 </script>
 
