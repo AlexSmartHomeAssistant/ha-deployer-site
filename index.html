@@ -850,6 +850,32 @@
     }
 
     .btn-add-big:active { transform: scale(0.98); }
+    .btn-add-big:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* Journal de progression du déploiement de test */
+    .deploy-log {
+      display: none;
+      margin-top: 4px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      max-height: 210px;
+      overflow-y: auto;
+    }
+
+    .deploy-log.open { display: block; }
+
+    .deploy-log .line { display: flex; gap: 8px; align-items: flex-start; }
+    .deploy-log .line + .line { margin-top: 3px; }
+    .deploy-log .line i { width: 14px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+    .deploy-log .ok   { color: var(--accent-green); }
+    .deploy-log .err  { color: var(--col-required); }
+    .deploy-log .warn { color: var(--col-gold); }
+    .deploy-log .run  { color: var(--text-muted); }
+    .deploy-log a { color: var(--primary-blue); }
 
     .cart-total {
       font-size: 1.1rem;
@@ -1469,14 +1495,17 @@
       <div class="card">
         <div class="notice-box">
           <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un module de démonstration sur votre instance.
+          Aucune entité n'est requise : la carte est entièrement autonome.
         </div>
         <div class="form-group">
-          <label>URL Home Assistant (Test)</label>
-          <input type="url" class="field-required" placeholder="https://test.duckdns.org:8123">
+          <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url')" title="Aide">?</button></label>
+          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.</div>
+          <input type="url" id="test-ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123">
         </div>
-        <div class="form-group">
-          <label>Jeton d'accès (Test)</label>
-          <input type="password" class="field-required" placeholder="Jeton temporaire...">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token')" title="Aide">?</button></label>
+          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.</div>
+          <input type="password" id="test-ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
         </div>
       </div>
 
@@ -1486,11 +1515,11 @@
           <div class="module-item-row">
             <div>
               <strong>Module Découverte</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">Module de test gratuit sans engagement</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Vitrine animée des 6 familles de modules — gratuit, sans engagement</div>
             </div>
           </div>
-          <input type="text" placeholder="Entrez l'entité (ex: sensor.test)" id="test-entity-input">
-          <button onclick="alert('🎉 Test gratuit injecté avec succès sur votre instance !')">Tester Gratuitement</button>
+          <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
+          <div class="deploy-log" id="test-log"></div>
         </div>
       </div>
 
@@ -2202,6 +2231,418 @@
 
     cartModalStep = 'payment';
     renderCartModalBody();
+  }
+
+  /* =====================================================================
+     MODULE DE TEST GRATUIT — construction de la carte puis injection
+     directe sur l'instance du visiteur, depuis son navigateur.
+
+     L'injection passe par l'API WebSocket de Home Assistant, et non par
+     l'API REST : les WebSockets ne sont pas soumis au CORS, alors qu'un
+     appel REST depuis cette origine serait refusé par le navigateur tant
+     que l'instance ne déclare pas ce domaine dans `cors_allowed_origins`.
+
+     Le fond utilise un dégradé CSS et non /local/images/dark-texture.png :
+     ce fichier n'existe pas sur une instance neuve et ne peut pas être
+     téléversé depuis un navigateur. La carte est ainsi autonome.
+     ===================================================================== */
+  const TEST_THEMES = [
+    {
+      title: 'OUVERTURE', color: '#FFFFFF', rgb: '255,255,255',
+      icon: 'mdi:garage-open-variant', dur: '2.8s', halo: 'glow',
+      desc: "Portes de garage, volets roulants et fenêtres — état, position et commande temporisée.",
+      anim: '0%,100% { transform: translateY(6px); opacity: 0.75; } 50% { transform: translateY(-8px); opacity: 1; }'
+    },
+    {
+      title: 'LUMIÈRE', color: '#F8C471', rgb: '248,196,113',
+      icon: 'mdi:lightbulb-on-outline', dur: '2.2s', halo: 'glow',
+      desc: "Intensité, température de blanc, couleurs et effets dynamiques, minuterie d'extinction.",
+      anim: '0%,100% { filter: drop-shadow(0 0 3px rgba(248,196,113,0.5)); transform: scale(0.96); } 50% { filter: drop-shadow(0 0 22px rgba(248,196,113,1)); transform: scale(1.06); }'
+    },
+    {
+      title: 'CHAUFFAGE', color: '#EC7063', rgb: '236,112,99',
+      icon: 'mdi:fire', dur: '1.5s', halo: 'glow',
+      desc: "Thermostats, consignes et dérogations temporaires, suivi de la consommation.",
+      anim: '0%,100% { transform: scale(1) rotate(-2.5deg); filter: drop-shadow(0 0 6px rgba(236,112,99,0.6)); } 25% { transform: scale(1.08) rotate(2.5deg); filter: drop-shadow(0 0 16px rgba(236,112,99,0.9)); } 50% { transform: scale(0.95) rotate(-1.5deg); filter: drop-shadow(0 0 8px rgba(236,112,99,0.7)); } 75% { transform: scale(1.05) rotate(1.5deg); filter: drop-shadow(0 0 14px rgba(236,112,99,0.9)); }'
+    },
+    {
+      title: 'EAU', color: '#3575DC', rgb: '53,117,220',
+      icon: 'mdi:water', dur: '2.8s', halo: 'ripple',
+      desc: "Détection de fuite, vanne d'arrêt automatique, compteur et arrosage du jardin.",
+      anim: '0% { transform: translateY(-14px) scaleY(1.06); } 55% { transform: translateY(8px) scaleY(0.90); } 70% { transform: translateY(2px) scaleY(1.04); } 100% { transform: translateY(-14px) scaleY(1.06); }'
+    },
+    {
+      title: 'APPAREIL', color: '#52BE80', rgb: '82,190,128',
+      icon: 'mdi:washing-machine', dur: '3.4s', halo: 'dashed',
+      desc: "Électroménager, multimédia, robots et consommation électrique en temps réel.",
+      anim: '0%,100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); }'
+    },
+    {
+      title: 'SÉCURITÉ', color: '#BE3FA9', rgb: '190,63,169',
+      icon: 'mdi:shield-home', dur: '2.4s', halo: 'conic',
+      desc: "Alarme, caméras, boîte aux lettres et détection de vibration sur les ouvrants.",
+      anim: '0%,100% { transform: scale(0.97); filter: drop-shadow(0 0 4px rgba(190,63,169,0.5)); } 50% { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(190,63,169,1)); }'
+    }
+  ];
+
+  function haloCss(theme, i) {
+    const n = i + 1;
+    if (theme.halo === 'ripple') {
+      return `
+        ha-card::before {
+          content: ""; position: absolute; top: 78px; left: 50%;
+          width: 130px; height: 130px; margin-left: -65px; border-radius: 50%;
+          border: 2px solid rgba(${theme.rgb},0.55);
+          animation: halo${n} 2.8s ease-out infinite; pointer-events: none;
+        }
+        @keyframes halo${n} { 0% { transform: scale(0.35); opacity: 0.9; } 100% { transform: scale(1.35); opacity: 0; } }`;
+    }
+    if (theme.halo === 'dashed') {
+      return `
+        ha-card::before {
+          content: ""; position: absolute; top: 52px; left: 50%;
+          width: 166px; height: 166px; margin-left: -83px; border-radius: 50%;
+          border: 2px dashed rgba(${theme.rgb},0.45);
+          animation: halo${n} 9s linear infinite; pointer-events: none;
+        }
+        @keyframes halo${n} { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+    }
+    if (theme.halo === 'conic') {
+      return `
+        ha-card::before {
+          content: ""; position: absolute; top: 62px; left: 50%;
+          width: 148px; height: 148px; margin-left: -74px; border-radius: 50%;
+          background: conic-gradient(from 0deg, rgba(${theme.rgb},0.45), rgba(${theme.rgb},0) 55%);
+          animation: halo${n} 3.6s linear infinite; pointer-events: none;
+        }
+        @keyframes halo${n} { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+    }
+    return `
+      ha-card::before {
+        content: ""; position: absolute; top: 40px; left: 50%;
+        width: 190px; height: 190px; margin-left: -95px; border-radius: 50%;
+        background: radial-gradient(circle, rgba(${theme.rgb},0.28) 0%, rgba(${theme.rgb},0) 68%);
+        animation: halo${n} 3.6s ease-in-out infinite; pointer-events: none;
+      }
+      @keyframes halo${n} {
+        0%,100% { transform: scale(0.82); opacity: 0.45; }
+        50% { transform: scale(1.10); opacity: 1; }
+      }`;
+  }
+
+  function buildTestSlide(theme, i) {
+    const n = i + 1;
+    return {
+      type: 'custom:stack-in-card',
+      card_mod: {
+        style:
+          `ha-card {\n` +
+          `  padding-top: 0px !important;\n` +
+          `  padding-bottom: 30px !important;\n` +
+          `  border: 2px solid ${theme.color};\n` +
+          `  height: 350px !important;\n` +
+          `  background: radial-gradient(circle at 50% 22%, #2b3038 0%, #14171c 62%, #0d0f12 100%) !important;\n` +
+          `  position: relative;\n` +
+          `  overflow: hidden;\n` +
+          `}\n` + haloCss(theme, i)
+      },
+      cards: [
+        {
+          type: 'custom:mushroom-template-card',
+          primary: '', secondary: '', icon: theme.icon,
+          layout: 'vertical',
+          tap_action: { action: 'none' },
+          card_mod: {
+            style: {
+              'mushroom-shape-icon$': '.shape { background: transparent !important; box-shadow: none !important; }\n',
+              '.':
+                `ha-card { background: none !important; border: none !important; box-shadow: none !important; padding-top: 46px !important; }\n` +
+                `mushroom-shape-icon {\n` +
+                `  --icon-size: 108px;\n` +
+                `  --icon-color: ${theme.color} !important;\n` +
+                `  --shape-color: transparent !important;\n` +
+                `  animation: ico${n} ${theme.dur} ease-in-out infinite;\n` +
+                `}\n` +
+                `@keyframes ico${n} { ${theme.anim} }\n`
+            }
+          }
+        },
+        {
+          type: 'markdown',
+          content: `<p class="t">${theme.title}</p>\n\n<p class="s">${theme.desc}</p>`,
+          card_mod: {
+            style: {
+              'ha-markdown$':
+                `.t { text-align: center; color: ${theme.color}; font-size: 19px; font-weight: 800; letter-spacing: 3px; margin: 0 0 8px 0; }\n` +
+                `.s { text-align: center; color: #B9BEC6; font-size: 12px; line-height: 1.45; margin: 0; }\n`,
+              '.':
+                `ha-card { background: none !important; border: none !important; box-shadow: none !important; padding: 0 22px !important; }\n` +
+                `ha-card::after {\n` +
+                `  content: ""; display: block; height: 2px; margin: 14px auto 0 auto; border-radius: 2px;\n` +
+                `  background: linear-gradient(90deg, transparent, ${theme.color}, transparent);\n` +
+                `  animation: bar${n} 3s ease-in-out infinite;\n` +
+                `}\n` +
+                `@keyframes bar${n} { 0%,100% { width: 60px; opacity: 0.4; } 50% { width: 190px; opacity: 1; } }\n`
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  function buildTestCard() {
+    return {
+      type: 'custom:mod-card',
+      card_mod: {
+        style: 'ha-card {\n  width: 100% !important;\n  max-width: 400px !important;\n  margin: 0 auto !important;\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n}\n'
+      },
+      card: {
+        type: 'vertical-stack',
+        cards: [
+          {
+            type: 'custom:mod-card',
+            card: { type: 'custom:mushroom-title-card', title: 'Test Gratuit', alignment: 'center' },
+            card_mod: {
+              style: {
+                'mushroom-title-card$': '.title { --primary-text-color: #FFFFFF; font-size: 15px !important; letter-spacing: 1px !important; }\n.header { padding: 8px 0px !important; }\n',
+                '.': 'ha-card { background: none !important; border: none !important; box-shadow: none !important; }\n'
+              }
+            }
+          },
+          {
+            type: 'custom:swipe-card',
+            parameters: { pagination: { type: 'bullets' } },
+            card_mod: {
+              style:
+                '.swiper-pagination { pointer-events: none !important; }\n' +
+                '.swiper-pagination-bullet { background: #000000 !important; opacity: 0.7 !important; }\n' +
+                '.swiper-pagination-bullet-active { background: #FFFFFF !important; opacity: 1 !important; }\n'
+            },
+            cards: TEST_THEMES.map(buildTestSlide)
+          }
+        ]
+      }
+    };
+  }
+
+  /* ---------- Journal de progression ---------- */
+  function logLine(kind, text) {
+    const box = document.getElementById('test-log');
+    box.classList.add('open');
+    const icons = { ok: 'fa-circle-check', err: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin' };
+    const div = document.createElement('div');
+    div.className = 'line ' + kind;
+    div.innerHTML = `<i class="fa-solid ${icons[kind]}"></i><span>${text}</span>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+    return div;
+  }
+
+  function replaceLine(el, kind, text) {
+    const icons = { ok: 'fa-circle-check', err: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin' };
+    el.className = 'line ' + kind;
+    el.innerHTML = `<i class="fa-solid ${icons[kind]}"></i><span>${text}</span>`;
+  }
+
+  /* ---------- Connexion WebSocket ---------- */
+  function toWebSocketUrl(raw) {
+    let u;
+    try { u = new URL(raw.trim()); } catch (e) { return { error: "L'adresse saisie n'est pas une URL valide." }; }
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+      return { error: "L'adresse doit commencer par http:// ou https://." };
+    }
+    if (location.protocol === 'https:' && u.protocol === 'http:') {
+      return { error: "Cette page est en HTTPS : votre navigateur bloque toute connexion vers une instance en HTTP. Utilisez une adresse https:// (Nabu Casa, DuckDNS + certificat, Cloudflare…)." };
+    }
+    const proto = u.protocol === 'https:' ? 'wss:' : 'ws:';
+    const path = u.pathname.replace(/\/+$/, '');
+    return { url: `${proto}//${u.host}${path}/api/websocket` };
+  }
+
+  function haConnect(wsUrl, token) {
+    return new Promise((resolve, reject) => {
+      let ws;
+      try { ws = new WebSocket(wsUrl); } catch (e) { return reject(new Error('Connexion impossible.')); }
+
+      const state = { id: 1, pending: {} };
+      const timer = setTimeout(() => {
+        try { ws.close(); } catch (e) {}
+        reject(new Error("Délai dépassé. Vérifiez que l'adresse est joignable depuis l'extérieur et que le certificat est accepté par votre navigateur."));
+      }, 15000);
+
+      ws.onerror = () => {
+        clearTimeout(timer);
+        reject(new Error("Connexion refusée. Si votre instance utilise un certificat auto-signé, ouvrez d'abord son adresse dans un onglet pour l'accepter, puis réessayez."));
+      };
+
+      ws.onclose = () => {
+        Object.values(state.pending).forEach(p => p.reject(new Error('Connexion fermée.')));
+        state.pending = {};
+      };
+
+      ws.onmessage = (evt) => {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'auth_required') {
+          ws.send(JSON.stringify({ type: 'auth', access_token: token }));
+          return;
+        }
+        if (msg.type === 'auth_invalid') {
+          clearTimeout(timer);
+          try { ws.close(); } catch (e) {}
+          reject(new Error("Jeton refusé. Générez un nouveau jeton d'accès longue durée puis réessayez."));
+          return;
+        }
+        if (msg.type === 'auth_ok') {
+          clearTimeout(timer);
+          resolve({
+            call: (payload) => new Promise((res, rej) => {
+              const id = state.id++;
+              state.pending[id] = { resolve: res, reject: rej };
+              ws.send(JSON.stringify(Object.assign({}, payload, { id })));
+            }),
+            close: () => { try { ws.close(); } catch (e) {} }
+          });
+          return;
+        }
+        if (msg.id && state.pending[msg.id]) {
+          state.pending[msg.id].resolve(msg);
+          delete state.pending[msg.id];
+        }
+      };
+    });
+  }
+
+  const TEST_RESOURCES = {
+    'card-mod': '/hacsfiles/lovelace-card-mod/card-mod.js',
+    'mushroom': '/hacsfiles/lovelace-mushroom/mushroom.js',
+    'swipe-card': '/hacsfiles/swipe-card/swipe-card.js',
+    'stack-in-card': '/hacsfiles/stack-in-card/stack-in-card.js'
+  };
+
+  const TEST_HACS_REPOS = {
+    'card-mod': 'thomasloven/lovelace-card-mod',
+    'mushroom': 'piitaya/lovelace-mushroom',
+    'swipe-card': 'bramkragten/swipe-card',
+    'stack-in-card': 'custom-cards/stack-in-card'
+  };
+
+  const TEST_DASHBOARD = 'accueil-modules';
+  const TEST_VIEW_PATH = 'test-gratuit';
+
+  async function runFreeTest() {
+    const btn = document.getElementById('test-deploy-btn');
+    const box = document.getElementById('test-log');
+    const urlInput = document.getElementById('test-ha-url');
+    const tokenInput = document.getElementById('test-ha-token');
+
+    box.innerHTML = '';
+    box.classList.remove('open');
+
+    const rawUrl = urlInput.value.trim();
+    const token = tokenInput.value.trim();
+
+    if (!rawUrl || !token) {
+      const missing = !rawUrl ? urlInput : tokenInput;
+      missing.classList.remove('input-error');
+      void missing.offsetWidth;
+      missing.classList.add('input-error');
+      missing.focus();
+      logLine('err', "Renseignez l'URL et le jeton d'accès de votre instance.");
+      return;
+    }
+    urlInput.classList.remove('input-error');
+    tokenInput.classList.remove('input-error');
+
+    const parsed = toWebSocketUrl(rawUrl);
+    if (parsed.error) { logLine('err', parsed.error); return; }
+
+    btn.disabled = true;
+    let ha = null;
+    let step = logLine('run', 'Connexion à votre instance Home Assistant…');
+
+    try {
+      ha = await haConnect(parsed.url, token);
+      replaceLine(step, 'ok', 'Connecté et authentifié.');
+
+      // 1. Plugins HACS — au mieux : une entrée de ressource orpheline
+      //    (URL déclarée mais fichier jamais téléchargé) fait échouer les
+      //    cartes en silence, on vérifie donc l'état réel côté HACS.
+      step = logLine('run', 'Vérification des cartes personnalisées…');
+      let hacsOk = false;
+      try {
+        const res = await ha.call({ type: 'hacs/repositories/list' });
+        if (res.success) {
+          hacsOk = true;
+          const byName = {};
+          (res.result || []).forEach(r => { byName[r.full_name] = r; });
+          for (const [name, full] of Object.entries(TEST_HACS_REPOS)) {
+            const repo = byName[full];
+            if (repo && !repo.installed) {
+              await ha.call({ type: 'hacs/repository/download', repository: repo.id });
+            }
+          }
+          replaceLine(step, 'ok', 'Cartes personnalisées présentes ou installées via HACS.');
+        }
+      } catch (e) { /* HACS absent : traité juste en dessous */ }
+      if (!hacsOk) {
+        replaceLine(step, 'warn', "HACS n'a pas répondu. Si la carte s'affiche en erreur, installez card-mod, mushroom, swipe-card et stack-in-card depuis HACS.");
+      }
+
+      // 2. Ressources Lovelace
+      step = logLine('run', 'Enregistrement des ressources Lovelace…');
+      const resRes = await ha.call({ type: 'lovelace/resources' });
+      const registered = (resRes.result || []).map(r => r.url).join(' ');
+      const missingRes = Object.entries(TEST_RESOURCES).filter(([, p]) => !registered.includes(p));
+      for (const [, path] of missingRes) {
+        await ha.call({ type: 'lovelace/resources/create', url: path, res_type: 'module' });
+      }
+      replaceLine(step, 'ok', missingRes.length ? `${missingRes.length} ressource(s) ajoutée(s).` : 'Ressources déjà en place.');
+
+      // 3. Tableau de bord partagé "Accueil"
+      step = logLine('run', 'Préparation du tableau de bord « Accueil »…');
+      const dashRes = await ha.call({ type: 'lovelace/dashboards/list' });
+      const exists = (dashRes.result || []).some(d => d.url_path === TEST_DASHBOARD);
+      if (!exists) {
+        const created = await ha.call({
+          type: 'lovelace/dashboards/create',
+          url_path: TEST_DASHBOARD, title: 'Accueil', icon: 'mdi:home-assistant',
+          show_in_sidebar: true, require_admin: false, mode: 'storage'
+        });
+        if (!created.success) throw new Error("Impossible de créer le tableau de bord « Accueil ».");
+        replaceLine(step, 'ok', 'Tableau de bord « Accueil » créé.');
+      } else {
+        replaceLine(step, 'ok', 'Tableau de bord « Accueil » déjà présent, réutilisé.');
+      }
+
+      // 4. Fusion dans les vues existantes — la racine n'est jamais réécrite
+      step = logLine('run', 'Injection de la carte…');
+      const cfgRes = await ha.call({ type: 'lovelace/config', url_path: TEST_DASHBOARD });
+      const config = cfgRes.success ? cfgRes.result : { title: 'Accueil', views: [] };
+      const views = config.views || [];
+
+      const newView = {
+        title: 'Test Gratuit',
+        path: TEST_VIEW_PATH,
+        icon: 'mdi:gift-outline',
+        cards: [buildTestCard()]
+      };
+
+      const idx = views.findIndex(v => v.path === TEST_VIEW_PATH);
+      if (idx >= 0) views[idx] = newView; else views.push(newView);
+      config.views = views;
+
+      const saved = await ha.call({ type: 'lovelace/config/save', url_path: TEST_DASHBOARD, config: config });
+      if (!saved.success) throw new Error('La sauvegarde du tableau de bord a échoué.');
+
+      const link = `${new URL(rawUrl).origin}/${TEST_DASHBOARD}/${TEST_VIEW_PATH}`;
+      replaceLine(step, 'ok', idx >= 0 ? 'Carte mise à jour.' : 'Carte injectée.');
+      logLine('ok', `Terminé — <a href="${link}" target="_blank" rel="noopener">ouvrir la carte sur votre instance</a>`);
+    } catch (e) {
+      logLine('err', e.message || "Le déploiement a échoué.");
+    } finally {
+      if (ha) ha.close();
+      btn.disabled = false;
+    }
   }
 
   /* ===== THÈME CLAIR / SOMBRE ===== */
