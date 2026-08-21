@@ -2065,7 +2065,15 @@
       if (!entityVal) entityVal = 'Non renseigné (détection automatique)';
     }
 
-    cart.push({ name: moduleTitle(modName), entity: entityVal, price: 9 });
+    // `key` et `raw` servent au déploiement : la clé identifie le module,
+    // `raw` porte la valeur brute (entity_id saisi, ou variante de calendrier).
+    cart.push({
+      key: modName,
+      name: moduleTitle(modName),
+      entity: entityVal,
+      raw: fieldEl ? fieldEl.value.trim() : '',
+      price: 9
+    });
     flyToCart(btnEl.closest('.module-item'));
     updateCartUI();
     if (fieldEl && fieldEl.tagName === 'INPUT') {
@@ -2132,6 +2140,7 @@
     const body = document.getElementById('cart-modal-body');
     if (cartModalStep === 'list') body.innerHTML = cartListStepHtml();
     else if (cartModalStep === 'checkout') body.innerHTML = cartCheckoutStepHtml();
+    else if (cartModalStep === 'deploy') body.innerHTML = cartDeployStepHtml();
     else body.innerHTML = cartPaymentStepHtml();
   }
 
@@ -2232,6 +2241,24 @@
           </button>
         `).join('')}
       </div>
+      <div class="modal-footer">
+        <button class="btn-pay" style="background: var(--primary-blue); width: 100%;" onclick="runCartDeployment()">
+          <i class="fa-solid fa-forward"></i> Passer — déployer sans paiement
+        </button>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+          Phase de test : injecte directement les modules sur votre instance.
+        </div>
+      </div>
+    `;
+  }
+
+  function cartDeployStepHtml() {
+    return `
+      <div class="modal-step-title"><i class="fa-solid fa-rocket"></i> Déploiement en cours</div>
+      <div class="deploy-log open" id="cart-deploy-log"></div>
+      <div class="modal-footer">
+        <button class="btn-pay" id="cart-deploy-close" onclick="closeCartModal()" disabled>Fermer</button>
+      </div>
     `;
   }
 
@@ -2262,6 +2289,10 @@
       alert("Veuillez renseigner l'URL et le Jeton d'accès Home Assistant.");
       return;
     }
+
+    // Conservés en mémoire pour l'étape de déploiement : le re-rendu de la
+    // modale détruit les champs de saisie.
+    checkoutCreds = { url: url, token: token };
 
     cartModalStep = 'payment';
     renderCartModalBody();
@@ -2737,6 +2768,434 @@
     } finally {
       if (ha) ha.close();
       btn.disabled = false;
+    }
+  }
+
+  /* =====================================================================
+     DÉPLOIEMENT DES MODULES DU PANIER
+
+     Même mécanique que le test gratuit : connexion WebSocket depuis le
+     navigateur du client, puis fusion de la vue dans le tableau de bord
+     « Accueil ». La différence tient à la détection : les entités ne sont
+     pas connues d'avance, elles sont retrouvées sur l'instance par des
+     règles déterministes (portage de ha_discovery.py côté navigateur).
+     ===================================================================== */
+
+  /* ---------- Détection : correspondance par mot, jamais par sous-chaîne ---------- */
+  function normalizeText(text) {
+    if (!text) return ' ';
+    const noAccent = String(text).normalize('NFD').split('').filter(c => { const n = c.charCodeAt(0); return n < 0x300 || n > 0x36f; }).join('');
+    return ' ' + noAccent.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() + ' ';
+  }
+
+  function haystackOf(state) {
+    const attrs = state.attributes || {};
+    return normalizeText(`${state.entity_id || ''} ${attrs.friendly_name || ''}`);
+  }
+
+  function hasWord(hay, word) {
+    const needle = normalizeText(word).trim();
+    if (!needle) return false;
+    return hay.split(' ').some(tok =>
+      tok === needle ||
+      // Tolérance de flexion réservée aux mots longs : sans cela « asr »
+      // se déclencherait sur « asrama ».
+      (needle.length >= 4 && tok.startsWith(needle) && tok.length - needle.length <= 2)
+    );
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    const nums = [lat1, lon1, lat2, lon2].map(Number);
+    if (nums.some(n => !Number.isFinite(n))) return null;
+    const [a1, o1, a2, o2] = nums;
+    const rad = d => d * Math.PI / 180;
+    const dLat = rad(a2 - a1), dLon = rad(o2 - o1);
+    const h = Math.sin(dLat / 2) ** 2 +
+              Math.cos(rad(a1)) * Math.cos(rad(a2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.sqrt(h));
+  }
+
+  /* ---------- Substitution dans la configuration de carte ---------- */
+  function deepReplace(node, fn) {
+    if (typeof node === 'string') return fn(node);
+    if (Array.isArray(node)) return node.map(n => deepReplace(n, fn));
+    if (node && typeof node === 'object') {
+      const out = {};
+      Object.keys(node).forEach(k => { out[k] = deepReplace(node[k], fn); });
+      return out;
+    }
+    return node;
+  }
+
+  // Le fond dark-texture.png n'existe pas sur une instance neuve et ne peut
+  // pas être téléversé depuis un navigateur : on le remplace par un dégradé.
+  const CARD_GRADIENT = 'radial-gradient(circle at 50% 22%, #2b3038 0%, #14171c 62%, #0d0f12 100%)';
+
+  function prepareCard(config, replacements) {
+    return deepReplace(config, str => {
+      let out = str;
+      Object.keys(replacements || {}).forEach(from => {
+        if (out.includes(from)) out = out.split(from).join(replacements[from]);
+      });
+      out = out.replace(
+        /background-image:\s*url\(\s*["']?\/local\/images\/dark-texture\.png["']?\s*\)/g,
+        `background: ${CARD_GRADIENT}`
+      );
+      return out;
+    });
+  }
+
+  /* ---------- Module Météo ---------- */
+  const METEO_ATTRS = { 'Vent': 'wind_speed', 'Pression': 'pressure', 'Humidité': 'humidity', 'UV': 'uv_index' };
+
+  function discoverWeatherEntity(states, homeLat, homeLon) {
+    const candidates = states.filter(s => s.entity_id.startsWith('weather.'));
+    if (!candidates.length) return { state: null, reason: 'aucune entité météo sur l\'instance' };
+    if (candidates.length === 1) return { state: candidates[0], reason: 'seule entité météo présente' };
+
+    let best = null, bestNote = null, bestReason = '';
+    candidates.forEach(state => {
+      const attrs = state.attributes || {};
+      let note = 0; const why = [];
+
+      const dist = homeLat != null ? haversineKm(homeLat, homeLon, attrs.latitude, attrs.longitude) : null;
+      if (dist != null) { note += Math.max(0, 50 - dist); why.push(`à ${dist.toFixed(1)} km du domicile`); }
+
+      const present = Object.values(METEO_ATTRS).filter(a => a in attrs);
+      note += 2 * present.length;
+      if (present.length) why.push(`${present.length}/4 attributs utiles`);
+
+      const hay = haystackOf(state);
+      if (['maison', 'home', 'domicile', 'forecast'].some(w => hay.includes(w))) { note += 3; why.push('nom évocateur'); }
+
+      if (bestNote === null || note > bestNote) { best = state; bestNote = note; bestReason = why.join(', '); }
+    });
+    return { state: best, reason: bestReason || 'meilleur score' };
+  }
+
+  function findEntitiesCard(node) {
+    if (Array.isArray(node)) {
+      for (const item of node) { const f = findEntitiesCard(item); if (f) return f; }
+    } else if (node && typeof node === 'object') {
+      if (node.type === 'entities') return node;
+      for (const k of Object.keys(node)) { const f = findEntitiesCard(node[k]); if (f) return f; }
+    }
+    return null;
+  }
+
+  /* ---------- Module Temps : les 6 variantes de calendrier ---------- */
+  const TEMPS_CALENDARS = {
+    standard: {
+      label: 'Standard / Universel', json: 'temps_standard',
+      entities: { 'sensor.temps_prochaines_fetes': { createdByModule: true } }
+    },
+    islam: {
+      label: 'Islamique / Musulman', json: 'temps_islam',
+      context: ['prayer', 'priere', 'islamic', 'islam', 'salat', 'adhan'],
+      entities: {
+        'sensor.islamic_prayer_times_priere_du_fajr':    { anyOf: ['fajr', 'sobh', 'subh'] },
+        'sensor.islamic_prayer_times_priere_du_dhuhr':   { anyOf: ['dhuhr', 'duhr', 'zuhr', 'dohr'] },
+        'sensor.islamic_prayer_times_priere_de_l_asr':   { anyOf: ['asr'] },
+        'sensor.islamic_prayer_times_priere_du_maghrib': { anyOf: ['maghrib', 'maghreb'] },
+        'sensor.islamic_prayer_times_priere_de_l_isha':  { anyOf: ['isha', 'icha', 'ishaa'] }
+      }
+    },
+    chretien: {
+      label: 'Chrétien', json: 'temps_christianisme',
+      entities: { 'sensor.temps_calendrier_chretien': { createdByModule: true } }
+    },
+    juif: {
+      label: 'Juif', json: 'temps_judaisme',
+      context: ['jewish', 'juif', 'hebraique', 'hebrew', 'hebreu'],
+      entities: {
+        'sensor.jewish_calendar_date':                             { anyOf: ['date'] },
+        'sensor.jewish_calendar_coucher_du_soleil_shkia':          { anyOf: ['shkia', 'sunset', 'coucher'] },
+        'sensor.jewish_calendar_issur_melacha_en_vigueur':         { anyOf: ['issur', 'melacha'] },
+        'sensor.jewish_calendar_portion_hebdomadaire_de_la_torah': { anyOf: ['torah', 'parshat', 'parasha', 'portion'] },
+        'sensor.jewish_calendar_prochaine_havdalah':               { anyOf: ['havdalah', 'havdala'] }
+      }
+    },
+    bouddhiste: {
+      label: 'Bouddhiste', json: 'temps_bouddhisme',
+      entities: { 'sensor.temps_calendrier_bouddhiste': { createdByModule: true } }
+    },
+    hindou: {
+      label: 'Hindou', json: 'temps_hindouisme',
+      entities: { 'sensor.temps_calendrier_hindou': { createdByModule: true } }
+    }
+  };
+
+  function resolveCalendarEntities(states, key) {
+    const spec = TEMPS_CALENDARS[key];
+    const context = spec.context || [];
+    const map = {}, missing = [];
+    const already = new Set();
+
+    Object.keys(spec.entities).forEach(placeholder => {
+      const criteria = spec.entities[placeholder];
+      if (criteria.createdByModule) {
+        if (states.some(s => s.entity_id === placeholder)) map[placeholder] = placeholder;
+        else missing.push(placeholder);
+        return;
+      }
+      const match = states
+        .filter(s => s.entity_id.startsWith('sensor.'))
+        .filter(s => !already.has(s.entity_id))
+        .filter(s => (criteria.anyOf || []).some(w => hasWord(haystackOf(s), w)))
+        .filter(s => !context.length || context.some(w => hasWord(haystackOf(s), w)))
+        .sort((a, b) => a.entity_id.length - b.entity_id.length)[0];
+      if (match) { map[placeholder] = match.entity_id; already.add(match.entity_id); }
+      else missing.push(placeholder);
+    });
+    return { map, missing };
+  }
+
+  /* ---------- Déclaration des modules déployables ---------- */
+  const MODULE_DEPLOYERS = {
+    OK_service_meteo: {
+      label: 'Météo',
+      view: { path: 'meteo', title: 'Météo', icon: 'mdi:weather-partly-cloudy' },
+      resources: {
+        'card-mod': '/hacsfiles/lovelace-card-mod/card-mod.js',
+        'mushroom': '/hacsfiles/lovelace-mushroom/mushroom.js',
+        'swipe-card': '/hacsfiles/swipe-card/swipe-card.js',
+        'stack-in-card': '/hacsfiles/stack-in-card/stack-in-card.js',
+        'clock-weather-card': '/hacsfiles/clock-weather-card/clock-weather-card.js'
+      },
+      hacs: {
+        'card-mod': 'thomasloven/lovelace-card-mod',
+        'mushroom': 'piitaya/lovelace-mushroom',
+        'swipe-card': 'bramkragten/swipe-card',
+        'stack-in-card': 'custom-cards/stack-in-card',
+        'clock-weather-card': 'pkissling/clock-weather-card'
+      },
+      async build(ctx, log) {
+        const { state: weather, reason } = discoverWeatherEntity(ctx.states, ctx.homeLat, ctx.homeLon);
+        if (!weather) throw new Error("Aucune entité météo sur votre instance. Ajoutez une intégration météo (Météo-France, Open-Meteo, Met.no) puis réessayez.");
+
+        // Une saisie manuelle du client prime sur la détection automatique.
+        let entity = weather.entity_id;
+        if (ctx.item.raw && ctx.states.some(s => s.entity_id === ctx.item.raw)) {
+          entity = ctx.item.raw;
+          log('ok', `Entité imposée : <code>${entity}</code>`);
+        } else {
+          log('ok', `Entité détectée : <code>${entity}</code> — ${reason}`);
+        }
+
+        const attrs = (ctx.states.find(s => s.entity_id === entity) || {}).attributes || {};
+        const available = Object.values(METEO_ATTRS).filter(a => a in attrs);
+
+        let cfg = await loadModuleJson('meteo');
+        cfg = prepareCard(cfg, { 'weather.forecast_maison': entity });
+        cfg = deepReplace(cfg, s => s.replace(/locale:\s*\w+/g, `locale: ${ctx.language}`));
+
+        // 3e onglet : on ne garde que les lignes dont l'attribut existe.
+        const card = findEntitiesCard(cfg);
+        if (card && Array.isArray(card.entities)) {
+          card.entities = card.entities
+            .filter(row => METEO_ATTRS[row.name] && available.includes(METEO_ATTRS[row.name]))
+            .map(row => Object.assign({}, row, {
+              type: 'attribute', entity: entity, attribute: METEO_ATTRS[row.name]
+            }));
+          log(available.length === 4 ? 'ok' : 'warn',
+              `3ᵉ onglet : ${card.entities.length}/4 mesures disponibles${available.length < 4 ? ' (les autres sont retirées)' : ''}`);
+        }
+        return cfg;
+      }
+    },
+
+    OK_service_temps: {
+      label: 'Temps',
+      view: { path: 'temps', title: 'Temps', icon: 'mdi:clock-outline' },
+      resources: {
+        'card-mod': '/hacsfiles/lovelace-card-mod/card-mod.js',
+        'mushroom': '/hacsfiles/lovelace-mushroom/mushroom.js',
+        'swipe-card': '/hacsfiles/swipe-card/swipe-card.js',
+        'stack-in-card': '/hacsfiles/stack-in-card/stack-in-card.js',
+        'analog-clock': '/hacsfiles/analogclock/analogclock.js',
+        'horizon-card': '/hacsfiles/lovelace-horizon-card/lovelace-horizon-card.js'
+      },
+      hacs: {
+        'card-mod': 'thomasloven/lovelace-card-mod',
+        'mushroom': 'piitaya/lovelace-mushroom',
+        'swipe-card': 'bramkragten/swipe-card',
+        'stack-in-card': 'custom-cards/stack-in-card'
+      },
+      async build(ctx, log) {
+        const key = TEMPS_CALENDARS[ctx.item.raw] ? ctx.item.raw : 'standard';
+        const spec = TEMPS_CALENDARS[key];
+        log('ok', `Calendrier retenu : ${spec.label}`);
+
+        if (!ctx.states.some(s => s.entity_id === 'sun.sun')) {
+          throw new Error("L'entité sun.sun est absente de votre instance : l'onglet solaire ne peut pas fonctionner.");
+        }
+
+        const { map, missing } = resolveCalendarEntities(ctx.states, key);
+        Object.keys(map).forEach(ph => {
+          if (map[ph] !== ph) log('ok', `Trouvé : <code>${map[ph]}</code>`);
+        });
+        if (missing.length) {
+          const createdByModule = missing.every(m => spec.entities[m].createdByModule);
+          log('warn', createdByModule
+            ? `Le capteur de calendrier n'existe pas encore sur votre instance : la carte s'affichera vide tant que l'intégration correspondante ne sera pas configurée.`
+            : `${missing.length} capteur(s) introuvable(s) : les cartes concernées afficheront « indisponible ».`);
+        }
+
+        let cfg = await loadModuleJson(spec.json);
+        return prepareCard(cfg, map);
+      }
+    }
+  };
+
+  const MODULE_JSON_CACHE = {};
+  async function loadModuleJson(name) {
+    if (MODULE_JSON_CACHE[name]) return JSON.parse(JSON.stringify(MODULE_JSON_CACHE[name]));
+    const res = await fetch(`modules/${name}.json`, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(`Modèle du module introuvable (${name}).`);
+    MODULE_JSON_CACHE[name] = await res.json();
+    return JSON.parse(JSON.stringify(MODULE_JSON_CACHE[name]));
+  }
+
+  /* ---------- Exécution du déploiement de tout le panier ---------- */
+  let checkoutCreds = null;   // renseigné à l'étape « Confirmer et payer »
+
+  async function runCartDeployment() {
+    if (!checkoutCreds) { alert("Renseignez d'abord l'URL et le jeton."); return; }
+
+    cartModalStep = 'deploy';
+    renderCartModalBody();
+
+    const box = document.getElementById('cart-deploy-log');
+    const log = (kind, text) => {
+      const icons = { ok: 'fa-circle-check', err: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin' };
+      const div = document.createElement('div');
+      div.className = 'line ' + kind;
+      div.innerHTML = `<i class="fa-solid ${icons[kind]}"></i><span>${text}</span>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return div;
+    };
+    const swap = (el, kind, text) => {
+      const icons = { ok: 'fa-circle-check', err: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin' };
+      el.className = 'line ' + kind;
+      el.innerHTML = `<i class="fa-solid ${icons[kind]}"></i><span>${text}</span>`;
+    };
+
+    const parsed = toWebSocketUrl(checkoutCreds.url);
+    if (parsed.error) { log('err', parsed.error); return; }
+
+    let ha = null;
+    let step = log('run', 'Connexion à votre instance Home Assistant…');
+    try {
+      ha = await haConnect(parsed.url, checkoutCreds.token);
+      swap(step, 'ok', 'Connecté et authentifié.');
+
+      const cfgRes = await ha.call({ type: 'get_config' });
+      const haCfg = cfgRes.result || {};
+      const statesRes = await ha.call({ type: 'get_states' });
+      const states = statesRes.result || [];
+      log('ok', `${states.length} entités lues sur votre instance.`);
+
+      const deployables = cart.filter(item => MODULE_DEPLOYERS[item.key]);
+      const others = cart.filter(item => !MODULE_DEPLOYERS[item.key]);
+
+      // Une seule lecture / écriture du tableau de bord pour tout le panier.
+      let dashCreated = false;
+      const dashRes = await ha.call({ type: 'lovelace/dashboards/list' });
+      if (!(dashRes.result || []).some(d => d.url_path === TEST_DASHBOARD)) {
+        const created = await ha.call({
+          type: 'lovelace/dashboards/create',
+          url_path: TEST_DASHBOARD, title: 'Accueil', icon: 'mdi:home-assistant',
+          show_in_sidebar: true, require_admin: false, mode: 'storage'
+        });
+        if (!created.success) throw new Error("Impossible de créer le tableau de bord « Accueil ».");
+        dashCreated = true;
+      }
+      log('ok', dashCreated ? 'Tableau de bord « Accueil » créé.' : 'Tableau de bord « Accueil » réutilisé.');
+
+      const dashCfgRes = await ha.call({ type: 'lovelace/config', url_path: TEST_DASHBOARD });
+      const dashboard = dashCfgRes.success ? dashCfgRes.result : { title: 'Accueil', views: [] };
+      dashboard.views = dashboard.views || [];
+
+      let injected = 0;
+      for (const item of deployables) {
+        const mod = MODULE_DEPLOYERS[item.key];
+        const started = Date.now();
+        const head = log('run', `<b>${mod.label}</b> — préparation…`);
+        try {
+          // Dépendances propres au module
+          await ensureResources(ha, mod);
+
+          const card = await mod.build(
+            { states, item, language: haCfg.language || 'fr', homeLat: haCfg.latitude, homeLon: haCfg.longitude },
+            log
+          );
+
+          const view = {
+            title: mod.view.title, path: mod.view.path, icon: mod.view.icon, cards: [card]
+          };
+          const idx = dashboard.views.findIndex(v => v.path === mod.view.path);
+          if (idx >= 0) dashboard.views[idx] = view; else dashboard.views.push(view);
+
+          injected++;
+          swap(head, 'ok', `<b>${mod.label}</b> — prêt à être injecté.`);
+          reportDeployment({
+            module: item.key, status: 'success', step: 'done',
+            instance: await hashOrigin(checkoutCreds.url),
+            ha_version: haCfg.version, duration_ms: Date.now() - started
+          });
+        } catch (e) {
+          swap(head, 'err', `<b>${mod.label}</b> — ${e.message}`);
+          reportDeployment({
+            module: item.key, status: 'error', step: 'inject', error: e.message,
+            instance: await hashOrigin(checkoutCreds.url),
+            ha_version: haCfg.version, duration_ms: Date.now() - started
+          });
+        }
+      }
+
+      others.forEach(item => log('warn', `<b>${item.name}</b> — déploiement automatique pas encore disponible pour ce module.`));
+
+      if (injected > 0) {
+        step = log('run', 'Enregistrement du tableau de bord…');
+        const saved = await ha.call({ type: 'lovelace/config/save', url_path: TEST_DASHBOARD, config: dashboard });
+        if (!saved.success) throw new Error('La sauvegarde du tableau de bord a échoué.');
+        const link = `${new URL(checkoutCreds.url).origin}/${TEST_DASHBOARD}`;
+        swap(step, 'ok', `${injected} module(s) injecté(s).`);
+        log('ok', `Terminé — <a href="${link}" target="_blank" rel="noopener">ouvrir votre tableau de bord</a>`);
+      } else {
+        log('warn', 'Aucun module injecté.');
+      }
+    } catch (e) {
+      log('err', e.message || 'Le déploiement a échoué.');
+    } finally {
+      if (ha) ha.close();
+      const btn = document.getElementById('cart-deploy-close');
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function ensureResources(ha, mod) {
+    // HACS au mieux : une entrée de ressource orpheline fait échouer les
+    // cartes en silence, on vérifie donc l'état réel côté HACS.
+    try {
+      const res = await ha.call({ type: 'hacs/repositories/list' });
+      if (res.success) {
+        const byName = {};
+        (res.result || []).forEach(r => { byName[r.full_name] = r; });
+        for (const full of Object.values(mod.hacs || {})) {
+          const repo = byName[full];
+          if (repo && !repo.installed) await ha.call({ type: 'hacs/repository/download', repository: repo.id });
+        }
+      }
+    } catch (e) { /* HACS absent : les ressources sont tout de même déclarées */ }
+
+    const resRes = await ha.call({ type: 'lovelace/resources' });
+    const registered = (resRes.result || []).map(r => r.url).join(' ');
+    for (const path of Object.values(mod.resources)) {
+      if (!registered.includes(path)) {
+        await ha.call({ type: 'lovelace/resources/create', url: path, res_type: 'module' });
+      }
     }
   }
 
