@@ -3000,7 +3000,7 @@
           log(available.length === 4 ? 'ok' : 'warn',
               `3ᵉ onglet : ${card.entities.length}/4 mesures disponibles${available.length < 4 ? ' (les autres sont retirées)' : ''}`);
         }
-        return cfg;
+        return translateCard(cfg, ctx.language);
       }
     },
 
@@ -3042,10 +3042,41 @@
         }
 
         let cfg = await loadModuleJson(spec.json);
-        return prepareCard(cfg, map);
+        return translateCard(prepareCard(cfg, map), ctx.language);
       }
     }
   };
+
+  /* ---------- Traduction des textes en dur des modules ----------
+     Table statique partagée avec les scripts Python (modules/i18n.json) :
+     une seule source de vérité, aucun appel à un service de traduction, donc
+     aucun coût par client et un résultat identique d'un déploiement à l'autre.
+
+     La correspondance porte sur la valeur ENTIÈRE d'un champ, jamais sur une
+     sous-chaîne : sans cela, traduire « Date » corromprait les blocs CSS et
+     les expressions Jinja qui contiennent ce mot.                        */
+  let I18N = null;
+
+  async function loadI18n() {
+    if (I18N) return I18N;
+    try {
+      const res = await fetch('modules/i18n.json', { cache: 'no-cache' });
+      I18N = res.ok ? await res.json() : {};
+    } catch (e) {
+      I18N = {};   // repli silencieux : les textes restent en français
+    }
+    return I18N;
+  }
+
+  function translateValue(value, lang) {
+    const entry = I18N && I18N[value];
+    return (entry && entry[lang]) ? entry[lang] : value;
+  }
+
+  function translateCard(config, lang) {
+    if (!lang || lang === 'fr' || !I18N) return config;
+    return deepReplace(config, str => translateValue(str, lang));
+  }
 
   const MODULE_JSON_CACHE = {};
   async function loadModuleJson(name) {
@@ -3096,6 +3127,11 @@
       const states = statesRes.result || [];
       log('ok', `${states.length} entités lues sur votre instance.`);
 
+      // La langue de l'instance pilote la traduction des textes en dur.
+      await loadI18n();
+      const lang = haCfg.language || 'fr';
+      if (lang !== 'fr') log('ok', `Langue de l'instance : <code>${lang}</code> — les libellés seront traduits.`);
+
       const deployables = cart.filter(item => MODULE_DEPLOYERS[item.key]);
       const others = cart.filter(item => !MODULE_DEPLOYERS[item.key]);
 
@@ -3127,12 +3163,13 @@
           await ensureResources(ha, mod, log);
 
           const card = await mod.build(
-            { states, item, language: haCfg.language || 'fr', homeLat: haCfg.latitude, homeLon: haCfg.longitude },
+            { states, item, language: lang, homeLat: haCfg.latitude, homeLon: haCfg.longitude },
             log
           );
 
           const view = {
-            title: mod.view.title, path: mod.view.path, icon: mod.view.icon, cards: [card]
+            title: translateValue(mod.view.title, lang),   // l'onglet aussi
+            path: mod.view.path, icon: mod.view.icon, cards: [card]
           };
           const idx = dashboard.views.findIndex(v => v.path === mod.view.path);
           if (idx >= 0) dashboard.views[idx] = view; else dashboard.views.push(view);
