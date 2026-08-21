@@ -3124,7 +3124,7 @@
         const head = log('run', `<b>${mod.label}</b> — préparation…`);
         try {
           // Dépendances propres au module
-          await ensureResources(ha, mod);
+          await ensureResources(ha, mod, log);
 
           const card = await mod.build(
             { states, item, language: haCfg.language || 'fr', homeLat: haCfg.latitude, homeLon: haCfg.longitude },
@@ -3175,20 +3175,33 @@
     }
   }
 
-  async function ensureResources(ha, mod) {
-    // HACS au mieux : une entrée de ressource orpheline fait échouer les
-    // cartes en silence, on vérifie donc l'état réel côté HACS.
-    try {
-      const res = await ha.call({ type: 'hacs/repositories/list' });
-      if (res.success) {
-        const byName = {};
-        (res.result || []).forEach(r => { byName[r.full_name] = r; });
-        for (const full of Object.values(mod.hacs || {})) {
-          const repo = byName[full];
-          if (repo && !repo.installed) await ha.call({ type: 'hacs/repository/download', repository: repo.id });
-        }
-      }
-    } catch (e) { /* HACS absent : les ressources sont tout de même déclarées */ }
+  async function ensureResources(ha, mod, log) {
+    // HACS doit répondre pour qu'on puisse garantir que les fichiers des
+    // cartes personnalisées existent réellement. Sans cette confirmation,
+    // enregistrer quand même les ressources Lovelace créerait des entrées
+    // orphelines (URL déclarée, fichier jamais présent) : les cartes
+    // afficheraient "Erreur de configuration" sans qu'on l'ait détecté.
+    const res = await ha.call({ type: 'hacs/repositories/list' });
+    if (!res.success) {
+      throw new Error(
+        "HACS ne répond pas sur votre instance. Ce module a besoin de cartes personnalisées : " +
+        "installez HACS (<a href=\"https://hacs.xyz/docs/use/download/download/\" target=\"_blank\" rel=\"noopener\">hacs.xyz</a>) " +
+        "puis relancez le déploiement."
+      );
+    }
+
+    const byName = {};
+    (res.result || []).forEach(r => { byName[r.full_name] = r; });
+
+    const unresolved = [];
+    for (const [name, full] of Object.entries(mod.hacs || {})) {
+      const repo = byName[full];
+      if (!repo) { unresolved.push(name); continue; }
+      if (!repo.installed) await ha.call({ type: 'hacs/repository/download', repository: repo.id });
+    }
+    if (unresolved.length && log) {
+      log('warn', `Dépôt HACS introuvable pour : ${unresolved.join(', ')}. Installez-le manuellement si la carte s'affiche en erreur.`);
+    }
 
     const resRes = await ha.call({ type: 'lovelace/resources' });
     const registered = (resRes.result || []).map(r => r.url).join(' ');
