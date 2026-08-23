@@ -33,6 +33,12 @@
       --col-gold: #F8C471;
       --col-required: #EF8377;
 
+      /* Dégradé métallique du titre d'accueil. Il vit sur le fond des cartes
+         (clair ou sombre selon le thème) : deux nuances sont nécessaires,
+         un or clair resterait illisible sur une carte claire. */
+      --titre-or: linear-gradient(180deg, #F7E9B6 0%, #E0BC63 34%, #B98C2C 68%, #EBD391 100%);
+      --titre-ombre: rgba(0, 0, 0, 0.55);
+
       --nav-bg: rgba(31, 35, 41, 0.86);
       --input-bg: rgba(0, 0, 0, 0.22);
       --hover-bg: rgba(255, 255, 255, 0.08);
@@ -70,6 +76,11 @@
       --col-interface: #8B5E3C;
       --col-gold: #B7791F;
       --col-required: #C0392B;
+
+      /* Bronze soutenu : sur une carte claire, l'or pâle du thème sombre
+         passerait sous le seuil de lisibilité. */
+      --titre-or: linear-gradient(180deg, #C08A2E 0%, #9A6B14 38%, #6E4A0C 70%, #B5842A 100%);
+      --titre-ombre: rgba(255, 255, 255, 0.5);
 
       --nav-bg: rgba(255, 255, 255, 0.78);
       --input-bg: rgba(255, 255, 255, 0.92);
@@ -616,53 +627,70 @@
        sur-titre très interlettré, et l'Anneau en dessous.
        Le panneau porte son propre fond sombre : le rendu reste identique en
        thème clair comme en thème sombre, comme sur la couverture. */
+    /* Titre d'accueil inspiré de la jaquette du « Seigneur des Anneaux » :
+       capitales serif dorées et centrées, sur-titre interlettré, l'Anneau en
+       séparateur. Il adopte le fond des autres cartes pour rester dans la
+       ligne de la page, et reste compact pour tenir sans défilement. */
     .accueil-title {
       display: block;
       text-align: center;
-      background: radial-gradient(ellipse at 50% 30%, #23201a 0%, #0a0a0b 72%);
-      border: 1px solid rgba(198, 160, 74, 0.32);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 30px 18px 24px;
+      padding: 14px 18px 12px;
+      backdrop-filter: blur(10px);
     }
 
     .accueil-title .surtitre {
       display: block;
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.42em;
       /* Compense l'interlettrage, qui ajoute une espace après la dernière
          lettre et décale le texte vers la gauche une fois centré. */
       text-indent: 0.42em;
-      color: #C9A227;
-      margin-bottom: 12px;
+      color: var(--col-gold);
+      margin-bottom: 4px;
     }
 
     .accueil-title .titre-principal {
       display: block;
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.6rem, 5.4vw, 3rem);
+      font-size: clamp(1.35rem, 3.4vw, 2.1rem);
       font-weight: 700;
-      line-height: 1.06;
+      line-height: 1.08;
       text-transform: uppercase;
       letter-spacing: 0.03em;
       /* Dégradé métallique appliqué au texte. Il impose color: transparent,
          donc l'ombre ne peut pas venir de text-shadow (elle se verrait au
          travers) : elle passe par un filtre sur l'élément. */
-      background: linear-gradient(180deg, #F7E9B6 0%, #DCB75E 36%, #A87A20 66%, #EBD391 100%);
+      background: var(--titre-or);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.75));
+      filter: drop-shadow(0 1px 2px var(--titre-ombre));
     }
 
+    /* L'Anneau sert de filet entre le titre et la citation. */
     .accueil-title .anneau {
       display: block;
-      margin-top: 16px;
-      font-size: 1.5rem;
-      color: #D9B45B;
-      filter: drop-shadow(0 0 9px rgba(217, 180, 91, 0.6));
+      margin: 6px 0 5px;
+      font-size: 1rem;
+      color: var(--col-gold);
+      filter: drop-shadow(0 0 7px rgba(217, 180, 91, 0.55));
+    }
+
+    .accueil-title .citation {
+      display: block;
+      font-size: 0.78rem;
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.45;
+      color: var(--text-muted);
+      max-width: 780px;
+      margin: 0 auto;
     }
 
     .descriptif-liens {
@@ -1279,6 +1307,47 @@
          qui se partagent la rangée du dessus. */
       #section-accueil .container > .card:last-child { grid-column: 1 / -1; }
 
+      /* Accueil sans défilement : le contenu doit tenir dans la hauteur de la
+         fenêtre. La vidéo est le poste le plus lourd — son cadre 16/9 atteint
+         ~370 px sur une demi-largeur. On lui donne donc une hauteur liée à la
+         fenêtre plutôt qu'au ratio ; YouTube ajuste l'image dans le cadre. */
+      #section-accueil .video-container {
+        padding-bottom: 0;
+        height: clamp(150px, 24vh, 290px);
+      }
+
+      #section-accueil .hero-pitch { padding: 9px 16px; font-size: 1rem; }
+      #section-accueil .accueil-title { padding: 12px 18px 10px; }
+
+      /* Bloc de soutien resserré : titre, phrase et boutons sur trois lignes
+         courtes plutôt qu'un pavé. */
+      #section-accueil .container > .card:last-child h3 { margin-bottom: 6px; }
+      #section-accueil .container > .card:last-child p { margin-bottom: 10px; }
+    }
+
+    /* Écrans larges mais peu hauts (portables 1366x768, 1440x810…) : la rangée
+       du milieu est dictée par le descriptif, pas par la vidéo — réduire la
+       seule vidéo ne suffit donc pas. On resserre l'ensemble.
+       Les `!important` sont nécessaires : les tailles de police de ces
+       paragraphes sont posées en style inline dans le HTML. */
+    @media (min-width: 1024px) and (max-height: 830px) {
+      #section-accueil .video-container { height: clamp(130px, 20vh, 200px); }
+      #section-accueil .accueil-title { padding: 9px 16px 8px; }
+      #section-accueil .accueil-title .citation { font-size: 0.72rem; line-height: 1.35; }
+      #section-accueil .accueil-title .anneau { margin: 3px 0 3px; font-size: 0.9rem; }
+      #section-accueil .hero-pitch { padding: 7px 14px; font-size: 0.92rem; }
+      #section-accueil .container > .card { padding: 12px 14px; }
+      #section-accueil .container > .card h3 { font-size: 0.92rem !important; margin-bottom: 8px !important; }
+      #section-accueil .container > .card p { font-size: 0.78rem !important; line-height: 1.45; }
+      #section-accueil .descriptif-liens { margin-top: 10px; }
+      #section-accueil .descriptif-lien { padding: 7px 10px; font-size: 0.74rem; }
+      #section-accueil .container { gap: 10px; }
+      #section-accueil .container > .card:last-child p {
+        font-size: 0.75rem !important;
+        margin-bottom: 8px !important;
+      }
+      #section-accueil .donation-btn { padding: 7px 12px; font-size: 0.78rem; }
+
       /* La dernière carte (prérequis) occupe toute la largeur */
       #section-fonctionnement .container > .card:last-child,
       #section-test .container > .card:last-child {
@@ -1537,13 +1606,10 @@
     <div class="container">
       <h2 class="accueil-title">
         <span class="surtitre">Home Assistant</span>
-        <span class="titre-principal">Le Seigneur<br>de la Domotique</span>
+        <span class="titre-principal">Le Seigneur de la Domotique</span>
         <i class="fa-solid fa-ring anneau" aria-hidden="true"></i>
+        <span class="citation">"Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"</span>
       </h2>
-
-      <div class="hero-slogan">
-        "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
-      </div>
 
       <div class="hero-pitch">Déployez vos modules sur Home Assistant en 1 clic</div>
 
