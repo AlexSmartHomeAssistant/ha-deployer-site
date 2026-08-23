@@ -611,15 +611,84 @@
     }
 
     /* ONGLET ACCUEIL */
+    /* Titre d'accueil repris de la jaquette du « Seigneur des Anneaux » :
+       capitales serif dorées et centrées sur fond noir, surmontées d'un
+       sur-titre très interlettré, et l'Anneau en dessous.
+       Le panneau porte son propre fond sombre : le rendu reste identique en
+       thème clair comme en thème sombre, comme sur la couverture. */
     .accueil-title {
+      display: block;
       text-align: center;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--text-main);
+      background: radial-gradient(ellipse at 50% 30%, #23201a 0%, #0a0a0b 72%);
+      border: 1px solid rgba(198, 160, 74, 0.32);
+      border-radius: var(--radius);
+      padding: 30px 18px 24px;
+    }
+
+    .accueil-title .surtitre {
+      display: block;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 0.82rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.42em;
+      /* Compense l'interlettrage, qui ajoute une espace après la dernière
+         lettre et décale le texte vers la gauche une fois centré. */
+      text-indent: 0.42em;
+      color: #C9A227;
+      margin-bottom: 12px;
+    }
+
+    .accueil-title .titre-principal {
+      display: block;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.6rem, 5.4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.06;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      /* Dégradé métallique appliqué au texte. Il impose color: transparent,
+         donc l'ombre ne peut pas venir de text-shadow (elle se verrait au
+         travers) : elle passe par un filtre sur l'élément. */
+      background: linear-gradient(180deg, #F7E9B6 0%, #DCB75E 36%, #A87A20 66%, #EBD391 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.75));
+    }
+
+    .accueil-title .anneau {
+      display: block;
+      margin-top: 16px;
+      font-size: 1.5rem;
+      color: #D9B45B;
+      filter: drop-shadow(0 0 9px rgba(217, 180, 91, 0.6));
+    }
+
+    .descriptif-liens {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .descriptif-lien {
+      flex: 1 1 auto;
+      text-align: center;
+      background: var(--hover-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .descriptif-lien:hover {
+      border-color: var(--primary-blue);
+      color: var(--accent-green);
     }
 
     .hero-slogan {
@@ -724,17 +793,69 @@
     .subtab.securite { color: var(--col-securite); }
     .subtab.service { color: var(--col-service); }
 
-    /* Mise en évidence au survol, identique aux onglets du bandeau */
+    /* « Configuration » : demandée en noir. Du noir sur le thème sombre serait
+       illisible, on le pose donc sur une pastille claire — la couleur reste
+       franchement noire, et le contraste tient dans les deux thèmes. */
+    .subtab.configuration {
+      color: #14171c;
+      background-color: rgba(255, 255, 255, 0.88);
+      border-radius: 6px 6px 0 0;
+    }
+    .subtab.configuration:hover,
+    .subtab.configuration.active {
+      background-color: #ffffff;
+      border-bottom-color: #14171c;
+    }
+
+    /* Catégories multicolores (Service, Automatisme) : le dégradé est appliqué
+       au TEXTE via background-clip, ce qui impose `color: transparent`. La
+       bordure de l'onglet actif ne peut donc pas suivre `currentColor` (elle
+       serait invisible) : on lui donne une teinte explicite. */
+    .subtab.multicolore {
+      /* Quatre bandes franches plutôt qu'un fondu : sur un mot court, un
+         dégradé continu ne laisse voir que sa portion centrale et les quatre
+         couleurs ne se lisent plus. */
+      background-image: linear-gradient(90deg,
+        #E74C3C 0%,  #E74C3C 21%,
+        #2ECC71 29%, #2ECC71 46%,
+        #3498DB 54%, #3498DB 71%,
+        #F1C40F 79%, #F1C40F 100%);
+      /* Sans cela, le dégradé se cale sur la boîte de padding : les 14 px de
+         marge latérale absorbent le rouge et le jaune, et l'onglet paraît
+         simplement vert. On le cale donc sur le contenu, c'est-à-dire le mot. */
+      background-origin: content-box;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .subtab.multicolore:hover,
+    .subtab.multicolore.active {
+      border-bottom-color: #3498DB;
+    }
+
+    /* Mise en évidence au survol, identique aux onglets du bandeau.
+       `background-color` et non `background` : la forme courte reinitialiserait
+       le dégradé des catégories multicolores. */
     .subtab:hover {
-      background: var(--hover-bg);
+      background-color: var(--hover-bg);
       border-radius: 6px 6px 0 0;
       border-bottom-color: currentColor;
     }
 
     .subtab.active {
       border-bottom-color: currentColor;
-      background: var(--hover-bg);
+      background-color: var(--hover-bg);
       border-radius: 6px 6px 0 0;
+    }
+
+    /* Catégorie encore vide : on le dit, plutôt que d'afficher une page blanche */
+    .categorie-vide {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 28px 16px;
+      border: 1px dashed var(--card-border);
+      border-radius: var(--radius);
     }
 
     .module-list-container {
@@ -1154,6 +1275,10 @@
         grid-column: 1 / -1;
       }
 
+      /* Accueil : « Soutenir le Projet » passe sous la vidéo et le descriptif,
+         qui se partagent la rangée du dessus. */
+      #section-accueil .container > .card:last-child { grid-column: 1 / -1; }
+
       /* La dernière carte (prérequis) occupe toute la largeur */
       #section-fonctionnement .container > .card:last-child,
       #section-test .container > .card:last-child {
@@ -1410,7 +1535,11 @@
   <!-- SECTION 1 : ACCUEIL -->
   <div id="section-accueil" class="page-section active">
     <div class="container">
-      <h2 class="accueil-title"><i class="fa-solid fa-crown"></i> Home Assistant : Le Seigneur de la Domotique</h2>
+      <h2 class="accueil-title">
+        <span class="surtitre">Home Assistant</span>
+        <span class="titre-principal">Le Seigneur<br>de la Domotique</span>
+        <i class="fa-solid fa-ring anneau" aria-hidden="true"></i>
+      </h2>
 
       <div class="hero-slogan">
         "Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"
@@ -1418,11 +1547,29 @@
 
       <div class="hero-pitch">Déployez vos modules sur Home Assistant en 1 clic</div>
 
+      <!-- Sur PC, .container est déjà une grille 2 colonnes (≥1024px) :
+           la vidéo se place à gauche, le descriptif à droite, et le bloc de
+           soutien s'étend sur les deux colonnes (règle :last-child plus bas). -->
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-video"></i> Présentation Vidéo</h3>
         <div class="video-container">
           <iframe src="https://www.youtube.com/embed/LokQyLFPUOA?list=PLHCmYWBoMir-iFsAeatdl_xY1kTKdGPV3" title="Présentation HA-Deployer" allowfullscreen></iframe>
         </div>
+      </div>
+
+      <div class="card">
+          <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-circle-info"></i> Descriptif</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+            <b style="color: var(--col-gold);">HA-Deployer</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos modules, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
+          </p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
+            Chaque module apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin. Les textes s'adaptent à votre langue.
+          </p>
+          <div class="descriptif-liens">
+            <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
+            <button type="button" class="descriptif-lien" onclick="switchTab('module')"><i class="fa-solid fa-cubes"></i> Modules</button>
+            <button type="button" class="descriptif-lien" onclick="switchTab('test')"><i class="fa-solid fa-vial"></i> Test gratuit</button>
+          </div>
       </div>
 
       <div class="card" style="text-align: center;">
@@ -1501,14 +1648,16 @@
 
       <!-- Sous-onglets de catégorie, horizontaux -->
       <div class="subtabs" id="category-subtabs">
+        <button class="subtab configuration" onclick="filterCategory('configuration', this)">Configuration</button>
         <button class="subtab interface active" onclick="filterCategory('interface', this)">Interface</button>
+        <button class="subtab service multicolore" onclick="filterCategory('service', this)">Service</button>
         <button class="subtab ouverture" onclick="filterCategory('ouverture', this)">Ouverture</button>
-        <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Lumière</button>
+        <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Éclairage</button>
         <button class="subtab chauffage" onclick="filterCategory('chauffage', this)">Chauffage</button>
         <button class="subtab eau" onclick="filterCategory('eau', this)">Eau</button>
         <button class="subtab appareil" onclick="filterCategory('appareil', this)">Appareil</button>
         <button class="subtab securite" onclick="filterCategory('securite', this)">Sécurité</button>
-        <button class="subtab service" onclick="filterCategory('service', this)">Services</button>
+        <button class="subtab automatisme multicolore" onclick="filterCategory('automatisme', this)">Automatisme</button>
       </div>
 
       <div class="card">
@@ -1721,7 +1870,7 @@
         <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
         <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
       </div>
-      <div class="footer-copyright">© 2026 Alex Smart Home Assistant</div>
+      <div class="footer-copyright">© 2026 HA-Deployer</div>
       <div class="social-icons">
         <a href="tel:+33600000000" title="Téléphone"><i class="fa-solid fa-phone"></i></a>
         <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
@@ -1851,6 +2000,10 @@
   }
 
   const modulesData = {
+    // Deux categories ouvertes le 23/08/2026, encore sans module : elles
+    // s'affichent avec un message d'attente plutot qu'une liste vide.
+    configuration: [],
+    automatisme: [],
     lumiere: [
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
     ],
@@ -1998,6 +2151,15 @@
     container.innerHTML = '';
 
     const list = modulesData[categoryKey] || [];
+
+    if (!list.length) {
+      const vide = document.createElement('div');
+      vide.className = 'categorie-vide';
+      vide.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Aucun module dans cette catégorie pour l'instant — elle s'étoffera prochainement.`;
+      container.appendChild(vide);
+      return;
+    }
+
     list.forEach(mod => {
       const item = document.createElement('div');
       const media = MODULE_MEDIA[mod.name];
