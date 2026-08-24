@@ -864,6 +864,30 @@
       border-radius: 6px 6px 0 0;
     }
 
+    /* Ce qui est fourni avec le module : détaché du descriptif par un blanc,
+       et dans une graisse et une famille distinctes pour se lire d'un coup
+       d'œil sans relire le paragraphe. */
+    .inclus {
+      display: block;
+      font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text-main);
+      background: rgba(248, 196, 113, 0.07);
+      border-left: 3px solid var(--col-gold);
+      border-radius: 0 6px 6px 0;
+      padding: 8px 10px;
+    }
+
+    /* Paramètres saisis, rappelés dans le panier */
+    .cart-param {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .cart-param b { color: var(--text-main); font-weight: 700; }
+
     /* Libellé des champs des modules qui en réclament plusieurs : sans lui,
        trois saisies successives seraient indiscernables. */
     .param-label {
@@ -2185,12 +2209,12 @@
   const MODULE_MEDIA = {
     OK_service_meteo: {
       gif: 'templates/service_meteo/meteo.gif',
-      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée. <b>Inclus :</b> installation de HACS si nécessaire et des cartes personnalisées requises (clock-weather-card, mushroom, swipe-card, card-mod…).',
+      detail: 'Tableau de bord météo complet et traduit selon la ville du client : température et humidité extérieures, vent, pression, UV, qualité de l\'air et alertes météo, avec horloge météo animée. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire et des cartes personnalisées requises (clock-weather-card, mushroom, swipe-card, card-mod…).</span>',
       field: { type: 'entity', required: false, placeholder: 'ex: weather.paris (optionnel)' }
     },
     OK_service_temps: {
       gif: 'templates/service_temps/temps_athee.gif',
-      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.',
+      detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.</span>',
       field: {
         type: 'calendar',
         options: [
@@ -2228,6 +2252,22 @@
              `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
         : `<input type="text" class="field-required" id="${id}" placeholder="${c.placeholder || ''}">`;
       return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
+    }).join('');
+  }
+
+  /* Récapitulatif du panier : rappeler ce que le client a saisi. Sans cela,
+     un module réclamant trois informations n'affiche qu'une ligne, et
+     l'acheteur ne peut pas relire son thème ni sa pièce avant de valider. */
+  function detailParamsHtml(item) {
+    const champs = MODULE_PARAMS[item.key];
+    if (!champs || !item.params) return '';
+    return champs.map(c => {
+      const valeur = item.params[c.param];
+      if (!valeur) return '';
+      const lisible = c.type === 'select'
+        ? (c.options.find(o => o.value === valeur) || {}).label || valeur
+        : valeur;
+      return `<span class="cart-param">${c.label} : <b>${lisible}</b></span>`;
     }).join('');
   }
 
@@ -2442,6 +2482,7 @@
           <div>
             <strong>${item.name}</strong>
             <span class="entity"><i class="fa-solid fa-microchip"></i> ${item.entity}</span>
+            ${detailParamsHtml(item)}
           </div>
           <div class="cart-modal-item-actions">
             <span>${item.price} €</span>
@@ -2747,6 +2788,12 @@
       if (job.status === 'success') {
         const lien = `${creds.url}/${DASHBOARD_PATH}`;
         replaceLine(courante, 'ok', 'Déploiement terminé.');
+        // Le panier a été livré : le vider évite un second déploiement
+        // involontaire des mêmes modules au prochain passage.
+        if (opts.viderPanier) {
+          cart.length = 0;
+          updateCartUI();
+        }
         log('ok', `<a href="${lien}" target="_blank" rel="noopener">Ouvrir votre tableau de bord</a>`);
       } else {
         replaceLine(courante, 'err', job.error || 'Le déploiement a échoué.');
@@ -2827,6 +2874,7 @@
       creds: { url: parsed.url, token: checkoutCreds.token },
       modules: deployables.map(item => SERVER_MODULES[item.key]),
       params: params,
+      viderPanier: true,
       boxId: 'cart-deploy-log',
       closeBtnId: 'cart-deploy-close'
     });
