@@ -864,6 +864,18 @@
       border-radius: 6px 6px 0 0;
     }
 
+    /* Libellé des champs des modules qui en réclament plusieurs : sans lui,
+       trois saisies successives seraient indiscernables. */
+    .param-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 8px 0 3px;
+    }
+
     /* Catégorie encore vide : on le dit, plutôt que d'afficher une page blanche */
     .categorie-vide {
       text-align: center;
@@ -2193,6 +2205,32 @@
     }
   };
 
+  /* Modules réclamant plusieurs informations, et non une seule entité.
+     Chaque champ porte le nom de la variable transmise au runner : le Worker
+     ne laisse passer que des noms en MAJUSCULES_ET_SOULIGNES, et le module
+     Python les relit dans son environnement. */
+  const MODULE_PARAMS = {
+    lumiere_lumiere: [
+      { param: 'LUMIERE_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Salon' },
+      { param: 'LUMIERE_ENTITE', label: 'Entité de la lumière', type: 'text', required: true,
+        placeholder: 'ex : light.suspension_salon' },
+      { param: 'LUMIERE_THEME', label: 'Thème', type: 'select', required: true,
+        options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
+    ]
+  };
+
+  function champsParamsHtml(modName) {
+    return MODULE_PARAMS[modName].map(c => {
+      const id = `param-${modName}-${c.param}`;
+      const saisie = c.type === 'select'
+        ? `<select id="${id}">${c.options.map((o, i) =>
+             `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
+        : `<input type="text" class="field-required" id="${id}" placeholder="${c.placeholder || ''}">`;
+      return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
+    }).join('');
+  }
+
   function filterCategory(categoryKey, tabEl) {
     document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
     (tabEl || document.querySelector(`.subtab.${categoryKey}`)).classList.add('active');
@@ -2249,7 +2287,9 @@
             </div>
             <button onclick="addModuleToCart('${mod.name}', this)">Ajouter (9€)</button>
           </div>
-          <input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">
+          ${MODULE_PARAMS[mod.name]
+              ? champsParamsHtml(mod.name)
+              : `<input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">`}
         `;
       }
       container.appendChild(item);
@@ -2257,6 +2297,42 @@
   }
 
   function addModuleToCart(modName, btnEl) {
+    // Modules a plusieurs champs (ex: Eclairage) : on les collecte, on
+    // signale le premier champ obligatoire laisse vide, et on les range dans
+    // `params` — ce sont eux qui deviendront les variables du runner.
+    if (MODULE_PARAMS[modName]) {
+      const params = {};
+      for (const c of MODULE_PARAMS[modName]) {
+        const el = document.getElementById(`param-${modName}-${c.param}`);
+        const valeur = el ? el.value.trim() : '';
+        if (c.required && !valeur) {
+          el.classList.remove('input-error');
+          void el.offsetWidth;          // relance l'animation si deja jouee
+          el.classList.add('input-error');
+          el.focus();
+          return;
+        }
+        params[c.param] = valeur;
+      }
+      cart.push({
+        key: modName,
+        name: moduleTitle(modName),
+        entity: MODULE_PARAMS[modName]
+          .filter(c => c.type !== 'select')
+          .map(c => params[c.param]).join(' — '),
+        raw: '',
+        params: params,
+        price: 9
+      });
+      flyToCart(btnEl.closest('.module-item'));
+      updateCartUI();
+      MODULE_PARAMS[modName].forEach(c => {
+        const el = document.getElementById(`param-${modName}-${c.param}`);
+        if (el && el.tagName === 'INPUT') { el.value = ''; el.classList.remove('input-error'); }
+      });
+      return;
+    }
+
     const media = MODULE_MEDIA[modName];
     const fieldEl = document.getElementById(`input-${modName}`);
     let entityVal;
@@ -2607,7 +2683,7 @@
   }
 
   /* ---------- Dialogue avec le Worker ---------- */
-  async function createJob(creds, modules) {
+  async function createJob(creds, modules, params) {
     const res = await fetch(BACKEND_URL.replace(/\/+$/, '') + '/api/jobs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2615,7 +2691,11 @@
         ha_url: creds.url,
         ha_token: creds.token,
         modules: modules,
-        lang: document.documentElement.getAttribute('lang') || 'fr'
+        lang: document.documentElement.getAttribute('lang') || 'fr',
+        // Paramètres réclamés par certains modules (pièce, entité, thème…).
+        // Le Worker les range avec les identifiants chiffrés, et le runner
+        // les relit dans son environnement.
+        params: params || {}
       })
     });
 
@@ -2651,12 +2731,12 @@
   }
 
   async function submitDeployment(opts) {
-    const { creds, modules, boxId, closeBtnId } = opts;
+    const { creds, modules, params, boxId, closeBtnId } = opts;
     const log = (kind, text) => logLine(boxId, kind, text);
 
     let courante = log('run', 'Envoi de la demande au serveur de déploiement…');
     try {
-      const jobId = await createJob(creds, modules);
+      const jobId = await createJob(creds, modules, params);
       replaceLine(courante, 'ok', `Demande acceptée — ${modules.length} module(s) en file d'attente.`);
 
       courante = log('run', 'Déploiement en cours sur votre instance…');
@@ -2738,9 +2818,15 @@
       return;
     }
 
+    // Fusion des parametres des modules du panier. Aujourd'hui seul
+    // Eclairage en reclame ; en cas de collision de nom, le dernier ajoute
+    // l'emporte, ce que l'ordre du panier rend previsible.
+    const params = Object.assign({}, ...deployables.map(item => item.params || {}));
+
     await submitDeployment({
       creds: { url: parsed.url, token: checkoutCreds.token },
       modules: deployables.map(item => SERVER_MODULES[item.key]),
+      params: params,
       boxId: 'cart-deploy-log',
       closeBtnId: 'cart-deploy-close'
     });
