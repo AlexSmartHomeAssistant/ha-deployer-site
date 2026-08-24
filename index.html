@@ -22,16 +22,29 @@
       --radius: 12px;
 
       /* Couleurs des catégories */
-      --col-lumiere: #F8C471;
+      --col-lumiere: #FBDCA8;
       --col-ouverture: #E4E7EB;
       --col-chauffage: #EF8377;
       --col-securite: #C888BA;
       --col-appareil: #5BC98A;
-      --col-service: #A6AEB9;
+      --col-service: #CBD2DB;
       --col-eau: #6FBBEC;
       --col-interface: #C08A5C;
+      /* « Configuration » n'a plus de pastille claire : sa couleur doit donc
+         tenir seule sur le fond du thème, d'où une teinte propre à chacun. */
+      --col-configuration: #E4E7EB;
       --col-gold: #F8C471;
       --col-required: #EF8377;
+
+      /* Couleur unique de VALIDATION (ajout au panier, total, confirmation,
+         étapes réussies du déploiement). Volontairement identique dans les
+         deux thèmes : c'est le repère visuel commun à tous les modules, et
+         il doit se reconnaître au premier coup d'œil quel que soit le thème.
+         Le texte posé dessus est sombre — du blanc sur ce jaune serait
+         illisible, contrairement au vert qu'il remplace. */
+      --col-valide: #F8C471;
+      --col-valide-texte: #1a1206;
+      --col-valide-halo: rgba(248, 196, 113, 0.22);
 
       /* Dégradé métallique du titre d'accueil. Il vit sur le fond des cartes
          (clair ou sombre selon le thème) : deux nuances sont nécessaires,
@@ -66,16 +79,20 @@
       --text-main: #14171c;
       --text-muted: #5d646e;
 
-      --col-lumiere: #B7791F;
+      --col-lumiere: #D69E2E;
       --col-ouverture: #4A5058;
       --col-chauffage: #C0392B;
       --col-securite: #9B4F8E;
       --col-appareil: #2E8B57;
-      --col-service: #5d646e;
+      --col-service: #78818D;
       --col-eau: #1F6FA5;
       --col-interface: #8B5E3C;
+      --col-configuration: #14171c;
       --col-gold: #B7791F;
       --col-required: #C0392B;
+
+      /* Volontairement non redéfinies : la validation garde le même jaune
+         dans les deux thèmes (voir --col-valide dans :root). */
 
       /* Bronze soutenu : sur une carte claire, l'or pâle du thème sombre
          passerait sous le seuil de lisibilité. */
@@ -270,14 +287,14 @@
     }
 
     .nav-cart:hover {
-      border-color: var(--accent-green);
-      background: rgba(82, 190, 128, 0.14);
-      box-shadow: 0 2px 12px rgba(82, 190, 128, 0.22);
+      border-color: var(--col-valide);
+      background: var(--col-valide-halo);
+      box-shadow: 0 2px 12px var(--col-valide-halo);
     }
 
     .nav-cart-badge {
-      background: #F8C471;
-      color: #1a1206;
+      background: var(--col-valide);
+      color: var(--col-valide-texte);
       border-radius: 999px;
       min-width: 22px;
       height: 22px;
@@ -293,7 +310,7 @@
     }
 
     .nav-cart-total {
-      color: var(--accent-green);
+      color: var(--col-valide);
     }
 
     /* BOUTON DE BASCULE CLAIR / SOMBRE */
@@ -809,33 +826,28 @@
     .subtab.securite { color: var(--col-securite); }
     .subtab.service { color: var(--col-service); }
 
-    /* « Configuration » : demandée en noir. Du noir sur le thème sombre serait
-       illisible, on le pose donc sur une pastille claire — la couleur reste
-       franchement noire, et le contraste tient dans les deux thèmes. */
-    .subtab.configuration {
-      color: #14171c;
-      background-color: rgba(255, 255, 255, 0.88);
-      border-radius: 6px 6px 0 0;
-    }
-    .subtab.configuration:hover,
-    .subtab.configuration.active {
-      background-color: #ffffff;
-      border-bottom-color: #14171c;
-    }
+    /* « Configuration » : fond transparent comme les autres catégories. Le
+       noir demandé à l'origine ne tenait que sur la pastille claire qui vient
+       d'être retirée ; on garde donc le noir sur le thème clair, et son
+       équivalent lisible sur le thème sombre (cf. --col-configuration). */
+    .subtab.configuration { color: var(--col-configuration); }
 
-    /* Catégories multicolores (Service, Automatisme) : le dégradé est appliqué
-       au TEXTE via background-clip, ce qui impose `color: transparent`. La
+    /* Catégorie multicolore (« Automatisme ») : le dégradé est appliqué au
+       TEXTE via background-clip, ce qui impose `color: transparent`. La
        bordure de l'onglet actif ne peut donc pas suivre `currentColor` (elle
        serait invisible) : on lui donne une teinte explicite. */
     .subtab.multicolore {
-      /* Quatre bandes franches plutôt qu'un fondu : sur un mot court, un
-         dégradé continu ne laisse voir que sa portion centrale et les quatre
-         couleurs ne se lisent plus. */
+      /* Six bandes franches plutôt qu'un fondu : sur un mot court, un dégradé
+         continu ne laisse voir que sa portion centrale et les six couleurs ne
+         se lisent plus. Chaque teinte occupe donc un sixième de la largeur du
+         mot, avec un court fondu pour éviter la marche d'escalier. */
       background-image: linear-gradient(90deg,
-        #E74C3C 0%,  #E74C3C 21%,
-        #2ECC71 29%, #2ECC71 46%,
-        #3498DB 54%, #3498DB 71%,
-        #F1C40F 79%, #F1C40F 100%);
+        #FFFFFF 0%,  #FFFFFF 13%,
+        #F8C471 20%, #F8C471 30%,
+        #EC7063 37%, #EC7063 46%,
+        #5DADE2 54%, #5DADE2 63%,
+        #52BE80 70%, #52BE80 80%,
+        #BF71B2 87%, #BF71B2 100%);
       /* Sans cela, le dégradé se cale sur la boîte de padding : les 14 px de
          marge latérale absorbent le rouge et le jaune, et l'onglet paraît
          simplement vert. On le cale donc sur le contenu, c'est-à-dire le mot. */
@@ -846,7 +858,7 @@
     }
     .subtab.multicolore:hover,
     .subtab.multicolore.active {
-      border-bottom-color: #3498DB;
+      border-bottom-color: #5DADE2;
     }
 
     /* Mise en évidence au survol, identique aux onglets du bandeau.
@@ -958,9 +970,9 @@
     .field-optional { border-color: var(--col-gold) !important; }
 
     .module-item button {
-      background: var(--accent-green);
+      background: var(--col-valide);
       border: none;
-      color: white;
+      color: var(--col-valide-texte);
       padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
@@ -1007,9 +1019,9 @@
     }
 
     .btn-add-big {
-      background: var(--accent-green);
+      background: var(--col-valide);
       border: none;
-      color: white;
+      color: var(--col-valide-texte);
       padding: 14px;
       border-radius: 8px;
       cursor: pointer;
@@ -1044,7 +1056,7 @@
     .deploy-log .line { display: flex; gap: 8px; align-items: flex-start; }
     .deploy-log .line + .line { margin-top: 3px; }
     .deploy-log .line i { width: 14px; text-align: center; flex-shrink: 0; margin-top: 2px; }
-    .deploy-log .ok   { color: var(--accent-green); }
+    .deploy-log .ok   { color: var(--col-valide); }
     .deploy-log .err  { color: var(--col-required); }
     .deploy-log .warn { color: var(--col-gold); }
     .deploy-log .run  { color: var(--text-muted); }
@@ -1053,13 +1065,13 @@
     .cart-total {
       font-size: 1.1rem;
       font-weight: bold;
-      color: var(--accent-green);
+      color: var(--col-valide);
     }
 
     .btn-pay {
-      background: var(--accent-green);
+      background: var(--col-valide);
       border: none;
-      color: white;
+      color: var(--col-valide-texte);
       padding: 14px;
       border-radius: 6px;
       font-size: 1.05rem;
@@ -1080,7 +1092,7 @@
 
     @keyframes priceFlash {
       0% { color: var(--text-main); }
-      100% { color: var(--accent-green); }
+      100% { color: var(--col-valide); }
     }
 
     .price-flash { animation: priceFlash 0.5s ease; }
@@ -1103,8 +1115,8 @@
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      background: var(--accent-green);
-      color: #fff;
+      background: var(--col-valide);
+      color: var(--col-valide-texte);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1113,6 +1125,75 @@
       pointer-events: none;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       transition: transform 0.7s cubic-bezier(.2, .8, .2, 1), opacity 0.7s ease;
+    }
+
+    /* BANDEAU DE STATUT — ancré en bas de l'écran pendant un déploiement.
+
+       Le journal défile avec la page (et, dans le panier, avec la modale).
+       À l'étape de redémarrage de Home Assistant, qui dure plusieurs
+       minutes, un visiteur qui a fait défiler la page n'avait plus aucun
+       retour et pouvait croire à un blocage. Ce bandeau reprend l'étape en
+       cours et reste visible quoi qu'il arrive.
+
+       z-index supérieur à celui de la modale (4000) : le déploiement du
+       panier se déroule dans la modale, le bandeau doit rester au-dessus. */
+    .deploy-sticky {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translate(-50%, 120%);
+      width: calc(100% - 24px);
+      max-width: 560px;
+      z-index: 4500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: var(--modal-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      /* `visibility` en plus de la translation : sans elle le bandeau reste
+         cliquable hors de l'écran et intercepte les clics en bas de page. */
+      visibility: hidden;
+      transition: transform 0.35s cubic-bezier(.2, .8, .2, 1), visibility 0.35s;
+    }
+
+    .deploy-sticky.visible {
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+
+    .deploy-sticky i {
+      flex-shrink: 0;
+      font-size: 0.95rem;
+    }
+
+    /* Le libellé peut être long (« Déploiement en cours… ») : une seule ligne,
+       tronquée proprement, plutôt qu'un bandeau qui grandit et masque la page. */
+    .deploy-sticky span {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .deploy-sticky.run  i { color: var(--text-muted); }
+    .deploy-sticky.ok   i { color: var(--col-valide); }
+    .deploy-sticky.err  i { color: var(--col-required); }
+    .deploy-sticky.warn i { color: var(--col-gold); }
+
+    .deploy-sticky.run  { border-color: var(--card-border); }
+    .deploy-sticky.ok   { border-color: var(--col-valide); }
+    .deploy-sticky.err  { border-color: var(--col-required); }
+
+    @media (max-width: 600px) {
+      .deploy-sticky { font-size: 0.76rem; padding: 10px 14px; }
     }
 
     /* MODALE DE CONTENU DU PANIER */
@@ -1180,7 +1261,7 @@
     }
 
     .cart-modal-item .entity {
-      color: var(--accent-green);
+      color: var(--col-valide);
       font-size: 0.78rem;
       margin-top: 2px;
       display: block;
@@ -1736,7 +1817,7 @@
       <div class="subtabs" id="category-subtabs">
         <button class="subtab configuration" onclick="filterCategory('configuration', this)">Configuration</button>
         <button class="subtab interface active" onclick="filterCategory('interface', this)">Interface</button>
-        <button class="subtab service multicolore" onclick="filterCategory('service', this)">Service</button>
+        <button class="subtab service" onclick="filterCategory('service', this)">Service</button>
         <button class="subtab ouverture" onclick="filterCategory('ouverture', this)">Ouverture</button>
         <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Éclairage</button>
         <button class="subtab chauffage" onclick="filterCategory('chauffage', this)">Chauffage</button>
@@ -1969,6 +2050,12 @@
   </footer>
 
   <!-- MODALE : PANIER (liste → connexion HA → paiement) -->
+  <!-- Reprise permanente de l'étape en cours, visible quel que soit le défilement -->
+  <div class="deploy-sticky" id="deploy-sticky" onclick="revenirAuJournal()" title="Revenir au journal de déploiement">
+    <i class="fa-solid fa-spinner fa-spin"></i>
+    <span id="deploy-sticky-text"></span>
+  </div>
+
   <div class="modal-overlay" id="cart-modal-overlay" onclick="closeCartModalOverlay(event)">
     <div class="modal-box">
       <div class="modal-header">
@@ -2419,7 +2506,7 @@
 
     const clone = document.createElement('div');
     clone.className = 'flying-clone';
-    clone.innerHTML = '<i class="fa-solid fa-box"></i>';
+    clone.innerHTML = '<i class="fa-solid fa-lightbulb"></i>';
     clone.style.left = `${startRect.left + startRect.width / 2 - 17}px`;
     clone.style.top = `${startRect.top + startRect.height / 2 - 17}px`;
     document.body.appendChild(clone);
@@ -2497,7 +2584,7 @@
       ${modulesHtml}
       <div class="modal-footer">
         <div class="cart-total" style="margin-bottom: 10px;">Total : ${cartTotal()} €</div>
-        <button class="btn-pay" onclick="goToCartCheckoutStep()" ${disabled}>Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
+        <button class="btn-pay" onclick="goToCartCheckoutStep()" ${disabled}><i class="fa-solid fa-lightbulb"></i> Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
       </div>
     `;
   }
@@ -2531,7 +2618,7 @@
         <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">
           ${cart.map(item => `<div>${item.name} : ${item.price} €</div>`).join('')}
         </div>
-        <button class="btn-pay" onclick="confirmPayment()">Confirmer et payer</button>
+        <button class="btn-pay" onclick="confirmPayment()"><i class="fa-solid fa-lightbulb"></i> Confirmer et payer</button>
       </div>
     `;
   }
@@ -2678,8 +2765,12 @@
   };
 
   /* ---------- Journal de progression ---------- */
+  /* L'ampoule jaune est le repere de validation commun a tous les modules :
+     meme icone et meme couleur du bouton d'ajout jusqu'a la derniere etape
+     du deploiement. L'erreur et l'avertissement gardent leurs teintes, qui
+     doivent au contraire trancher. */
   const LOG_ICONS = {
-    ok: 'fa-circle-check', err: 'fa-circle-xmark',
+    ok: 'fa-lightbulb', err: 'fa-circle-xmark',
     warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin'
   };
 
@@ -2692,6 +2783,9 @@
     div.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+    // Une étape « en cours » prend la main sur le bandeau du bas : c'est elle
+    // que le visiteur doit pouvoir suivre même après avoir fait défiler.
+    if (kind === 'run') mirrorSticky(div, boxId, kind, text);
     return div;
   }
 
@@ -2699,6 +2793,57 @@
     if (!el) return;
     el.className = 'line ' + kind;
     el.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
+    // La ligne reflétée vient de changer d'état (réussie, en échec…) :
+    // le bandeau suit, sans quoi il afficherait une étape déjà terminée.
+    if (el === stickyLine) renderSticky(kind, text);
+  }
+
+  /* ---------- Bandeau de statut, ancré en bas de l'écran ----------------
+     Le journal de déploiement défile avec la page — et, pour le panier, avec
+     la modale. Pendant le redémarrage de Home Assistant, qui dure plusieurs
+     minutes, un visiteur ayant fait défiler la page n'avait plus aucun retour
+     et pouvait croire à un blocage. Le bandeau reprend donc l'étape en cours.
+
+     Il n'est qu'un MIROIR : le journal reste la source de vérité. On retient
+     la ligne reflétée pour que replaceLine() les mette à jour ensemble. */
+  let stickyLine = null;     // ligne du journal actuellement reflétée
+  let stickyBoxId = null;    // journal vers lequel renvoie un clic
+  let stickyTimer = null;
+
+  function mirrorSticky(ligne, boxId, kind, text) {
+    stickyLine = ligne;
+    stickyBoxId = boxId;
+    renderSticky(kind, text);
+  }
+
+  function renderSticky(kind, text) {
+    const bar = document.getElementById('deploy-sticky');
+    if (!bar) return;
+    clearTimeout(stickyTimer);
+    bar.className = 'deploy-sticky visible ' + kind;
+    bar.querySelector('i').className = 'fa-solid ' + LOG_ICONS[kind];
+    // textContent : certains messages portent un lien, qui n'aurait pas de
+    // sens ici (le bandeau entier est déjà cliquable).
+    document.getElementById('deploy-sticky-text').textContent =
+      String(text).replace(/<[^>]*>/g, '');
+  }
+
+  /* Masquage différé : l'issue du déploiement doit rester lisible un instant
+     avant que le bandeau ne se retire. */
+  function hideSticky(delaiMs) {
+    const bar = document.getElementById('deploy-sticky');
+    if (!bar) return;
+    clearTimeout(stickyTimer);
+    stickyTimer = setTimeout(() => {
+      bar.classList.remove('visible');
+      stickyLine = null;
+      stickyBoxId = null;
+    }, delaiMs || 0);
+  }
+
+  function revenirAuJournal() {
+    const box = stickyBoxId && document.getElementById(stickyBoxId);
+    if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   /* ---------- Validation de l'adresse saisie ----------
@@ -2805,10 +2950,196 @@
     } finally {
       const btn = closeBtnId && document.getElementById(closeBtnId);
       if (btn) btn.disabled = false;
+      hideSticky(8000);
     }
   }
 
-  /* ---------- Test gratuit ---------- */
+  /* =====================================================================
+     TEST GRATUIT — déployé par le NAVIGATEUR, sans passer par le serveur
+
+     Les modules payants restent confiés au runner GitHub Actions (bloc
+     ci-dessus) : c'est là que se décide le droit de déployer, et là que
+     vivent les traitements qu'un navigateur ne sait pas faire.
+
+     Le test gratuit, lui, n'a besoin d'aucun de ces traitements : sa vue
+     est une carte entièrement statique — aucune entité à découvrir, aucun
+     configuration.yaml à écrire, aucun redémarrage à attendre. Le faire
+     passer par le runner coûtait une à deux minutes d'attente au visiteur,
+     et autant de minutes de quota mensuel sur le dépôt privé, pour un
+     travail que la page fait elle-même en quelques secondes.
+
+     L'injection passe par l'API WebSocket de Home Assistant, et non par
+     l'API REST : les WebSockets ne sont pas soumis au CORS, alors qu'un
+     appel REST depuis cette origine serait refusé par le navigateur tant
+     que l'instance ne déclare pas ce domaine dans `cors_allowed_origins`.
+     ===================================================================== */
+
+  const TEST_DASHBOARD = 'accueil-modules';
+  const TEST_VIEW_PATH = 'test-gratuit';
+  const TEST_VIEW_TITLE = 'Test Gratuit';
+  const TEST_VIEW_ICON = 'mdi:gift-outline';
+
+  /* Ressource Lovelace -> dépôt HACS. Le couple est obligatoire : une URL
+     inscrite dans lovelace/resources ne prouve PAS que le plugin soit
+     installé — une entrée orpheline fait échouer toutes les cartes en
+     silence, sur un « Erreur de configuration » sans explication. */
+  const TEST_RESOURCES = {
+    'card-mod': '/hacsfiles/lovelace-card-mod/card-mod.js',
+    'mushroom': '/hacsfiles/lovelace-mushroom/mushroom.js',
+    'swipe-card': '/hacsfiles/swipe-card/swipe-card.js',
+    'stack-in-card': '/hacsfiles/stack-in-card/stack-in-card.js'
+  };
+
+  const TEST_HACS_REPOS = {
+    'card-mod': 'thomasloven/lovelace-card-mod',
+    'mushroom': 'piitaya/lovelace-mushroom',
+    'swipe-card': 'bramkragten/swipe-card',
+    'stack-in-card': 'custom-cards/stack-in-card'
+  };
+
+  /* Fond commun des 7 volets. Un navigateur ne peut pas le déposer dans
+     /config/www : l'add-on « File editor » ne s'atteint qu'en REST, et
+     Home Assistant ne renvoie pas d'en-tête CORS pour cette origine. On
+     regarde donc s'il est déjà là — un déploiement serveur antérieur a pu
+     l'y mettre — et, sinon, on retombe sur un dégradé de même facture :
+     panneau sombre éclairé au centre, coins assombris. */
+  const TEST_FOND = '/local/images/sombre-texture.png';
+  const TEST_FOND_REPLI =
+    'radial-gradient(ellipse at 50% 42%, #454545 0%, #363636 38%, #232323 72%, #131313 100%)';
+
+  /* --- CARTE-TEST-GRATUIT (début) -------------------------------------
+     Généré depuis templates/test_gratuit/dashboard_test_gratuit.yaml.
+     NE PAS MODIFIER À LA MAIN : éditer le YAML, puis relancer
+         python build_site.py
+     C'est le fichier que déploie aussi le runner : les deux parcours
+     produisent donc exactement la même vue. */
+  const TEST_CARD = {"type":"custom:mod-card","card_mod":{"style":"/* Rendu identique sur téléphone, tablette et PC */\nha-card {\n  width: 100% !important;\n  max-width: 400px !important;\n  margin: 0 auto !important;\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n}\n"},"card":{"type":"vertical-stack","cards":[{"type":"custom:mod-card","card":{"type":"custom:mushroom-title-card","title":"Test Gratuit","alignment":"center"},"card_mod":{"style":{"mushroom-title-card$":".title {\n  --primary-text-color: #FFFFFF;\n  font-size: 15px !important;\n  letter-spacing: 1px !important;\n}\n.header {\n  padding: 8px 0px !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n}\n"}}},{"type":"custom:swipe-card","parameters":{"pagination":{"type":"bullets"}},"card_mod":{"style":"/* Le bandeau de pagination est un calque pleine largeur en z-index 10 :\n   sans ceci il absorbe les clics des éléments situés en bas de carte. */\n.swiper-pagination {\n  pointer-events: none !important;\n} .swiper-pagination-bullet {\n  background: #000000 !important;\n  opacity: 0.7 !important;\n} .swiper-pagination-bullet-active {\n  background: #FFFFFF !important;\n  opacity: 1 !important;\n}\n"},"cards":[{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #FFFFFF;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 50px;\n  left: 50%;\n  width: 0px;\n  height: 120px;\n  margin-left: 0px;\n  border-left: 2px solid rgba(255,255,255,0.6);\n  border-right: 2px solid rgba(255,255,255,0.6);\n  background: rgba(255,255,255,0.05);\n  animation: open-effect 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;\n  pointer-events: none;\n}\n@keyframes open-effect {\n  0% { width: 0px; margin-left: 0px; opacity: 0; }\n  10% { width: 0px; margin-left: 0px; opacity: 1; }\n  70% { width: 220px; margin-left: -110px; opacity: 0; }\n  100% { width: 220px; margin-left: -110px; opacity: 0; }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:garage-open-variant","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #FFFFFF !important;\n  --shape-color: transparent !important;\n  animation: ico1 2.8s ease-in-out infinite;\n}\n@keyframes ico1 {\n  0%, 100% { transform: translateY(6px);  opacity: 0.75; }\n  50%      { transform: translateY(-8px); opacity: 1; }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">OUVERTURE</p>\n<p class=\"s\">Portes de garage, volets roulants et fenêtres — état, position et commande temporisée.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #FFFFFF;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #FFFFFF, transparent);\n  animation: bar1 3s ease-in-out infinite;\n}\n@keyframes bar1 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #F8C471;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 30px; \n  left: 50%;\n  width: 240px;\n  height: 200px;\n  margin-left: -120px;\n  background: linear-gradient(to bottom, rgba(248,196,113,0.4) 0%, rgba(248,196,113,0) 80%);\n  clip-path: polygon(48% 0, 52% 0, 70% 100%, 30% 100%);\n  animation: beam-effect 3.2s ease-in-out infinite;\n  pointer-events: none;\n}\n@keyframes beam-effect {\n  0%, 100% { opacity: 0.3; clip-path: polygon(48% 0, 52% 0, 60% 100%, 40% 100%); }\n  50%      { opacity: 0.9; clip-path: polygon(45% 0, 55% 0, 85% 100%, 15% 100%); }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:lightbulb-on-outline","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #F8C471 !important;\n  --shape-color: transparent !important;\n  animation: ico2 3.2s ease-in-out infinite;\n}\n@keyframes ico2 {\n  0%, 100% { filter: drop-shadow(0 0 3px  rgba(248,196,113,0.5)); transform: scale(0.96); }\n  50%      { filter: drop-shadow(0 0 22px rgba(248,196,113,1));   transform: scale(1.06); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">LUMIÈRE</p>\n<p class=\"s\">Intensité, température de blanc, couleurs et effets dynamiques, minuterie d'extinction.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #F8C471;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #F8C471, transparent);\n  animation: bar2 3s ease-in-out infinite;\n}\n@keyframes bar2 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #EC7063;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 30px;\n  left: 50%;\n  width: 190px;\n  height: 190px;\n  margin-left: -95px;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(236,112,99,0.30) 0%, rgba(236,112,99,0) 68%);\n  animation: halo3 2.6s ease-in-out infinite;\n  pointer-events: none;\n}\n@keyframes halo3 {\n  0%, 100% { transform: scale(0.85); opacity: 0.4; }\n  50%      { transform: scale(1.12); opacity: 0.95; }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:fire","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #EC7063 !important;\n  --shape-color: transparent !important;\n  animation: ico3 1.5s ease-in-out infinite;\n  transform-origin: 50% 85%;\n}\n@keyframes ico3 {\n  0%, 100% { transform: scale(1)    rotate(-2.5deg); filter: drop-shadow(0 0 6px  rgba(236,112,99,0.6)); }\n  25%      { transform: scale(1.08) rotate(2.5deg);  filter: drop-shadow(0 0 16px rgba(236,112,99,0.9)); }\n  50%      { transform: scale(0.95) rotate(-1.5deg); filter: drop-shadow(0 0 8px  rgba(236,112,99,0.7)); }\n  75%      { transform: scale(1.05) rotate(1.5deg);  filter: drop-shadow(0 0 14px rgba(236,112,99,0.9)); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">CHAUFFAGE</p>\n<p class=\"s\">Thermostats, consignes et dérogations temporaires, suivi de la consommation.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #EC7063;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #EC7063, transparent);\n  animation: bar3 3s ease-in-out infinite;\n}\n@keyframes bar3 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #3575DC;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 65px;\n  left: 50%;\n  width: 130px;\n  height: 130px;\n  margin-left: -65px;\n  border-radius: 50%;\n  border: 2px solid rgba(53,117,220,0.55);\n  animation: halo4 2.8s ease-out infinite;\n  pointer-events: none;\n}\n@keyframes halo4 {\n  0%   { transform: scale(0.35); opacity: 0.9; }\n  100% { transform: scale(1.35); opacity: 0; }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:water","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #3575DC !important;\n  --shape-color: transparent !important;\n  animation: ico4 2.8s cubic-bezier(.5,0,.5,1) infinite;\n}\n@keyframes ico4 {\n  0%       { transform: translateY(-14px) scaleY(1.06); }\n  55%      { transform: translateY(8px)   scaleY(0.90); }\n  70%      { transform: translateY(2px)   scaleY(1.04); }\n  100%     { transform: translateY(-14px) scaleY(1.06); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">EAU</p>\n<p class=\"s\">Détection de fuite, vanne d'arrêt automatique, compteur et arrosage du jardin.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #3575DC;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #3575DC, transparent);\n  animation: bar4 3s ease-in-out infinite;\n}\n@keyframes bar4 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #52BE80;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 40px;\n  left: 50%;\n  width: 166px;\n  height: 166px;\n  margin-left: -83px;\n  border-radius: 50%;\n  border: 2px dashed rgba(82,190,128,0.45);\n  animation: halo5 9s linear infinite;\n  pointer-events: none;\n}\n@keyframes halo5 {\n  from { transform: rotate(0deg); }\n  to   { transform: rotate(360deg); }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:washing-machine","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #52BE80 !important;\n  --shape-color: transparent !important;\n  animation: ico5 3.4s ease-in-out infinite;\n}\n@keyframes ico5 {\n  0%, 100% { transform: rotate(-9deg); }\n  50%      { transform: rotate(9deg); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">APPAREIL</p>\n<p class=\"s\">Électroménager, multimédia, robots et consommation électrique en temps réel.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #52BE80;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #52BE80, transparent);\n  animation: bar5 3s ease-in-out infinite;\n}\n@keyframes bar5 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #BE3FA9;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 50px;\n  left: 50%;\n  width: 148px;\n  height: 148px;\n  margin-left: -74px;\n  border-radius: 50%;\n  background: conic-gradient(from 0deg, rgba(190,63,169,0.45), rgba(190,63,169,0) 55%);\n  animation: halo6 3.6s linear infinite;\n  pointer-events: none;\n}\n@keyframes halo6 {\n  from { transform: rotate(0deg); }\n  to   { transform: rotate(360deg); }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:shield-home","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #BE3FA9 !important;\n  --shape-color: transparent !important;\n  animation: ico6 2.4s ease-in-out infinite;\n}\n@keyframes ico6 {\n  0%, 100% { transform: scale(0.97); filter: drop-shadow(0 0 4px  rgba(190,63,169,0.5)); }\n  50%      { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(190,63,169,1)); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">SÉCURITÉ</p>\n<p class=\"s\">Alarme, caméras, boîte aux lettres et détection de vibration sur les ouvrants.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #BE3FA9;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #BE3FA9, transparent);\n  animation: bar6 3s ease-in-out infinite;\n}\n@keyframes bar6 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]},{"type":"custom:stack-in-card","card_mod":{"style":"ha-card {\n  padding-top: 150px !important;\n  padding-bottom: 20px !important;\n  border: 2px solid #808080;\n  height: 400px !important;\n  background-image: url(\"/local/images/sombre-texture.png\") !important;\n  background-size: cover !important;\n  background-repeat: no-repeat !important;\n  position: relative;\n  overflow: hidden;\n}\nha-card::before {\n  content: \"\";\n  position: absolute;\n  top: 45px;\n  left: 50%;\n  width: 160px;\n  height: 160px;\n  margin-left: -80px;\n  border-radius: 50%;\n  border: 2px dotted rgba(128,128,128,0.5);\n  animation: halo7 12s linear infinite;\n  pointer-events: none;\n}\n@keyframes halo7 {\n  from { transform: rotate(0deg); }\n  to   { transform: rotate(-360deg); }\n}\n"},"cards":[{"type":"custom:mushroom-template-card","primary":"","secondary":"","icon":"mdi:cog-sync","layout":"vertical","tap_action":{"action":"none"},"card_mod":{"style":{"mushroom-shape-icon$":".shape {\n  background: transparent !important;\n  box-shadow: none !important;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding-top: 0px !important;\n}\nmushroom-shape-icon {\n  --icon-size: 124px;\n  --icon-color: #808080 !important;\n  --shape-color: transparent !important;\n  animation: ico7 6s linear infinite;\n}\n@keyframes ico7 {\n  from { transform: rotate(0deg); }\n  to   { transform: rotate(360deg); }\n}\n"}}},{"type":"markdown","content":"<p class=\"t\">SERVICES</p>\n<p class=\"s\">Météo, horloge, calendrier, présence, transports en commun et gestion des déchets.</p>","card_mod":{"style":{"ha-markdown$":".t {\n  text-align: center;\n  color: #808080;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: 3px;\n  margin: 0 0 6px 0;\n}\n.s {\n  text-align: center;\n  color: #B9BEC6;\n  font-size: 11px;\n  line-height: 1.4;\n  margin: 0;\n}\n",".":"ha-card {\n  background: none !important;\n  border: none !important;\n  box-shadow: none !important;\n  padding: 0 22px !important;\n}\nha-card::after {\n  content: \"\";\n  display: block;\n  height: 2px;\n  margin: 10px auto 0 auto;\n  border-radius: 2px;\n  background: linear-gradient(90deg, transparent, #808080, transparent);\n  animation: bar7 3s ease-in-out infinite;\n}\n@keyframes bar7 {\n  0%, 100% { width: 60px;  opacity: 0.4; }\n  50%      { width: 190px; opacity: 1; }\n}\n"}}}]}]}]}};
+  /* --- CARTE-TEST-GRATUIT (fin) --------------------------------------- */
+
+  /* ---------- Adresse de l'instance, vue du navigateur ----------
+     Contrairement au déploiement serveur, une adresse de réseau local est
+     ici parfaitement joignable — à condition que le navigateur accepte de
+     s'y connecter. Ce qui l'en empêche, c'est le contenu mixte : cette page
+     est servie en HTTPS, elle ne peut pas ouvrir une WebSocket en clair. */
+  function checkInstanceUrlNavigateur(raw) {
+    let u;
+    try { u = new URL(String(raw).trim()); }
+    catch (e) { return { error: "L'adresse saisie n'est pas une URL valide (attendu : https://…)." }; }
+
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') {
+      return { error: "L'adresse doit commencer par http:// ou https://." };
+    }
+    if (typeof location !== 'undefined' && location.protocol === 'https:' && u.protocol === 'http:') {
+      return { error: "Cette page est en HTTPS : votre navigateur bloque toute connexion vers une instance en HTTP. Utilisez une adresse https:// (Nabu Casa, Cloudflare Tunnel, ou DuckDNS avec certificat)." };
+    }
+    const proto = u.protocol === 'https:' ? 'wss:' : 'ws:';
+    const chemin = u.pathname.replace(/\/+$/, '');
+    return { origine: u.origin + chemin, ws: proto + '//' + u.host + chemin + '/api/websocket' };
+  }
+
+  /* ---------- Connexion WebSocket authentifiée ---------- */
+  function haConnect(wsUrl, token) {
+    return new Promise((resolve, reject) => {
+      let ws;
+      try { ws = new WebSocket(wsUrl); } catch (e) { return reject(new Error('Connexion impossible.')); }
+
+      const etat = { id: 1, attente: {} };
+      const minuteur = setTimeout(() => {
+        try { ws.close(); } catch (e) {}
+        reject(new Error("Délai dépassé. Vérifiez que l'adresse est joignable et que son certificat est accepté par votre navigateur."));
+      }, 15000);
+
+      ws.onerror = () => {
+        clearTimeout(minuteur);
+        reject(new Error("Connexion refusée. Si votre instance utilise un certificat auto-signé, ouvrez d'abord son adresse dans un onglet pour l'accepter, puis réessayez."));
+      };
+
+      // Aucune réponse ne viendra après la fermeture : sans ceci, un appel
+      // en cours resterait en attente indéfiniment.
+      ws.onclose = () => {
+        Object.keys(etat.attente).forEach(id => etat.attente[id].reject(new Error('Connexion fermée.')));
+        etat.attente = {};
+      };
+
+      ws.onmessage = (evt) => {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'auth_required') {
+          ws.send(JSON.stringify({ type: 'auth', access_token: token }));
+          return;
+        }
+        if (msg.type === 'auth_invalid') {
+          clearTimeout(minuteur);
+          try { ws.close(); } catch (e) {}
+          reject(new Error("Jeton refusé. Générez un nouveau jeton d'accès longue durée puis réessayez."));
+          return;
+        }
+        if (msg.type === 'auth_ok') {
+          clearTimeout(minuteur);
+          resolve({
+            call: (charge) => new Promise((res, rej) => {
+              const id = etat.id++;
+              etat.attente[id] = { resolve: res, reject: rej };
+              ws.send(JSON.stringify(Object.assign({}, charge, { id: id })));
+            }),
+            close: () => { try { ws.close(); } catch (e) {} }
+          });
+          return;
+        }
+        if (msg.id && etat.attente[msg.id]) {
+          etat.attente[msg.id].resolve(msg);
+          delete etat.attente[msg.id];
+        }
+      };
+    });
+  }
+
+  /* ---------- Fond d'écran : présent ou non sur l'instance ----------
+     Une balise <img> n'est pas soumise au CORS, contrairement à fetch() :
+     c'est le seul moyen, depuis cette origine, de savoir si le fichier
+     existe sur l'instance du visiteur. */
+  function fondDisponible(origine) {
+    return new Promise(resolve => {
+      if (typeof Image === 'undefined') return resolve(false);
+      const img = new Image();
+      let repondu = false;
+      const fini = (present) => {
+        if (repondu) return;
+        repondu = true;
+        img.onload = null;
+        img.onerror = null;
+        resolve(present);
+      };
+      img.onload = () => fini(img.naturalWidth > 0);
+      img.onerror = () => fini(false);
+      setTimeout(() => fini(false), 5000);
+      // Paramètre anti-cache : un 404 mis en cache lors d'un essai antérieur
+      // ferait conclure à tort que le fond manque encore.
+      img.src = origine + TEST_FOND + '?v=' + Date.now();
+    });
+  }
+
+  /* Substitution du fond dans la carte. Les 7 volets portent la même
+     déclaration, mais à des profondeurs différentes dans leurs `card_mod` :
+     on parcourt donc la structure plutôt que de viser des positions. */
+  function remplacerFond(valeur, remplacement) {
+    if (typeof valeur === 'string') {
+      return valeur.split('url("' + TEST_FOND + '")').join(remplacement);
+    }
+    if (Array.isArray(valeur)) return valeur.map(v => remplacerFond(v, remplacement));
+    if (valeur && typeof valeur === 'object') {
+      const sortie = {};
+      Object.keys(valeur).forEach(cle => { sortie[cle] = remplacerFond(valeur[cle], remplacement); });
+      return sortie;
+    }
+    return valeur;
+  }
+
+  function carteTestGratuit(avecFond) {
+    const carte = JSON.parse(JSON.stringify(TEST_CARD));
+    return avecFond ? carte : remplacerFond(carte, TEST_FOND_REPLI);
+  }
+
+  /* ---------- Déploiement ---------- */
   async function runFreeTest() {
     const adresse = document.getElementById('test-ha-url').value;
     const jeton = document.getElementById('test-ha-token').value;
@@ -2818,18 +3149,117 @@
       logLine('test-log', 'err', "Renseignez l'adresse de votre instance et un jeton d'accès.");
       return;
     }
-    const parsed = checkInstanceUrl(adresse);
-    if (parsed.error) { logLine('test-log', 'err', parsed.error); return; }
+    const cible = checkInstanceUrlNavigateur(adresse);
+    if (cible.error) { logLine('test-log', 'err', cible.error); return; }
 
     if (bouton) bouton.disabled = true;
+    let ha = null;
+    let etape = logLine('test-log', 'run', 'Connexion à votre instance Home Assistant…');
+
     try {
-      await submitDeployment({
-        creds: { url: parsed.url, token: jeton },
-        modules: ['test-gratuit'],
-        boxId: 'test-log'
-      });
+      ha = await haConnect(cible.ws, jeton);
+      let version = null;
+      try {
+        const cfg = await ha.call({ type: 'get_config' });
+        version = (cfg.result && cfg.result.version) || null;
+      } catch (e) { /* la version n'est pas déterminante */ }
+      replaceLine(etape, 'ok', version ? 'Connecté à Home Assistant ' + version + '.' : 'Connecté et authentifié.');
+
+      // 1. Cartes personnalisées réellement installées côté HACS
+      etape = logLine('test-log', 'run', 'Vérification des cartes personnalisées…');
+      let hacsOk = false, installees = 0;
+      try {
+        const res = await ha.call({ type: 'hacs/repositories/list' });
+        if (res.success) {
+          hacsOk = true;
+          const parNom = {};
+          (res.result || []).forEach(r => { parNom[r.full_name] = r; });
+          const depots = Object.keys(TEST_HACS_REPOS).map(k => TEST_HACS_REPOS[k]);
+          for (const nomComplet of depots) {
+            const depot = parNom[nomComplet];
+            if (depot && !depot.installed) {
+              await ha.call({ type: 'hacs/repository/download', repository: depot.id });
+              installees++;
+            }
+          }
+        }
+      } catch (e) { /* HACS absent : traité juste en dessous */ }
+
+      if (!hacsOk) {
+        replaceLine(etape, 'warn', "HACS n'a pas répondu. Si la carte s'affiche en erreur, installez card-mod, mushroom, swipe-card et stack-in-card depuis HACS.");
+      } else {
+        replaceLine(etape, 'ok', installees
+          ? installees + ' carte(s) personnalisée(s) installée(s) via HACS.'
+          : 'Cartes personnalisées déjà installées.');
+      }
+
+      // 2. Ressources Lovelace
+      etape = logLine('test-log', 'run', 'Enregistrement des ressources Lovelace…');
+      const resRes = await ha.call({ type: 'lovelace/resources' });
+      const inscrites = (resRes.result || []).map(r => r.url).join(' ');
+      const manquantes = Object.keys(TEST_RESOURCES)
+        .map(k => TEST_RESOURCES[k])
+        .filter(chemin => !inscrites.includes(chemin));
+      for (const chemin of manquantes) {
+        await ha.call({ type: 'lovelace/resources/create', url: chemin, res_type: 'module' });
+      }
+      replaceLine(etape, 'ok', manquantes.length
+        ? manquantes.length + ' ressource(s) ajoutée(s).'
+        : 'Ressources déjà en place.');
+
+      // 3. Tableau de bord partagé « Accueil » — jamais recréé s'il existe
+      etape = logLine('test-log', 'run', 'Préparation du tableau de bord « Accueil »…');
+      const dashRes = await ha.call({ type: 'lovelace/dashboards/list' });
+      const present = (dashRes.result || []).some(d => d.url_path === TEST_DASHBOARD);
+      if (!present) {
+        const cree = await ha.call({
+          type: 'lovelace/dashboards/create',
+          url_path: TEST_DASHBOARD, title: 'Accueil', icon: 'mdi:home-assistant',
+          show_in_sidebar: true, require_admin: false, mode: 'storage'
+        });
+        if (!cree.success) throw new Error("Impossible de créer le tableau de bord « Accueil ».");
+      }
+      replaceLine(etape, 'ok', present
+        ? 'Tableau de bord « Accueil » déjà présent, réutilisé.'
+        : 'Tableau de bord « Accueil » créé.');
+
+      // 4. Injection de la vue, fusionnée dans les vues existantes.
+      //    La racine du tableau de bord n'est jamais réécrite.
+      etape = logLine('test-log', 'run', 'Injection de la carte…');
+      const avecFond = await fondDisponible(cible.origine);
+      const cfgRes = await ha.call({ type: 'lovelace/config', url_path: TEST_DASHBOARD });
+      const config = cfgRes.success ? cfgRes.result : { title: 'Accueil', views: [] };
+      const views = config.views || [];
+
+      const vue = {
+        title: TEST_VIEW_TITLE,
+        path: TEST_VIEW_PATH,
+        icon: TEST_VIEW_ICON,
+        cards: [carteTestGratuit(avecFond)]
+      };
+
+      const idx = views.findIndex(v => v.path === TEST_VIEW_PATH);
+      if (idx >= 0) views[idx] = vue; else views.push(vue);
+      config.views = views;
+
+      const sauve = await ha.call({ type: 'lovelace/config/save', url_path: TEST_DASHBOARD, config: config });
+      if (!sauve.success) throw new Error('La sauvegarde du tableau de bord a échoué.');
+      replaceLine(etape, 'ok', idx >= 0 ? 'Carte mise à jour.' : 'Carte injectée.');
+
+      if (!avecFond) {
+        logLine('test-log', 'warn', "Fond d'écran commun absent de votre instance : un dégradé équivalent a été utilisé à la place.");
+      }
+
+      const lien = cible.origine + '/' + TEST_DASHBOARD + '/' + TEST_VIEW_PATH;
+      logLine('test-log', 'ok', 'Terminé — <a href="' + lien + '" target="_blank" rel="noopener">ouvrir la carte sur votre instance</a>');
+    } catch (e) {
+      const message = (e && e.message) || 'Le déploiement a échoué.';
+      if (etape) replaceLine(etape, 'err', message);
+      else logLine('test-log', 'err', message);
     } finally {
+      if (ha) ha.close();
       if (bouton) bouton.disabled = false;
+      hideSticky(8000);
     }
   }
 
