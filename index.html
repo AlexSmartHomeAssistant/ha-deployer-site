@@ -36,21 +36,23 @@
       --col-gold: #F8C471;
       --col-required: #EF8377;
 
-      /* Couleur unique de VALIDATION (ajout au panier, total, confirmation,
-         étapes réussies du déploiement). Volontairement identique dans les
-         deux thèmes : c'est le repère visuel commun à tous les modules, et
-         il doit se reconnaître au premier coup d'œil quel que soit le thème.
-         Le texte posé dessus est sombre — du blanc sur ce jaune serait
-         illisible, contrairement au vert qu'il remplace. */
-      --col-valide: #F8C471;
-      --col-valide-texte: #1a1206;
-      --col-valide-halo: rgba(248, 196, 113, 0.22);
+      /* Couleur unique de VALIDATION (ajout au panier, test gratuit, total,
+         confirmation, étapes réussies du déploiement). Volontairement
+         identique dans les deux thèmes : c'est le repère visuel commun à tous
+         les modules, et il doit se reconnaître au premier coup d'œil quel que
+         soit le thème. Le texte posé dessus est sombre — sur un vert de cette
+         clarté, du blanc passerait sous le seuil de lisibilité. */
+      --col-valide: #5BC98A;
+      --col-valide-texte: #06170F;
+      --col-valide-halo: rgba(91, 201, 138, 0.22);
 
-      /* Dégradé métallique du titre d'accueil. Il vit sur le fond des cartes
-         (clair ou sombre selon le thème) : deux nuances sont nécessaires,
-         un or clair resterait illisible sur une carte claire. */
-      --titre-or: linear-gradient(180deg, #F7E9B6 0%, #E0BC63 34%, #B98C2C 68%, #EBD391 100%);
-      --titre-ombre: rgba(0, 0, 0, 0.55);
+      /* Quantité du panier : SEUL élément du panier resté doré. Elle compte,
+         elle ne valide rien — la confondre avec le vert de validation ferait
+         lire « c'est payé » là où il n'y a qu'un nombre d'articles. Posée en
+         dur plutôt que sur --col-gold, qui change de teinte selon le thème. */
+      --col-quantite: #F8C471;
+      --col-quantite-texte: #1a1206;
+
 
       --nav-bg: rgba(31, 35, 41, 0.86);
       --input-bg: rgba(0, 0, 0, 0.22);
@@ -91,13 +93,9 @@
       --col-gold: #B7791F;
       --col-required: #C0392B;
 
-      /* Volontairement non redéfinies : la validation garde le même jaune
+      /* Volontairement non redéfinies : la validation garde le même vert
          dans les deux thèmes (voir --col-valide dans :root). */
 
-      /* Bronze soutenu : sur une carte claire, l'or pâle du thème sombre
-         passerait sous le seuil de lisibilité. */
-      --titre-or: linear-gradient(180deg, #C08A2E 0%, #9A6B14 38%, #6E4A0C 70%, #B5842A 100%);
-      --titre-ombre: rgba(255, 255, 255, 0.5);
 
       --nav-bg: rgba(255, 255, 255, 0.78);
       --input-bg: rgba(255, 255, 255, 0.92);
@@ -293,8 +291,8 @@
     }
 
     .nav-cart-badge {
-      background: var(--col-valide);
-      color: var(--col-valide-texte);
+      background: var(--col-quantite);
+      color: var(--col-quantite-texte);
       border-radius: 999px;
       min-width: 22px;
       height: 22px;
@@ -639,77 +637,6 @@
     }
 
     /* ONGLET ACCUEIL */
-    /* Titre d'accueil repris de la jaquette du « Seigneur des Anneaux » :
-       capitales serif dorées et centrées sur fond noir, surmontées d'un
-       sur-titre très interlettré, et l'Anneau en dessous.
-       Le panneau porte son propre fond sombre : le rendu reste identique en
-       thème clair comme en thème sombre, comme sur la couverture. */
-    /* Titre d'accueil inspiré de la jaquette du « Seigneur des Anneaux » :
-       capitales serif dorées et centrées, sur-titre interlettré, l'Anneau en
-       séparateur. Il adopte le fond des autres cartes pour rester dans la
-       ligne de la page, et reste compact pour tenir sans défilement. */
-    .accueil-title {
-      display: block;
-      text-align: center;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 14px 18px 12px;
-      backdrop-filter: blur(10px);
-    }
-
-    .accueil-title .surtitre {
-      display: block;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 0.72rem;
-      font-weight: 400;
-      text-transform: uppercase;
-      letter-spacing: 0.42em;
-      /* Compense l'interlettrage, qui ajoute une espace après la dernière
-         lettre et décale le texte vers la gauche une fois centré. */
-      text-indent: 0.42em;
-      color: var(--col-gold);
-      margin-bottom: 4px;
-    }
-
-    .accueil-title .titre-principal {
-      display: block;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.35rem, 3.4vw, 2.1rem);
-      font-weight: 700;
-      line-height: 1.08;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      /* Dégradé métallique appliqué au texte. Il impose color: transparent,
-         donc l'ombre ne peut pas venir de text-shadow (elle se verrait au
-         travers) : elle passe par un filtre sur l'élément. */
-      background: var(--titre-or);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      filter: drop-shadow(0 1px 2px var(--titre-ombre));
-    }
-
-    /* L'Anneau sert de filet entre le titre et la citation. */
-    .accueil-title .anneau {
-      display: block;
-      margin: 6px 0 5px;
-      font-size: 1rem;
-      color: var(--col-gold);
-      filter: drop-shadow(0 0 7px rgba(217, 180, 91, 0.55));
-    }
-
-    .accueil-title .citation {
-      display: block;
-      font-size: 0.78rem;
-      font-style: italic;
-      font-weight: 400;
-      line-height: 1.45;
-      color: var(--text-muted);
-      max-width: 780px;
-      margin: 0 auto;
-    }
-
     .descriptif-liens {
       display: flex;
       flex-wrap: wrap;
@@ -736,16 +663,29 @@
       color: var(--accent-green);
     }
 
-    /* Accroche dorée, sous le titre et la citation */
+    /* Accroche dorée. Elle ouvre désormais la page : le panneau « Le Seigneur
+       de la Domotique » qui la précédait a été retiré le 25/08/2026, elle
+       prend donc sa place — et sa taille. La police est en `clamp()` pour
+       rester lisible du téléphone au grand écran sans jamais déborder. */
     .hero-pitch {
       text-align: center;
-      font-size: 1.15rem;
+      font-size: clamp(1.25rem, 3.1vw, 1.85rem);
       font-weight: 800;
+      line-height: 1.25;
       color: var(--col-gold);
       background: rgba(248, 196, 113, 0.08);
       border: 1px solid rgba(248, 196, 113, 0.4);
       border-radius: var(--radius);
-      padding: 16px 20px;
+      padding: 26px 24px;
+    }
+
+    .hero-pitch .hero-sub {
+      display: block;
+      margin-top: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text-muted);
     }
 
     .video-container {
@@ -764,33 +704,6 @@
       left: 0;
       width: 100%;
       height: 100%;
-    }
-
-    .donation-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .donation-btn {
-      background: var(--hover-bg);
-      border: 1px solid var(--card-border);
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      color: var(--text-main);
-      text-decoration: none;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .donation-btn:hover {
-      background: var(--hover-bg);
-      border-color: var(--primary-blue);
     }
 
     /* SOUS-ONGLETS DE CATÉGORIE (horizontaux, sous le titre de la page Module) */
@@ -1247,6 +1160,11 @@
 
     .modal-close:hover { color: var(--col-chauffage); }
 
+    /* Chaque ligne du panier porte la COULEUR DE SA CATÉGORIE, transmise au
+       rendu par la variable `--cat` posée en style inline. C'est le repère
+       déjà utilisé par les sous-onglets du catalogue : on retrouve un module
+       à sa teinte sans relire les noms. Le vert de validation reste réservé
+       au prix et aux boutons d'action, qui eux engagent l'achat. */
     .cart-modal-item {
       display: flex;
       justify-content: space-between;
@@ -1254,18 +1172,34 @@
       gap: 10px;
       background: var(--hover-bg);
       border: 1px solid var(--card-border);
+      border-left: 4px solid var(--cat, var(--primary-blue));
       border-radius: 8px;
       padding: 12px 14px;
       margin-bottom: 10px;
       font-size: 0.85rem;
     }
 
+    .cart-modal-item .cart-item-name {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      color: var(--cat, var(--text-main));
+    }
+
+    .cart-modal-item .cart-item-name i { flex-shrink: 0; }
+
     .cart-modal-item .entity {
-      color: var(--col-valide);
+      color: var(--cat, var(--text-muted));
+      /* Légèrement en retrait du nom, sans quitter la teinte de la catégorie */
+      opacity: 0.85;
       font-size: 0.78rem;
       margin-top: 2px;
       display: block;
     }
+
+    .cart-modal-item .cart-param b { color: var(--cat, var(--text-main)); }
+
+    .cart-modal-item-actions .price { color: var(--col-valide); font-weight: 700; }
 
     .cart-modal-item-actions {
       display: flex;
@@ -1284,6 +1218,29 @@
     }
 
     .cart-remove-btn:hover { color: var(--col-required); }
+
+    /* Action destructive : rouge, et volontairement moins appuyée que le
+       bouton de validation — on ne vide pas un panier par mégarde. */
+    .cart-clear-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 9px 14px;
+      background: none;
+      border: 1px solid var(--col-required);
+      border-radius: 6px;
+      color: var(--col-required);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .cart-clear-btn:hover {
+      background: var(--col-required);
+      color: var(--modal-bg);
+    }
 
     .cart-modal-empty {
       text-align: center;
@@ -1400,33 +1357,28 @@
       }
 
       .container > header,
-      .container > .accueil-title,
       .container > .hero-pitch,
       .container > .module-notice,
       .container > .subtabs {
         grid-column: 1 / -1;
       }
 
-      /* Accueil : « Soutenir le Projet » passe sous la vidéo et le descriptif,
-         qui se partagent la rangée du dessus. */
-      #section-accueil .container > .card:last-child { grid-column: 1 / -1; }
-
       /* Accueil sans défilement : le contenu doit tenir dans la hauteur de la
          fenêtre. La vidéo est le poste le plus lourd — son cadre 16/9 atteint
          ~370 px sur une demi-largeur. On lui donne donc une hauteur liée à la
-         fenêtre plutôt qu'au ratio ; YouTube ajuste l'image dans le cadre. */
+         fenêtre plutôt qu'au ratio ; YouTube ajuste l'image dans le cadre.
+         Le retrait du panneau de titre et du bloc de dons (25/08/2026) lui
+         rend de la hauteur : il n'y a plus que deux cartes, côte à côte. */
       #section-accueil .video-container {
         padding-bottom: 0;
-        height: clamp(150px, 24vh, 290px);
+        height: clamp(180px, 33vh, 380px);
       }
 
-      #section-accueil .hero-pitch { padding: 9px 16px; font-size: 1rem; }
-      #section-accueil .accueil-title { padding: 12px 18px 10px; }
-
-      /* Bloc de soutien resserré : titre, phrase et boutons sur trois lignes
-         courtes plutôt qu'un pavé. */
-      #section-accueil .container > .card:last-child h3 { margin-bottom: 6px; }
-      #section-accueil .container > .card:last-child p { margin-bottom: 10px; }
+      #section-accueil .hero-pitch {
+        padding: 20px 22px;
+        font-size: clamp(1.15rem, 2vw, 1.55rem);
+      }
+      #section-accueil .hero-pitch .hero-sub { margin-top: 8px; font-size: 0.84rem; }
     }
 
     /* Écrans larges mais peu hauts (portables 1366x768, 1440x810…) : la rangée
@@ -1435,26 +1387,20 @@
        Les `!important` sont nécessaires : les tailles de police de ces
        paragraphes sont posées en style inline dans le HTML. */
     @media (min-width: 1024px) and (max-height: 830px) {
-      #section-accueil .video-container { height: clamp(130px, 20vh, 200px); }
-      #section-accueil .accueil-title { padding: 9px 16px 8px; }
-      #section-accueil .accueil-title .citation { font-size: 0.72rem; line-height: 1.35; }
-      #section-accueil .accueil-title .anneau { margin: 3px 0 3px; font-size: 0.9rem; }
-      #section-accueil .hero-pitch { padding: 7px 14px; font-size: 0.92rem; }
+      #section-accueil .video-container { height: clamp(150px, 26vh, 300px); }
+      #section-accueil .hero-pitch { padding: 13px 16px; font-size: 1.08rem; }
+      #section-accueil .hero-pitch .hero-sub { margin-top: 5px; font-size: 0.76rem; }
       #section-accueil .container > .card { padding: 12px 14px; }
       #section-accueil .container > .card h3 { font-size: 0.92rem !important; margin-bottom: 8px !important; }
       #section-accueil .container > .card p { font-size: 0.78rem !important; line-height: 1.45; }
       #section-accueil .descriptif-liens { margin-top: 10px; }
       #section-accueil .descriptif-lien { padding: 7px 10px; font-size: 0.74rem; }
       #section-accueil .container { gap: 10px; }
-      #section-accueil .container > .card:last-child p {
-        font-size: 0.75rem !important;
-        margin-bottom: 8px !important;
-      }
-      #section-accueil .donation-btn { padding: 7px 12px; font-size: 0.78rem; }
 
-      /* La dernière carte (prérequis) occupe toute la largeur */
-      #section-fonctionnement .container > .card:last-child,
-      #section-test .container > .card:last-child {
+      /* La dernière carte (prérequis) occupe toute la largeur. L'onglet Test
+         Gratuit n'en fait plus partie : ses deux cartes restantes tiennent
+         côte à côte depuis le retrait des encarts de prérequis. */
+      #section-fonctionnement .container > .card:last-child {
         grid-column: 1 / -1;
       }
 
@@ -1481,7 +1427,6 @@
         align-content: start;
       }
 
-      .accueil-title { font-size: 1.5rem; }
       header h1 { font-size: 1.6rem; margin-bottom: 6px; }
     }
 
@@ -1604,7 +1549,6 @@
     @media (max-width: 768px) {
       .page-section { padding: 16px 12px; }
       .card { padding: 16px; }
-      .accueil-title { font-size: 1.12rem; }
       header h1 { font-size: 1.25rem; }
       /* Police réduite : le nom était tronqué par le panier sur petits écrans */
       .nav-brand-title { font-size: 0.86rem; }
@@ -1614,12 +1558,11 @@
       .nav-cart-badge { min-width: 19px; height: 19px; font-size: 0.7rem; padding: 0 5px; }
       .lang-current, .theme-toggle { width: 34px; height: 34px; }
       .nav-hamburger { font-size: 1.2rem; padding: 5px 7px; }
+      .hero-pitch { padding: 20px 16px; }
       .module-video { height: 180px; }
       .payment-methods { grid-template-columns: 1fr; }
       .modal-box { padding: 20px; max-height: 86vh; }
       .modal-header h3 { font-size: 1.1rem; }
-      .donation-links { flex-direction: column; }
-      .donation-btn { justify-content: center; }
 
       /* Pied de page empilé et centré */
       .footer-inner {
@@ -1705,18 +1648,16 @@
   <!-- SECTION 1 : ACCUEIL -->
   <div id="section-accueil" class="page-section active">
     <div class="container">
-      <h2 class="accueil-title">
-        <span class="surtitre">Home Assistant</span>
-        <span class="titre-principal">Le Seigneur de la Domotique</span>
-        <i class="fa-solid fa-ring anneau" aria-hidden="true"></i>
-        <span class="citation">"Une Application pour les gouverner tous ... Une Application pour les trouver ... Une Application pour les amener tous et dans les automatismes les lier !"</span>
-      </h2>
-
-      <div class="hero-pitch">Déployez vos modules sur Home Assistant en 1 clic</div>
+      <!-- Bloc d'ouverture de la page. Le panneau « Le Seigneur de la
+           Domotique » qui le précédait a été retiré le 25/08/2026 : l'accroche
+           le remplace et porte seule l'entrée en matière. -->
+      <div class="hero-pitch">
+        Déployez vos modules sur Home Assistant en 1 clic
+        <span class="hero-sub">Des tableaux de bord clé en main, installés à distance sur votre instance — vous n'avez rien à préparer.</span>
+      </div>
 
       <!-- Sur PC, .container est déjà une grille 2 colonnes (≥1024px) :
-           la vidéo se place à gauche, le descriptif à droite, et le bloc de
-           soutien s'étend sur les deux colonnes (règle :last-child plus bas). -->
+           la vidéo se place à gauche, le descriptif à droite. -->
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-video"></i> Présentation Vidéo</h3>
         <div class="video-container">
@@ -1737,15 +1678,6 @@
             <button type="button" class="descriptif-lien" onclick="switchTab('module')"><i class="fa-solid fa-cubes"></i> Modules</button>
             <button type="button" class="descriptif-lien" onclick="switchTab('test')"><i class="fa-solid fa-vial"></i> Test gratuit</button>
           </div>
-      </div>
-
-      <div class="card" style="text-align: center;">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Soutenir le Projet</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Ce projet est open-source. Vous pouvez soutenir son développement via les plateformes de dons :</p>
-        <div class="donation-links">
-          <a href="https://github.com/sponsors" target="_blank" class="donation-btn"><i class="fa-solid fa-mug-hot" style="color: #F4D03F;"></i> Buy Me a Coffee</a>
-          <a href="https://paypal.com" target="_blank" class="donation-btn"><i class="fa-brands fa-paypal" style="color: #5DADE2;"></i> PayPal</a>
-        </div>
       </div>
     </div>
   </div>
@@ -1871,28 +1803,6 @@
           <div class="deploy-log" id="test-log"></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage);">
-          <strong><i class="fa-solid fa-triangle-exclamation"></i> Prérequis indispensable :</strong>
-          Votre instance Home Assistant doit être <b>accessible depuis l'extérieur</b> pour que le déploiement puisse s'y connecter (choisissez l'une des solutions suivantes) :
-          <ol>
-            <li>Abonnement <b>Nabu Casa</b> (Home Assistant Cloud)</li>
-            <li><b>VPN</b> (WireGuard, Tailscale, etc.)</li>
-            <li><b>DuckDNS</b> + redirection de port</li>
-            <li><b>Cloudflare Tunnel</b> + NGINX (reverse proxy)</li>
-          </ol>
-        </div>
-
-        <div class="notice-box" style="margin-bottom: 0;">
-          <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
-          <ol>
-            <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
-            <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
-            <li>Saisissez le nom <code>HA-Deployer</code>.</li>
-          </ol>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1917,7 +1827,11 @@
         <div class="prose">
           <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos modules.</p>
           <p>Vous gardez la main : un jeton d'accès longue durée se révoque à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
-          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le module concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont transmis</strong> — seule une empreinte irréversible de cette adresse est conservée, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
+          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le module concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont conservés</strong> — seule une empreinte irréversible de cette adresse l'est, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
+          <p>Le détail complet — durées de conservation, destinataires, base légale, registre des traitements et contact du responsable — figure dans la <strong>politique de confidentialité</strong>.</p>
+          <div class="descriptif-liens">
+            <button type="button" class="descriptif-lien" onclick="switchTab('confidentialite')"><i class="fa-solid fa-user-shield"></i> Politique de confidentialité</button>
+          </div>
         </div>
       </div>
 
@@ -2029,6 +1943,195 @@
     </div>
   </div>
 
+  <!-- SECTION 8 : CONDITIONS GÉNÉRALES DE VENTE -->
+  <div id="section-cgv" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-file-contract"></i> Conditions Générales de Vente</h1>
+      </header>
+
+      <!-- Point le plus souvent mal compris de l'offre : le prix paie un
+           service d'installation, pas la revente de cartes communautaires que
+           leurs auteurs distribuent gratuitement. Il est donc mis en évidence,
+           en tête de page, et non noyé dans un article. -->
+      <div class="card">
+        <div class="notice-box" style="background: rgba(248, 196, 113, 0.1); border-left-color: var(--col-gold); margin-bottom: 0;">
+          <strong><i class="fa-solid fa-scale-balanced"></i> Ce que vous payez exactement :</strong>
+          le prix d'un module rémunère <b>une prestation de service</b> — l'orchestration et l'exécution automatisée du déploiement sur votre instance : scripts d'installation, découverte de vos entités, configuration, helpers, automatisations, traduction et assistance.
+          <b>Il ne s'agit en aucun cas de la vente d'un logiciel, ni de l'acquisition de droits de propriété intellectuelle sur les cartes communautaires open-source</b> (card-mod, mushroom, swipe-card, stack-in-card, apexcharts-card, plotly-graph, button-card…), ni sur <b>Home Assistant</b> ou <b>HACS</b>.
+          Ces composants restent la propriété de leurs auteurs respectifs, sont distribués gratuitement sous leurs propres licences libres, et vous demeurez libre de les installer vous-même sans passer par ce service. HA-Deployer n'est affilié ni à Home Assistant, ni à Nabu Casa, ni aux auteurs de ces cartes.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-file-lines"></i> Objet et champ d'application</h3>
+        <div class="prose">
+          <p>Les présentes conditions générales de vente (CGV) régissent la vente des prestations de déploiement proposées sur ce site. Toute commande implique leur acceptation sans réserve.</p>
+          <p>Elles sont accessibles à tout moment depuis le pied de page et prévalent sur tout autre document. La version applicable est celle en vigueur à la date de la commande.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-gears"></i> Nature de la prestation</h3>
+        <div class="prose">
+          <p>Un <strong>module</strong> correspond à l'exécution, sur l'instance Home Assistant que vous désignez, d'un ensemble d'opérations automatisées : installation des dépendances requises (HACS, cartes personnalisées, intégrations), création des helpers, scripts, automatisations et capteurs, puis injection d'une vue de tableau de bord adaptée à vos entités et traduite dans votre langue.</p>
+          <p>La prestation est fournie <strong>à distance</strong> et suppose que votre instance soit joignable depuis Internet. Ce prérequis est décrit dans l'onglet <strong>Fonctionnement</strong> ; il relève de votre installation et non de la prestation vendue.</p>
+          <p>Les éléments déployés restent intégralement sur votre instance et vous appartiennent : aucune licence n'est révoquée, aucun abonnement n'est requis, et l'interruption du service n'affecte pas les modules déjà installés.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-euro-sign"></i> Prix et paiement</h3>
+        <div class="prose">
+          <p>Les prix sont indiqués en euros, toutes taxes comprises, sur la fiche de chaque module. Le montant total est rappelé dans le panier avant validation.</p>
+          <p>Le paiement s'effectue en une fois, à la commande, par l'intermédiaire d'un prestataire de paiement sécurisé. Aucune coordonnée bancaire ne transite par ce site ni n'y est conservée.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-rocket"></i> Exécution de la prestation</h3>
+        <div class="prose">
+          <p>Le déploiement démarre <strong>immédiatement après la confirmation du paiement</strong> et se déroule en quelques minutes. Son avancement est affiché en direct, étape par étape.</p>
+          <p>Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement et signalé dans le journal de déploiement.</p>
+          <p>En cas d'échec imputable à la prestation, celle-ci est relancée sans frais ; si l'échec persiste, la commande est remboursée intégralement.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-arrow-rotate-left"></i> Droit de rétractation — contenus et services numériques</h3>
+        <div class="prose">
+          <p>Conformément aux articles L.221-18 et suivants du code de la consommation, vous disposez en principe d'un délai de <strong>quatorze (14) jours</strong> à compter de la conclusion du contrat pour exercer votre droit de rétractation, sans avoir à motiver votre décision ni à supporter d'autres coûts.</p>
+          <p><strong>Exception applicable ici.</strong> Le déploiement étant exécuté immédiatement après le paiement, vous êtes invité, au moment de la commande, à donner votre <strong>accord exprès et préalable</strong> à cette exécution immédiate et à reconnaître que vous <strong>perdez votre droit de rétractation</strong> une fois la prestation pleinement exécutée. Cette perte résulte des articles <strong>L.221-28 1°</strong> (service pleinement exécuté avant la fin du délai) et <strong>L.221-28 13°</strong> (fourniture d'un contenu numérique non fourni sur support matériel) du code de la consommation.</p>
+          <p>Tant que le déploiement n'a pas démarré, ou s'il a échoué, la rétractation reste possible : le remboursement intervient sous quatorze (14) jours à compter de la réception de votre demande, par le même moyen de paiement que celui utilisé lors de la commande.</p>
+          <p>Pour exercer ce droit, il suffit d'une déclaration dénuée d'ambiguïté adressée à <strong>smarthomeassistant.alex@gmail.com</strong>, en indiquant la commande concernée.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i> Garanties légales</h3>
+        <div class="prose">
+          <p>Indépendamment de toute garantie commerciale, vous bénéficiez des garanties légales suivantes, qui s'appliquent de plein droit et sans frais :</p>
+          <ul>
+            <li><strong>Garantie légale de conformité des contenus et services numériques</strong> — articles <strong>L.224-25-12 et suivants</strong> du code de la consommation : le contenu ou service numérique doit être conforme au contrat ; à défaut, vous pouvez en exiger la mise en conformité, et si celle-ci n'intervient pas dans un délai raisonnable, obtenir une réduction du prix ou la résolution du contrat.</li>
+            <li><strong>Garantie légale de conformité</strong> — articles <strong>L.217-3 et suivants</strong> du code de la consommation, pour ce qui relève des biens.</li>
+            <li><strong>Garantie des vices cachés</strong> — articles <strong>1641 et suivants</strong> du code civil : elle permet d'obtenir la résolution de la vente ou une réduction du prix, dans un délai de deux ans à compter de la découverte du vice.</li>
+          </ul>
+          <p>Ces garanties se mettent en œuvre sur simple demande à l'adresse indiquée ci-dessous.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-triangle-exclamation"></i> Responsabilité</h3>
+        <div class="prose">
+          <p>Les modules sont ajoutés comme de <strong>nouvelles vues</strong> dans un tableau de bord dédié : vos vues, scripts et automatisations existants ne sont ni écrasés ni supprimés. Lorsqu'un module doit compléter votre <code>configuration.yaml</code>, la configuration est systématiquement validée avant tout redémarrage.</p>
+          <p>Il vous appartient néanmoins de disposer d'une <strong>sauvegarde à jour</strong> de votre instance avant tout déploiement, comme avant toute modification de configuration.</p>
+          <p>La responsabilité ne saurait être engagée pour une indisponibilité de votre instance, de votre accès Internet ou d'un service tiers (Home Assistant, HACS, dépôts de cartes communautaires, fournisseur d'accès distant), ni pour les conséquences d'une modification manuelle apportée par vos soins aux éléments déployés.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-comments"></i> Réclamations, médiation et droit applicable</h3>
+        <div class="prose">
+          <p>Toute réclamation peut être adressée à <strong>smarthomeassistant.alex@gmail.com</strong>. Une réponse vous est apportée dans les meilleurs délais.</p>
+          <p>Conformément à l'article <strong>L.612-1</strong> du code de la consommation, le consommateur peut recourir gratuitement à un <strong>médiateur de la consommation</strong> en vue de la résolution amiable du litige, après avoir adressé une réclamation écrite préalable. Les coordonnées du médiateur compétent sont communiquées sur simple demande à l'adresse ci-dessus.</p>
+          <p>La plateforme européenne de règlement en ligne des litiges est également accessible à l'adresse <strong>ec.europa.eu/consumers/odr</strong>.</p>
+          <p>Les présentes CGV sont soumises au <strong>droit français</strong>. À défaut de résolution amiable, le litige sera porté devant la juridiction compétente.</p>
+          <p style="margin-top: 12px;"><em>Dernière mise à jour : 25 août 2026.</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 9 : POLITIQUE DE CONFIDENTIALITÉ -->
+  <div id="section-confidentialite" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-user-shield"></i> Politique de confidentialité</h1>
+      </header>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-id-card-clip"></i> Responsable du traitement</h3>
+        <div class="prose">
+          <p>Le responsable du traitement des données collectées sur ce site est l'éditeur de <strong>HA-Deployer</strong>, joignable à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>.</p>
+          <p><strong>Délégué à la protection des données (DPO) :</strong> aucun DPO n'a été désigné, cette désignation n'étant pas obligatoire au regard de l'<strong>article 37 du RGPD</strong> (ni autorité publique, ni suivi systématique à grande échelle, ni traitement à grande échelle de données sensibles). Toutes les demandes relatives aux données personnelles sont donc traitées <strong>directement par le responsable du traitement</strong>, à l'adresse ci-dessus, sous un délai d'un mois.</p>
+          <p><strong>Registre des activités de traitement :</strong> un registre est tenu conformément à l'<strong>article 30 du RGPD</strong>. Il recense les traitements décrits ci-dessous, leurs finalités, les catégories de données et de destinataires, les durées de conservation et les mesures de sécurité appliquées. Il est communiqué à l'autorité de contrôle sur sa demande, et son contenu vous est présenté sur demande dans la mesure où il vous concerne.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-database"></i> Données traitées, finalités et bases légales</h3>
+        <div class="prose">
+          <ul>
+            <li><strong>Adresse (URL) de votre instance</strong> et <strong>jeton d'accès longue durée</strong> — nécessaires à l'exécution du déploiement. Le jeton est chiffré dès sa réception, n'est jamais transmis en clair au système d'exécution et n'est jamais journalisé. <em>Base légale : exécution du contrat (art. 6.1.b du RGPD).</em></li>
+            <li><strong>Empreinte irréversible de l'adresse de votre instance</strong> — condensat cryptographique salé, à sens unique : il ne permet pas de retrouver l'adresse d'origine. Il sert uniquement à compter les installations distinctes et à mesurer la fiabilité des déploiements. <em>Base légale : intérêt légitime (art. 6.1.f) — fiabilité et amélioration du service.</em></li>
+            <li><strong>Journal technique de déploiement</strong> — module concerné, réussite ou échec, message d'erreur éventuel, version de Home Assistant, langue de l'interface. <em>Base légale : intérêt légitime (art. 6.1.f).</em></li>
+            <li><strong>Données de commande et de facturation</strong> — traitées par le prestataire de paiement ; seules les données nécessaires à la comptabilité sont conservées ici. <em>Base légale : obligation légale (art. 6.1.c).</em></li>
+            <li><strong>Échanges d'assistance</strong> — courriels que vous nous adressez. <em>Base légale : exécution du contrat et intérêt légitime.</em></li>
+          </ul>
+          <p>Aucune donnée sensible au sens de l'article 9 du RGPD n'est collectée. Aucun profilage ni décision automatisée produisant des effets juridiques n'est mis en œuvre.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-hourglass-half"></i> Durées de conservation</h3>
+        <div class="prose">
+          <p>Chaque catégorie de données fait l'objet d'une durée de conservation déterminée, au terme de laquelle elle est effacée :</p>
+          <ul>
+            <li><strong>Jeton d'accès :</strong> effacé dès la fin du déploiement, et au plus tard <strong>24 heures</strong> après la création de la demande — y compris si le déploiement a échoué.</li>
+            <li><strong>Adresse (URL) de l'instance :</strong> même durée que le jeton, soit <strong>24 heures</strong> au maximum. Seule l'empreinte irréversible lui survit.</li>
+            <li><strong>Empreinte irréversible de l'instance :</strong> <strong>24 mois</strong> à compter du dernier déploiement.</li>
+            <li><strong>Journal technique de déploiement :</strong> <strong>90 jours</strong>.</li>
+            <li><strong>Pièces comptables et factures :</strong> <strong>10 ans</strong>, durée imposée par l'article <strong>L.123-22</strong> du code de commerce.</li>
+            <li><strong>Échanges d'assistance :</strong> <strong>3 ans</strong> à compter du dernier contact.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-share-nodes"></i> Destinataires et sous-traitants</h3>
+        <div class="prose">
+          <p>Les données ne sont ni vendues, ni louées, ni cédées à des tiers à des fins commerciales. Elles sont accessibles au seul responsable du traitement et aux sous-traitants techniques strictement nécessaires au service :</p>
+          <ul>
+            <li><strong>Cloudflare</strong> — hébergement de l'interface de commande et du service qui reçoit les demandes de déploiement.</li>
+            <li><strong>GitHub</strong> — exécution des scripts de déploiement.</li>
+            <li><strong>Prestataire de paiement</strong> — traitement de la transaction, selon sa propre politique de confidentialité.</li>
+            <li><strong>ipapi.co</strong> — détection du pays à partir de votre adresse IP, à seule fin de présélectionner la langue de l'interface. Cet appel peut être bloqué sans conséquence sur le service.</li>
+          </ul>
+          <p>Lorsqu'un transfert hors de l'Union européenne intervient chez l'un de ces prestataires, il est encadré par les <strong>clauses contractuelles types</strong> de la Commission européenne ou par un mécanisme équivalent au sens du chapitre V du RGPD.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-user-check"></i> Vos droits</h3>
+        <div class="prose">
+          <p>Vous disposez, sur les données vous concernant, des droits d'<strong>accès</strong>, de <strong>rectification</strong>, d'<strong>effacement</strong>, de <strong>limitation</strong> du traitement, d'<strong>opposition</strong> et de <strong>portabilité</strong> (articles 15 à 22 du RGPD), ainsi que du droit de définir des directives relatives au sort de vos données après votre décès.</p>
+          <p>Ces droits s'exercent auprès du responsable du traitement, à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>. Une réponse vous est apportée dans un délai d'un mois.</p>
+          <p><em>Une limite à signaler franchement :</em> l'empreinte de l'adresse de votre instance étant <strong>irréversible par construction</strong>, elle ne permet pas de vous ré-identifier. Nous ne pouvons donc pas retrouver la vôtre pour l'effacer sur simple demande, cas prévu par l'<strong>article 11 du RGPD</strong>. Vous pouvez toutefois nous communiquer l'adresse concernée : l'empreinte correspondante est alors recalculée puis supprimée.</p>
+          <p>Vous pouvez à tout moment <strong>révoquer l'accès</strong> accordé, depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>, en supprimant le jeton nommé <code>HA-Deployer</code>.</p>
+          <p>Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 — ou sur <strong>cnil.fr</strong>.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-cookie-bite"></i> Cookies et stockage local</h3>
+        <div class="prose">
+          <p>Ce site <strong>ne dépose aucun cookie</strong> publicitaire, de mesure d'audience ou de traçage. Aucun bandeau de consentement n'est donc nécessaire.</p>
+          <p>Seule une préférence d'affichage — le choix du thème clair ou sombre — est enregistrée dans le <strong>stockage local</strong> de votre navigateur. Elle ne quitte jamais votre appareil et disparaît si vous videz les données du site.</p>
+          <p>La vidéo de présentation est hébergée par <strong>YouTube</strong>, susceptible de déposer ses propres traceurs lors de sa lecture, selon la politique de Google.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-lock"></i> Sécurité</h3>
+        <div class="prose">
+          <p>Les échanges avec ce site et avec votre instance sont chiffrés (HTTPS / WSS). Le jeton d'accès est chiffré au repos, n'est jamais inscrit dans les journaux d'exécution et ne figure jamais dans les paramètres de déclenchement du déploiement.</p>
+          <p>En cas de violation de données susceptible d'engendrer un risque pour vos droits et libertés, la CNIL en est informée dans les 72 heures et vous en êtes averti, conformément aux <strong>articles 33 et 34 du RGPD</strong>.</p>
+          <p style="margin-top: 12px;"><em>Dernière mise à jour : 25 août 2026.</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PIED DE PAGE -->
   <footer class="site-footer">
     <div class="footer-inner">
@@ -2036,6 +2139,8 @@
         <button onclick="switchTab('apropos')" id="nav-apropos">À propos</button>
         <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
         <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
+        <button onclick="switchTab('cgv')" id="nav-cgv">CGV</button>
+        <button onclick="switchTab('confidentialite')" id="nav-confidentialite">Confidentialité</button>
       </div>
       <div class="footer-copyright">© 2026 HA-Deployer</div>
       <div class="social-icons">
@@ -2279,6 +2384,82 @@
     interface_dashboard_principal: 'Tableau de Bord'
   };
 
+  /* Icône propre à chaque module, affichée dans le panier. Sans elle, toutes
+     les lignes portaient le même pictogramme générique et ne se distinguaient
+     qu'à la lecture du nom. Un module absent de cette table retombe sur le
+     cube du catalogue plutôt que de n'afficher aucune icône. */
+  const MODULE_ICONS = {
+    lumiere_lumiere: 'fa-lightbulb',
+    ouverture_garage_porte: 'fa-warehouse',
+    ouverture_volet: 'fa-window-maximize',
+    chauffage_thermostat: 'fa-temperature-half',
+    chauffage_cheminee: 'fa-fire',
+    chauffage_compteur_gaz: 'fa-gauge-high',
+    securite_alarme: 'fa-bell',
+    securite_camera: 'fa-video',
+    appareil_aspirateur: 'fa-robot',
+    appareil_box_internet: 'fa-wifi',
+    appareil_enceinte: 'fa-volume-high',
+    appareil_lave_vaisselle: 'fa-sink',
+    appareil_machine_laver: 'fa-soap',
+    appareil_microwave: 'fa-kitchen-set',
+    appareil_panneau_solaire: 'fa-solar-panel',
+    appareil_printer: 'fa-print',
+    appareil_raspberry: 'fa-microchip',
+    appareil_refrigerateur: 'fa-snowflake',
+    appareil_seche_linge: 'fa-wind',
+    appareil_serpillere: 'fa-broom',
+    appareil_sonnette: 'fa-bell-concierge',
+    appareil_soundbar: 'fa-music',
+    appareil_television: 'fa-tv',
+    appareil_tondeuse: 'fa-seedling',
+    appareil_voiture: 'fa-car',
+    appareil_zigbee: 'fa-diagram-project',
+    OK_service_meteo: 'fa-cloud-sun',
+    OK_service_temps: 'fa-clock',
+    service_boite_aux_lettres: 'fa-envelope',
+    service_capteur: 'fa-gauge',
+    service_compteur_electricite: 'fa-bolt',
+    // Volontairement pas fa-trash : c'est l'icône du bouton « retirer », juste
+    // à côté sur la même ligne du panier.
+    service_gestion_dechets: 'fa-recycle',
+    service_person: 'fa-user-group',
+    service_transport: 'fa-bus',
+    eau_compteur: 'fa-droplet',
+    eau_detecteur_fuite: 'fa-house-flood-water',
+    eau_pool: 'fa-water-ladder',
+    eau_valve: 'fa-faucet',
+    interface_dashboard_principal: 'fa-table-cells-large'
+  };
+
+  function moduleIcon(rawName) {
+    return MODULE_ICONS[rawName] || 'fa-cube';
+  }
+
+  /* Catégorie d'un module, relue dans `modulesData` — la table est construite
+     au premier appel puis conservée. C'est elle qui donne sa couleur à la
+     ligne du panier, celle-là même que porte le sous-onglet du catalogue. */
+  let CATEGORIE_PAR_MODULE = null;
+
+  function moduleCategory(rawName) {
+    if (!CATEGORIE_PAR_MODULE) {
+      CATEGORIE_PAR_MODULE = {};
+      Object.keys(modulesData).forEach(cat => {
+        modulesData[cat].forEach(m => { CATEGORIE_PAR_MODULE[m.name] = cat; });
+      });
+    }
+    return CATEGORIE_PAR_MODULE[rawName] || '';
+  }
+
+  /* « Automatisme » est la seule catégorie sans teinte propre — son onglet est
+     multicolore, il n'existe pas de --col-automatisme. Elle retombe donc sur
+     le bleu de l'interface plutôt que sur une variable CSS inexistante, qui
+     laisserait la ligne sans couleur du tout. */
+  function moduleColor(rawName) {
+    const cat = moduleCategory(rawName);
+    return (cat && cat !== 'automatisme') ? 'var(--col-' + cat + ')' : 'var(--primary-blue)';
+  }
+
   function cleanTitle(rawName) {
     return rawName
       .replace(/^OK_/, '')
@@ -2321,6 +2502,10 @@
      ne laisse passer que des noms en MAJUSCULES_ET_SOULIGNES, et le module
      Python les relit dans son environnement. */
   const MODULE_PARAMS = {
+    OK_service_meteo: [
+      { param: 'METEO_THEME', label: 'Thème', type: 'select', required: true,
+        options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
+    ],
     lumiere_lumiere: [
       { param: 'LUMIERE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
@@ -2332,6 +2517,7 @@
   };
 
   function champsParamsHtml(modName) {
+    if (!MODULE_PARAMS[modName]) return '';
     return MODULE_PARAMS[modName].map(c => {
       const id = `param-${modName}-${c.param}`;
       const saisie = c.type === 'select'
@@ -2340,6 +2526,37 @@
         : `<input type="text" class="field-required" id="${id}" placeholder="${c.placeholder || ''}">`;
       return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
     }).join('');
+  }
+
+  /* Collecte des champs supplémentaires d'un module (thème, pièce…).
+     Renvoie null — après avoir signalé le champ fautif — si un champ
+     obligatoire est vide, et {} pour un module qui n'en réclame aucun.
+     Partagée par les deux formes de carte : celle des modules détaillés
+     (GIF + entité) et celle des modules en liste. */
+  function collecterParams(modName) {
+    const champs = MODULE_PARAMS[modName];
+    if (!champs) return {};
+    const params = {};
+    for (const c of champs) {
+      const el = document.getElementById(`param-${modName}-${c.param}`);
+      const valeur = el ? el.value.trim() : '';
+      if (c.required && !valeur) {
+        el.classList.remove('input-error');
+        void el.offsetWidth;          // relance l'animation si deja jouee
+        el.classList.add('input-error');
+        el.focus();
+        return null;
+      }
+      params[c.param] = valeur;
+    }
+    return params;
+  }
+
+  function reinitialiserParams(modName) {
+    (MODULE_PARAMS[modName] || []).forEach(c => {
+      const el = document.getElementById(`param-${modName}-${c.param}`);
+      if (el && el.tagName === 'INPUT') { el.value = ''; el.classList.remove('input-error'); }
+    });
   }
 
   /* Récapitulatif du panier : rappeler ce que le client a saisi. Sans cela,
@@ -2402,6 +2619,7 @@
           </div>
           <p class="module-desc-full">${media.detail}</p>
           ${fieldHtml}
+          ${champsParamsHtml(mod.name)}
           <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (9€)</button>
         `;
       } else {
@@ -2427,20 +2645,12 @@
     // Modules a plusieurs champs (ex: Eclairage) : on les collecte, on
     // signale le premier champ obligatoire laisse vide, et on les range dans
     // `params` — ce sont eux qui deviendront les variables du runner.
-    if (MODULE_PARAMS[modName]) {
-      const params = {};
-      for (const c of MODULE_PARAMS[modName]) {
-        const el = document.getElementById(`param-${modName}-${c.param}`);
-        const valeur = el ? el.value.trim() : '';
-        if (c.required && !valeur) {
-          el.classList.remove('input-error');
-          void el.offsetWidth;          // relance l'animation si deja jouee
-          el.classList.add('input-error');
-          el.focus();
-          return;
-        }
-        params[c.param] = valeur;
-      }
+    // Les modules a carte detaillee (GIF + entite) qui reclament en plus un
+    // parametre — le theme de Meteo — passent par la branche `media` plus
+    // bas, qui appelle les memes helpers.
+    if (MODULE_PARAMS[modName] && !MODULE_MEDIA[modName]) {
+      const params = collecterParams(modName);
+      if (params === null) return;
       cart.push({
         key: modName,
         name: moduleTitle(modName),
@@ -2453,10 +2663,7 @@
       });
       flyToCart(btnEl.closest('.module-item'));
       updateCartUI();
-      MODULE_PARAMS[modName].forEach(c => {
-        const el = document.getElementById(`param-${modName}-${c.param}`);
-        if (el && el.tagName === 'INPUT') { el.value = ''; el.classList.remove('input-error'); }
-      });
+      reinitialiserParams(modName);
       return;
     }
 
@@ -2480,6 +2687,12 @@
       if (!entityVal) entityVal = 'Non renseigné (détection automatique)';
     }
 
+    // Champs supplémentaires de la carte détaillée (le thème de Météo) :
+    // collectés APRÈS l'entité, pour que le champ signalé en premier reste
+    // celui que le client lit en premier.
+    const params = collecterParams(modName);
+    if (params === null) return;
+
     // `key` et `raw` servent au déploiement : la clé identifie le module,
     // `raw` porte la valeur brute (entity_id saisi, ou variante de calendrier).
     cart.push({
@@ -2487,10 +2700,12 @@
       name: moduleTitle(modName),
       entity: entityVal,
       raw: fieldEl ? fieldEl.value.trim() : '',
+      params: params,
       price: 9
     });
     flyToCart(btnEl.closest('.module-item'));
     updateCartUI();
+    reinitialiserParams(modName);
     if (fieldEl && fieldEl.tagName === 'INPUT') {
       fieldEl.value = '';
       fieldEl.classList.remove('input-error');
@@ -2565,14 +2780,14 @@
       modulesHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Aucun module sélectionné pour le moment.<br>Ajoutez un module depuis l'onglet Module.</div>`;
     } else {
       modulesHtml = cart.map((item, i) => `
-        <div class="cart-modal-item">
+        <div class="cart-modal-item" style="--cat: ${moduleColor(item.key)};">
           <div>
-            <strong>${item.name}</strong>
-            <span class="entity"><i class="fa-solid fa-microchip"></i> ${item.entity}</span>
+            <strong class="cart-item-name"><i class="fa-solid ${moduleIcon(item.key)}"></i> ${item.name}</strong>
+            <span class="entity">${item.entity}</span>
             ${detailParamsHtml(item)}
           </div>
           <div class="cart-modal-item-actions">
-            <span>${item.price} €</span>
+            <span class="price">${item.price} €</span>
             <button class="cart-remove-btn" onclick="removeFromCart(${i})" title="Retirer du panier"><i class="fa-solid fa-trash"></i></button>
           </div>
         </div>
@@ -2585,12 +2800,22 @@
       <div class="modal-footer">
         <div class="cart-total" style="margin-bottom: 10px;">Total : ${cartTotal()} €</div>
         <button class="btn-pay" onclick="goToCartCheckoutStep()" ${disabled}><i class="fa-solid fa-lightbulb"></i> Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
+        ${cart.length ? `<div><button class="cart-clear-btn" onclick="clearCart()"><i class="fa-solid fa-trash-can"></i> Vider le panier</button></div>` : ''}
       </div>
     `;
   }
 
   function removeFromCart(index) {
     cart.splice(index, 1);
+    updateCartUI();
+    renderCartModalBody();
+  }
+
+  /* Vidage complet. `cart.length = 0` plutôt qu'une réaffectation : d'autres
+     fonctions (le déploiement) gardent une référence sur ce même tableau. */
+  function clearCart() {
+    if (!cart.length) return;
+    cart.length = 0;
     updateCartUI();
     renderCartModalBody();
   }
@@ -2765,7 +2990,7 @@
   };
 
   /* ---------- Journal de progression ---------- */
-  /* L'ampoule jaune est le repere de validation commun a tous les modules :
+  /* L'ampoule verte est le repere de validation commun a tous les modules :
      meme icone et meme couleur du bouton d'ajout jusqu'a la derniere etape
      du deploiement. L'erreur et l'avertissement gardent leurs teintes, qui
      doivent au contraire trancher. */
