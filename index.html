@@ -1176,6 +1176,16 @@
       color: var(--primary-blue);
     }
 
+    /* Pendant un deploiement, la modale ne doit pas pouvoir etre fermee :
+       la fermer n'annulerait rien (le runner poursuit) mais ferait perdre
+       au client le fil d'avancement et le lien vers son tableau de bord.
+       Les deux sorties -- la croix et le bouton Fermer -- disparaissent
+       donc, et reviennent des que la tache est close, reussie ou non. */
+    .modal-overlay.deploiement-en-cours .modal-close,
+    .modal-overlay.deploiement-en-cours #cart-deploy-close {
+      display: none;
+    }
+
     .modal-close {
       background: none;
       border: none;
@@ -1585,7 +1595,10 @@
       .lang-current, .theme-toggle { width: 34px; height: 34px; }
       .nav-hamburger { font-size: 1.2rem; padding: 5px 7px; }
       .hero-pitch { padding: 20px 16px; }
-      .module-video { height: 180px; }
+      /* Surtout PAS de hauteur fixe ici : elle ecraserait l'aspect-ratio
+         et le cadre redeviendrait rectangulaire sur telephone, la ou il
+         est carre partout ailleurs. */
+      .module-video { height: auto; }
       .payment-methods { grid-template-columns: 1fr; }
       .modal-box { padding: 20px; max-height: 86vh; }
       .modal-header h3 { font-size: 1.1rem; }
@@ -3002,7 +3015,16 @@
   }
 
   function closeCartModal() {
-    document.getElementById('cart-modal-overlay').classList.remove('active');
+    const overlay = document.getElementById('cart-modal-overlay');
+    // Verrou unique : la croix, le bouton Fermer et le clic hors modale
+    // passent tous par ici.
+    if (overlay.classList.contains('deploiement-en-cours')) return;
+    overlay.classList.remove('active');
+  }
+
+  function verrouillerFermeture(verrouille) {
+    document.getElementById('cart-modal-overlay')
+      .classList.toggle('deploiement-en-cours', verrouille);
   }
 
   function closeCartModalOverlay(e) {
@@ -3262,6 +3284,8 @@
       replaceLine(courante, 'err', e.message || 'Le déploiement a échoué.');
       return null;
     } finally {
+      // Succes, echec ou exception : la tache est close, on rend les sorties.
+      verrouillerFermeture(false);
       const btn = closeBtnId && document.getElementById(closeBtnId);
       if (btn) btn.disabled = false;
       hideSticky(8000);
@@ -3641,9 +3665,12 @@
     renderCartModalBody();
 
     const debloquerFermeture = () => {
+      verrouillerFermeture(false);
       const btn = document.getElementById('cart-deploy-close');
       if (btn) btn.disabled = false;
     };
+
+    verrouillerFermeture(true);
 
     if (parsed.error) {
       logLine('cart-deploy-log', 'err', parsed.error);
@@ -3707,8 +3734,23 @@
     applyTheme(prefersLight ? 'light' : 'dark');
   }
 
+  /* Les langues sont ecrites dans l'ordre historique d'ajout ; on les range
+     a l'affichage plutot que dans le HTML, pour qu'une langue ajoutee plus
+     tard se place toute seule. Le tri se fait sur le nom tel qu'il est LU
+     par le visiteur (l'endonyme), avec le collateur du navigateur : c'est lui
+     qui sait ou placer un nom en arabe, en devanagari ou en han. */
+  function trierLangues() {
+    const liste = document.getElementById('lang-options');
+    if (!liste) return;
+    const collateur = new Intl.Collator(undefined, { sensitivity: 'base' });
+    [...liste.children]
+      .sort((a, b) => collateur.compare(a.textContent.trim(), b.textContent.trim()))
+      .forEach(li => liste.appendChild(li));
+  }
+
   window.onload = () => {
     initTheme();
+    trierLangues();
     filterCategory('interface');
     detectLanguageByIP();
   };
