@@ -825,6 +825,26 @@
       margin: 8px 0 3px;
     }
 
+    /* Choix multiple (ex: deux themes a la fois pour le module Eclairage) :
+       une case a cocher par option, plutot qu'un <select> qui n'en retient
+       qu'une. Bordure transparente par defaut pour que .input-error (qui ne
+       fait que colorer border-color) reste visible en cas d'erreur. */
+    .param-checkboxes {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      padding: 2px 4px;
+    }
+    .param-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
     /* Catégorie encore vide : on le dit, plutôt que d'afficher une page blanche */
     .categorie-vide {
       text-align: center;
@@ -2566,7 +2586,9 @@
         placeholder: 'ex : Salon' },
       { param: 'LUMIERE_ENTITE', label: 'Entité de la lumière', type: 'text', required: true,
         placeholder: 'ex : light.suspension_salon' },
-      { param: 'LUMIERE_THEME', label: 'Thème', type: 'select', required: true,
+      { param: 'LUMIERE_THEME', label: 'Thème(s)', type: 'checkboxes', required: true,
+        // Les deux peuvent etre coches a la fois : le module genere alors une
+        // vue dediee par theme (voir deploy_pack_eclairage_lumiere.deploy()).
         options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
     ]
   };
@@ -2575,6 +2597,13 @@
     if (!MODULE_PARAMS[modName]) return '';
     return MODULE_PARAMS[modName].map(c => {
       const id = `param-${modName}-${c.param}`;
+      if (c.type === 'checkboxes') {
+        const cases = c.options.map((o, i) =>
+          `<label class="param-checkbox"><input type="checkbox" id="${id}-${o.value}"
+             name="${id}" value="${o.value}"${i === 0 ? ' checked' : ''}> ${o.label}</label>`
+        ).join('');
+        return `<span class="param-label">${c.label}</span><span class="param-checkboxes" id="${id}">${cases}</span>`;
+      }
       const saisie = c.type === 'select'
         ? `<select id="${id}" onchange="majApercu('${modName}')">${c.options.map((o, i) =>
              `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
@@ -2636,7 +2665,21 @@
     if (!champs) return {};
     const params = {};
     for (const c of champs) {
-      const el = document.getElementById(`param-${modName}-${c.param}`);
+      const id = `param-${modName}-${c.param}`;
+      if (c.type === 'checkboxes') {
+        const groupe = document.getElementById(id);
+        const coches = groupe ? Array.from(groupe.querySelectorAll('input[type="checkbox"]:checked')) : [];
+        const valeur = coches.map(el => el.value).join(',');
+        if (c.required && !valeur) {
+          groupe.classList.remove('input-error');
+          void groupe.offsetWidth;
+          groupe.classList.add('input-error');
+          return null;
+        }
+        params[c.param] = valeur;
+        continue;
+      }
+      const el = document.getElementById(id);
       const valeur = el ? el.value.trim() : '';
       if (c.required && !valeur) {
         el.classList.remove('input-error');
@@ -2652,6 +2695,14 @@
 
   function reinitialiserParams(modName) {
     (MODULE_PARAMS[modName] || []).forEach(c => {
+      if (c.type === 'checkboxes') {
+        const groupe = document.getElementById(`param-${modName}-${c.param}`);
+        if (groupe) {
+          groupe.classList.remove('input-error');
+          groupe.querySelectorAll('input[type="checkbox"]').forEach((el, i) => { el.checked = i === 0; });
+        }
+        return;
+      }
       const el = document.getElementById(`param-${modName}-${c.param}`);
       if (el && el.tagName === 'INPUT') { el.value = ''; el.classList.remove('input-error'); }
     });
@@ -2666,9 +2717,14 @@
     return champs.map(c => {
       const valeur = item.params[c.param];
       if (!valeur) return '';
-      const lisible = c.type === 'select'
-        ? (c.options.find(o => o.value === valeur) || {}).label || valeur
-        : valeur;
+      let lisible = valeur;
+      if (c.type === 'select') {
+        lisible = (c.options.find(o => o.value === valeur) || {}).label || valeur;
+      } else if (c.type === 'checkboxes') {
+        lisible = valeur.split(',')
+          .map(v => (c.options.find(o => o.value === v) || {}).label || v)
+          .join(' + ');
+      }
       return `<span class="cart-param">${c.label} : <b>${lisible}</b></span>`;
     }).join('');
   }
@@ -2752,7 +2808,7 @@
         key: modName,
         name: moduleTitle(modName),
         entity: MODULE_PARAMS[modName]
-          .filter(c => c.type !== 'select')
+          .filter(c => c.type !== 'select' && c.type !== 'checkboxes')
           .map(c => params[c.param]).join(' — '),
         raw: '',
         params: params,
