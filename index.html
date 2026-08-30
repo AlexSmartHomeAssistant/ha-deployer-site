@@ -2556,13 +2556,23 @@
       detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.</span>',
       field: {
         type: 'calendar',
+        /* Le choix voyage jusqu'au runner sous ce nom. Sans `param`, il
+           restait dans le seul `raw` de la ligne de panier, que
+           `runCartDeployment` n'envoie pas : le module retombait alors sur sa
+           détection automatique et une instance dotée de l'intégration des
+           heures de prière restait en calendrier musulman quel que soit le
+           calendrier acheté (défaut signalé le 30/08/2026).
+           Les valeurs sont les clés de `CALENDARS` dans deploy_pack_temps.py
+           — qui accepte aussi les anciens libellés courts, pour un onglet
+           resté ouvert sur la page précédente. */
+        param: 'TEMPS_CALENDRIER',
         options: [
           { value: 'standard', label: 'Standard / Universel (Par défaut)' },
           { value: 'islam', label: 'Islamique / Musulman' },
-          { value: 'chretien', label: 'Chrétien (Catholique / Protestant / Orthodoxe)' },
-          { value: 'juif', label: 'Juif' },
-          { value: 'bouddhiste', label: 'Bouddhiste' },
-          { value: 'hindou', label: 'Hindou' }
+          { value: 'christianisme', label: 'Chrétien (Catholique / Protestant / Orthodoxe)' },
+          { value: 'judaisme', label: 'Juif' },
+          { value: 'bouddhisme', label: 'Bouddhiste' },
+          { value: 'hindouisme', label: 'Hindou' }
         ]
       }
     }
@@ -2849,13 +2859,21 @@
     const params = collecterParams(modName);
     if (params === null) return;
 
+    // Un champ principal qui déclare un `param` (le calendrier du module
+    // Temps) rejoint les réglages : `raw` seul ne quitte jamais le navigateur,
+    // seul `params` est transmis au runner.
+    const brut = fieldEl ? fieldEl.value.trim() : '';
+    if (media && media.field && media.field.param && brut) {
+      params[media.field.param] = brut;
+    }
+
     // `key` et `raw` servent au déploiement : la clé identifie le module,
     // `raw` porte la valeur brute (entity_id saisi, ou variante de calendrier).
     cart.push({
       key: modName,
       name: moduleTitle(modName),
       entity: entityVal,
-      raw: fieldEl ? fieldEl.value.trim() : '',
+      raw: brut,
       params: params,
       price: 9
     });
