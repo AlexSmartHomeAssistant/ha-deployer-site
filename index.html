@@ -53,6 +53,11 @@
       --col-quantite: #F8C471;
       --col-quantite-texte: #1a1206;
 
+      /* Première couleur de la roue multicolore des onglets « Service » et
+         « Automatisme ». Blanche sur le thème sombre ; redéfinie en gris
+         foncé sur le clair, où un sixième du mot serait sinon invisible. */
+      --multicolore-tete: #FFFFFF;
+
 
       --nav-bg: rgba(31, 35, 41, 0.86);
       --input-bg: rgba(0, 0, 0, 0.22);
@@ -92,6 +97,11 @@
       --col-configuration: #14171c;
       --col-gold: #B7791F;
       --col-required: #C0392B;
+
+      /* Voir --multicolore-tete dans :root — le blanc de la roue devient ici
+         le gris des écritures, sans quoi le mot perdrait sa première lettre
+         sur la texture claire. */
+      --multicolore-tete: #333333;
 
       /* Volontairement non redéfinies : la validation garde le même vert
          dans les deux thèmes (voir --col-valide dans :root). */
@@ -527,6 +537,12 @@
       display: flex;
     }
 
+    /* La page Détails montre trois captures cote a cote : les 680 px communs
+       aux autres pages les réduiraient à un timbre-poste. La grille se replie
+       d'elle-même en dessous (voir .detail-swipes), la largeur n'est donc pas
+       bornée par media query. */
+    #section-details { max-width: 1100px; }
+
     .container {
       width: 100%;
       display: flex;
@@ -619,6 +635,26 @@
     }
 
     .field-help.open { display: block; }
+
+    /* Rappel de suppression du jeton (31/08/2026).
+       Il était jusqu'ici la QUATRIÈME étape d'une liste numérotée, juste après
+       « copiez le jeton généré ici ». Numéroté, il se lisait comme la suite
+       immédiate des trois autres : plus d'un visiteur supprimait son jeton dès
+       sa création, avant même d'avoir lancé le déploiement — qui échouait
+       alors sans que rien n'explique pourquoi. Sorti de la numérotation, il
+       redevient ce qu'il est : une consigne pour plus tard. */
+    .rappel-jeton {
+      display: block;
+      margin-top: 10px;
+      padding: 9px 11px;
+      background: rgba(248, 196, 113, 0.10);
+      border-left: 3px solid var(--col-gold);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+    .rappel-jeton i { color: var(--col-gold); margin-right: 6px; }
 
     .form-group input, .form-group select {
       width: 100%;
@@ -745,17 +781,24 @@
        équivalent lisible sur le thème sombre (cf. --col-configuration). */
     .subtab.configuration { color: var(--col-configuration); }
 
-    /* Catégorie multicolore (« Automatisme ») : le dégradé est appliqué au
-       TEXTE via background-clip, ce qui impose `color: transparent`. La
-       bordure de l'onglet actif ne peut donc pas suivre `currentColor` (elle
-       serait invisible) : on lui donne une teinte explicite. */
+    /* Catégories multicolores (« Automatisme », « Service ») : le dégradé est
+       appliqué au TEXTE via background-clip, ce qui impose
+       `color: transparent`. La bordure de l'onglet actif ne peut donc pas
+       suivre `currentColor` (elle serait invisible) : on lui donne une teinte
+       explicite. */
     .subtab.multicolore {
       /* Six bandes franches plutôt qu'un fondu : sur un mot court, un dégradé
          continu ne laisse voir que sa portion centrale et les six couleurs ne
          se lisent plus. Chaque teinte occupe donc un sixième de la largeur du
-         mot, avec un court fondu pour éviter la marche d'escalier. */
+         mot, avec un court fondu pour éviter la marche d'escalier.
+
+         La première bande passe par --multicolore-tete : le blanc voulu sur
+         le thème sombre disparaîtrait purement et simplement sur la texture
+         claire, où il devient le gris foncé des écritures (#333333). Même
+         raisonnement — et même valeur — que le jeton __PALETTE_BLANC__ du
+         module Test Gratuit. */
       background-image: linear-gradient(90deg,
-        #FFFFFF 0%,  #FFFFFF 13%,
+        var(--multicolore-tete) 0%,  var(--multicolore-tete) 13%,
         #F8C471 20%, #F8C471 30%,
         #EC7063 37%, #EC7063 46%,
         #5DADE2 54%, #5DADE2 63%,
@@ -975,6 +1018,121 @@
       font-size: 0.8rem;
       color: var(--text-muted);
       line-height: 1.5;
+    }
+
+    /* ===== PAGE « DÉTAILS » D'UN PACK (31/08/2026) =====
+       Le cadre de la fiche ne montre qu'une animation d'ensemble. La page
+       Détails ouvre chaque onglet du tableau de bord livré, capture à l'appui,
+       et decrit ce qu'on y fait — le visiteur voit ce qu'il achète avant de
+       l'acheter, et non après. */
+
+    /* Le lien suit la description, sur sa propre ligne (un <br> le précède
+       dans la fiche) : en fin de phrase il se lirait comme un mot du texte. */
+    .lien-details {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .lien-details:hover { color: var(--accent-green); }
+
+    .detail-retour {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 9px 14px;
+      background: none;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .detail-retour:hover { background: var(--hover-bg); color: var(--text-main); }
+
+    .detail-intro {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* L'animation d'ensemble, au meme gabarit que le cadre des fiches : le
+       visiteur reconnait l'apercu qu'il vient de quitter. */
+    .detail-gif {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .detail-variante-titre {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 4px;
+    }
+    .detail-variante-sous {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    /* Une colonne par capture sur grand ecran, empilees sur telephone. Les
+       captures font 800 x 800 : `minmax` les laisse descendre jusqu'a 240 px
+       sans jamais deborder de la colonne. */
+    .detail-swipes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .detail-swipe {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+    .detail-swipe img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .detail-swipe-titre {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .detail-swipe-texte {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Pack dont les captures ne sont pas encore faites : on le dit, plutot
+       que d'ouvrir une page vide. */
+    .detail-attente {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      padding: 28px 16px;
+      border: 1px dashed var(--card-border);
+      border-radius: var(--radius);
     }
 
     .btn-add-big {
@@ -1298,6 +1456,94 @@
       color: var(--modal-bg);
     }
 
+    /* Rangee d'actions du panier (31/08/2026) : « Vider » a gauche,
+       « Valider » a droite. `space-between` place les deux aux extremites, et
+       le <span> vide rendu quand le panier est vide garde le bouton de
+       validation a droite plutot que de le laisser glisser a gauche. */
+    .cart-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    /* La marge haute du bouton datait de l'empilement vertical : dans une
+       rangee elle desaligne les deux boutons. */
+    .cart-actions .cart-clear-btn { margin-top: 0; }
+    .cart-actions .btn-pay { margin-left: auto; }
+
+    /* Sur telephone, les deux boutons passent l'un sous l'autre — mais dans
+       l'ordre voulu : valider d'abord, vider ensuite, l'action destructive
+       ne devant jamais tomber sous le pouce a la place de l'autre. */
+    @media (max-width: 420px) {
+      .cart-actions { flex-direction: column-reverse; align-items: stretch; }
+      .cart-actions .btn-pay { margin-left: 0; }
+    }
+
+    /* ===== ACCÈS DISTANT (31/08/2026) =====
+       Deux adresses officielles, données en clair et copiables. Le champ est
+       en lecture seule : ce n'est pas une saisie, c'est une valeur à prendre —
+       mais un <input> se sélectionne d'un clic et se copie, ce qu'un simple
+       paragraphe ne fait pas. */
+    .acces-distant {
+      margin-top: 4px;
+      padding: 14px 16px;
+      background: rgba(93, 173, 226, 0.07);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+    }
+    .acces-distant-titre {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 4px;
+    }
+    .acces-distant-ligne {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .acces-distant-ligne input {
+      flex: 1 1 auto;
+      min-width: 0;
+      padding: 10px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+    .acces-distant-lien {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: var(--primary-blue);
+      color: #0d1116;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .acces-distant-lien:hover { filter: brightness(1.08); }
+    /* --primary-blue est clair sur le theme sombre (texte sombre lisible) mais
+       FONCE sur le theme clair : le meme texte sombre y passerait sous le
+       seuil de lisibilite. */
+    html[data-theme="light"] .acces-distant-lien { color: #ffffff; }
+    .acces-distant-aide {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 8px 0 14px;
+    }
+    .acces-distant-aide code {
+      background: var(--input-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
     .cart-modal-empty {
       text-align: center;
       color: var(--text-muted);
@@ -1419,6 +1665,15 @@
         grid-column: 1 / -1;
       }
 
+      /* La page Détails garde UNE colonne de cartes pleine largeur : la
+         grille à deux colonnes couperait chaque variante en deux et les
+         captures y descendraient à 240 px. C'est la grille interne
+         `.detail-swipes` qui répartit les trois onglets côte à côte. */
+      #section-details .container {
+        display: flex;
+        flex-direction: column;
+      }
+
       /* La vidéo commande la hauteur de la rangée : le descriptif, posé dans
          la même rangée de grille, s'étire pour la suivre. C'est donc elle
          seule qu'on dimensionne, et les deux blocs grandissent ensemble.
@@ -1536,6 +1791,7 @@
        ========================================================= */
     @media (min-width: 769px) and (max-width: 1023px) {
       .page-section { max-width: 820px; }
+      #section-details { max-width: 100%; }
 
       .module-list-container {
         max-height: 60vh;
@@ -1653,7 +1909,7 @@
     <div class="nav-links">
       <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
       <button onclick="switchTab('fonctionnement')" id="nav-fonctionnement"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
-      <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Module</button>
+      <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Packs</button>
       <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
     </div>
     <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
@@ -1711,7 +1967,7 @@
            Domotique » qui le précédait a été retiré le 25/08/2026 : l'accroche
            le remplace et porte seule l'entrée en matière. -->
       <div class="hero-pitch">
-        Déployez vos modules sur Home Assistant en 1 clic
+        Déployez vos packs sur Home Assistant en 1 clic
         <span class="hero-sub">Des tableaux de bord clé en main, installés à distance sur votre instance — vous n'avez rien à préparer.</span>
       </div>
 
@@ -1727,14 +1983,14 @@
       <div class="card">
           <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-circle-info"></i> Descriptif</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-            <b style="color: var(--col-gold);">HA-Deployer</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos modules, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
+            <b style="color: var(--col-gold);">HA-Deployer</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-            Chaque module apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin. Les textes s'adaptent à votre langue.
+            Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin. Les textes s'adaptent à votre langue.
           </p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
-            <button type="button" class="descriptif-lien" onclick="switchTab('module')"><i class="fa-solid fa-cubes"></i> Modules</button>
+            <button type="button" class="descriptif-lien" onclick="switchTab('module')"><i class="fa-solid fa-cubes"></i> Packs</button>
             <button type="button" class="descriptif-lien" onclick="switchTab('test')"><i class="fa-solid fa-vial"></i> Test gratuit</button>
           </div>
       </div>
@@ -1751,7 +2007,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-diagram-project"></i> Le principe</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-          HA-Deployer se connecte à distance à votre instance pour y déployer les modules choisis, sans intervention de votre part. Un <b>module</b> est un tableau de bord clé en main dédié à un usage précis (éclairage, météo, sécurité…), qui embarque aussi ses scripts, automatisations, capteurs et helpers, configurés à partir des informations que vous renseignez (parfois optionnelles).
+          HA-Deployer se connecte à distance à votre instance pour y déployer les packs choisis, sans intervention de votre part. Un <b>pack</b> est un tableau de bord clé en main dédié à un usage précis (éclairage, météo, sécurité…), qui embarque aussi ses scripts, automatisations, capteurs et helpers, configurés à partir des informations que vous renseignez (parfois optionnelles).
         </p>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
           <b style="color: var(--col-gold);">Tout est inclus :</b> <b>HACS</b> s'il manque, les <b>cartes personnalisées</b> et les <b>intégrations</b> requises. Vous n'avez rien à installer.
@@ -1761,7 +2017,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-list-ol"></i> Comment ça marche</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-          1. Choisissez vos modules dans l'onglet <b>Module</b>, en renseignant l'entité concernée pour chacun.<br>
+          1. Choisissez vos packs dans l'onglet <b>Packs</b>, en renseignant l'entité concernée pour chacun.<br>
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
           3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
           4. Procédez au paiement — les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance.
@@ -1780,14 +2036,61 @@
           </ol>
         </div>
 
+        <!-- Acces distant (31/08/2026) : les deux solutions les plus courantes
+             se configurent sur le site de leur editeur, pas ici. On donne donc
+             l'adresse exacte, visible et copiable — un visiteur qui cherche
+             « nabu casa » ou « duckdns » dans un moteur tombe aussi sur des
+             pages de revente et des tutoriels perimes. -->
+        <div class="acces-distant">
+          <div class="acces-distant-titre">
+            <i class="fa-solid fa-globe"></i> Configurer l'accès distant, via le site officiel
+          </div>
+
+          <label class="param-label" for="url-nabucasa">Nabu Casa — Home Assistant Cloud (abonnement, rien à installer)</label>
+          <div class="acces-distant-ligne">
+            <input type="url" id="url-nabucasa" value="https://www.nabucasa.com/" readonly
+                   onclick="this.select()" aria-label="Adresse du site officiel Nabu Casa">
+            <a class="acces-distant-lien" href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir
+            </a>
+          </div>
+          <p class="acces-distant-aide">
+            Une fois l'abonnement actif, l'adresse à nous donner se lit dans Home Assistant :
+            <b>Paramètres → Home Assistant Cloud → Accès distant</b>. Elle finit par
+            <code>.ui.nabu.casa</code> et son certificat est déjà valide.
+          </p>
+
+          <label class="param-label" for="url-duckdns">DuckDNS — nom de domaine gratuit (avec redirection de port sur votre box)</label>
+          <div class="acces-distant-ligne">
+            <input type="url" id="url-duckdns" value="https://www.duckdns.org/" readonly
+                   onclick="this.select()" aria-label="Adresse du site officiel DuckDNS">
+            <a class="acces-distant-lien" href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir
+            </a>
+          </div>
+          <p class="acces-distant-aide">
+            Créez-y un sous-domaine, puis installez l'add-on <b>DuckDNS</b> dans Home Assistant
+            (il obtient aussi le certificat) et ouvrez le port 8123 sur votre box.
+            L'adresse à nous donner ressemble alors à
+            <code>https://votre-nom.duckdns.org:8123</code>.
+          </p>
+
+          <p class="acces-distant-aide" style="margin-bottom: 0;">
+            <i class="fa-solid fa-shield-halved"></i>
+            Dans les deux cas, l'adresse doit être en <b>https</b> : cette page l'est
+            elle-même, et un navigateur refuse d'ouvrir une connexion en clair depuis
+            une page sécurisée.
+          </p>
+        </div>
+
         <div class="notice-box" style="margin-bottom: 0;">
           <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
           <ol>
             <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
             <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
             <li>Saisissez le nom <code>HA-Deployer</code>.</li>
-            <li>Une fois l'installation réussie, revenez dans ce même onglet et supprimez le jeton.</li>
           </ol>
+          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
         </div>
       </div>
     </div>
@@ -1797,11 +2100,11 @@
   <div id="section-module" class="page-section">
     <div class="container">
       <header>
-        <h1><i class="fa-solid fa-sliders"></i> Configuration & Modules</h1>
+        <h1><i class="fa-solid fa-sliders"></i> Configuration & Packs</h1>
       </header>
 
       <div class="notice-box module-notice">
-        <strong><i class="fa-solid fa-box-open"></i> Chaque module est livré complet :</strong>
+        <strong><i class="fa-solid fa-box-open"></i> Chaque pack est livré complet :</strong>
         le tableau de bord, ses scripts et automatisations, mais aussi l'installation de <b>HACS</b>, des <b>cartes personnalisées</b> et des <b>intégrations</b> dont il a besoin. Rien à installer de votre côté.
       </div>
 
@@ -1809,7 +2112,7 @@
       <div class="subtabs" id="category-subtabs">
         <button class="subtab configuration" onclick="filterCategory('configuration', this)">Configuration</button>
         <button class="subtab interface active" onclick="filterCategory('interface', this)">Interface</button>
-        <button class="subtab service" onclick="filterCategory('service', this)">Service</button>
+        <button class="subtab service multicolore" onclick="filterCategory('service', this)">Service</button>
         <button class="subtab ouverture" onclick="filterCategory('ouverture', this)">Ouverture</button>
         <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Éclairage</button>
         <button class="subtab chauffage" onclick="filterCategory('chauffage', this)">Chauffage</button>
@@ -1826,6 +2129,23 @@
     </div>
   </div>
 
+  <!-- SECTION 3 bis : DÉTAILS D'UN PACK
+       Une seule section, remplie a la volee par `ouvrirDetails(cle)` depuis la
+       fiche du pack : une page par pack figerait 40 blocs quasi identiques
+       dans le fichier, et le premier changement de mise en page les ferait
+       diverger. -->
+  <div id="section-details" class="page-section">
+    <div class="container">
+      <button type="button" class="detail-retour" onclick="switchTab('module')">
+        <i class="fa-solid fa-arrow-left"></i> Retour aux packs
+      </button>
+      <header>
+        <h1 id="detail-titre"></h1>
+      </header>
+      <div id="detail-corps"></div>
+    </div>
+  </div>
+
   <!-- SECTION 4 : TEST GRATUIT -->
   <div id="section-test" class="page-section">
     <div class="container">
@@ -1835,30 +2155,36 @@
 
       <div class="card">
         <div class="notice-box">
-          <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un module de démonstration sur votre instance.
+          <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un pack de démonstration sur votre instance.
           Aucune entité n'est requise : la carte est entièrement autonome.
         </div>
         <div class="form-group">
           <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url')" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.</div>
+          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>. Si elle n'est joignable que chez vous, configurez d'abord un accès distant : <b>Nabu Casa</b> (<a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>) ou <b>DuckDNS</b> (<a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>) — marche à suivre dans l'onglet Fonctionnement.</div>
           <input type="url" id="test-ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token')" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<br>4. Une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</div>
+          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
           <input type="password" id="test-ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
         </div>
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Module de Test Unique</h3>
-        <div class="module-item">
-          <div class="module-item-row">
-            <div>
-              <strong>Module Découverte</strong>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">Vitrine animée des 6 familles de modules — gratuit, sans engagement</div>
-            </div>
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Pack de Test Unique</h3>
+        <!-- Meme presentation que les fiches du catalogue : un cadre carre,
+             son animation, puis le descriptif. Le visiteur voit ce qu'il va
+             deployer avant de saisir quoi que ce soit. -->
+        <div class="module-item module-item-detailed">
+          <strong>Pack Découverte</strong>
+          <div class="module-video" style="background: #000;">
+            <img src="templates/test_gratuit/test-gratuit.gif" alt="Démonstration du Pack Découverte" loading="lazy">
           </div>
+          <p class="module-desc-text">
+            Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
+            Chauffage, Eau, Appareil et Sécurité. Gratuit, sans engagement, et sans
+            aucune entité à renseigner.
+          </p>
           <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
           <div class="deploy-log" id="test-log"></div>
         </div>
@@ -1885,9 +2211,9 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i> Vos données</h3>
         <div class="prose">
-          <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos modules.</p>
+          <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos packs.</p>
           <p>Vous gardez la main : un jeton d'accès longue durée se révoque à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
-          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le module concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont conservés</strong> — seule une empreinte irréversible de cette adresse l'est, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
+          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le pack concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont conservés</strong> — seule une empreinte irréversible de cette adresse l'est, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
           <p>Le détail complet — durées de conservation, destinataires, base légale, registre des traitements et contact du responsable — figure dans la <strong>politique de confidentialité</strong>.</p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('confidentialite')"><i class="fa-solid fa-user-shield"></i> Politique de confidentialité</button>
@@ -1898,7 +2224,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-envelope-open-text"></i> Contact</h3>
         <div class="prose">
-          <p>Une question, une suggestion de module, un partenariat ? Écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> ou passez par l'un des canaux en bas de page.</p>
+          <p>Une question, une suggestion de pack, un partenariat ? Écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> ou passez par l'un des canaux en bas de page.</p>
         </div>
       </div>
     </div>
@@ -1912,17 +2238,17 @@
       </header>
 
       <div class="card">
-        <h3 class="faq-q"><i class="fa-solid fa-cube"></i> Qu'est-ce qu'un module exactement ?</h3>
+        <h3 class="faq-q"><i class="fa-solid fa-cube"></i> Qu'est-ce qu'un pack exactement ?</h3>
         <div class="prose">
-          <p>Un tableau de bord complet dédié à un usage précis. Selon le module, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p>
-          <p>S'y ajoutent les dépendances nécessaires : <strong>HACS</strong>, les <strong>cartes personnalisées</strong> et certaines <strong>intégrations</strong> — le tout compris dans le prix du module.</p>
+          <p>Un tableau de bord complet dédié à un usage précis. Selon le pack, il embarque aussi des scripts, des automatisations, des capteurs ou des helpers, installés automatiquement sur votre instance.</p>
+          <p>S'y ajoutent les dépendances nécessaires : <strong>HACS</strong>, les <strong>cartes personnalisées</strong> et certaines <strong>intégrations</strong> — le tout compris dans le prix du pack.</p>
         </div>
       </div>
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-puzzle-piece"></i> Dois-je installer HACS ou des cartes moi-même ?</h3>
         <div class="prose">
-          <p>Non, rien n'est à installer manuellement. Si <strong>HACS</strong> n'est pas encore présent sur votre instance, il est mis en place automatiquement. Les <strong>cartes personnalisées</strong> utilisées par le tableau de bord sont téléchargées et déclarées dans les ressources Lovelace, et les <strong>intégrations</strong> requises par le module sont configurées dans la foulée.</p>
+          <p>Non, rien n'est à installer manuellement. Si <strong>HACS</strong> n'est pas encore présent sur votre instance, il est mis en place automatiquement. Les <strong>cartes personnalisées</strong> utilisées par le tableau de bord sont téléchargées et déclarées dans les ressources Lovelace, et les <strong>intégrations</strong> requises par le pack sont configurées dans la foulée.</p>
           <p>Si une de ces dépendances est déjà installée chez vous, elle est réutilisée telle quelle : rien n'est écrasé ni dupliqué.</p>
         </div>
       </div>
@@ -1939,22 +2265,22 @@
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-shield-halved"></i> Le déploiement peut-il casser ma configuration existante ?</h3>
-        <div class="prose"><p>Non. Les modules sont ajoutés comme de nouvelles vues dans un tableau de bord dédié. Vos vues et automatisations actuelles ne sont jamais écrasées.</p></div>
+        <div class="prose"><p>Non. Les packs sont ajoutés comme de nouvelles vues dans un tableau de bord dédié. Vos vues et automatisations actuelles ne sont jamais écrasées.</p></div>
       </div>
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-clock"></i> Combien de temps prend un déploiement ?</h3>
-        <div class="prose"><p>Quelques minutes après le paiement. Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement.</p></div>
+        <div class="prose"><p>Quelques minutes après le paiement. Certains packs nécessitent un redémarrage de Home Assistant, effectué automatiquement.</p></div>
       </div>
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-vial"></i> Puis-je essayer avant d'acheter ?</h3>
-        <div class="prose"><p>Oui, l'onglet <strong>Test Gratuit</strong> permet d'injecter un module de démonstration sans engagement.</p></div>
+        <div class="prose"><p>Oui, l'onglet <strong>Test Gratuit</strong> permet d'injecter un pack de démonstration sans engagement.</p></div>
       </div>
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-key"></i> Comment révoquer l'accès après coup ?</h3>
-        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les modules déjà déployés restent en place.</p></div>
+        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les packs déjà déployés restent en place.</p></div>
       </div>
     </div>
   </div>
@@ -1967,10 +2293,10 @@
       </header>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-list-check"></i> Déployer un module, pas à pas</h3>
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-list-check"></i> Déployer un pack, pas à pas</h3>
         <div class="prose">
           <ul>
-            <li>Ouvrez l'onglet <strong>Module</strong> et choisissez une catégorie.</li>
+            <li>Ouvrez l'onglet <strong>Packs</strong> et choisissez une catégorie.</li>
             <li>Renseignez l'entité demandée, puis cliquez sur <strong>Ajouter</strong>.</li>
             <li>Ouvrez le <strong>Panier</strong> en haut, vérifiez la liste, retirez au besoin.</li>
             <li>Validez, saisissez l'URL et le jeton de votre instance.</li>
@@ -1987,8 +2313,8 @@
             <li>Ouvrez l'onglet <strong>Sécurité</strong>.</li>
             <li>Section <strong>Jetons d'accès longue durée</strong> → <strong>Créer un jeton</strong>.</li>
             <li>Nommez-le <code>HA-Deployer</code> et copiez la valeur affichée : elle n'est montrée qu'une seule fois.</li>
-            <li>Une fois l'installation réussie, revenez dans cet onglet et supprimez le jeton.</li>
           </ul>
+          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
         </div>
       </div>
 
@@ -1998,7 +2324,7 @@
           <p><strong>La connexion échoue :</strong> vérifiez que l'URL est complète (avec <code>https://</code> et le port), et qu'elle s'ouvre bien depuis un réseau extérieur — depuis votre mobile en 4G, Wi-Fi coupé, par exemple.</p>
           <p><strong>Le jeton est refusé :</strong> il a peut-être expiré ou été révoqué. Générez-en un nouveau puis réessayez.</p>
           <p><strong>Une carte affiche « Erreur de configuration » :</strong> une carte personnalisée est manquante. Elle est normalement installée automatiquement ; un rechargement forcé du navigateur (<code>Ctrl+Maj+R</code>) suffit le plus souvent.</p>
-          <p>Si le problème persiste, écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> en précisant le module concerné.</p>
+          <p>Si le problème persiste, écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> en précisant le pack concerné.</p>
         </div>
       </div>
     </div>
@@ -2018,7 +2344,7 @@
       <div class="card">
         <div class="notice-box" style="background: rgba(248, 196, 113, 0.1); border-left-color: var(--col-gold); margin-bottom: 0;">
           <strong><i class="fa-solid fa-scale-balanced"></i> Ce que vous payez exactement :</strong>
-          le prix d'un module rémunère <b>une prestation de service</b> — l'orchestration et l'exécution automatisée du déploiement sur votre instance : scripts d'installation, découverte de vos entités, configuration, helpers, automatisations, traduction et assistance.
+          le prix d'un pack rémunère <b>une prestation de service</b> — l'orchestration et l'exécution automatisée du déploiement sur votre instance : scripts d'installation, découverte de vos entités, configuration, helpers, automatisations, traduction et assistance.
           <b>Il ne s'agit en aucun cas de la vente d'un logiciel, ni de l'acquisition de droits de propriété intellectuelle sur les cartes communautaires open-source</b> (card-mod, mushroom, swipe-card, stack-in-card, apexcharts-card, plotly-graph, button-card…), ni sur <b>Home Assistant</b> ou <b>HACS</b>.
           Ces composants restent la propriété de leurs auteurs respectifs, sont distribués gratuitement sous leurs propres licences libres, et vous demeurez libre de les installer vous-même sans passer par ce service. HA-Deployer n'est affilié ni à Home Assistant, ni à Nabu Casa, ni aux auteurs de ces cartes.
         </div>
@@ -2035,16 +2361,16 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-gears"></i> Nature de la prestation</h3>
         <div class="prose">
-          <p>Un <strong>module</strong> correspond à l'exécution, sur l'instance Home Assistant que vous désignez, d'un ensemble d'opérations automatisées : installation des dépendances requises (HACS, cartes personnalisées, intégrations), création des helpers, scripts, automatisations et capteurs, puis injection d'une vue de tableau de bord adaptée à vos entités et traduite dans votre langue.</p>
+          <p>Un <strong>pack</strong> correspond à l'exécution, sur l'instance Home Assistant que vous désignez, d'un ensemble d'opérations automatisées : installation des dépendances requises (HACS, cartes personnalisées, intégrations), création des helpers, scripts, automatisations et capteurs, puis injection d'une vue de tableau de bord adaptée à vos entités et traduite dans votre langue.</p>
           <p>La prestation est fournie <strong>à distance</strong> et suppose que votre instance soit joignable depuis Internet. Ce prérequis est décrit dans l'onglet <strong>Fonctionnement</strong> ; il relève de votre installation et non de la prestation vendue.</p>
-          <p>Les éléments déployés restent intégralement sur votre instance et vous appartiennent : aucune licence n'est révoquée, aucun abonnement n'est requis, et l'interruption du service n'affecte pas les modules déjà installés.</p>
+          <p>Les éléments déployés restent intégralement sur votre instance et vous appartiennent : aucune licence n'est révoquée, aucun abonnement n'est requis, et l'interruption du service n'affecte pas les packs déjà installés.</p>
         </div>
       </div>
 
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-euro-sign"></i> Prix et paiement</h3>
         <div class="prose">
-          <p>Les prix sont indiqués en euros, toutes taxes comprises, sur la fiche de chaque module. Le montant total est rappelé dans le panier avant validation.</p>
+          <p>Les prix sont indiqués en euros, toutes taxes comprises, sur la fiche de chaque pack. Le montant total est rappelé dans le panier avant validation.</p>
           <p>Le paiement s'effectue en une fois, à la commande, par l'intermédiaire d'un prestataire de paiement sécurisé. Aucune coordonnée bancaire ne transite par ce site ni n'y est conservée.</p>
         </div>
       </div>
@@ -2053,7 +2379,7 @@
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-rocket"></i> Exécution de la prestation</h3>
         <div class="prose">
           <p>Le déploiement démarre <strong>immédiatement après la confirmation du paiement</strong> et se déroule en quelques minutes. Son avancement est affiché en direct, étape par étape.</p>
-          <p>Certains modules nécessitent un redémarrage de Home Assistant, effectué automatiquement et signalé dans le journal de déploiement.</p>
+          <p>Certains packs nécessitent un redémarrage de Home Assistant, effectué automatiquement et signalé dans le journal de déploiement.</p>
           <p>En cas d'échec imputable à la prestation, celle-ci est relancée sans frais ; si l'échec persiste, la commande est remboursée intégralement.</p>
         </div>
       </div>
@@ -2084,7 +2410,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-triangle-exclamation"></i> Responsabilité</h3>
         <div class="prose">
-          <p>Les modules sont ajoutés comme de <strong>nouvelles vues</strong> dans un tableau de bord dédié : vos vues, scripts et automatisations existants ne sont ni écrasés ni supprimés. Lorsqu'un module doit compléter votre <code>configuration.yaml</code>, la configuration est systématiquement validée avant tout redémarrage.</p>
+          <p>Les packs sont ajoutés comme de <strong>nouvelles vues</strong> dans un tableau de bord dédié : vos vues, scripts et automatisations existants ne sont ni écrasés ni supprimés. Lorsqu'un pack doit compléter votre <code>configuration.yaml</code>, la configuration est systématiquement validée avant tout redémarrage.</p>
           <p>Il vous appartient néanmoins de disposer d'une <strong>sauvegarde à jour</strong> de votre instance avant tout déploiement, comme avant toute modification de configuration.</p>
           <p>La responsabilité ne saurait être engagée pour une indisponibilité de votre instance, de votre accès Internet ou d'un service tiers (Home Assistant, HACS, dépôts de cartes communautaires, fournisseur d'accès distant), ni pour les conséquences d'une modification manuelle apportée par vos soins aux éléments déployés.</p>
         </div>
@@ -2125,7 +2451,7 @@
           <ul>
             <li><strong>Adresse (URL) de votre instance</strong> et <strong>jeton d'accès longue durée</strong> — nécessaires à l'exécution du déploiement. Le jeton est chiffré dès sa réception, n'est jamais transmis en clair au système d'exécution et n'est jamais journalisé. <em>Base légale : exécution du contrat (art. 6.1.b du RGPD).</em></li>
             <li><strong>Empreinte irréversible de l'adresse de votre instance</strong> — condensat cryptographique salé, à sens unique : il ne permet pas de retrouver l'adresse d'origine. Il sert uniquement à compter les installations distinctes et à mesurer la fiabilité des déploiements. <em>Base légale : intérêt légitime (art. 6.1.f) — fiabilité et amélioration du service.</em></li>
-            <li><strong>Journal technique de déploiement</strong> — module concerné, réussite ou échec, message d'erreur éventuel, version de Home Assistant, langue de l'interface. <em>Base légale : intérêt légitime (art. 6.1.f).</em></li>
+            <li><strong>Journal technique de déploiement</strong> — pack concerné, réussite ou échec, message d'erreur éventuel, version de Home Assistant, langue de l'interface. <em>Base légale : intérêt légitime (art. 6.1.f).</em></li>
             <li><strong>Données de commande et de facturation</strong> — traitées par le prestataire de paiement ; seules les données nécessaires à la comptabilité sont conservées ici. <em>Base légale : obligation légale (art. 6.1.c).</em></li>
             <li><strong>Échanges d'assistance</strong> — courriels que vous nous adressez. <em>Base légale : exécution du contrat et intérêt légitime.</em></li>
           </ul>
@@ -2332,6 +2658,10 @@
     // Les pages du pied de page (À propos / FAQ / Aide) n'ont pas d'onglet dans le bandeau
     const navBtn = document.getElementById(`nav-${tabId}`);
     if (navBtn) navBtn.classList.add('active');
+
+    // La fiche de détails d'un pack n'a pas d'onglet non plus, mais elle
+    // appartient au catalogue : c'est « Packs » qui reste allumé.
+    if (tabId === 'details') document.getElementById('nav-module').classList.add('active');
 
     closeMobileMenu();
     document.querySelectorAll('.page-section').forEach(sec => { sec.scrollTop = 0; });
@@ -2578,6 +2908,299 @@
     }
   };
 
+
+  /* ---------- PAGE « DÉTAILS » D'UN PACK (31/08/2026) ----------
+     Le cadre de la fiche ne montre qu'une animation d'ensemble : le visiteur
+     ne sait pas ce que contient chacun des trois onglets qu'il achète, ni ce
+     qui change d'une variante à l'autre. Cette table décrit, pack par pack,
+     l'animation globale puis chaque onglet du tableau de bord livré.
+
+     Les captures sont produites par `_capturer_swipes.py` depuis l'instance
+     de recette : ce sont les vues réellement déployées, jamais des maquettes.
+     Un pack absent de cette table affiche une page d'attente explicite
+     plutôt qu'un écran vide — le lien « Détails », lui, est présent partout.
+
+     ATTENTION aux chemins : `publier_site.py` relève les fichiers de
+     `templates/` cités entre APOSTROPHES dans cette page. Un chemin composé
+     à l'exécution ne serait pas publié, et les images manqueraient sur le
+     site sans que rien ne le signale ici. */
+  const PACK_DETAILS = {
+    OK_service_meteo: {
+      gif: 'templates/service_meteo/meteo-sombre.gif',
+      cadre: '#000000',
+      intro: 'Trois onglets, balayés du doigt. Les données viennent de l\'intégration Meteorologisk institutt (met.no), installée par le pack si elle manque — la seule source native qui publie d\'un bloc les cinq relevés du troisième onglet. Les textes suivent la langue de votre instance.',
+      variantes: [
+        {
+          nom: 'Thème sombre',
+          sous: 'La variante par défaut. Fond texturé sombre, écritures blanches, bordure animée multicolore.',
+          gif: 'templates/service_meteo/meteo-sombre.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_meteo/details/meteo-sombre-1-1.jpg',
+              titre: '1 — Semaine',
+              texte: 'Condition et température du moment, puis cinq jours de prévisions : minimale, maximale, et une barre colorée qui situe la journée dans l\'amplitude de la semaine.' },
+            { img: 'templates/service_meteo/details/meteo-sombre-1-2.jpg',
+              titre: '2 — Heure par heure',
+              texte: 'Le même relevé, découpé heure par heure sur la journée en cours — utile pour placer une sortie ou une lessive.' },
+            { img: 'templates/service_meteo/details/meteo-sombre-1-3.jpg',
+              titre: '3 — Conditions',
+              texte: 'Couverture nuageuse, vent, pression, humidité et ultraviolet. Chaque ligne porte sa propre icône animée : le nuage s\'efface, le vent traverse, la goutte tombe.' }
+          ]
+        },
+        {
+          nom: 'Thème clair',
+          sous: 'Même carte, texture claire et écritures gris foncé. Le fond de la vue passe au blanc pour que la carte ne flotte pas sur du noir.',
+          gif: 'templates/service_meteo/meteo-clair.gif', cadre: '#FFFFFF',
+          swipes: [
+            { img: 'templates/service_meteo/details/meteo-clair-1-1.jpg',
+              titre: '1 — Semaine',
+              texte: 'Les prévisions de la semaine, sur texture claire.' },
+            { img: 'templates/service_meteo/details/meteo-clair-1-2.jpg',
+              titre: '2 — Heure par heure',
+              texte: 'Le découpage horaire de la journée.' },
+            { img: 'templates/service_meteo/details/meteo-clair-1-3.jpg',
+              titre: '3 — Conditions',
+              texte: 'Les cinq relevés détaillés. Les icônes météo gardent leurs couleurs : seuls leurs blancs sont assombris, sans quoi les nuages disparaîtraient dans la texture.' }
+          ]
+        }
+      ]
+    },
+
+    OK_service_temps: {
+      gif: 'templates/service_temps/temps_athee.gif',
+      cadre: '#000000',
+      intro: 'Les deux premiers onglets sont communs à toutes les variantes : une horloge analogique, puis le cycle du soleil et de la lune. C\'est le troisième qui change — vous choisissez votre calendrier au moment de l\'achat, et le pack installe l\'intégration correspondante.',
+      variantes: [
+        {
+          nom: 'Standard / Universel',
+          sous: 'Les cinq prochains jours fériés de votre pays, via l\'intégration native Home Assistant — donc traduits.',
+          gif: 'templates/service_temps/temps_athee.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-1-1.jpg', titre: '1 — Horloge',
+              texte: 'Horloge analogique à l\'heure de votre instance, date du jour en dessous.' },
+            { img: 'templates/service_temps/details/temps-sombre-1-2.jpg', titre: '2 — Cycle solaire',
+              texte: 'Position du soleil sur l\'horizon, heures de lever et de coucher, phase et trajet de la lune.' },
+            { img: 'templates/service_temps/details/temps-sombre-1-3.jpg', titre: '3 — Jours fériés',
+              texte: 'Cinq colonnes, une par fête à venir : nom, icône propre à la fête, date en toutes lettres.' }
+          ]
+        },
+        {
+          nom: 'Islamique / Musulman',
+          sous: 'Les cinq prières du jour, à l\'heure calculée pour vos coordonnées.',
+          gif: 'templates/service_temps/temps_islam.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-2-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
+            { img: 'templates/service_temps/details/temps-sombre-2-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
+            { img: 'templates/service_temps/details/temps-sombre-2-3.jpg', titre: '3 — Prières',
+              texte: 'Fajr, Dhuhr, Asr, Maghrib et Isha, chacune avec son horaire. Un mouvement d\'icône distinct par prière : Fajr monte, Asr descend, Isha traverse.' }
+          ]
+        },
+        {
+          nom: 'Juif',
+          sous: 'Calendrier hébraïque : date, parasha de la semaine, entrée et sortie du chabbat.',
+          gif: 'templates/service_temps/temps_judaisme.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-3-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
+            { img: 'templates/service_temps/details/temps-sombre-3-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
+            { img: 'templates/service_temps/details/temps-sombre-3-3.jpg', titre: '3 — Fêtes juives',
+              texte: 'Cinq relevés du calendrier hébraïque. Le pack installe l\'intégration Jewish Calendar si elle manque.' }
+          ]
+        },
+        {
+          nom: 'Chrétien',
+          sous: 'Fêtes du calendrier chrétien (catholique, protestant, orthodoxe), par abonnement à un flux public.',
+          gif: 'templates/service_temps/temps_christianisme.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-4-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
+            { img: 'templates/service_temps/details/temps-sombre-4-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
+            { img: 'templates/service_temps/details/temps-sombre-4-3.jpg', titre: '3 — Calendrier chrétien',
+              texte: 'Les cinq prochaines fêtes, avec une icône propre à chacune. Les intitulés viennent du flux source, publié en anglais.' }
+          ]
+        },
+        {
+          nom: 'Bouddhiste',
+          sous: 'Jours de pleine lune (Poya), Vesak et grandes observances.',
+          gif: 'templates/service_temps/temps_bouddhiste.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-5-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
+            { img: 'templates/service_temps/details/temps-sombre-5-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
+            { img: 'templates/service_temps/details/temps-sombre-5-3.jpg', titre: '3 — Calendrier bouddhiste',
+              texte: 'Les cinq prochaines observances. Les dates étant lunaires, elles sont publiées un à deux ans à l\'avance par la source.' }
+          ]
+        },
+        {
+          nom: 'Hindou',
+          sous: 'Diwali, Holi, Shivaratri, Navratri, Janmashtami et les autres grandes fêtes.',
+          gif: 'templates/service_temps/temps_hindou.gif', cadre: '#000000',
+          swipes: [
+            { img: 'templates/service_temps/details/temps-sombre-6-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
+            { img: 'templates/service_temps/details/temps-sombre-6-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
+            { img: 'templates/service_temps/details/temps-sombre-6-3.jpg', titre: '3 — Calendrier hindou',
+              texte: 'Les cinq prochaines fêtes, chacune avec son icône. Les intitulés viennent du flux source, publié en anglais.' }
+          ]
+        }
+      ]
+    },
+
+    lumiere_lumiere: {
+      gif: 'templates/eclairage_lumiere/lumiere.gif',
+      cadre: '#000000',
+      intro: 'Trois onglets : contrôle, minuteur, historique. Le premier <b>s\'adapte à votre lampe</b> — le pack lit ses capacités réelles (intensité, blanc variable, couleur, effets) et n\'affiche que les réglages qu\'elle sait exécuter. Les huit combinaisons possibles sont montrées ci-dessous, toutes déployées telles quelles.',
+      variantes: [
+        { nom: 'Variante 1 — Interrupteur simple',
+          sous: 'La lampe ne sait qu\'être allumée ou éteinte : ni curseur, ni matrice, ni sélecteur de mode.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-1-1.jpg', titre: '1 — Contrôle', texte: 'L\'ampoule seule, allumée d\'un appui.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-1-2.jpg', titre: '2 — Minuteur', texte: 'Six durées d\'extinction automatique, du quart d\'heure aux douze heures, avec pause et reprise.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-1-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 2 — Intensité variable',
+          sous: 'Le curseur d\'intensité apparaît, avec sa mémoire de luminosité.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-2-1.jpg', titre: '1 — Contrôle', texte: 'Anneau de luminosité autour de l\'ampoule, et curseur d\'intensité.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-2-2.jpg', titre: '2 — Minuteur', texte: 'Le minuteur applique aussi l\'intensité mémorisée au démarrage.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-2-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 3 — Blanc variable',
+          sous: 'La matrice de température de couleur s\'ajoute — du blanc chaud au blanc froid.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-3-1.jpg', titre: '1 — Contrôle', texte: 'La barre de blanc variable occupe toute la largeur : sans autre mode, aucune pastille de bascule n\'est nécessaire.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-3-2.jpg', titre: '2 — Minuteur', texte: 'Durées d\'extinction, veille et statut.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-3-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 4 — Couleur',
+          sous: 'Matrice de couleur RVB, sans blanc variable ni effets.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-4-1.jpg', titre: '1 — Contrôle', texte: 'La matrice arc-en-ciel. Lampe éteinte, un appui la rallume et lui redonne sa couleur.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-4-2.jpg', titre: '2 — Minuteur', texte: 'La couleur choisie est reprise au démarrage du minuteur.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-4-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 5 — Blanc variable et couleur',
+          sous: 'Deux modes : une pastille ronde fait passer de la couleur au blanc variable.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-5-1.jpg', titre: '1 — Contrôle', texte: 'La pastille de gauche bascule d\'un mode à l\'autre ; la matrice affichée suit.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-5-2.jpg', titre: '2 — Minuteur', texte: 'Le réglage mémorisé se règle ici, indépendamment de la lampe.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-5-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 6 — Effets',
+          sous: 'Les effets réellement annoncés par la lampe, un bouton chacun — jamais une liste figée.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-6-1.jpg', titre: '1 — Contrôle', texte: 'Carrousel d\'effets, généré à partir de ce que la lampe déclare : deux effets, ou vingt.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-6-2.jpg', titre: '2 — Minuteur', texte: 'L\'effet mémorisé est vérifié avant d\'être appliqué : une lampe remplacée ne casse pas le pack.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-6-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 7 — Couleur et effets',
+          sous: 'Deux modes : couleur et effets.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-7-1.jpg', titre: '1 — Contrôle', texte: 'La pastille bascule entre la matrice de couleur et le carrousel d\'effets.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-7-2.jpg', titre: '2 — Minuteur', texte: 'Durées, veille et statut, avec le réglage mémorisé.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-7-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
+        { nom: 'Variante 8 — Toutes capacités',
+          sous: 'Intensité, blanc variable, couleur et effets : les trois modes et le curseur.',
+          swipes: [
+            { img: 'templates/eclairage_lumiere/details/lumiere-8-1.jpg', titre: '1 — Contrôle', texte: 'Le tableau de bord complet : anneau d\'intensité, pastille de bascule à trois modes, matrice ou carrousel selon le mode.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-8-2.jpg', titre: '2 — Minuteur', texte: 'Le réglage à appliquer au démarrage se compose ici, sans toucher à la lampe.' },
+            { img: 'templates/eclairage_lumiere/details/lumiere-8-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année, lus sur l\'historique réel de la lampe.' } ] }
+      ]
+    },
+
+    eau_detecteur_fuite: {
+      gif: 'templates/eau_detecteur_de_fuite/fuite.gif',
+      cadre: '#000000',
+      intro: 'Le tableau de bord ne lit jamais votre détecteur directement : le pack pose entre les deux un capteur filtré. C\'est lui qui permet de <b>taire une alerte sans rien débrancher</b> — le détecteur continue de rapporter son état, son historique reste complet, et rien n\'est désactivé dans Home Assistant.',
+      variantes: [
+        {
+          nom: 'Thème sombre',
+          sous: 'Fond texturé sombre. La bordure devient un dégradé en rotation dès qu\'une fuite est détectée.',
+          swipes: [
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-1.jpg', titre: '1 — Indicateur',
+              texte: 'L\'état du détecteur d\'un coup d\'œil. En alerte, le cercle pulse et la bordure s\'anime — sans qu\'aucun élément ne bouge de place.' },
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-2.jpg', titre: '2 — Désactivation',
+              texte: 'Six durées de mise en sourdine, du quart d\'heure aux douze heures, avec pause, reprise et annulation. Le détecteur se réarme tout seul à la fin.' },
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-3.jpg', titre: '3 — Historique',
+              texte: 'Humidité de la pièce sur le jour, la semaine, le mois ou l\'année.' }
+          ]
+        },
+        {
+          nom: 'Thème clair',
+          sous: 'Même carte, texture claire et écritures gris foncé.',
+          swipes: [
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-1.jpg', titre: '1 — Indicateur', texte: 'L\'état du détecteur, sur texture claire.' },
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-2.jpg', titre: '2 — Désactivation', texte: 'Les six durées de mise en sourdine et le compte à rebours.' },
+            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-3.jpg', titre: '3 — Historique', texte: 'Humidité de la pièce sur quatre échelles de temps.' }
+          ]
+        }
+      ]
+    }
+  };
+
+  /* Fiche de détails du pack ouvert. Elle sert au bouton « Retour » comme au
+     titre de la page : rendue à chaque ouverture plutôt que pré-écrite, pour
+     qu'un ajout dans PACK_DETAILS suffise. */
+  function ouvrirDetails(cleModule) {
+    const pack = PACK_DETAILS[cleModule];
+    const titre = moduleTitle(cleModule);
+    document.getElementById('detail-titre').innerHTML =
+      `<i class="fa-solid fa-cubes"></i> ${titre}`;
+
+    const corps = document.getElementById('detail-corps');
+    if (!pack) {
+      // Le lien est présent sur tous les packs, les captures non : le dire
+      // vaut mieux qu'ouvrir une page vide.
+      const desc = detailSepare(descriptifDe(cleModule));
+      corps.innerHTML = `
+        <div class="card">
+          <p class="detail-intro">${desc.descriptif || ''}</p>
+        </div>
+        <div class="detail-attente">
+          <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack
+          sont en cours de préparation. Le pack reste déployable dès maintenant
+          depuis l'onglet Packs.
+        </div>`;
+      switchTab('details');
+      return;
+    }
+
+    const bloc = (v) => `
+      <div class="card">
+        <div class="detail-variante-titre">${v.nom}</div>
+        ${v.sous ? `<div class="detail-variante-sous">${v.sous}</div>` : ''}
+        ${v.gif ? `<div class="module-video detail-gif" style="background: ${v.cadre || '#000'}; margin-bottom: 16px;">
+                     <img src="${v.gif}" alt="Aperçu ${titre} — ${v.nom}" loading="lazy"></div>` : ''}
+        <div class="detail-swipes">
+          ${v.swipes.map(s => `
+            <figure class="detail-swipe">
+              <img src="${s.img}" alt="${titre} — ${v.nom} — ${s.titre}" loading="lazy">
+              <figcaption>
+                <div class="detail-swipe-titre">${s.titre}</div>
+                <div class="detail-swipe-texte">${s.texte}</div>
+              </figcaption>
+            </figure>`).join('')}
+        </div>
+      </div>`;
+
+    corps.innerHTML = `
+      <div class="card">
+        ${pack.gif ? `<div class="module-video detail-gif" style="background: ${pack.cadre || '#000'}; margin-bottom: 14px;">
+                        <img src="${pack.gif}" alt="Aperçu ${titre}" loading="lazy"></div>` : ''}
+        <p class="detail-intro">${pack.intro || ''}</p>
+      </div>
+      ${pack.variantes.map(bloc).join('')}
+      <div class="card" style="text-align: center;">
+        <button class="btn-add-big" onclick="switchTab('module')">
+          <i class="fa-solid fa-cart-plus"></i> Retour aux packs
+        </button>
+      </div>`;
+
+    switchTab('details');
+  }
+
+  /* Descriptif d'un pack, quelle que soit sa forme de fiche : les packs
+     détaillés le portent dans MODULE_MEDIA, les autres dans `modulesData`. */
+  function descriptifDe(cleModule) {
+    if (MODULE_MEDIA[cleModule] && MODULE_MEDIA[cleModule].detail) {
+      return MODULE_MEDIA[cleModule].detail;
+    }
+    for (const cat of Object.keys(modulesData)) {
+      const trouve = modulesData[cat].find(m => m.name === cleModule);
+      if (trouve) return trouve.desc || '';
+    }
+    return '';
+  }
+
   /* Modules réclamant plusieurs informations, et non une seule entité.
      Chaque champ porte le nom de la variable transmise au runner : le Worker
      ne laisse passer que des noms en MAJUSCULES_ET_SOULIGNES, et le module
@@ -2751,7 +3374,7 @@
     if (!list.length) {
       const vide = document.createElement('div');
       vide.className = 'categorie-vide';
-      vide.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Aucun module dans cette catégorie pour l'instant — elle s'étoffera prochainement.`;
+      vide.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Aucun pack dans cette catégorie pour l'instant — elle s'étoffera prochainement.`;
       container.appendChild(vide);
       return;
     }
@@ -2780,9 +3403,17 @@
 
       // Tous les modules ont désormais un cadre, avec ou sans animation :
       // celui qui n'en a pas encore montre un cadre vide, à la bonne taille.
+      // L'animation vient, dans l'ordre : de la variante de thème choisie,
+      // du pack détaillé, puis de sa page Détails — c'est elle qui porte
+      // l'animation des packs sans entrée dans MODULE_MEDIA (Éclairage,
+      // Détecteur de fuite). La rattacher plutôt à MODULE_MEDIA ferait
+      // basculer ces packs dans la branche « détection automatique » de
+      // `addModuleToCart`, et le panier n'afficherait plus l'entité saisie.
       const variante = varianteParDefaut(mod.name);
-      const source = variante ? variante.gif : (media && media.gif);
-      const fond = variante ? ` style="background: ${variante.cadre};"` : '';
+      const fiche = PACK_DETAILS[mod.name];
+      const source = variante ? variante.gif : ((media && media.gif) || (fiche && fiche.gif));
+      const cadre = variante ? variante.cadre : (fiche && fiche.cadre);
+      const fond = cadre ? ` style="background: ${cadre};"` : '';
       const detail = detailSepare(media ? media.detail : mod.desc);
 
       item.className = 'module-item module-item-detailed';
@@ -2793,7 +3424,8 @@
             ? `<img src="${source}" alt="Démonstration ${title}" loading="lazy">`
             : `<span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>`}
         </div>
-        ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}</p>` : ''}
+        ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}<br>
+          <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button></p>` : ''}
         ${champsParamsHtml(mod.name)}
         ${detail.inclus ? `<p class="module-desc-full">${detail.inclus}</p>` : ''}
         ${fieldHtml}
@@ -2951,7 +3583,7 @@
   function cartListStepHtml() {
     let modulesHtml;
     if (cart.length === 0) {
-      modulesHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Aucun module sélectionné pour le moment.<br>Ajoutez un module depuis l'onglet Module.</div>`;
+      modulesHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Aucun pack sélectionné pour le moment.<br>Ajoutez un pack depuis l'onglet Packs.</div>`;
     } else {
       modulesHtml = cart.map((item, i) => `
         <div class="cart-modal-item" style="--cat: ${moduleColor(item.key)};">
@@ -2972,9 +3604,15 @@
     return `
       ${modulesHtml}
       <div class="modal-footer">
-        <div class="cart-total" style="margin-bottom: 10px;">Total : ${cartTotal()} €</div>
-        <button class="btn-pay" onclick="goToCartCheckoutStep()" ${disabled}><i class="fa-solid fa-lightbulb"></i> Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
-        ${cart.length ? `<div><button class="cart-clear-btn" onclick="clearCart()"><i class="fa-solid fa-trash-can"></i> Vider le panier</button></div>` : ''}
+        <div class="cart-total" style="margin-bottom: 12px;">Total : ${cartTotal()} €</div>
+        <!-- Les deux actions sur une meme ligne, aux deux extremites : vider a
+             gauche, valider a droite. L'une defait, l'autre avance — les
+             empiler l'une sous l'autre les faisait lire comme deux etapes
+             successives. -->
+        <div class="cart-actions">
+          ${cart.length ? `<button class="cart-clear-btn" onclick="clearCart()"><i class="fa-solid fa-trash-can"></i> Vider le panier</button>` : '<span></span>'}
+          <button class="btn-pay" onclick="goToCartCheckoutStep()" ${disabled}><i class="fa-solid fa-circle-check"></i> Valider la sélection <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
       </div>
     `;
   }
@@ -3004,12 +3642,12 @@
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url')" title="Aide">?</button></label>
-        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici.</div>
+        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>. Si elle n'est joignable que chez vous, configurez d'abord un accès distant : <b>Nabu Casa</b> (<a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>) ou <b>DuckDNS</b> (<a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>) — marche à suivre dans l'onglet Fonctionnement.</div>
         <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
         <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token')" title="Aide">?</button></label>
-        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<br>4. Une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</div>
+        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
         <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
       </div>
       <div class="modal-footer">
@@ -3061,7 +3699,7 @@
           <i class="fa-solid fa-forward"></i> Passer — déployer sans paiement
         </button>
         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
-          Phase de test : injecte directement les modules sur votre instance.
+          Phase de test : injecte directement les packs sur votre instance.
         </div>
       </div>
     `;
@@ -3333,7 +3971,7 @@
     let courante = log('run', 'Envoi de la demande au serveur de déploiement…');
     try {
       const jobId = await createJob(creds, items);
-      replaceLine(courante, 'ok', `Demande acceptée — ${items.length} module(s) en file d'attente.`);
+      replaceLine(courante, 'ok', `Demande acceptée — ${items.length} pack(s) en file d'attente.`);
 
       courante = log('run', 'Déploiement en cours sur votre instance…');
       const job = await pollJob(jobId, etapes => {
@@ -3756,10 +4394,10 @@
     cart.forEach(item => (SERVER_MODULES[item.key] ? deployables : indisponibles).push(item));
 
     indisponibles.forEach(item => logLine('cart-deploy-log', 'warn',
-      `<b>${item.name}</b> — déploiement automatique pas encore disponible pour ce module.`));
+      `<b>${item.name}</b> — déploiement automatique pas encore disponible pour ce pack.`));
 
     if (!deployables.length) {
-      logLine('cart-deploy-log', 'warn', 'Aucun module de ce panier n\'est déployable automatiquement.');
+      logLine('cart-deploy-log', 'warn', 'Aucun pack de ce panier n\'est déployable automatiquement.');
       debloquerFermeture();
       return;
     }
