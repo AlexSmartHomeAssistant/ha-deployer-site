@@ -2880,7 +2880,7 @@
     service: [
       { name: 'OK_service_meteo', desc: 'Service Météo & Prévisions' },
       { name: 'OK_service_temps', desc: 'Gestion du temps et calendriers' },
-      { name: 'service_boite_aux_lettres', desc: 'Détecteur de courrier boite aux lettres' },
+      { name: 'service_boite_aux_lettres', desc: 'Courrier et colis déposés, comptés et notifiés sur vos mobiles' },
       { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
       { name: 'service_compteur_electricite', desc: 'Compteur électrique principal' },
       { name: 'service_gestion_dechets', desc: 'Poubelles & calendrier de collecte' },
@@ -3388,6 +3388,19 @@
         { titre: '3 — Historique', icone: 'fa-chart-line',
           texte: 'Humidité de la pièce sur le jour, la semaine, le mois ou l\'année.' }
       ]
+    },
+
+    service_boite_aux_lettres: {
+      intro: 'Le pack compte ce qui est déposé et <b>prévient tous vos mobiles</b> au moment du dépôt. La carte s\'adapte à ce que vous avez posé dans la boîte : un seul capteur compte les dépôts sans les distinguer, deux capteurs séparent le courrier du colis, et un capteur de relevé remet les compteurs à zéro tout seul quand vous videz la boîte.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-inbox',
+          texte: 'Ce qui attend dans la boîte, d\'un coup d\'œil. Le chiffre s\'anime dès qu\'il dépasse zéro, la bordure passe au multicolore et le fond s\'allume — sans qu\'aucun élément ne bouge de place. Un appui remet le compteur à zéro.' },
+        { titre: '2 — Historique', icone: 'fa-clock-rotate-left',
+          texte: 'Les dépôts des sept derniers jours, courrier d\'un côté, colis de l\'autre, chacun avec son icône animée et sa couleur.' },
+        { titre: '3 — Suivi', icone: 'fa-truck-fast',
+          texte: 'Les colis encore en route, prêts au retrait ou en alerte, si vous avez l\'intégration de suivi 17TRACK. Sans elle, l\'onglet dit simplement qu\'aucun colis n\'est en cours.' }
+      ]
     }
   };
 
@@ -3648,6 +3661,23 @@
       { param: 'FUITE_HUMIDITE', label: 'Capteur d\'humidité', type: 'text', required: false,
         placeholder: 'ex : sensor.salle_eau_humidity — vide : deviné dans la pièce' },
       champThemeSite('FUITE_THEME', 'bleu-evasion')
+    ],
+    /* Boîte aux lettres : le premier capteur est obligatoire, les deux autres
+       facultatifs — et ce sont EUX qui décident de la variante déployée.
+         courrier seul             -> un compteur, aucune purge automatique
+         courrier + relevé         -> un compteur, remis à zéro au relevé
+         courrier + colis + relevé -> deux compteurs, deux colonnes
+       Rien à choisir dans une liste : le pack se règle sur ce qui est posé
+       dans la boîte, et le client n'a pas à traduire son matériel en numéro
+       de variante. */
+    service_boite_aux_lettres: [
+      { param: 'BAL_COURRIER', label: 'Capteur du courrier', type: 'text', required: true,
+        placeholder: 'ex : binary_sensor.boite_aux_lettres_courrier' },
+      { param: 'BAL_COLIS', label: 'Capteur du colis', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.boite_aux_lettres_colis — vide : compté avec le courrier' },
+      { param: 'BAL_RELEVE', label: 'Capteur de relevé', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.boite_aux_lettres_releve — vide : remise à zéro à la main' },
+      champThemeSite('BAL_THEME', 'urban-factory')
     ]
   };
 
@@ -4839,7 +4869,8 @@
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     lumiere_lumiere: 'lumiere',
-    eau_detecteur_fuite: 'fuite'
+    eau_detecteur_fuite: 'fuite',
+    service_boite_aux_lettres: 'bal'
   };
 
   function themeSite(cle) {
@@ -5173,7 +5204,8 @@
   const PACKS_GRATUITS = new Set([
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
-    'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite'
+    'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
+    'service_boite_aux_lettres'
   ]);
 
   const PRIX_PACK = 9;
