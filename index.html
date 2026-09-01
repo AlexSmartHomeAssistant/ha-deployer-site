@@ -1104,11 +1104,41 @@
        haut s'etire sur toute la largeur et ne ressemble plus a celui du bas
        (harmonisation demandee le 01/09/2026). */
     #section-details > .container > .detail-retour { align-self: flex-start; }
+    /* Seule difference avec celui du haut, et elle est de POSITION, pas de
+       style : sa marge passe au-dessus. Le reste — fond transparent, bordure,
+       teinte, alignement a gauche — vient de la meme classe. */
+    .detail-retour-bas { margin-top: 18px; margin-bottom: 0; }
 
     .detail-intro {
       font-size: 0.85rem;
       color: var(--text-muted);
       line-height: 1.6;
+    }
+
+    /* UN SEUL bloc principal pour toute la page (01/09/2026). Les commandes,
+       l'animation et les trois captures vivaient dans trois cartes distinctes :
+       trois cadres empilés, et le regard ne voyait plus la page comme un
+       ensemble. */
+    .detail-bloc {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* Les deux sous-blocs. L'espacement vient du `gap` du parent, jamais
+       d'une marge posée sur l'un des deux : une marge se serait ajoutée au
+       padding de la carte sur le premier et le dernier. */
+    .detail-sous-bloc {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Le trait de séparation dit que le second sous-bloc parle d'autre chose
+       (les trois onglets) sans réintroduire un second cadre. */
+    .detail-sous-bloc + .detail-sous-bloc {
+      border-top: 1px solid var(--card-border);
+      padding-top: 20px;
     }
 
     /* L'animation d'ensemble, au meme gabarit que le cadre des fiches : le
@@ -1182,9 +1212,33 @@
       border-radius: 8px;
     }
     .detail-swipe-titre {
+      display: flex;
+      align-items: center;
+      gap: 7px;
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-main);
+    }
+    /* L'icône du titre reprend la teinte d'accent : elle nomme l'onglet d'un
+       coup d'œil dans une colonne étroite, où le titre passe souvent à la
+       ligne. */
+    .detail-swipe-titre i { color: var(--primary-blue); font-size: 0.9em; }
+
+    /* Les packs « Configuration » n'ont AUCUNE capture — ils n'affichent pas
+       de carte, il n'y a rien à filmer sur une instance. Leur icône tient donc
+       la place du visuel, au même gabarit carré que les captures : un cadre
+       « capture à venir » ferait croire à une page inachevée, alors qu'il n'y
+       a rien à attendre. */
+    .detail-swipe-icone {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--hover-bg);
+      border: 1px solid var(--card-border);
+      color: var(--primary-blue);
+      font-size: 3.4rem;
     }
     .detail-swipe-texte {
       font-size: 0.78rem;
@@ -1827,18 +1881,18 @@
         flex-direction: column;
       }
 
-      /* `repeat(3, ...)` et non `auto-fill` : la largeur du contenu est
-         plafonnee par --content-max, donc trois colonnes stables quel que
-         soit l'ecran. `auto-fill` en aurait donne cinq sur un 1920 et deux
-         sur un 1280 -- la fiche changeant de taille d'un poste a l'autre.
-         `minmax(0, 1fr)` empeche une fiche au contenu large de gonfler sa
-         colonne au detriment des deux autres. */
+      /* `repeat(5, ...)` et non `auto-fill` : la largeur du contenu est
+         plafonnee par --content-max, donc CINQ colonnes stables quel que
+         soit l'ecran (01/09/2026 — trois auparavant). `auto-fill` en aurait
+         donne un nombre variable, la fiche changeant de taille d'un poste a
+         l'autre. `minmax(0, 1fr)` empeche une fiche au contenu large de
+         gonfler sa colonne au detriment des autres. */
       #section-module .module-list-container {
         max-height: none;
         flex: 1;
         min-height: 0;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         align-content: start;
       }
 
@@ -2220,6 +2274,16 @@
         <h1 id="detail-titre"></h1>
       </header>
       <div id="detail-corps"></div>
+      <!-- Le bouton du bas est le MEME element que celui du haut, au meme
+           niveau de l'arbre : frere direct de `.container`, et non enferme
+           dans une carte injectee par `majDetails`. Enveloppe dans un
+           `.card` centre, il avait un fond, une bordure et un centrage que
+           celui du haut n'a pas — deux boutons de meme libelle qui ne se
+           ressemblaient pas. Sorti du corps, il herite de la meme regle
+           `align-self: flex-start` et n'a plus rien a redeclarer. -->
+      <button type="button" class="detail-retour detail-retour-bas" onclick="switchTab('module')">
+        <i class="fa-solid fa-arrow-left"></i> Retour aux packs
+      </button>
     </div>
   </div>
 
@@ -3169,15 +3233,73 @@
        - le calendrier (pack Temps), qui ne change QUE le 3e onglet ;
        - la variante de capacités (pack Éclairage), qui change les trois. */
   const PACK_DETAILS = {
+    /* ---- Les quatre packs « Configuration » (01/09/2026) ----
+       Meme structure que les quatre packs a tableau de bord, a deux details
+       pres qui decoulent de leur nature : pas de selecteur de theme (ils
+       n'affichent aucune carte), et une ICONE au lieu d'une capture dans
+       chacun des trois elements. Il n'y a rien a filmer sur une instance —
+       ce que ces packs produisent, c'est un add-on installe et regle. */
+    configuration_file_editor: {
+      intro: 'Trois étapes, entièrement automatiques. Le pack ne vous demande rien : l\'add-on n\'a aucun paramètre obligatoire. C\'est la brique à poser en premier sur une instance neuve — tous nos autres packs passent par elle pour écrire dans votre configuration.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Installation', icone: 'fa-download',
+          texte: 'L\'add-on officiel <b>File editor</b> est installé s\'il manque, ou mis à jour s\'il est en retard. Rien n\'est réinstallé inutilement : une relance sur une instance déjà à jour ne touche à rien.' },
+        { titre: '2 — Réglages', icone: 'fa-toggle-on',
+          texte: 'Les quatre réglages sont activés d\'un coup : lancement au démarrage, chien de garde, mise à jour automatique, et affichage dans la barre latérale.' },
+        { titre: '3 — Vérification', icone: 'fa-circle-check',
+          texte: 'Le pack ouvre réellement l\'interface de l\'add-on pour confirmer qu\'elle répond, plutôt que de se fier au seul statut « démarré ». Les packs qui écrivent dans votre configuration peuvent alors être déployés.' }
+      ]
+    },
+
+    configuration_terminal_ssh: {
+      intro: 'Un terminal complet dans la barre latérale de Home Assistant, sans rien installer sur votre ordinateur. Le pack ne vous demande rien et ne dépose <b>aucune clé SSH</b> à votre place.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Installation', icone: 'fa-download',
+          texte: 'L\'add-on officiel <b>Terminal &amp; SSH</b> est installé s\'il manque, ou mis à jour s\'il est en retard.' },
+        { titre: '2 — Réglages', icone: 'fa-toggle-on',
+          texte: 'Lancement au démarrage, chien de garde, mise à jour automatique, et affichage dans la barre latérale — les quatre mêmes réglages que les autres add-ons du catalogue.' },
+        { titre: '3 — Terminal', icone: 'fa-terminal',
+          texte: 'Le terminal de la barre latérale est prêt immédiatement : il hérite de votre session Home Assistant. L\'accès SSH depuis l\'extérieur, lui, reste fermé tant que vous n\'avez pas déposé votre propre clé publique — ouvrir le port 22 à votre place serait un choix de sécurité qui ne nous appartient pas.' }
+      ]
+    },
+
+    configuration_hacs: {
+      intro: 'Ajoute à <b>HACS</b> le dépôt GitHub de votre choix, puis le télécharge — et le met à jour s\'il y est déjà. Vous indiquez l\'adresse du dépôt et sa catégorie au moment de l\'achat.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Dépôt personnalisé', icone: 'fa-code-branch',
+          texte: 'Le dépôt que vous avez indiqué est ajouté aux dépôts personnalisés de HACS, dans la catégorie choisie. Une adresse GitHub complète, courte ou suivie de « .git » : les trois formes sont acceptées.' },
+        { titre: '2 — Téléchargement', icone: 'fa-cloud-arrow-down',
+          texte: 'HACS télécharge le dépôt. S\'il était déjà installé dans une version plus ancienne, il est mis à jour ; s\'il était déjà à jour, rien n\'est retéléchargé.' },
+        { titre: '3 — Prise en compte', icone: 'fa-rotate',
+          texte: 'Home Assistant n\'est redémarré que si la catégorie l\'exige — une intégration ou un script Python. Une carte Lovelace ou un thème se rechargent depuis votre navigateur, et le pack vous épargne alors deux minutes d\'attente.' }
+      ]
+    },
+
+    configuration_duckdns: {
+      intro: 'Donne à votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit. C\'est l\'une des quatre voies d\'accès distant que nos packs payants savent utiliser. Vous fournissez votre domaine et votre jeton DuckDNS.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Domaine et jeton', icone: 'fa-globe',
+          texte: 'L\'add-on <b>DuckDNS</b> est installé et configuré avec votre domaine et votre jeton. Vos autres réglages — alias, second sous-domaine — sont conservés : le pack ajoute, il ne remplace pas.' },
+        { titre: '2 — Certificat https', icone: 'fa-lock',
+          texte: 'Let\'s Encrypt est activé : c\'est lui qui donne le « https » sans lequel un navigateur refuse l\'accès distant. L\'intégration est déclarée dans votre configuration, et l\'adresse externe renseignée si vous n\'en aviez pas déjà une.' },
+        { titre: '3 — Le port de votre box', icone: 'fa-network-wired',
+          texte: 'La dernière étape vous revient : rediriger le port 8123 sur votre box. Aucune interface ne permet de le faire à votre place. Le pack vous le rappelle par une notification qui <b>reste dans Home Assistant</b>, bien après la fermeture de cette page.' }
+      ]
+    },
+
     OK_service_meteo: {
       intro: 'Trois onglets, balayés du doigt. Les données viennent de l\'intégration Meteorologisk institutt (met.no), installée par le pack si elle manque — la seule source native qui publie d\'un bloc les cinq relevés du troisième onglet. Les textes suivent la langue de votre instance.',
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Semaine',
+        { titre: '1 — Semaine', icone: 'fa-calendar-week',
           texte: 'Condition et température du moment, puis cinq jours de prévisions : minimale, maximale, et une barre colorée qui situe la journée dans l\'amplitude de la semaine.' },
-        { titre: '2 — Heure par heure',
+        { titre: '2 — Heure par heure', icone: 'fa-clock',
           texte: 'Le même relevé, découpé heure par heure sur la journée en cours — utile pour placer une sortie ou une lessive.' },
-        { titre: '3 — Conditions',
+        { titre: '3 — Conditions', icone: 'fa-gauge-high',
           texte: 'Couverture nuageuse, vent, pression, humidité et ultraviolet. Chaque ligne porte sa propre icône animée : le nuage s\'efface, le vent traverse, la goutte tombe.' }
       ]
     },
@@ -3209,11 +3331,11 @@
       // de la carte standard.
       carte: (etat, onglet) => (onglet === 3 ? (etat.calendrier || 'standard') : 'standard'),
       onglets: [
-        { titre: '1 — Horloge',
+        { titre: '1 — Horloge', icone: 'fa-clock',
           texte: 'Horloge analogique à l\'heure de votre instance, date du jour en dessous.' },
-        { titre: '2 — Cycle solaire',
+        { titre: '2 — Cycle solaire', icone: 'fa-sun',
           texte: 'Position du soleil sur l\'horizon, heures de lever et de coucher, phase et trajet de la lune.' },
-        { titre: '3 — Calendrier', texte: '' }   // rempli par l'option choisie
+        { titre: '3 — Calendrier', icone: 'fa-calendar-days', texte: '' }   // rempli par l'option choisie
       ]
     },
 
@@ -3246,11 +3368,11 @@
       },
       carte: (etat) => etat.variante || 'variante-8',
       onglets: [
-        { titre: '1 — Contrôle',
+        { titre: '1 — Contrôle', icone: 'fa-sliders',
           texte: 'L\'ampoule, son anneau d\'intensité, et les matrices que la lampe sait réellement piloter.' },
-        { titre: '2 — Minuteur',
+        { titre: '2 — Minuteur', icone: 'fa-hourglass-half',
           texte: 'Six durées d\'extinction automatique, du quart d\'heure aux douze heures, avec pause et reprise. Le réglage à appliquer au démarrage se compose ici, sans toucher à la lampe.' },
-        { titre: '3 — Historique',
+        { titre: '3 — Historique', icone: 'fa-chart-column',
           texte: 'Temps d\'allumage par jour, semaine, mois et année, lus sur l\'historique réel de la lampe.' }
       ]
     },
@@ -3259,11 +3381,11 @@
       intro: 'Le tableau de bord ne lit jamais votre détecteur directement : le pack pose entre les deux un capteur filtré. C\'est lui qui permet de <b>taire une alerte sans rien débrancher</b> — le détecteur continue de rapporter son état, son historique reste complet, et rien n\'est désactivé dans Home Assistant.',
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Indicateur',
+        { titre: '1 — Indicateur', icone: 'fa-droplet',
           texte: 'L\'état du détecteur d\'un coup d\'œil. En alerte, le cercle pulse et la bordure s\'anime — sans qu\'aucun élément ne bouge de place.' },
-        { titre: '2 — Désactivation',
+        { titre: '2 — Désactivation', icone: 'fa-bell-slash',
           texte: 'Six durées de mise en sourdine, du quart d\'heure aux douze heures, avec pause, reprise et annulation. Le détecteur se réarme tout seul à la fin.' },
-        { titre: '3 — Historique',
+        { titre: '3 — Historique', icone: 'fa-chart-line',
           texte: 'Humidité de la pièce sur le jour, la semaine, le mois ou l\'année.' }
       ]
     }
@@ -3293,8 +3415,10 @@
     const cleModule = etatDetails.module;
     const titre = moduleTitle(cleModule);
     const conf = PACK_DETAILS[cleModule];
+    // L'icone du titre est celle du pack, pas un cube generique : c'est la
+    // meme que porte sa ligne dans le panier, le visiteur la reconnait.
     document.getElementById('detail-titre').innerHTML =
-      `<i class="fa-solid fa-cubes"></i> ${titre}`;
+      `<i class="fa-solid ${moduleIcon(cleModule)}"></i> ${titre}`;
     const corps = document.getElementById('detail-corps');
 
     if (!conf) {
@@ -3302,27 +3426,36 @@
       // le dire vaut mieux qu'ouvrir une page vide.
       const desc = detailSepare(descriptifDe(cleModule));
       corps.innerHTML = `
-        <div class="card"><p class="detail-intro">${desc.descriptif || ''}</p></div>
-        <div class="detail-attente">
-          <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack sont en
-          cours de préparation. Le pack reste déployable dès maintenant depuis l'onglet Packs.
-        </div>
-        ${retourHtml()}`;
+        <div class="card detail-bloc">
+          <p class="detail-intro">${desc.descriptif || ''}</p>
+          <div class="detail-attente" style="margin-top: 14px;">
+            <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack sont en
+            cours de préparation. Le pack reste déployable dès maintenant depuis l'onglet Packs.
+          </div>
+        </div>`;
       return;
     }
 
-    const dispo = themesDisponibles(cleModule);
+    // Un pack sans thème (les quatre packs « Configuration ») n'a ni sélecteur
+    // de fond ni aperçu par thème : son animation est le logo de sa fiche.
+    const aTheme = (MODULE_PARAMS[cleModule] || []).some(c => c.label === 'Thème');
+    const dispo = aTheme ? themesDisponibles(cleModule) : [];
     if (dispo.length && !dispo.includes(etatDetails.theme)) etatDetails.theme = dispo[0];
     const cleTheme = etatDetails.theme;
-    const fiche = apercuDuTheme(cleModule, cleTheme);
+    const fiche = aTheme ? apercuDuTheme(cleModule, cleTheme) : null;
+    const logo = (MODULE_MEDIA[cleModule] || {}).logo;
+    const animation = fiche && fiche.gif ? fiche.gif : logo;
     const sel = conf.selecteur;
     const option = sel ? (sel.options.find(o => o.value === etatDetails[sel.cle])
                           || sel.options[0]) : null;
 
-    // --- Commandes, EN TÊTE : le sélecteur de thème est au-dessus du GIF,
-    //     puisque c'est lui qui commande et le GIF et les captures.
-    const commandes = `
-      <div class="card detail-commandes">
+    // --- Sous-bloc 1 : commandes, animation, descriptif.
+    //     Les sélecteurs sont EN TÊTE : ce sont eux qui commandent et
+    //     l'animation et les trois captures. Les poser dessous laisserait
+    //     croire qu'ils s'appliquent à ce qui suit.
+    const commandes = (aTheme || sel) ? `
+      <div class="detail-commandes">
+        ${aTheme ? `
         <div class="detail-commande">
           <label class="param-label" for="detail-theme">Thème</label>
           <select id="detail-theme" onchange="changerDetail('theme', this.value)">
@@ -3330,7 +3463,7 @@
                ${dispo.length && !dispo.includes(t.value) ? ' disabled' : ''}>${t.label}${
                dispo.length && !dispo.includes(t.value) ? ' — aperçu à venir' : ''}</option>`).join('')}
           </select>
-        </div>
+        </div>` : ''}
         ${sel ? `
         <div class="detail-commande">
           <label class="param-label" for="detail-${sel.cle}">${sel.label}</label>
@@ -3338,20 +3471,26 @@
             ${sel.options.map(o => `<option value="${o.value}"${o.value === option.value ? ' selected' : ''}>${o.label}</option>`).join('')}
           </select>
         </div>` : ''}
-      </div>`;
+      </div>` : '';
 
-    const gif = `
-      <div class="card">
-        ${fiche && fiche.gif
-          ? `<div class="module-video detail-gif" style="background: ${cadreDuTheme(cleTheme)}; margin-bottom: 14px;">
-               <img src="${fiche.gif}" alt="Aperçu ${titre} — ${(themeSite(cleTheme) || {}).label || ''}" loading="lazy"></div>`
-          : `<div class="detail-attente" style="margin-bottom: 14px;">
+    const cadre = aTheme ? cadreDuTheme(cleTheme) : '#14181d';
+    const presentation = `
+      <div class="detail-sous-bloc">
+        ${commandes}
+        ${animation
+          ? `<div class="module-video detail-gif" style="background: ${cadre};">
+               <img src="${animation}" alt="Aperçu ${titre}${
+                 aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}" loading="lazy"></div>`
+          : `<div class="detail-attente">
                <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
         <p class="detail-intro">${conf.intro || ''}</p>
-        ${option && option.sous ? `<p class="detail-variante-sous" style="margin: 10px 0 0;">${option.sous}</p>` : ''}
+        ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
       </div>`;
 
-    // --- Les trois onglets, dans la déclinaison choisie.
+    // --- Sous-bloc 2 : les trois éléments, dans la déclinaison choisie.
+    //     Un pack sans capture (Configuration) montre son icône contextuelle
+    //     à la place : ce n'est pas une capture manquante, c'est qu'il n'y a
+    //     rien à filmer — ces packs n'affichent aucune carte.
     const vignettes = conf.onglets.map((o, i) => {
       const numero = i + 1;
       const nomCarte = conf.carte(etatDetails, numero);
@@ -3360,32 +3499,33 @@
       // L'option du sélecteur peut porter le texte d'un onglet précis
       // (le 3e du pack Temps) : il remplace alors l'annotation générique.
       const texte = (sel && sel.onglet === numero && option && option.texte) ? option.texte : o.texte;
+      const visuel = img
+        ? `<img src="${img}" alt="${titre} — ${o.titre}" loading="lazy">`
+        : (o.icone
+            ? `<div class="detail-swipe-icone"><i class="fa-solid ${o.icone}"></i></div>`
+            : `<div class="detail-attente" style="padding: 40px 12px;">
+                 <i class="fa-solid fa-camera"></i> Capture à venir</div>`);
       return `
         <figure class="detail-swipe">
-          ${img ? `<img src="${img}" alt="${titre} — ${o.titre}" loading="lazy">`
-                : `<div class="detail-attente" style="padding: 40px 12px;">
-                     <i class="fa-solid fa-camera"></i> Capture à venir</div>`}
+          ${visuel}
           <figcaption>
-            <div class="detail-swipe-titre">${o.titre}</div>
+            <div class="detail-swipe-titre">${
+              o.icone ? `<i class="fa-solid ${o.icone}"></i> ` : ''}${o.titre}</div>
             <div class="detail-swipe-texte">${texte || ''}</div>
           </figcaption>
         </figure>`;
     }).join('');
 
-    corps.innerHTML = commandes + gif +
-      `<div class="card"><div class="detail-swipes">${vignettes}</div></div>` + retourHtml();
-  }
-
-  /* Le bouton du bas est le MÊME que celui du haut : même classe, même
-     libellé, même icône (harmonisation demandée le 01/09/2026). Ils étaient
-     auparavant l'un un lien discret, l'autre un gros bouton vert de
-     validation — qui se lisait comme « ajouter au panier ». */
-  function retourHtml() {
-    return `<div class="card" style="text-align: center;">
-      <button type="button" class="detail-retour" style="margin: 0;" onclick="switchTab('module')">
-        <i class="fa-solid fa-arrow-left"></i> Retour aux packs
-      </button>
-    </div>`;
+    // UN SEUL bloc principal, deux sous-blocs séparés par un espacement.
+    // Trois cartes distinctes donnaient trois cadres empilés, et le regard
+    // ne voyait plus la page comme un ensemble.
+    corps.innerHTML = `
+      <div class="card detail-bloc">
+        ${presentation}
+        <div class="detail-sous-bloc">
+          <div class="detail-swipes">${vignettes}</div>
+        </div>
+      </div>`;
   }
 
   /* Descriptif d'un pack, quelle que soit sa forme de fiche : les packs
@@ -3478,8 +3618,8 @@
       { param: 'DUCKDNS_TOKEN', label: 'Jeton DuckDNS', type: 'text', required: true,
         placeholder: 'le token affiche en haut de duckdns.org' }
     ],
-    OK_service_meteo: [champThemeSite('METEO_THEME', 'pure-lumiere')],
-    OK_service_temps: [champThemeSite('TEMPS_THEME', 'nocturne-artistique')],
+    OK_service_meteo: [champThemeSite('METEO_THEME', 'terre-de-carmin')],
+    OK_service_temps: [champThemeSite('TEMPS_THEME', 'neo-future')],
     lumiere_lumiere: [
       { param: 'LUMIERE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
@@ -3491,7 +3631,7 @@
       // cases devenait illisible. Un client qui en veut plusieurs ajoute
       // autant de lignes au panier — le module range chaque thème dans sa
       // propre vue, le résultat est le même.
-      champThemeSite('LUMIERE_THEME', 'sahara-elegance')
+      champThemeSite('LUMIERE_THEME', 'carbon-pulse')
     ],
     eau_detecteur_fuite: [
       { param: 'FUITE_PIECE', label: 'Pièce', type: 'text', required: true,
