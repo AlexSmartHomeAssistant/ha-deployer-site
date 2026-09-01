@@ -62,6 +62,9 @@
       --nav-bg: rgba(31, 35, 41, 0.86);
       --input-bg: rgba(0, 0, 0, 0.22);
       --hover-bg: rgba(255, 255, 255, 0.08);
+      /* Fond de la langue active du selecteur. Une teinte par theme : la
+         meme valeur serait invisible sur l un des deux fonds. */
+      --lang-active-bg: rgba(111, 187, 236, 0.18);
       --modal-bg: #2a2f36;
 
       /* Largeur du contenu : sert aussi à aligner les onglets et le panier du bandeau */
@@ -110,6 +113,7 @@
       --nav-bg: rgba(255, 255, 255, 0.78);
       --input-bg: rgba(255, 255, 255, 0.92);
       --hover-bg: rgba(0, 0, 0, 0.055);
+      --lang-active-bg: rgba(31, 111, 165, 0.13);
       --modal-bg: #ffffff;
 
       --pattern: rgba(0, 0, 0, 0.05);
@@ -497,6 +501,28 @@
 
     .lang-options li:hover {
       background: var(--hover-bg);
+    }
+
+    /* La langue en service : remontée en tête ET mise en évidence. L'ordre
+       seul ne suffit pas — sur vingt et une lignes, rien ne dit que la
+       première est la vôtre plutôt que la première de l'alphabet.
+       La teinte dérive de --primary-blue, qui change avec le thème : un aplat
+       figé serait délavé sur l'un des deux fonds. */
+    .lang-options li.lang-active,
+    .lang-options li.lang-active:hover {
+      background: var(--lang-active-bg);
+      color: var(--primary-blue);
+      font-weight: 700;
+      box-shadow: inset 3px 0 0 var(--primary-blue);
+    }
+
+    /* La coche est poussée à droite : drapeau et libellé gardent ainsi
+       l'alignement des autres lignes, et la liste ne « saute » pas quand on
+       change de langue. */
+    .lang-options li.lang-active::after {
+      content: '✓';
+      margin-left: auto;
+      font-weight: 700;
     }
 
     .lang-options li .fi {
@@ -2693,6 +2719,10 @@
     flag.parentElement.title = label;
     document.documentElement.lang = code;
     document.getElementById('lang-dropdown').classList.remove('open');
+    // La liste se réordonne APRÈS le changement : la nouvelle langue passe en
+    // tête et prend la surbrillance. Sans cet appel, la mise en évidence
+    // resterait sur la langue précédente jusqu'au prochain rechargement.
+    trierLangues();
   }
 
   document.addEventListener('click', (e) => {
@@ -3395,9 +3425,24 @@
     { value: 'nocturne-artistique', label: 'Nocturne Artistique', clair: false },
   ];
 
-  function champThemeSite(param) {
+  /* Un thème par défaut PROPRE À CHAQUE PACK (01/09/2026). Les quatre packs
+     à thème ouvraient tous sur « Élégance Ardoise », premier de la liste :
+     quatre fiches côte à côte, quatre fois le même fond, et le visiteur ne
+     pouvait pas deviner que onze fonds l'attendaient.
+
+     Le choix n'est pas arbitraire — deux packs reprennent leur propre couleur
+     d'identité (Éclairage l'ambre de son `#F8C471`, Détecteur de Fuite le bleu
+     de son `#5DADE2`), les deux autres suivent leur sujet (la Météo un fond
+     clair de plein jour, le Temps un fond nocturne pour son cycle
+     solaire/lunaire).
+
+     La valeur sert AUX DEUX endroits — l'option présélectionnée du sélecteur
+     de la fiche, et le thème sur lequel s'ouvre la page de détails. Les
+     dissocier ferait changer de fond au clic sur « Détails », ce qui se lit
+     comme un défaut d'affichage. */
+  function champThemeSite(param, defaut) {
     return { param: param, label: 'Thème', type: 'select', required: true,
-             options: THEMES_SITE };
+             defaut: defaut || THEMES_SITE[0].value, options: THEMES_SITE };
   }
 
   /* Modules réclamant plusieurs informations, et non une seule entité.
@@ -3433,8 +3478,8 @@
       { param: 'DUCKDNS_TOKEN', label: 'Jeton DuckDNS', type: 'text', required: true,
         placeholder: 'le token affiche en haut de duckdns.org' }
     ],
-    OK_service_meteo: [champThemeSite('METEO_THEME')],
-    OK_service_temps: [champThemeSite('TEMPS_THEME')],
+    OK_service_meteo: [champThemeSite('METEO_THEME', 'pure-lumiere')],
+    OK_service_temps: [champThemeSite('TEMPS_THEME', 'nocturne-artistique')],
     lumiere_lumiere: [
       { param: 'LUMIERE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
@@ -3446,7 +3491,7 @@
       // cases devenait illisible. Un client qui en veut plusieurs ajoute
       // autant de lignes au panier — le module range chaque thème dans sa
       // propre vue, le résultat est le même.
-      champThemeSite('LUMIERE_THEME')
+      champThemeSite('LUMIERE_THEME', 'sahara-elegance')
     ],
     eau_detecteur_fuite: [
       { param: 'FUITE_PIECE', label: 'Pièce', type: 'text', required: true,
@@ -3462,7 +3507,7 @@
       // quand la déduction se trompe ou ne trouve rien.
       { param: 'FUITE_HUMIDITE', label: 'Capteur d\'humidité', type: 'text', required: false,
         placeholder: 'ex : sensor.salle_eau_humidity — vide : deviné dans la pièce' },
-      champThemeSite('FUITE_THEME')
+      champThemeSite('FUITE_THEME', 'bleu-evasion')
     ]
   };
 
@@ -3477,9 +3522,15 @@
         ).join('');
         return `<span class="param-label">${c.label}</span><span class="param-checkboxes" id="${id}">${cases}</span>`;
       }
+      // L'option présélectionnée est celle que le champ DÉCLARE, et non la
+      // première de la liste : c'est ce qui donne à chaque pack son thème
+      // par défaut sans dupliquer les onze options par pack.
+      // Calculé APRÈS le test de type : un champ texte n'a pas d'`options`,
+      // et y lire `options[0]` faisait échouer le rendu de toute la catégorie.
+      const parDefaut = c.type === 'select' ? (c.defaut || c.options[0].value) : null;
       const saisie = c.type === 'select'
-        ? `<select id="${id}" onchange="majApercu('${modName}')">${c.options.map((o, i) =>
-             `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
+        ? `<select id="${id}" onchange="majApercu('${modName}')">${c.options.map(o =>
+             `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
         : `<input type="text" class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
       return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
@@ -4676,6 +4727,11 @@
     const champ = (MODULE_PARAMS[modName] || []).find(c => c.type === 'select' && c.label === 'Thème');
     const el = champ && document.getElementById(`param-${modName}-${champ.param}`);
     if (el && el.value) return el.value;
+    // Hors de la fiche (page de détails ouverte directement, fiche pas encore
+    // rendue), le défaut du pack prime sur le premier thème du manifeste :
+    // sans lui, la page de détails s'ouvrirait sur un fond que le sélecteur
+    // de la fiche n'a jamais proposé.
+    if (champ && champ.defaut) return champ.defaut;
     const dispo = themesDisponibles(modName);
     return dispo[0] || (THEMES_SITE[0] && THEMES_SITE[0].value);
   }
@@ -5905,13 +5961,57 @@
      tard se place toute seule. Le tri se fait sur le nom tel qu'il est LU
      par le visiteur (l'endonyme), avec le collateur du navigateur : c'est lui
      qui sait ou placer un nom en arabe, en devanagari ou en han. */
+  /* Le code d'une ligne est relevé dans son `onclick` (`selectLang('fr', …)`),
+     puis conservé sur l'élément. Les vingt et une lignes sont écrites à la
+     main dans le HTML : leur ajouter un attribut à chacune se serait
+     désynchronisé au premier ajout de langue, alors que l'appel, lui, ne peut
+     pas manquer — c'est lui qui fait fonctionner la ligne. */
+  function codeLangue(li) {
+    if (!li.dataset.lang) {
+      const trouve = (li.getAttribute('onclick') || '').match(/selectLang\('([^']+)'/);
+      li.dataset.lang = trouve ? trouve[1] : '';
+    }
+    return li.dataset.lang;
+  }
+
+  function langueCourante() {
+    return document.documentElement.lang || 'fr';
+  }
+
+  /* Tri alphabétique, PUIS la langue active remontée en tête — les deux, et
+     pas l'un ou l'autre. Le tri garde la liste prévisible pour les vingt
+     autres langues ; la remontée épargne au visiteur de chercher la sienne
+     dans une liste défilante. Le tri se fait sur le nom tel qu'il est LU
+     (l'endonyme), avec le collateur du navigateur : c'est lui qui sait où
+     placer un nom en arabe, en devanagari ou en han. */
   function trierLangues() {
     const liste = document.getElementById('lang-options');
     if (!liste) return;
     const collateur = new Intl.Collator(undefined, { sensitivity: 'base' });
+    const active = langueCourante();
+
     [...liste.children]
-      .sort((a, b) => collateur.compare(a.textContent.trim(), b.textContent.trim()))
-      .forEach(li => liste.appendChild(li));
+      .sort((a, b) => {
+        const aActive = codeLangue(a) === active;
+        const bActive = codeLangue(b) === active;
+        if (aActive !== bActive) return aActive ? -1 : 1;
+        return collateur.compare(a.textContent.trim(), b.textContent.trim());
+      })
+      .forEach(li => {
+        const estActive = codeLangue(li) === active;
+        li.classList.toggle('lang-active', estActive);
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', estActive ? 'true' : 'false');
+        liste.appendChild(li);
+      });
+
+    // Sans ce rôle, un lecteur d'écran lit une simple liste et ne dit pas
+    // laquelle des entrées est sélectionnée — la coche et la couleur ne
+    // parlent qu'aux voyants.
+    liste.setAttribute('role', 'listbox');
+    // La liste défile : après un changement de langue, la nouvelle tête doit
+    // être visible à la réouverture, pas laissée au dernier défilement.
+    liste.scrollTop = 0;
   }
 
   window.onload = () => {
