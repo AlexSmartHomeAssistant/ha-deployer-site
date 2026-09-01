@@ -1028,6 +1028,19 @@
 
     /* Le lien suit la description, sur sa propre ligne (un <br> le précède
        dans la fiche) : en fin de phrase il se lirait comme un mot du texte. */
+    /* `.module-item button` peint TOUS les boutons d'une fiche en vert de
+       validation. Le lien « Détails » et l'icône « ? » n'en sont pas : ils
+       n'ajoutent rien au panier. On annule donc explicitement, plutôt que de
+       restreindre la règle générique dont dépend le bouton d'ajout. */
+    .module-item .lien-details {
+      background: none !important;
+      color: var(--primary-blue);
+      padding: 0;
+      border-radius: 0;
+      font-weight: 700;
+    }
+    .module-item .lien-details:hover { color: var(--accent-green); }
+
     .lien-details {
       display: inline-flex;
       align-items: center;
@@ -1716,43 +1729,66 @@
          Hauteur DOUBLEE le 26/08/2026 à la demande du client : l'accueil
          accepte désormais de défiler sur les fenêtres peu hautes, ce que le
          `overflow-y: auto` de .container gère déjà. */
+      /* La video ne se dimensionne plus en `vh` mais REMPLIT la place que la
+         grille lui laisse (01/09/2026). Une hauteur en `vh` ignore ce que le
+         bandeau, l'accroche et le pied ont deja pris : a 1440x900 elle
+         depassait de 24 px et faisait apparaitre un ascenseur sur les deux
+         blocs. Ici la rangee est bornee par la hauteur du conteneur, il ne
+         PEUT plus rien deborder. */
+      #section-accueil .container {
+        grid-template-rows: auto minmax(0, 1fr);
+        align-content: stretch;
+        overflow: hidden;
+      }
+      /* `min-height: 0` est indispensable : sans lui un enfant de grille
+         refuse de descendre sous la hauteur de son contenu, et la rangee
+         `1fr` se remet a deborder. */
+      #section-accueil .container > .card {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
       #section-accueil .video-container {
         padding-bottom: 0;
-        height: clamp(360px, 66vh, 760px);
+        height: auto;
+        flex: 1;
+        min-height: 0;
       }
+      /* Le descriptif garde son contenu en haut de sa carte, meme etiree. */
+      #section-accueil .container > .card > :not(.video-container) { flex: 0 0 auto; }
 
       #section-accueil .hero-pitch {
         padding: 20px 22px;
         font-size: clamp(1.15rem, 2vw, 1.55rem);
       }
       #section-accueil .hero-pitch .hero-sub { margin-top: 8px; font-size: 0.84rem; }
-    }
 
-    /* Écrans larges mais peu hauts (portables 1366x768, 1440x810…) : la rangée
-       du milieu est dictée par le descriptif, pas par la vidéo — réduire la
-       seule vidéo ne suffit donc pas. On resserre l'ensemble.
-       Les `!important` sont nécessaires : les tailles de police de ces
-       paragraphes sont posées en style inline dans le HTML. */
-    @media (min-width: 1024px) and (max-height: 830px) {
-      #section-accueil .video-container { height: clamp(300px, 52vh, 600px); }
-      #section-accueil .hero-pitch { padding: 13px 16px; font-size: 1.08rem; }
-      #section-accueil .hero-pitch .hero-sub { margin-top: 5px; font-size: 0.76rem; }
-      #section-accueil .container > .card { padding: 12px 14px; }
-      #section-accueil .container > .card h3 { font-size: 0.92rem !important; margin-bottom: 8px !important; }
-      #section-accueil .container > .card p { font-size: 0.78rem !important; line-height: 1.45; }
-      #section-accueil .descriptif-liens { margin-top: 10px; }
-      #section-accueil .descriptif-lien { padding: 7px 10px; font-size: 0.74rem; }
-      #section-accueil .container { gap: 10px; }
-
-      /* La dernière carte (prérequis) occupe toute la largeur. L'onglet Test
-         Gratuit n'en fait plus partie : ses deux cartes restantes tiennent
-         côte à côte depuis le retrait des encarts de prérequis. */
-      #section-fonctionnement .container > .card:last-child {
-        grid-column: 1 / -1;
+      /* Onglet Test Gratuit : trois colonnes cote a cote (01/09/2026).
+         L'apercu a gauche, la connexion au milieu, l'action a droite.
+         `minmax(0, 1fr)` plutot que `1fr` : sans lui, le journal de
+         deploiement (texte non coupable, en police a chasse fixe) elargit sa
+         colonne au detriment des deux autres des la premiere ligne longue. */
+      #section-test .container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-content: start;
       }
+      /* La colonne d'action est courte : son bouton se cale en bas de carte
+         plutot que de flotter au milieu d'un grand vide. */
+      #section-test .test-action {
+        display: flex;
+        flex-direction: column;
+      }
+      #section-test .test-action .btn-add-big { margin-top: auto; }
+      #section-test .test-action .deploy-log { margin-top: 12px; }
 
-      /* Onglet Module : la liste occupe toute la hauteur restante */
-      /* en-tête | encart | sous-onglets | catalogue extensible */
+      /* Onglet Packs : le catalogue prend TOUTE la largeur, sous les
+         categories, et range les fiches par TROIS (01/09/2026).
+
+         Ces regles vivaient jusqu'ici dans le bloc « ecran large mais peu
+         haut » (max-height: 830px) : sur un 1440x900 ordinaire elles ne
+         s'appliquaient pas, et le catalogue restait une colonne unique dans
+         la moitie gauche de la page. */
       #section-module .container {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto 1fr;
@@ -1765,14 +1801,37 @@
         flex-direction: column;
       }
 
+      /* `repeat(3, ...)` et non `auto-fill` : la largeur du contenu est
+         plafonnee par --content-max, donc trois colonnes stables quel que
+         soit l'ecran. `auto-fill` en aurait donne cinq sur un 1920 et deux
+         sur un 1280 -- la fiche changeant de taille d'un poste a l'autre.
+         `minmax(0, 1fr)` empeche une fiche au contenu large de gonfler sa
+         colonne au detriment des deux autres. */
       #section-module .module-list-container {
         max-height: none;
         flex: 1;
         min-height: 0;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         align-content: start;
       }
+
+    }
+
+    /* Écrans larges mais peu hauts (portables 1366x768, 1440x810…) : la rangée
+       du milieu est dictée par le descriptif, pas par la vidéo — réduire la
+       seule vidéo ne suffit donc pas. On resserre l'ensemble.
+       Les `!important` sont nécessaires : les tailles de police de ces
+       paragraphes sont posées en style inline dans le HTML. */
+    @media (min-width: 1024px) and (max-height: 830px) {
+      #section-accueil .hero-pitch { padding: 13px 16px; font-size: 1.08rem; }
+      #section-accueil .hero-pitch .hero-sub { margin-top: 5px; font-size: 0.76rem; }
+      #section-accueil .container > .card { padding: 12px 14px; }
+      #section-accueil .container > .card h3 { font-size: 0.92rem !important; margin-bottom: 8px !important; }
+      #section-accueil .container > .card p { font-size: 0.78rem !important; line-height: 1.45; }
+      #section-accueil .descriptif-liens { margin-top: 10px; }
+      #section-accueil .descriptif-lien { padding: 7px 10px; font-size: 0.74rem; }
+      #section-accueil .container { gap: 10px; }
 
       header h1 { font-size: 1.6rem; margin-bottom: 6px; }
     }
@@ -2060,8 +2119,11 @@
         </p>
       </div>
 
+      <!-- Deux CARTES, et non deux encarts dans une seule : sur PC le
+           conteneur est une grille a deux colonnes, et une carte unique les
+           empilait dans la colonne de gauche en laissant la droite vide. -->
       <div class="card">
-        <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage);">
+        <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage); margin-bottom: 0;">
           <strong><i class="fa-solid fa-triangle-exclamation"></i> Prérequis indispensable :</strong>
           Votre instance Home Assistant doit être <b>accessible depuis l'extérieur</b> pour que le déploiement puisse s'y connecter (choisissez l'une des solutions suivantes) :
           <!-- Rempli par `remplirAccesDistant()` : la même table sert ici et
@@ -2069,7 +2131,9 @@
                Trois copies à la main auraient divergé au premier ajustement. -->
           <ol id="liste-acces-distant"></ol>
         </div>
+      </div>
 
+      <div class="card">
         <div class="notice-box" style="margin-bottom: 0;">
           <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
           <ol>
@@ -2140,6 +2204,29 @@
         <h1><i class="fa-solid fa-vial"></i> Espace Test Gratuit</h1>
       </header>
 
+      <!-- Trois colonnes sur PC (01/09/2026) : l'apercu a gauche, la
+           connexion au milieu, l'action a droite. L'ordre du DOM est celui
+           des colonnes -- il vaut aussi comme ordre de lecture quand la
+           grille se replie sur telephone. -->
+      <div class="card">
+        <div class="module-item module-item-detailed">
+          <strong>Pack Découverte</strong>
+          <!-- Animation ENREGISTREE dans le navigateur, sur la vue reellement
+               deployee (`_generer_apercus.py`) : elle montre les icones
+               animees et les transitions de balayage des sept volets. Elle
+               remplace le diaporama de captures fixes du 31/08/2026, qui ne
+               montrait ni les unes ni les autres. -->
+          <div class="module-video" style="background: #000;">
+            <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
+          </div>
+          <p class="module-desc-text">
+            Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
+            Chauffage, Eau, Appareil et Sécurité.<br>
+            Gratuit, sans engagement, et sans aucune entité à renseigner.
+          </p>
+        </div>
+      </div>
+
       <div class="card">
         <div class="notice-box">
           <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un pack de démonstration sur votre instance.
@@ -2157,29 +2244,14 @@
         </div>
       </div>
 
-      <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);">Pack de Test Unique</h3>
-        <!-- Meme presentation que les fiches du catalogue : un cadre carre,
-             son animation, puis le descriptif. Le visiteur voit ce qu'il va
-             deployer avant de saisir quoi que ce soit. -->
-        <div class="module-item module-item-detailed">
-          <strong>Pack Découverte</strong>
-          <!-- Animation ENREGISTREE dans le navigateur, sur la vue reellement
-               deployee (`_generer_apercus.py`) : elle montre les icones
-               animees et les transitions de balayage des sept volets. Elle
-               remplace le diaporama de captures fixes du 31/08/2026, qui ne
-               montrait ni les unes ni les autres. -->
-          <div class="module-video" style="background: #000;">
-            <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
-          </div>
-          <p class="module-desc-text">
-            Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
-            Chauffage, Eau, Appareil et Sécurité.<br>
-            Gratuit, sans engagement, et sans aucune entité à renseigner.
-          </p>
-          <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
-          <div class="deploy-log" id="test-log"></div>
-        </div>
+      <div class="card test-action">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-rocket"></i> Lancer le test</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+          Renseignez l'adresse et le jeton, puis lancez le déploiement : la vue est
+          injectée dans votre tableau de bord en quelques secondes.
+        </p>
+        <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
+        <div class="deploy-log" id="test-log"></div>
       </div>
     </div>
   </div>
