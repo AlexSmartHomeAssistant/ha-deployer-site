@@ -3310,8 +3310,17 @@
     eau_detecteur_fuite: [
       { param: 'FUITE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: "ex : Salle d'eau" },
-      { param: 'FUITE_ENTITE', label: 'Entité du détecteur', type: 'text', required: true,
-        placeholder: 'ex : binary_sensor.salle_eau_fuite' },
+      // FACULTATIF depuis le 01/09/2026 : laissé vide, le pack crée lui-même
+      // un détecteur de démonstration, qu'un interrupteur permet de déclencher
+      // à la main. C'est ce qui permet de voir l'alerte -- cercle, bordure,
+      // fond -- sans attendre un vrai dégât des eaux, et d'installer le pack
+      // avant même d'avoir posé la sonde.
+      { param: 'FUITE_ENTITE', label: 'Entité du détecteur', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.salle_eau_fuite — vide : détecteur de démonstration' },
+      // Le pack le devine dans la pièce ; ce champ ne sert qu'à le désigner
+      // quand la déduction se trompe ou ne trouve rien.
+      { param: 'FUITE_HUMIDITE', label: 'Capteur d\'humidité', type: 'text', required: false,
+        placeholder: 'ex : sensor.salle_eau_humidity — vide : deviné dans la pièce' },
       champThemeSite('FUITE_THEME')
     ]
   };
@@ -3330,7 +3339,8 @@
       const saisie = c.type === 'select'
         ? `<select id="${id}" onchange="majApercu('${modName}')">${c.options.map((o, i) =>
              `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
-        : `<input type="text" class="field-required" id="${id}" placeholder="${c.placeholder || ''}">`;
+        : `<input type="text" class="${c.required === false ? 'field-optional' : 'field-required'}"
+                  id="${id}" placeholder="${c.placeholder || ''}">`;
       return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
     }).join('');
   }
