@@ -1061,6 +1061,10 @@
       transition: background 0.2s, color 0.2s;
     }
     .detail-retour:hover { background: var(--hover-bg); color: var(--text-main); }
+    /* Le conteneur de la page est un flex en colonne : sans ceci le bouton du
+       haut s'etire sur toute la largeur et ne ressemble plus a celui du bas
+       (harmonisation demandee le 01/09/2026). */
+    #section-details > .container > .detail-retour { align-self: flex-start; }
 
     .detail-intro {
       font-size: 0.85rem;
@@ -1075,6 +1079,31 @@
       max-width: 400px;
       margin: 0 auto;
     }
+
+    /* Les sélecteurs sont EN TÊTE de page : ce sont eux qui commandent
+       l'animation et les trois captures. Les poser sous le GIF laisserait
+       croire qu'ils s'appliquent à ce qui suit, et non à ce qui précède. */
+    .detail-commandes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px 18px;
+    }
+    /* Le libelle et son selecteur forment UN bloc : places directement dans la
+       grille, ils tombaient dans deux colonnes distinctes et le « Thème » se
+       retrouvait a gauche de sa propre liste. */
+    .detail-commande { display: flex; flex-direction: column; gap: 4px; }
+    .detail-commandes select {
+      width: 100%;
+      padding: 11px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      outline: none;
+    }
+    .detail-commandes select:focus { border-color: var(--primary-blue); }
+    .detail-commandes .param-label { margin-top: 0; }
 
     .detail-variante-titre {
       font-size: 1rem;
@@ -1480,69 +1509,76 @@
       .cart-actions .btn-pay { margin-left: 0; }
     }
 
-    /* ===== ACCÈS DISTANT (31/08/2026) =====
-       Deux adresses officielles, données en clair et copiables. Le champ est
-       en lecture seule : ce n'est pas une saisie, c'est une valeur à prendre —
-       mais un <input> se sélectionne d'un clic et se copie, ce qu'un simple
-       paragraphe ne fait pas. */
-    .acces-distant {
-      margin-top: 4px;
-      padding: 14px 16px;
-      background: rgba(93, 173, 226, 0.07);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-    }
-    .acces-distant-titre {
-      font-size: 0.92rem;
+    /* ===== ACCÈS DISTANT — LIENS ET INFOBULLES (01/09/2026) =====
+       Le paragraphe « Configurer l'accès distant » a été supprimé : il
+       répétait sous la liste des prérequis ce que la liste nommait déjà, et
+       le visiteur lisait deux fois la même chose. Son contenu vit désormais
+       DANS la liste, replié derrière une icône « ? » par solution.
+
+       Le lien porte --col-gold et non --primary-blue : sans couleur propre,
+       un <a> hérite du bleu par défaut du navigateur, illisible sur le fond
+       anthracite du thème sombre — c'est ce que le client a signalé. */
+    .lien-acces {
+      color: var(--col-gold);
       font-weight: 700;
-      color: var(--primary-blue);
-      margin-bottom: 4px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
-    .acces-distant-ligne {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-    }
-    .acces-distant-ligne input {
-      flex: 1 1 auto;
-      min-width: 0;
-      padding: 10px 12px;
-      background: var(--input-bg);
+    .lien-acces:hover { color: var(--accent-green); }
+    .lien-acces:visited { color: var(--col-gold); }
+
+    /* L'ancre du positionnement : l'infobulle se cale sur la LIGNE, pas sur
+       l'icône — sur un <li> étroit elle déborderait de la carte. */
+    .acces-item { position: relative; }
+
+    .acces-infobulle {
+      display: none;
+      position: absolute;
+      z-index: 40;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      background: var(--modal-bg);
       border: 1px solid var(--card-border);
-      border-radius: 6px;
-      color: var(--text-main);
-      font-size: 0.85rem;
-    }
-    .acces-distant-lien {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex: 0 0 auto;
-      padding: 10px 14px;
-      border-radius: 6px;
-      background: var(--primary-blue);
-      color: #0d1116;
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .acces-distant-lien:hover { filter: brightness(1.08); }
-    /* --primary-blue est clair sur le theme sombre (texte sombre lisible) mais
-       FONCE sur le theme clair : le meme texte sombre y passerait sous le
-       seuil de lisibilite. */
-    html[data-theme="light"] .acces-distant-lien { color: #ffffff; }
-    .acces-distant-aide {
+      border-left: 3px solid var(--col-gold);
+      border-radius: 8px;
+      padding: 12px 14px;
       font-size: 0.78rem;
+      font-weight: 400;
+      line-height: 1.55;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin: 8px 0 14px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
     }
-    .acces-distant-aide code {
+    .acces-infobulle.open { display: block; }
+    .acces-infobulle b, .acces-infobulle strong { color: var(--text-main); }
+    .acces-infobulle code {
       background: var(--input-bg);
       padding: 1px 5px;
       border-radius: 4px;
     }
+    .acces-infobulle a { color: var(--col-gold); }
+    /* Réserve : une limite réelle de la solution, encadrée pour qu'elle ne se
+       lise pas comme une étape de plus. */
+    .acces-infobulle .reserve {
+      display: block;
+      margin-top: 8px;
+      padding: 7px 9px;
+      background: rgba(236, 112, 99, 0.12);
+      border-radius: 6px;
+      color: var(--text-main);
+    }
+    .acces-fermer {
+      display: block;
+      margin: 10px 0 0 auto;
+      background: none;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    .acces-fermer:hover { background: var(--hover-bg); color: var(--text-main); }
 
     .cart-modal-empty {
       text-align: center;
@@ -2028,59 +2064,10 @@
         <div class="notice-box" style="background: rgba(236, 112, 99, 0.1); border-left-color: var(--col-chauffage);">
           <strong><i class="fa-solid fa-triangle-exclamation"></i> Prérequis indispensable :</strong>
           Votre instance Home Assistant doit être <b>accessible depuis l'extérieur</b> pour que le déploiement puisse s'y connecter (choisissez l'une des solutions suivantes) :
-          <ol>
-            <li>Abonnement <b>Nabu Casa</b> (Home Assistant Cloud)</li>
-            <li><b>VPN</b> (WireGuard, Tailscale, etc.)</li>
-            <li><b>DuckDNS</b> + redirection de port</li>
-            <li><b>Cloudflare Tunnel</b> + NGINX (reverse proxy)</li>
-          </ol>
-        </div>
-
-        <!-- Acces distant (31/08/2026) : les deux solutions les plus courantes
-             se configurent sur le site de leur editeur, pas ici. On donne donc
-             l'adresse exacte, visible et copiable — un visiteur qui cherche
-             « nabu casa » ou « duckdns » dans un moteur tombe aussi sur des
-             pages de revente et des tutoriels perimes. -->
-        <div class="acces-distant">
-          <div class="acces-distant-titre">
-            <i class="fa-solid fa-globe"></i> Configurer l'accès distant, via le site officiel
-          </div>
-
-          <label class="param-label" for="url-nabucasa">Nabu Casa — Home Assistant Cloud (abonnement, rien à installer)</label>
-          <div class="acces-distant-ligne">
-            <input type="url" id="url-nabucasa" value="https://www.nabucasa.com/" readonly
-                   onclick="this.select()" aria-label="Adresse du site officiel Nabu Casa">
-            <a class="acces-distant-lien" href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir
-            </a>
-          </div>
-          <p class="acces-distant-aide">
-            Une fois l'abonnement actif, l'adresse à nous donner se lit dans Home Assistant :
-            <b>Paramètres → Home Assistant Cloud → Accès distant</b>. Elle finit par
-            <code>.ui.nabu.casa</code> et son certificat est déjà valide.
-          </p>
-
-          <label class="param-label" for="url-duckdns">DuckDNS — nom de domaine gratuit (avec redirection de port sur votre box)</label>
-          <div class="acces-distant-ligne">
-            <input type="url" id="url-duckdns" value="https://www.duckdns.org/" readonly
-                   onclick="this.select()" aria-label="Adresse du site officiel DuckDNS">
-            <a class="acces-distant-lien" href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir
-            </a>
-          </div>
-          <p class="acces-distant-aide">
-            Créez-y un sous-domaine, puis installez l'add-on <b>DuckDNS</b> dans Home Assistant
-            (il obtient aussi le certificat) et ouvrez le port 8123 sur votre box.
-            L'adresse à nous donner ressemble alors à
-            <code>https://votre-nom.duckdns.org:8123</code>.
-          </p>
-
-          <p class="acces-distant-aide" style="margin-bottom: 0;">
-            <i class="fa-solid fa-shield-halved"></i>
-            Dans les deux cas, l'adresse doit être en <b>https</b> : cette page l'est
-            elle-même, et un navigateur refuse d'ouvrir une connexion en clair depuis
-            une page sécurisée.
-          </p>
+          <!-- Rempli par `remplirAccesDistant()` : la même table sert ici et
+               dans l'aide du champ « URL », onglet Test Gratuit comme panier.
+               Trois copies à la main auraient divergé au premier ajustement. -->
+          <ol id="liste-acces-distant"></ol>
         </div>
 
         <div class="notice-box" style="margin-bottom: 0;">
@@ -2160,7 +2147,7 @@
         </div>
         <div class="form-group">
           <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url')" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>. Si elle n'est joignable que chez vous, configurez d'abord un accès distant : <b>Nabu Casa</b> (<a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>) ou <b>DuckDNS</b> (<a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>) — marche à suivre dans l'onglet Fonctionnement.</div>
+          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="test" style="display:block; margin-top:6px;"></span></div>
           <input type="url" id="test-ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
@@ -2177,13 +2164,18 @@
              deployer avant de saisir quoi que ce soit. -->
         <div class="module-item module-item-detailed">
           <strong>Pack Découverte</strong>
+          <!-- Animation ENREGISTREE dans le navigateur, sur la vue reellement
+               deployee (`_generer_apercus.py`) : elle montre les icones
+               animees et les transitions de balayage des sept volets. Elle
+               remplace le diaporama de captures fixes du 31/08/2026, qui ne
+               montrait ni les unes ni les autres. -->
           <div class="module-video" style="background: #000;">
-            <img src="templates/test_gratuit/test-gratuit.gif" alt="Démonstration du Pack Découverte" loading="lazy">
+            <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
           </div>
           <p class="module-desc-text">
             Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
-            Chauffage, Eau, Appareil et Sécurité. Gratuit, sans engagement, et sans
-            aucune entité à renseigner.
+            Chauffage, Eau, Appareil et Sécurité.<br>
+            Gratuit, sans engagement, et sans aucune entité à renseigner.
           </p>
           <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
           <div class="deploy-log" id="test-log"></div>
@@ -2871,18 +2863,8 @@
          (met.no) et l'installe au besoin — la seule source qui publie les
          cinq attributs du 3e onglet. Il n'y a donc plus rien à saisir. */
       detail: 'Tableau de bord météo complet et traduit selon la ville du client : prévisions horaires et journalières, couverture nuageuse, vent, pression, humidité et ultraviolet, avec horloge météo animée. <br><br><span class="inclus"><b>Inclus :</b> l\'intégration Meteorologisk institutt (met.no) installée si nécessaire, HACS, et les cartes personnalisées requises (clock-weather-card, swipe-card, stack-in-card, card-mod).</span>',
-      /* L'aperçu suit le thème choisi juste au-dessus : le visiteur voit ce
-         qu'il va déployer, et non une capture de l'autre thème. */
-      apercu: {
-        param: 'METEO_THEME',
-        variantes: {
-          sombre: { gif: 'templates/service_meteo/meteo-sombre.gif', cadre: '#000000' },
-          clair: { gif: 'templates/service_meteo/meteo-clair.gif', cadre: '#FFFFFF' }
-        }
-      }
     },
     OK_service_temps: {
-      gif: 'templates/service_temps/temps_athee.gif',
       detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.</span>',
       field: {
         type: 'calendar',
@@ -2909,283 +2891,358 @@
   };
 
 
-  /* ---------- PAGE « DÉTAILS » D'UN PACK (31/08/2026) ----------
-     Le cadre de la fiche ne montre qu'une animation d'ensemble : le visiteur
-     ne sait pas ce que contient chacun des trois onglets qu'il achète, ni ce
-     qui change d'une variante à l'autre. Cette table décrit, pack par pack,
-     l'animation globale puis chaque onglet du tableau de bord livré.
 
-     Les captures sont produites par `_capturer_swipes.py` depuis l'instance
-     de recette : ce sont les vues réellement déployées, jamais des maquettes.
-     Un pack absent de cette table affiche une page d'attente explicite
-     plutôt qu'un écran vide — le lien « Détails », lui, est présent partout.
+  /* ---------- ACCÈS DISTANT : quatre solutions, une seule table (01/09/2026) ----------
+     Le paragraphe « Configurer l'accès distant » a été supprimé : il répétait
+     sous la liste des prérequis ce que la liste nommait déjà. Son contenu vit
+     désormais derrière l'icône « ? » de chaque solution.
 
-     ATTENTION aux chemins : `publier_site.py` relève les fichiers de
-     `templates/` cités entre APOSTROPHES dans cette page. Un chemin composé
-     à l'exécution ne serait pas publié, et les images manqueraient sur le
-     site sans que rien ne le signale ici. */
+     La table sert à TROIS endroits — la liste des prérequis (onglet
+     Fonctionnement) et l'aide du champ « URL » du Test Gratuit comme du
+     panier. Trois copies écrites à la main auraient divergé au premier
+     ajustement, et c'est justement ce texte-là que le client fait évoluer. */
+  const ACCES_DISTANT = [
+    {
+      cle: 'nabucasa',
+      nom: 'Nabu Casa',
+      suite: ' (Home Assistant Cloud)',
+      url: 'https://www.nabucasa.com/',
+      aide: `<b>La solution la plus simple : rien à installer, rien à ouvrir sur votre box.</b><br>
+             1. Souscrivez sur <a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>
+                (l'abonnement finance aussi le développement de Home Assistant).<br>
+             2. Dans Home Assistant : <b>Paramètres → Home Assistant Cloud</b>, puis activez <b>Accès distant</b>.<br>
+             3. L'adresse s'affiche à cet endroit. Elle finit par <code>.ui.nabu.casa</code>,
+                elle est en <b>https</b> et son certificat est déjà valide — c'est celle à nous donner.`
+    },
+    {
+      cle: 'vpn',
+      nom: 'VPN',
+      suite: ' (WireGuard, Tailscale…)',
+      url: 'https://www.wireguard.com/',
+      aide: `Un VPN relie <b>vos</b> appareils à votre réseau domestique.<br>
+             1. Installez l'add-on <b>WireGuard</b>
+                (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>)
+                ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>,
+                plus simple car sans ouverture de port.<br>
+             2. Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.
+             <span class="reserve"><b>À savoir :</b> un VPN convient au <b>Test Gratuit</b>, qui se déploie
+             depuis votre propre navigateur. Il ne convient <b>pas</b> aux packs payants : ceux-là sont
+             déployés par nos serveurs, qui ne sont pas sur votre VPN. Pour eux, choisissez Nabu Casa,
+             DuckDNS ou Cloudflare Tunnel.</span>`
+    },
+    {
+      cle: 'duckdns',
+      nom: 'DuckDNS',
+      suite: ' + redirection de port',
+      url: 'https://www.duckdns.org/',
+      aide: `<b>Gratuit</b>, mais demande d'ouvrir un port sur votre box.<br>
+             1. Créez un sous-domaine sur
+                <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>
+                (connexion par compte Google, GitHub…) et notez votre <b>token</b>.<br>
+             2. Dans Home Assistant, installez l'add-on <b>DuckDNS</b> et renseignez-y le domaine et le token.
+                Laissez <code>lets_encrypt</code> activé : il obtient le certificat <b>https</b>.<br>
+             3. Sur votre box, redirigez le port <b>8123</b> vers votre Home Assistant.<br>
+             4. L'adresse à nous donner ressemble alors à <code>https://votre-nom.duckdns.org:8123</code>.`
+    },
+    {
+      cle: 'cloudflare',
+      nom: 'Cloudflare Tunnel',
+      suite: ' + NGINX (reverse proxy)',
+      url: 'https://www.cloudflare.com/products/tunnel/',
+      aide: `Publie votre instance <b>sans ouvrir le moindre port</b> : c'est votre Home Assistant
+             qui va vers Cloudflare, et non l'inverse.<br>
+             1. Créez un tunnel sur
+                <a href="https://www.cloudflare.com/products/tunnel/" target="_blank" rel="noopener noreferrer">Cloudflare Zero Trust</a>
+                (un nom de domaine est nécessaire).<br>
+             2. Installez l'add-on <b>Cloudflared</b> dans Home Assistant et rattachez-le au tunnel.<br>
+             3. Le certificat <b>https</b> est fourni par Cloudflare. L'adresse à nous donner est
+                le nom public du tunnel.<br>
+             NGINX n'est utile que si vous publiez plusieurs services derrière le même domaine.`
+    }
+  ];
+
+  /* Le nom, cliquable vers le site officiel, suivi de l'icône « ? ». La ligne
+     porte `.acces-item` : c'est ELLE qui ancre l'infobulle, et non l'icône —
+     sur une puce étroite, une infobulle calée sur l'icône déborderait. */
+  function accesLigneHtml(a, portee) {
+    const id = `acces-${portee}-${a.cle}`;
+    return `<a class="lien-acces" href="${a.url}" target="_blank" rel="noopener noreferrer">${a.nom}</a>${a.suite}
+      <button type="button" class="help-icon" onclick="basculerInfobulleAcces('${id}')"
+              aria-label="Guide de configuration ${a.nom}" title="Comment le configurer ?">?</button>
+      <span class="acces-infobulle" id="${id}">
+        <b>${a.nom}</b> — guide de configuration<br>${a.aide}
+        <button type="button" class="acces-fermer" onclick="basculerInfobulleAcces('${id}')">Fermer</button>
+      </span>`;
+  }
+
+  /* Une seule infobulle ouverte à la fois : deux popovers superposés sur une
+     liste de quatre lignes se recouvrent et deviennent illisibles. */
+  function basculerInfobulleAcces(id) {
+    const cible = document.getElementById(id);
+    if (!cible) return;
+    const ouvrir = !cible.classList.contains('open');
+    document.querySelectorAll('.acces-infobulle.open').forEach(e => e.classList.remove('open'));
+    if (ouvrir) cible.classList.add('open');
+  }
+
+  // Un clic hors de l'infobulle la referme — comportement attendu d'un
+  // popover. On ignore le clic sur l'icône elle-même, que `basculer` traite
+  // déjà, sinon l'infobulle s'ouvrirait et se refermerait dans la foulée.
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.acces-infobulle') || e.target.closest('.help-icon')) return;
+    document.querySelectorAll('.acces-infobulle.open').forEach(el => el.classList.remove('open'));
+  });
+
+  function remplirAccesDistant() {
+    const liste = document.getElementById('liste-acces-distant');
+    if (liste) {
+      liste.innerHTML = ACCES_DISTANT
+        .map(a => `<li class="acces-item">${accesLigneHtml(a, 'fonc')}</li>`).join('');
+    }
+    // Aide du champ « URL » : la même chose, en ligne. `portee` distingue les
+    // identifiants — la page porte les trois exemplaires en même temps, et des
+    // identifiants dupliqués feraient ouvrir l'infobulle de l'autre onglet.
+    document.querySelectorAll('[data-acces-portee]').forEach(hote => {
+      const portee = hote.getAttribute('data-acces-portee');
+      hote.innerHTML = ACCES_DISTANT
+        .map(a => `<span class="acces-item" style="display:inline-block; margin-right:14px;">${accesLigneHtml(a, portee)}</span>`)
+        .join('');
+    });
+  }
+
+  /* ---------- PAGE « DÉTAILS » D'UN PACK ----------
+     Refondue le 01/09/2026. Elle déroulait auparavant TOUTES les déclinaisons
+     à la suite : avec onze thèmes et, pour l'Éclairage, huit variantes de
+     capacités, cela ferait 264 captures sur une seule page. Le visiteur
+     choisit désormais en tête, et la page ne montre que la déclinaison
+     choisie.
+
+     Ce qui reste écrit à la main ici, c'est le TEXTE : l'intro du pack et
+     l'annotation de chaque onglet. Les images, elles, viennent du manifeste
+     (`APERCUS`) — donc de déploiements réels, jamais de maquettes.
+
+     Trois sélecteurs, selon le pack :
+       - le thème, pour les quatre packs ;
+       - le calendrier (pack Temps), qui ne change QUE le 3e onglet ;
+       - la variante de capacités (pack Éclairage), qui change les trois. */
   const PACK_DETAILS = {
     OK_service_meteo: {
-      gif: 'templates/service_meteo/meteo-sombre.gif',
-      cadre: '#000000',
       intro: 'Trois onglets, balayés du doigt. Les données viennent de l\'intégration Meteorologisk institutt (met.no), installée par le pack si elle manque — la seule source native qui publie d\'un bloc les cinq relevés du troisième onglet. Les textes suivent la langue de votre instance.',
-      variantes: [
-        {
-          nom: 'Thème sombre',
-          sous: 'La variante par défaut. Fond texturé sombre, écritures blanches, bordure animée multicolore.',
-          gif: 'templates/service_meteo/meteo-sombre.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_meteo/details/meteo-sombre-1-1.jpg',
-              titre: '1 — Semaine',
-              texte: 'Condition et température du moment, puis cinq jours de prévisions : minimale, maximale, et une barre colorée qui situe la journée dans l\'amplitude de la semaine.' },
-            { img: 'templates/service_meteo/details/meteo-sombre-1-2.jpg',
-              titre: '2 — Heure par heure',
-              texte: 'Le même relevé, découpé heure par heure sur la journée en cours — utile pour placer une sortie ou une lessive.' },
-            { img: 'templates/service_meteo/details/meteo-sombre-1-3.jpg',
-              titre: '3 — Conditions',
-              texte: 'Couverture nuageuse, vent, pression, humidité et ultraviolet. Chaque ligne porte sa propre icône animée : le nuage s\'efface, le vent traverse, la goutte tombe.' }
-          ]
-        },
-        {
-          nom: 'Thème clair',
-          sous: 'Même carte, texture claire et écritures gris foncé. Le fond de la vue passe au blanc pour que la carte ne flotte pas sur du noir.',
-          gif: 'templates/service_meteo/meteo-clair.gif', cadre: '#FFFFFF',
-          swipes: [
-            { img: 'templates/service_meteo/details/meteo-clair-1-1.jpg',
-              titre: '1 — Semaine',
-              texte: 'Les prévisions de la semaine, sur texture claire.' },
-            { img: 'templates/service_meteo/details/meteo-clair-1-2.jpg',
-              titre: '2 — Heure par heure',
-              texte: 'Le découpage horaire de la journée.' },
-            { img: 'templates/service_meteo/details/meteo-clair-1-3.jpg',
-              titre: '3 — Conditions',
-              texte: 'Les cinq relevés détaillés. Les icônes météo gardent leurs couleurs : seuls leurs blancs sont assombris, sans quoi les nuages disparaîtraient dans la texture.' }
-          ]
-        }
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Semaine',
+          texte: 'Condition et température du moment, puis cinq jours de prévisions : minimale, maximale, et une barre colorée qui situe la journée dans l\'amplitude de la semaine.' },
+        { titre: '2 — Heure par heure',
+          texte: 'Le même relevé, découpé heure par heure sur la journée en cours — utile pour placer une sortie ou une lessive.' },
+        { titre: '3 — Conditions',
+          texte: 'Couverture nuageuse, vent, pression, humidité et ultraviolet. Chaque ligne porte sa propre icône animée : le nuage s\'efface, le vent traverse, la goutte tombe.' }
       ]
     },
 
     OK_service_temps: {
-      gif: 'templates/service_temps/temps_athee.gif',
-      cadre: '#000000',
       intro: 'Les deux premiers onglets sont communs à toutes les variantes : une horloge analogique, puis le cycle du soleil et de la lune. C\'est le troisième qui change — vous choisissez votre calendrier au moment de l\'achat, et le pack installe l\'intégration correspondante.',
-      variantes: [
-        {
-          nom: 'Standard / Universel',
-          sous: 'Les cinq prochains jours fériés de votre pays, via l\'intégration native Home Assistant — donc traduits.',
-          gif: 'templates/service_temps/temps_athee.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-1-1.jpg', titre: '1 — Horloge',
-              texte: 'Horloge analogique à l\'heure de votre instance, date du jour en dessous.' },
-            { img: 'templates/service_temps/details/temps-sombre-1-2.jpg', titre: '2 — Cycle solaire',
-              texte: 'Position du soleil sur l\'horizon, heures de lever et de coucher, phase et trajet de la lune.' },
-            { img: 'templates/service_temps/details/temps-sombre-1-3.jpg', titre: '3 — Jours fériés',
-              texte: 'Cinq colonnes, une par fête à venir : nom, icône propre à la fête, date en toutes lettres.' }
-          ]
-        },
-        {
-          nom: 'Islamique / Musulman',
-          sous: 'Les cinq prières du jour, à l\'heure calculée pour vos coordonnées.',
-          gif: 'templates/service_temps/temps_islam.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-2-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
-            { img: 'templates/service_temps/details/temps-sombre-2-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
-            { img: 'templates/service_temps/details/temps-sombre-2-3.jpg', titre: '3 — Prières',
-              texte: 'Fajr, Dhuhr, Asr, Maghrib et Isha, chacune avec son horaire. Un mouvement d\'icône distinct par prière : Fajr monte, Asr descend, Isha traverse.' }
-          ]
-        },
-        {
-          nom: 'Juif',
-          sous: 'Calendrier hébraïque : date, parasha de la semaine, entrée et sortie du chabbat.',
-          gif: 'templates/service_temps/temps_judaisme.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-3-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
-            { img: 'templates/service_temps/details/temps-sombre-3-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
-            { img: 'templates/service_temps/details/temps-sombre-3-3.jpg', titre: '3 — Fêtes juives',
-              texte: 'Cinq relevés du calendrier hébraïque. Le pack installe l\'intégration Jewish Calendar si elle manque.' }
-          ]
-        },
-        {
-          nom: 'Chrétien',
-          sous: 'Fêtes du calendrier chrétien (catholique, protestant, orthodoxe), par abonnement à un flux public.',
-          gif: 'templates/service_temps/temps_christianisme.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-4-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
-            { img: 'templates/service_temps/details/temps-sombre-4-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
-            { img: 'templates/service_temps/details/temps-sombre-4-3.jpg', titre: '3 — Calendrier chrétien',
-              texte: 'Les cinq prochaines fêtes, avec une icône propre à chacune. Les intitulés viennent du flux source, publié en anglais.' }
-          ]
-        },
-        {
-          nom: 'Bouddhiste',
-          sous: 'Jours de pleine lune (Poya), Vesak et grandes observances.',
-          gif: 'templates/service_temps/temps_bouddhiste.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-5-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
-            { img: 'templates/service_temps/details/temps-sombre-5-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
-            { img: 'templates/service_temps/details/temps-sombre-5-3.jpg', titre: '3 — Calendrier bouddhiste',
-              texte: 'Les cinq prochaines observances. Les dates étant lunaires, elles sont publiées un à deux ans à l\'avance par la source.' }
-          ]
-        },
-        {
-          nom: 'Hindou',
-          sous: 'Diwali, Holi, Shivaratri, Navratri, Janmashtami et les autres grandes fêtes.',
-          gif: 'templates/service_temps/temps_hindou.gif', cadre: '#000000',
-          swipes: [
-            { img: 'templates/service_temps/details/temps-sombre-6-1.jpg', titre: '1 — Horloge', texte: 'Horloge analogique et date du jour.' },
-            { img: 'templates/service_temps/details/temps-sombre-6-2.jpg', titre: '2 — Cycle solaire', texte: 'Course du soleil et de la lune sur la journée.' },
-            { img: 'templates/service_temps/details/temps-sombre-6-3.jpg', titre: '3 — Calendrier hindou',
-              texte: 'Les cinq prochaines fêtes, chacune avec son icône. Les intitulés viennent du flux source, publié en anglais.' }
-          ]
-        }
+      /* Le calendrier ne change QUE le 3e onglet : les deux premiers sont
+         identiques d'une variante à l'autre, et on les prend donc toujours
+         sur la carte du calendrier standard. Montrer six horloges identiques
+         n'apprendrait rien au visiteur. */
+      selecteur: {
+        cle: 'calendrier', label: 'Calendrier', onglet: 3,
+        options: [
+          { value: 'standard', label: 'Standard / Universel (par défaut)',
+            texte: 'Les cinq prochains jours fériés de votre pays, via l\'intégration native de Home Assistant — donc traduits, avec une icône propre à chaque fête.' },
+          { value: 'islam', label: 'Islamique / Musulman',
+            texte: 'Fajr, Dhuhr, Asr, Maghrib et Isha, à l\'heure calculée pour vos coordonnées. Un mouvement d\'icône distinct par prière : Fajr monte, Asr descend, Isha traverse.' },
+          { value: 'judaisme', label: 'Juif',
+            texte: 'Calendrier hébraïque : date, parasha de la semaine, entrée et sortie du chabbat. Le pack installe l\'intégration Jewish Calendar si elle manque.' },
+          { value: 'christianisme', label: 'Chrétien',
+            texte: 'Les cinq prochaines fêtes du calendrier chrétien, chacune avec son icône. Les intitulés viennent du flux source, publié en anglais.' },
+          { value: 'bouddhisme', label: 'Bouddhiste',
+            texte: 'Jours de pleine lune (Poya), Vesak et grandes observances. Les dates étant lunaires, la source les publie un à deux ans à l\'avance.' },
+          { value: 'hindouisme', label: 'Hindou',
+            texte: 'Diwali, Holi, Shivaratri, Navratri, Janmashtami et les autres grandes fêtes, chacune avec son icône.' }
+        ]
+      },
+      // Le 3e onglet vient de la carte du calendrier choisi, les deux autres
+      // de la carte standard.
+      carte: (etat, onglet) => (onglet === 3 ? (etat.calendrier || 'standard') : 'standard'),
+      onglets: [
+        { titre: '1 — Horloge',
+          texte: 'Horloge analogique à l\'heure de votre instance, date du jour en dessous.' },
+        { titre: '2 — Cycle solaire',
+          texte: 'Position du soleil sur l\'horizon, heures de lever et de coucher, phase et trajet de la lune.' },
+        { titre: '3 — Calendrier', texte: '' }   // rempli par l'option choisie
       ]
     },
 
     lumiere_lumiere: {
-      gif: 'templates/eclairage_lumiere/lumiere.gif',
-      cadre: '#000000',
-      intro: 'Trois onglets : contrôle, minuteur, historique. Le premier <b>s\'adapte à votre lampe</b> — le pack lit ses capacités réelles (intensité, blanc variable, couleur, effets) et n\'affiche que les réglages qu\'elle sait exécuter. Les huit combinaisons possibles sont montrées ci-dessous, toutes déployées telles quelles.',
-      variantes: [
-        { nom: 'Variante 1 — Interrupteur simple',
-          sous: 'La lampe ne sait qu\'être allumée ou éteinte : ni curseur, ni matrice, ni sélecteur de mode.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-1-1.jpg', titre: '1 — Contrôle', texte: 'L\'ampoule seule, allumée d\'un appui.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-1-2.jpg', titre: '2 — Minuteur', texte: 'Six durées d\'extinction automatique, du quart d\'heure aux douze heures, avec pause et reprise.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-1-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 2 — Intensité variable',
-          sous: 'Le curseur d\'intensité apparaît, avec sa mémoire de luminosité.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-2-1.jpg', titre: '1 — Contrôle', texte: 'Anneau de luminosité autour de l\'ampoule, et curseur d\'intensité.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-2-2.jpg', titre: '2 — Minuteur', texte: 'Le minuteur applique aussi l\'intensité mémorisée au démarrage.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-2-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 3 — Blanc variable',
-          sous: 'La matrice de température de couleur s\'ajoute — du blanc chaud au blanc froid.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-3-1.jpg', titre: '1 — Contrôle', texte: 'La barre de blanc variable occupe toute la largeur : sans autre mode, aucune pastille de bascule n\'est nécessaire.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-3-2.jpg', titre: '2 — Minuteur', texte: 'Durées d\'extinction, veille et statut.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-3-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 4 — Couleur',
-          sous: 'Matrice de couleur RVB, sans blanc variable ni effets.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-4-1.jpg', titre: '1 — Contrôle', texte: 'La matrice arc-en-ciel. Lampe éteinte, un appui la rallume et lui redonne sa couleur.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-4-2.jpg', titre: '2 — Minuteur', texte: 'La couleur choisie est reprise au démarrage du minuteur.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-4-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 5 — Blanc variable et couleur',
-          sous: 'Deux modes : une pastille ronde fait passer de la couleur au blanc variable.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-5-1.jpg', titre: '1 — Contrôle', texte: 'La pastille de gauche bascule d\'un mode à l\'autre ; la matrice affichée suit.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-5-2.jpg', titre: '2 — Minuteur', texte: 'Le réglage mémorisé se règle ici, indépendamment de la lampe.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-5-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 6 — Effets',
-          sous: 'Les effets réellement annoncés par la lampe, un bouton chacun — jamais une liste figée.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-6-1.jpg', titre: '1 — Contrôle', texte: 'Carrousel d\'effets, généré à partir de ce que la lampe déclare : deux effets, ou vingt.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-6-2.jpg', titre: '2 — Minuteur', texte: 'L\'effet mémorisé est vérifié avant d\'être appliqué : une lampe remplacée ne casse pas le pack.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-6-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 7 — Couleur et effets',
-          sous: 'Deux modes : couleur et effets.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-7-1.jpg', titre: '1 — Contrôle', texte: 'La pastille bascule entre la matrice de couleur et le carrousel d\'effets.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-7-2.jpg', titre: '2 — Minuteur', texte: 'Durées, veille et statut, avec le réglage mémorisé.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-7-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année.' } ] },
-        { nom: 'Variante 8 — Toutes capacités',
-          sous: 'Intensité, blanc variable, couleur et effets : les trois modes et le curseur.',
-          swipes: [
-            { img: 'templates/eclairage_lumiere/details/lumiere-8-1.jpg', titre: '1 — Contrôle', texte: 'Le tableau de bord complet : anneau d\'intensité, pastille de bascule à trois modes, matrice ou carrousel selon le mode.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-8-2.jpg', titre: '2 — Minuteur', texte: 'Le réglage à appliquer au démarrage se compose ici, sans toucher à la lampe.' },
-            { img: 'templates/eclairage_lumiere/details/lumiere-8-3.jpg', titre: '3 — Historique', texte: 'Temps d\'allumage par jour, semaine, mois et année, lus sur l\'historique réel de la lampe.' } ] }
+      intro: 'Trois onglets : contrôle, minuteur, historique. Le premier <b>s\'adapte à votre lampe</b> — le pack lit ses capacités réelles (intensité, blanc variable, couleur, effets) et n\'affiche que les réglages qu\'elle sait exécuter. Les huit combinaisons possibles sont ci-dessous, toutes déployées telles quelles.',
+      selecteur: {
+        cle: 'variante', label: 'Capacités de la lampe',
+        // L'animation d'ensemble est filmee sur la variante 8 (toutes
+        // capacites) : ouvrir la page sur la variante 1 montrerait un GIF et
+        // des captures qui ne parlent pas de la meme lampe.
+        defaut: 'variante-8',
+        options: [
+          { value: 'variante-1', label: '1 — Interrupteur simple',
+            sous: 'La lampe ne sait qu\'être allumée ou éteinte : ni curseur, ni matrice, ni sélecteur de mode.' },
+          { value: 'variante-2', label: '2 — Intensité variable',
+            sous: 'Le curseur d\'intensité apparaît, avec sa mémoire de luminosité.' },
+          { value: 'variante-3', label: '3 — Blanc variable',
+            sous: 'La matrice de température de couleur s\'ajoute — du blanc chaud au blanc froid.' },
+          { value: 'variante-4', label: '4 — Couleur',
+            sous: 'Matrice de couleur RVB, sans blanc variable ni effets.' },
+          { value: 'variante-5', label: '5 — Blanc variable et couleur',
+            sous: 'Deux modes : une pastille ronde fait passer de la couleur au blanc variable.' },
+          { value: 'variante-6', label: '6 — Effets',
+            sous: 'Les effets réellement annoncés par la lampe, un bouton chacun — jamais une liste figée.' },
+          { value: 'variante-7', label: '7 — Couleur et effets',
+            sous: 'Deux modes : la pastille bascule entre la matrice de couleur et le carrousel d\'effets.' },
+          { value: 'variante-8', label: '8 — Toutes capacités',
+            sous: 'Intensité, blanc variable, couleur et effets : les trois modes et le curseur.' }
+        ]
+      },
+      carte: (etat) => etat.variante || 'variante-8',
+      onglets: [
+        { titre: '1 — Contrôle',
+          texte: 'L\'ampoule, son anneau d\'intensité, et les matrices que la lampe sait réellement piloter.' },
+        { titre: '2 — Minuteur',
+          texte: 'Six durées d\'extinction automatique, du quart d\'heure aux douze heures, avec pause et reprise. Le réglage à appliquer au démarrage se compose ici, sans toucher à la lampe.' },
+        { titre: '3 — Historique',
+          texte: 'Temps d\'allumage par jour, semaine, mois et année, lus sur l\'historique réel de la lampe.' }
       ]
     },
 
     eau_detecteur_fuite: {
-      gif: 'templates/eau_detecteur_de_fuite/fuite.gif',
-      cadre: '#000000',
       intro: 'Le tableau de bord ne lit jamais votre détecteur directement : le pack pose entre les deux un capteur filtré. C\'est lui qui permet de <b>taire une alerte sans rien débrancher</b> — le détecteur continue de rapporter son état, son historique reste complet, et rien n\'est désactivé dans Home Assistant.',
-      variantes: [
-        {
-          nom: 'Thème sombre',
-          sous: 'Fond texturé sombre. La bordure devient un dégradé en rotation dès qu\'une fuite est détectée.',
-          swipes: [
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-1.jpg', titre: '1 — Indicateur',
-              texte: 'L\'état du détecteur d\'un coup d\'œil. En alerte, le cercle pulse et la bordure s\'anime — sans qu\'aucun élément ne bouge de place.' },
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-2.jpg', titre: '2 — Désactivation',
-              texte: 'Six durées de mise en sourdine, du quart d\'heure aux douze heures, avec pause, reprise et annulation. Le détecteur se réarme tout seul à la fin.' },
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-sombre-1-3.jpg', titre: '3 — Historique',
-              texte: 'Humidité de la pièce sur le jour, la semaine, le mois ou l\'année.' }
-          ]
-        },
-        {
-          nom: 'Thème clair',
-          sous: 'Même carte, texture claire et écritures gris foncé.',
-          swipes: [
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-1.jpg', titre: '1 — Indicateur', texte: 'L\'état du détecteur, sur texture claire.' },
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-2.jpg', titre: '2 — Désactivation', texte: 'Les six durées de mise en sourdine et le compte à rebours.' },
-            { img: 'templates/eau_detecteur_de_fuite/details/fuite-clair-1-3.jpg', titre: '3 — Historique', texte: 'Humidité de la pièce sur quatre échelles de temps.' }
-          ]
-        }
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur',
+          texte: 'L\'état du détecteur d\'un coup d\'œil. En alerte, le cercle pulse et la bordure s\'anime — sans qu\'aucun élément ne bouge de place.' },
+        { titre: '2 — Désactivation',
+          texte: 'Six durées de mise en sourdine, du quart d\'heure aux douze heures, avec pause, reprise et annulation. Le détecteur se réarme tout seul à la fin.' },
+        { titre: '3 — Historique',
+          texte: 'Humidité de la pièce sur le jour, la semaine, le mois ou l\'année.' }
       ]
     }
   };
 
-  /* Fiche de détails du pack ouvert. Elle sert au bouton « Retour » comme au
-     titre de la page : rendue à chaque ouverture plutôt que pré-écrite, pour
-     qu'un ajout dans PACK_DETAILS suffise. */
+  // Choix courants de la page Détails (thème, calendrier, variante). Un objet
+  // et non trois variables : `majDetails` les relit tous à chaque changement.
+  let etatDetails = { module: null, theme: null };
+
   function ouvrirDetails(cleModule) {
-    const pack = PACK_DETAILS[cleModule];
+    etatDetails = { module: cleModule, theme: themeChoisi(cleModule) };
+    const conf = PACK_DETAILS[cleModule];
+    if (conf && conf.selecteur) {
+      etatDetails[conf.selecteur.cle] =
+        conf.selecteur.defaut || conf.selecteur.options[0].value;
+    }
+    switchTab('details');
+    majDetails();
+  }
+
+  function changerDetail(champ, valeur) {
+    etatDetails[champ] = valeur;
+    majDetails();
+  }
+
+  function majDetails() {
+    const cleModule = etatDetails.module;
     const titre = moduleTitle(cleModule);
+    const conf = PACK_DETAILS[cleModule];
     document.getElementById('detail-titre').innerHTML =
       `<i class="fa-solid fa-cubes"></i> ${titre}`;
-
     const corps = document.getElementById('detail-corps');
-    if (!pack) {
-      // Le lien est présent sur tous les packs, les captures non : le dire
-      // vaut mieux qu'ouvrir une page vide.
+
+    if (!conf) {
+      // Le lien « Détails » est présent sur tous les packs, les captures non :
+      // le dire vaut mieux qu'ouvrir une page vide.
       const desc = detailSepare(descriptifDe(cleModule));
       corps.innerHTML = `
-        <div class="card">
-          <p class="detail-intro">${desc.descriptif || ''}</p>
-        </div>
+        <div class="card"><p class="detail-intro">${desc.descriptif || ''}</p></div>
         <div class="detail-attente">
-          <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack
-          sont en cours de préparation. Le pack reste déployable dès maintenant
-          depuis l'onglet Packs.
-        </div>`;
-      switchTab('details');
+          <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack sont en
+          cours de préparation. Le pack reste déployable dès maintenant depuis l'onglet Packs.
+        </div>
+        ${retourHtml()}`;
       return;
     }
 
-    const bloc = (v) => `
-      <div class="card">
-        <div class="detail-variante-titre">${v.nom}</div>
-        ${v.sous ? `<div class="detail-variante-sous">${v.sous}</div>` : ''}
-        ${v.gif ? `<div class="module-video detail-gif" style="background: ${v.cadre || '#000'}; margin-bottom: 16px;">
-                     <img src="${v.gif}" alt="Aperçu ${titre} — ${v.nom}" loading="lazy"></div>` : ''}
-        <div class="detail-swipes">
-          ${v.swipes.map(s => `
-            <figure class="detail-swipe">
-              <img src="${s.img}" alt="${titre} — ${v.nom} — ${s.titre}" loading="lazy">
-              <figcaption>
-                <div class="detail-swipe-titre">${s.titre}</div>
-                <div class="detail-swipe-texte">${s.texte}</div>
-              </figcaption>
-            </figure>`).join('')}
+    const dispo = themesDisponibles(cleModule);
+    if (dispo.length && !dispo.includes(etatDetails.theme)) etatDetails.theme = dispo[0];
+    const cleTheme = etatDetails.theme;
+    const fiche = apercuDuTheme(cleModule, cleTheme);
+    const sel = conf.selecteur;
+    const option = sel ? (sel.options.find(o => o.value === etatDetails[sel.cle])
+                          || sel.options[0]) : null;
+
+    // --- Commandes, EN TÊTE : le sélecteur de thème est au-dessus du GIF,
+    //     puisque c'est lui qui commande et le GIF et les captures.
+    const commandes = `
+      <div class="card detail-commandes">
+        <div class="detail-commande">
+          <label class="param-label" for="detail-theme">Thème</label>
+          <select id="detail-theme" onchange="changerDetail('theme', this.value)">
+            ${THEMES_SITE.map(t => `<option value="${t.value}"${t.value === cleTheme ? ' selected' : ''}
+               ${dispo.length && !dispo.includes(t.value) ? ' disabled' : ''}>${t.label}${
+               dispo.length && !dispo.includes(t.value) ? ' — aperçu à venir' : ''}</option>`).join('')}
+          </select>
         </div>
+        ${sel ? `
+        <div class="detail-commande">
+          <label class="param-label" for="detail-${sel.cle}">${sel.label}</label>
+          <select id="detail-${sel.cle}" onchange="changerDetail('${sel.cle}', this.value)">
+            ${sel.options.map(o => `<option value="${o.value}"${o.value === option.value ? ' selected' : ''}>${o.label}</option>`).join('')}
+          </select>
+        </div>` : ''}
       </div>`;
 
-    corps.innerHTML = `
+    const gif = `
       <div class="card">
-        ${pack.gif ? `<div class="module-video detail-gif" style="background: ${pack.cadre || '#000'}; margin-bottom: 14px;">
-                        <img src="${pack.gif}" alt="Aperçu ${titre}" loading="lazy"></div>` : ''}
-        <p class="detail-intro">${pack.intro || ''}</p>
-      </div>
-      ${pack.variantes.map(bloc).join('')}
-      <div class="card" style="text-align: center;">
-        <button class="btn-add-big" onclick="switchTab('module')">
-          <i class="fa-solid fa-cart-plus"></i> Retour aux packs
-        </button>
+        ${fiche && fiche.gif
+          ? `<div class="module-video detail-gif" style="background: ${cadreDuTheme(cleTheme)}; margin-bottom: 14px;">
+               <img src="${fiche.gif}" alt="Aperçu ${titre} — ${(themeSite(cleTheme) || {}).label || ''}" loading="lazy"></div>`
+          : `<div class="detail-attente" style="margin-bottom: 14px;">
+               <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
+        <p class="detail-intro">${conf.intro || ''}</p>
+        ${option && option.sous ? `<p class="detail-variante-sous" style="margin: 10px 0 0;">${option.sous}</p>` : ''}
       </div>`;
 
-    switchTab('details');
+    // --- Les trois onglets, dans la déclinaison choisie.
+    const vignettes = conf.onglets.map((o, i) => {
+      const numero = i + 1;
+      const nomCarte = conf.carte(etatDetails, numero);
+      const images = (fiche && fiche.cartes && fiche.cartes[nomCarte]) || [];
+      const img = images[i];
+      // L'option du sélecteur peut porter le texte d'un onglet précis
+      // (le 3e du pack Temps) : il remplace alors l'annotation générique.
+      const texte = (sel && sel.onglet === numero && option && option.texte) ? option.texte : o.texte;
+      return `
+        <figure class="detail-swipe">
+          ${img ? `<img src="${img}" alt="${titre} — ${o.titre}" loading="lazy">`
+                : `<div class="detail-attente" style="padding: 40px 12px;">
+                     <i class="fa-solid fa-camera"></i> Capture à venir</div>`}
+          <figcaption>
+            <div class="detail-swipe-titre">${o.titre}</div>
+            <div class="detail-swipe-texte">${texte || ''}</div>
+          </figcaption>
+        </figure>`;
+    }).join('');
+
+    corps.innerHTML = commandes + gif +
+      `<div class="card"><div class="detail-swipes">${vignettes}</div></div>` + retourHtml();
+  }
+
+  /* Le bouton du bas est le MÊME que celui du haut : même classe, même
+     libellé, même icône (harmonisation demandée le 01/09/2026). Ils étaient
+     auparavant l'un un lien discret, l'autre un gros bouton vert de
+     validation — qui se lisait comme « ajouter au panier ». */
+  function retourHtml() {
+    return `<div class="card" style="text-align: center;">
+      <button type="button" class="detail-retour" style="margin: 0;" onclick="switchTab('module')">
+        <i class="fa-solid fa-arrow-left"></i> Retour aux packs
+      </button>
+    </div>`;
   }
 
   /* Descriptif d'un pack, quelle que soit sa forme de fiche : les packs
@@ -3201,28 +3258,61 @@
     return '';
   }
 
+  /* ---------- LES ONZE THÈMES DE FOND (01/09/2026) ----------
+     Ils remplacent « Sombre » et « Clair » dans tous les sélecteurs. La liste
+     est le miroir exact de `themes_fond.ORDRE` côté Python : c'est la clé —
+     jamais le libellé — qui voyage jusqu'au runner, et le module la relit
+     dans son environnement (METEO_THEME, TEMPS_THEME, LUMIERE_THEME,
+     FUITE_THEME).
+
+     Les modules acceptent toujours « sombre » et « clair » : un onglet resté
+     ouvert sur l'ancienne page continue donc de fonctionner, même si ces deux
+     valeurs ne sont plus proposées ici. */
+  const THEMES_SITE = [
+    { value: 'elegance-ardoise', label: 'Élégance Ardoise', clair: false },
+    { value: 'pure-lumiere', label: 'Pure Lumière', clair: true },
+    { value: 'bleu-evasion', label: 'Bleu Évasion', clair: false },
+    { value: 'terre-de-carmin', label: 'Terre de Carmin', clair: false },
+    { value: 'carbon-pulse', label: 'Carbon Pulse', clair: false },
+    { value: 'creme-gourmande', label: 'Crème Gourmande', clair: true },
+    { value: 'neo-future', label: 'Neo Future', clair: false },
+    { value: 'urban-factory', label: 'Urban Factory', clair: false },
+    { value: 'mars-rouge', label: 'Mars Rouge', clair: false },
+    { value: 'sahara-elegance', label: 'Sahara Élégance', clair: false },
+    { value: 'nocturne-artistique', label: 'Nocturne Artistique', clair: false },
+  ];
+
+  function champThemeSite(param) {
+    return { param: param, label: 'Thème', type: 'select', required: true,
+             options: THEMES_SITE };
+  }
+
   /* Modules réclamant plusieurs informations, et non une seule entité.
      Chaque champ porte le nom de la variable transmise au runner : le Worker
      ne laisse passer que des noms en MAJUSCULES_ET_SOULIGNES, et le module
      Python les relit dans son environnement. */
   const MODULE_PARAMS = {
-    OK_service_meteo: [
-      { param: 'METEO_THEME', label: 'Thème', type: 'select', required: true,
-        options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
-    ],
-    OK_service_temps: [
-      { param: 'TEMPS_THEME', label: 'Thème', type: 'select', required: true,
-        options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
-    ],
+    OK_service_meteo: [champThemeSite('METEO_THEME')],
+    OK_service_temps: [champThemeSite('TEMPS_THEME')],
     lumiere_lumiere: [
       { param: 'LUMIERE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
       { param: 'LUMIERE_ENTITE', label: 'Entité de la lumière', type: 'text', required: true,
         placeholder: 'ex : light.suspension_salon' },
-      { param: 'LUMIERE_THEME', label: 'Thème(s)', type: 'checkboxes', required: true,
-        // Les deux peuvent etre coches a la fois : le module genere alors une
-        // vue dediee par theme (voir deploy_pack_eclairage_lumiere.deploy()).
-        options: [{ value: 'sombre', label: 'Sombre' }, { value: 'clair', label: 'Clair' }] }
+      // Liste déroulante, comme Météo et Temps (harmonisation demandée le
+      // 01/09/2026). Elle remplace les cases à cocher, qui permettaient de
+      // prendre les deux thèmes d'un coup : à onze thèmes, une rangée de
+      // cases devenait illisible. Un client qui en veut plusieurs ajoute
+      // autant de lignes au panier — le module range chaque thème dans sa
+      // propre vue, le résultat est le même.
+      champThemeSite('LUMIERE_THEME')
+    ],
+    eau_detecteur_fuite: [
+      { param: 'FUITE_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: "ex : Salle d'eau" },
+      { param: 'FUITE_ENTITE', label: 'Entité du détecteur', type: 'text', required: true,
+        placeholder: 'ex : binary_sensor.salle_eau_fuite' },
+      champThemeSite('FUITE_THEME')
     ]
   };
 
@@ -3257,35 +3347,1207 @@
     };
   }
 
-  /* ---------- Aperçu animé, accordé au thème choisi ----------
-     La variante par défaut est déduite de la PREMIÈRE option du sélecteur,
-     et non du premier élément de `variantes` : les deux listes vivraient
-     sinon leur vie chacune de leur côté, et l'aperçu finirait par montrer
-     l'autre thème que celui pré-sélectionné. */
-  function varianteParDefaut(modName) {
-    const media = MODULE_MEDIA[modName];
-    if (!media || !media.apercu) return null;
-    const champ = (MODULE_PARAMS[modName] || []).find(c => c.param === media.apercu.param);
-    const cle = champ && champ.options ? champ.options[0].value : Object.keys(media.apercu.variantes)[0];
-    return media.apercu.variantes[cle] || Object.values(media.apercu.variantes)[0];
+
+  /* ---------- APERÇUS PAR THÈME (01/09/2026) ----------
+     Le bloc APERCUS est ÉCRIT PAR `_injecter_apercus.py` à partir de
+     `templates/apercus/manifeste.json`, lui-même produit par
+     `_generer_apercus.py` en déployant réellement chaque pack dans chaque
+     thème puis en filmant la carte.
+
+     Pourquoi l'injecter plutôt que le charger à l'exécution : les chemins
+     deviennent des chaînes littérales de cette page, et `publier_site.py`
+     — qui relève les dépendances DANS index.html — les publie donc tout
+     seul. Un `fetch()` du manifeste, lui, laisserait les images derrière et
+     donnerait un site aux cadres vides, sans que rien ne le signale.
+
+     Un thème absent du manifeste n'a pas encore été filmé : le site le dit,
+     au lieu d'afficher un cadre noir. */
+  /* APERCUS-DEBUT */
+  const APERCUS =
+  {
+    "fuite": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/fuite/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/fuite/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/fuite/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/fuite/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/fuite/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/fuite/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/fuite/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/fuite/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/mars-rouge-defaut-1.jpg",
+            "templates/apercus/fuite/mars-rouge-defaut-2.jpg",
+            "templates/apercus/fuite/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/neo-future-defaut-1.jpg",
+            "templates/apercus/fuite/neo-future-defaut-2.jpg",
+            "templates/apercus/fuite/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/fuite/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/fuite/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/fuite/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/fuite/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/fuite/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/fuite/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/fuite/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/fuite/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/fuite/urban-factory-defaut-1.jpg",
+            "templates/apercus/fuite/urban-factory-defaut-2.jpg",
+            "templates/apercus/fuite/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/fuite/urban-factory.gif"
+      }
+    },
+    "lumiere": {
+      "bleu-evasion": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/bleu-evasion-variante-1-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-1-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/bleu-evasion-variante-2-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-2-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/bleu-evasion-variante-3-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-3-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/bleu-evasion-variante-4-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-4-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/bleu-evasion-variante-5-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-5-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/bleu-evasion-variante-6-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-6-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/bleu-evasion-variante-7-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-7-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/bleu-evasion-variante-8-1.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-8-2.jpg",
+            "templates/apercus/lumiere/bleu-evasion-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/carbon-pulse-variante-1-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-1-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/carbon-pulse-variante-2-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-2-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/carbon-pulse-variante-3-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-3-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/carbon-pulse-variante-4-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-4-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/carbon-pulse-variante-5-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-5-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/carbon-pulse-variante-6-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-6-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/carbon-pulse-variante-7-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-7-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/carbon-pulse-variante-8-1.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-8-2.jpg",
+            "templates/apercus/lumiere/carbon-pulse-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/creme-gourmande-variante-1-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-1-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/creme-gourmande-variante-2-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-2-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/creme-gourmande-variante-3-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-3-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/creme-gourmande-variante-4-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-4-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/creme-gourmande-variante-5-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-5-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/creme-gourmande-variante-6-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-6-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/creme-gourmande-variante-7-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-7-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/creme-gourmande-variante-8-1.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-8-2.jpg",
+            "templates/apercus/lumiere/creme-gourmande-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-1-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-1-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-2-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-2-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-3-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-3-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-4-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-4-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-5-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-5-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-6-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-6-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-7-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-7-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/elegance-ardoise-variante-8-1.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-8-2.jpg",
+            "templates/apercus/lumiere/elegance-ardoise-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/mars-rouge-variante-1-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-1-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/mars-rouge-variante-2-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-2-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/mars-rouge-variante-3-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-3-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/mars-rouge-variante-4-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-4-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/mars-rouge-variante-5-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-5-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/mars-rouge-variante-6-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-6-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/mars-rouge-variante-7-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-7-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/mars-rouge-variante-8-1.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-8-2.jpg",
+            "templates/apercus/lumiere/mars-rouge-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/neo-future-variante-1-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-1-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/neo-future-variante-2-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-2-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/neo-future-variante-3-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-3-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/neo-future-variante-4-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-4-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/neo-future-variante-5-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-5-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/neo-future-variante-6-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-6-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/neo-future-variante-7-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-7-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/neo-future-variante-8-1.jpg",
+            "templates/apercus/lumiere/neo-future-variante-8-2.jpg",
+            "templates/apercus/lumiere/neo-future-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-1-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-1-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-2-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-2-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-3-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-3-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-4-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-4-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-5-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-5-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-6-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-6-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-7-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-7-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/nocturne-artistique-variante-8-1.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-8-2.jpg",
+            "templates/apercus/lumiere/nocturne-artistique-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/pure-lumiere-variante-1-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-1-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/pure-lumiere-variante-2-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-2-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/pure-lumiere-variante-3-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-3-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/pure-lumiere-variante-4-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-4-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/pure-lumiere-variante-5-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-5-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/pure-lumiere-variante-6-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-6-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/pure-lumiere-variante-7-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-7-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/pure-lumiere-variante-8-1.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-8-2.jpg",
+            "templates/apercus/lumiere/pure-lumiere-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/sahara-elegance-variante-1-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-1-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/sahara-elegance-variante-2-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-2-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/sahara-elegance-variante-3-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-3-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/sahara-elegance-variante-4-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-4-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/sahara-elegance-variante-5-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-5-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/sahara-elegance-variante-6-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-6-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/sahara-elegance-variante-7-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-7-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/sahara-elegance-variante-8-1.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-8-2.jpg",
+            "templates/apercus/lumiere/sahara-elegance-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-1-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-1-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-2-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-2-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-3-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-3-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-4-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-4-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-5-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-5-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-6-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-6-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-7-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-7-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/terre-de-carmin-variante-8-1.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-8-2.jpg",
+            "templates/apercus/lumiere/terre-de-carmin-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "variante-1": [
+            "templates/apercus/lumiere/urban-factory-variante-1-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-1-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-1-3.jpg"
+          ],
+          "variante-2": [
+            "templates/apercus/lumiere/urban-factory-variante-2-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-2-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-2-3.jpg"
+          ],
+          "variante-3": [
+            "templates/apercus/lumiere/urban-factory-variante-3-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-3-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-3-3.jpg"
+          ],
+          "variante-4": [
+            "templates/apercus/lumiere/urban-factory-variante-4-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-4-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-4-3.jpg"
+          ],
+          "variante-5": [
+            "templates/apercus/lumiere/urban-factory-variante-5-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-5-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-5-3.jpg"
+          ],
+          "variante-6": [
+            "templates/apercus/lumiere/urban-factory-variante-6-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-6-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-6-3.jpg"
+          ],
+          "variante-7": [
+            "templates/apercus/lumiere/urban-factory-variante-7-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-7-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-7-3.jpg"
+          ],
+          "variante-8": [
+            "templates/apercus/lumiere/urban-factory-variante-8-1.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-8-2.jpg",
+            "templates/apercus/lumiere/urban-factory-variante-8-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lumiere/urban-factory.gif"
+      }
+    },
+    "meteo": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/meteo/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/meteo/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/meteo/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/meteo/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/meteo/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/meteo/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/meteo/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/meteo/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/mars-rouge-defaut-1.jpg",
+            "templates/apercus/meteo/mars-rouge-defaut-2.jpg",
+            "templates/apercus/meteo/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/neo-future-defaut-1.jpg",
+            "templates/apercus/meteo/neo-future-defaut-2.jpg",
+            "templates/apercus/meteo/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/meteo/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/meteo/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/meteo/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/meteo/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/meteo/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/meteo/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/meteo/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/meteo/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/meteo/urban-factory-defaut-1.jpg",
+            "templates/apercus/meteo/urban-factory-defaut-2.jpg",
+            "templates/apercus/meteo/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/meteo/urban-factory.gif"
+      }
+    },
+    "temps": {
+      "bleu-evasion": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/bleu-evasion-bouddhisme-1.jpg",
+            "templates/apercus/temps/bleu-evasion-bouddhisme-2.jpg",
+            "templates/apercus/temps/bleu-evasion-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/bleu-evasion-christianisme-1.jpg",
+            "templates/apercus/temps/bleu-evasion-christianisme-2.jpg",
+            "templates/apercus/temps/bleu-evasion-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/bleu-evasion-hindouisme-1.jpg",
+            "templates/apercus/temps/bleu-evasion-hindouisme-2.jpg",
+            "templates/apercus/temps/bleu-evasion-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/bleu-evasion-islam-1.jpg",
+            "templates/apercus/temps/bleu-evasion-islam-2.jpg",
+            "templates/apercus/temps/bleu-evasion-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/bleu-evasion-judaisme-1.jpg",
+            "templates/apercus/temps/bleu-evasion-judaisme-2.jpg",
+            "templates/apercus/temps/bleu-evasion-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/bleu-evasion-standard-1.jpg",
+            "templates/apercus/temps/bleu-evasion-standard-2.jpg",
+            "templates/apercus/temps/bleu-evasion-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/carbon-pulse-bouddhisme-1.jpg",
+            "templates/apercus/temps/carbon-pulse-bouddhisme-2.jpg",
+            "templates/apercus/temps/carbon-pulse-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/carbon-pulse-christianisme-1.jpg",
+            "templates/apercus/temps/carbon-pulse-christianisme-2.jpg",
+            "templates/apercus/temps/carbon-pulse-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/carbon-pulse-hindouisme-1.jpg",
+            "templates/apercus/temps/carbon-pulse-hindouisme-2.jpg",
+            "templates/apercus/temps/carbon-pulse-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/carbon-pulse-islam-1.jpg",
+            "templates/apercus/temps/carbon-pulse-islam-2.jpg",
+            "templates/apercus/temps/carbon-pulse-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/carbon-pulse-judaisme-1.jpg",
+            "templates/apercus/temps/carbon-pulse-judaisme-2.jpg",
+            "templates/apercus/temps/carbon-pulse-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/carbon-pulse-standard-1.jpg",
+            "templates/apercus/temps/carbon-pulse-standard-2.jpg",
+            "templates/apercus/temps/carbon-pulse-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/creme-gourmande-bouddhisme-1.jpg",
+            "templates/apercus/temps/creme-gourmande-bouddhisme-2.jpg",
+            "templates/apercus/temps/creme-gourmande-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/creme-gourmande-christianisme-1.jpg",
+            "templates/apercus/temps/creme-gourmande-christianisme-2.jpg",
+            "templates/apercus/temps/creme-gourmande-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/creme-gourmande-hindouisme-1.jpg",
+            "templates/apercus/temps/creme-gourmande-hindouisme-2.jpg",
+            "templates/apercus/temps/creme-gourmande-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/creme-gourmande-islam-1.jpg",
+            "templates/apercus/temps/creme-gourmande-islam-2.jpg",
+            "templates/apercus/temps/creme-gourmande-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/creme-gourmande-judaisme-1.jpg",
+            "templates/apercus/temps/creme-gourmande-judaisme-2.jpg",
+            "templates/apercus/temps/creme-gourmande-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/creme-gourmande-standard-1.jpg",
+            "templates/apercus/temps/creme-gourmande-standard-2.jpg",
+            "templates/apercus/temps/creme-gourmande-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/elegance-ardoise-bouddhisme-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-bouddhisme-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/elegance-ardoise-christianisme-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-christianisme-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/elegance-ardoise-hindouisme-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-hindouisme-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/elegance-ardoise-islam-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-islam-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/elegance-ardoise-judaisme-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-judaisme-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/elegance-ardoise-standard-1.jpg",
+            "templates/apercus/temps/elegance-ardoise-standard-2.jpg",
+            "templates/apercus/temps/elegance-ardoise-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/mars-rouge-bouddhisme-1.jpg",
+            "templates/apercus/temps/mars-rouge-bouddhisme-2.jpg",
+            "templates/apercus/temps/mars-rouge-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/mars-rouge-christianisme-1.jpg",
+            "templates/apercus/temps/mars-rouge-christianisme-2.jpg",
+            "templates/apercus/temps/mars-rouge-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/mars-rouge-hindouisme-1.jpg",
+            "templates/apercus/temps/mars-rouge-hindouisme-2.jpg",
+            "templates/apercus/temps/mars-rouge-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/mars-rouge-islam-1.jpg",
+            "templates/apercus/temps/mars-rouge-islam-2.jpg",
+            "templates/apercus/temps/mars-rouge-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/mars-rouge-judaisme-1.jpg",
+            "templates/apercus/temps/mars-rouge-judaisme-2.jpg",
+            "templates/apercus/temps/mars-rouge-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/mars-rouge-standard-1.jpg",
+            "templates/apercus/temps/mars-rouge-standard-2.jpg",
+            "templates/apercus/temps/mars-rouge-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/neo-future-bouddhisme-1.jpg",
+            "templates/apercus/temps/neo-future-bouddhisme-2.jpg",
+            "templates/apercus/temps/neo-future-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/neo-future-christianisme-1.jpg",
+            "templates/apercus/temps/neo-future-christianisme-2.jpg",
+            "templates/apercus/temps/neo-future-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/neo-future-hindouisme-1.jpg",
+            "templates/apercus/temps/neo-future-hindouisme-2.jpg",
+            "templates/apercus/temps/neo-future-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/neo-future-islam-1.jpg",
+            "templates/apercus/temps/neo-future-islam-2.jpg",
+            "templates/apercus/temps/neo-future-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/neo-future-judaisme-1.jpg",
+            "templates/apercus/temps/neo-future-judaisme-2.jpg",
+            "templates/apercus/temps/neo-future-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/neo-future-standard-1.jpg",
+            "templates/apercus/temps/neo-future-standard-2.jpg",
+            "templates/apercus/temps/neo-future-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/nocturne-artistique-bouddhisme-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-bouddhisme-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/nocturne-artistique-christianisme-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-christianisme-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/nocturne-artistique-hindouisme-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-hindouisme-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/nocturne-artistique-islam-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-islam-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/nocturne-artistique-judaisme-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-judaisme-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/nocturne-artistique-standard-1.jpg",
+            "templates/apercus/temps/nocturne-artistique-standard-2.jpg",
+            "templates/apercus/temps/nocturne-artistique-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/pure-lumiere-bouddhisme-1.jpg",
+            "templates/apercus/temps/pure-lumiere-bouddhisme-2.jpg",
+            "templates/apercus/temps/pure-lumiere-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/pure-lumiere-christianisme-1.jpg",
+            "templates/apercus/temps/pure-lumiere-christianisme-2.jpg",
+            "templates/apercus/temps/pure-lumiere-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/pure-lumiere-hindouisme-1.jpg",
+            "templates/apercus/temps/pure-lumiere-hindouisme-2.jpg",
+            "templates/apercus/temps/pure-lumiere-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/pure-lumiere-islam-1.jpg",
+            "templates/apercus/temps/pure-lumiere-islam-2.jpg",
+            "templates/apercus/temps/pure-lumiere-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/pure-lumiere-judaisme-1.jpg",
+            "templates/apercus/temps/pure-lumiere-judaisme-2.jpg",
+            "templates/apercus/temps/pure-lumiere-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/pure-lumiere-standard-1.jpg",
+            "templates/apercus/temps/pure-lumiere-standard-2.jpg",
+            "templates/apercus/temps/pure-lumiere-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/sahara-elegance-bouddhisme-1.jpg",
+            "templates/apercus/temps/sahara-elegance-bouddhisme-2.jpg",
+            "templates/apercus/temps/sahara-elegance-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/sahara-elegance-christianisme-1.jpg",
+            "templates/apercus/temps/sahara-elegance-christianisme-2.jpg",
+            "templates/apercus/temps/sahara-elegance-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/sahara-elegance-hindouisme-1.jpg",
+            "templates/apercus/temps/sahara-elegance-hindouisme-2.jpg",
+            "templates/apercus/temps/sahara-elegance-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/sahara-elegance-islam-1.jpg",
+            "templates/apercus/temps/sahara-elegance-islam-2.jpg",
+            "templates/apercus/temps/sahara-elegance-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/sahara-elegance-judaisme-1.jpg",
+            "templates/apercus/temps/sahara-elegance-judaisme-2.jpg",
+            "templates/apercus/temps/sahara-elegance-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/sahara-elegance-standard-1.jpg",
+            "templates/apercus/temps/sahara-elegance-standard-2.jpg",
+            "templates/apercus/temps/sahara-elegance-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/terre-de-carmin-bouddhisme-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-bouddhisme-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/terre-de-carmin-christianisme-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-christianisme-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/terre-de-carmin-hindouisme-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-hindouisme-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/terre-de-carmin-islam-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-islam-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/terre-de-carmin-judaisme-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-judaisme-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/terre-de-carmin-standard-1.jpg",
+            "templates/apercus/temps/terre-de-carmin-standard-2.jpg",
+            "templates/apercus/temps/terre-de-carmin-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "bouddhisme": [
+            "templates/apercus/temps/urban-factory-bouddhisme-1.jpg",
+            "templates/apercus/temps/urban-factory-bouddhisme-2.jpg",
+            "templates/apercus/temps/urban-factory-bouddhisme-3.jpg"
+          ],
+          "christianisme": [
+            "templates/apercus/temps/urban-factory-christianisme-1.jpg",
+            "templates/apercus/temps/urban-factory-christianisme-2.jpg",
+            "templates/apercus/temps/urban-factory-christianisme-3.jpg"
+          ],
+          "hindouisme": [
+            "templates/apercus/temps/urban-factory-hindouisme-1.jpg",
+            "templates/apercus/temps/urban-factory-hindouisme-2.jpg",
+            "templates/apercus/temps/urban-factory-hindouisme-3.jpg"
+          ],
+          "islam": [
+            "templates/apercus/temps/urban-factory-islam-1.jpg",
+            "templates/apercus/temps/urban-factory-islam-2.jpg",
+            "templates/apercus/temps/urban-factory-islam-3.jpg"
+          ],
+          "judaisme": [
+            "templates/apercus/temps/urban-factory-judaisme-1.jpg",
+            "templates/apercus/temps/urban-factory-judaisme-2.jpg",
+            "templates/apercus/temps/urban-factory-judaisme-3.jpg"
+          ],
+          "standard": [
+            "templates/apercus/temps/urban-factory-standard-1.jpg",
+            "templates/apercus/temps/urban-factory-standard-2.jpg",
+            "templates/apercus/temps/urban-factory-standard-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/temps/urban-factory.gif"
+      }
+    },
+    "test-gratuit": {
+      "sombre": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/test-gratuit/sombre-defaut-1.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-2.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-3.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-4.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-5.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-6.jpg",
+            "templates/apercus/test-gratuit/sombre-defaut-7.jpg"
+          ]
+        },
+        "gif": "templates/apercus/test-gratuit/sombre.gif"
+      }
+    }
+  };
+  /* APERCUS-FIN */
+
+  // Clé du pack sur le site -> clé du pack dans le manifeste.
+  const PACK_APERCU = {
+    OK_service_meteo: 'meteo',
+    OK_service_temps: 'temps',
+    lumiere_lumiere: 'lumiere',
+    eau_detecteur_fuite: 'fuite'
+  };
+
+  function themeSite(cle) {
+    return THEMES_SITE.find(t => t.value === cle) || null;
   }
 
-  function varianteApercu(modName) {
-    const media = MODULE_MEDIA[modName];
-    if (!media || !media.apercu) return null;
-    const el = document.getElementById(`param-${modName}-${media.apercu.param}`);
-    return (el && media.apercu.variantes[el.value]) || varianteParDefaut(modName);
+  /* Le cadre suit la POLARITÉ du thème, pas une valeur écrite à la main :
+     un aperçu clair posé sur un cadre noir se lit comme un défaut d'affichage.
+     C'est le même raisonnement que l'ancien couple sombre/clair, étendu aux
+     onze. */
+  function cadreDuTheme(cle) {
+    const t = themeSite(cle);
+    return t && t.clair ? '#FFFFFF' : '#000000';
   }
 
+  /* Thèmes réellement disponibles pour ce pack, dans l'ordre du sélecteur.
+     On n'invente rien : ce sont les thèmes présents dans le manifeste. */
+  function themesDisponibles(modName) {
+    const pack = APERCUS[PACK_APERCU[modName]];
+    if (!pack) return [];
+    return THEMES_SITE.filter(t => pack[t.value]).map(t => t.value);
+  }
+
+  function themeChoisi(modName) {
+    const champ = (MODULE_PARAMS[modName] || []).find(c => c.type === 'select' && c.label === 'Thème');
+    const el = champ && document.getElementById(`param-${modName}-${champ.param}`);
+    if (el && el.value) return el.value;
+    const dispo = themesDisponibles(modName);
+    return dispo[0] || (THEMES_SITE[0] && THEMES_SITE[0].value);
+  }
+
+  function apercuDuTheme(modName, cle) {
+    const pack = APERCUS[PACK_APERCU[modName]];
+    return (pack && pack[cle]) || null;
+  }
+
+  /* L'animation à montrer dans le cadre de la fiche. Elle suit le thème choisi
+     juste au-dessus : le visiteur voit ce qu'il va déployer, et non une
+     capture d'un autre thème. */
   function majApercu(modName) {
-    const variante = varianteApercu(modName);
-    const cadre = variante && document.getElementById(`apercu-${modName}`);
+    const cadre = document.getElementById(`apercu-${modName}`);
     if (!cadre) return;
-    // Le cadre est plus large que le GIF : sa couleur prolonge l'image
-    // plutôt que de la border de noir sur un aperçu de thème clair.
-    cadre.style.background = variante.cadre;
-    const img = cadre.querySelector('img');
-    if (img && img.getAttribute('src') !== variante.gif) img.setAttribute('src', variante.gif);
+    const cle = themeChoisi(modName);
+    const fiche = apercuDuTheme(modName, cle);
+    cadre.style.background = cadreDuTheme(cle);
+    if (fiche && fiche.gif) {
+      cadre.innerHTML = `<img src="${fiche.gif}" alt="Démonstration ${moduleTitle(modName)}" loading="lazy">`;
+    } else {
+      cadre.innerHTML = `<span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>`;
+    }
   }
 
   /* Collecte des champs supplémentaires d'un module (thème, pièce…).
@@ -3401,28 +4663,17 @@
         fieldHtml = `<input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">`;
       }
 
-      // Tous les modules ont désormais un cadre, avec ou sans animation :
-      // celui qui n'en a pas encore montre un cadre vide, à la bonne taille.
-      // L'animation vient, dans l'ordre : de la variante de thème choisie,
-      // du pack détaillé, puis de sa page Détails — c'est elle qui porte
-      // l'animation des packs sans entrée dans MODULE_MEDIA (Éclairage,
-      // Détecteur de fuite). La rattacher plutôt à MODULE_MEDIA ferait
-      // basculer ces packs dans la branche « détection automatique » de
-      // `addModuleToCart`, et le panier n'afficherait plus l'entité saisie.
-      const variante = varianteParDefaut(mod.name);
-      const fiche = PACK_DETAILS[mod.name];
-      const source = variante ? variante.gif : ((media && media.gif) || (fiche && fiche.gif));
-      const cadre = variante ? variante.cadre : (fiche && fiche.cadre);
-      const fond = cadre ? ` style="background: ${cadre};"` : '';
+      // Tous les packs ont un cadre, avec ou sans animation : celui qui n'en
+      // a pas encore montre un cadre vide, à la bonne taille. Le contenu du
+      // cadre est posé par `majApercu` APRÈS l'insertion dans la page — il
+      // dépend du thème choisi dans le sélecteur, qui n'existe pas encore ici.
       const detail = detailSepare(media ? media.detail : mod.desc);
 
       item.className = 'module-item module-item-detailed';
       item.innerHTML = `
         <strong>${title}</strong>
-        <div class="module-video" id="apercu-${mod.name}"${fond}>
-          ${source
-            ? `<img src="${source}" alt="Démonstration ${title}" loading="lazy">`
-            : `<span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>`}
+        <div class="module-video" id="apercu-${mod.name}">
+          <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
         ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}<br>
           <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button></p>` : ''}
@@ -3433,6 +4684,7 @@
       `;
 
       container.appendChild(item);
+      majApercu(mod.name);
     });
   }
 
@@ -3578,6 +4830,9 @@
     else if (cartModalStep === 'checkout') body.innerHTML = cartCheckoutStepHtml();
     else if (cartModalStep === 'deploy') body.innerHTML = cartDeployStepHtml();
     else body.innerHTML = cartPaymentStepHtml();
+    // L'aide du champ « URL » de l'etape de connexion n'existe qu'une fois la
+    // modale rendue : la remplir au chargement de la page ne trouverait rien.
+    remplirAccesDistant();
   }
 
   function cartListStepHtml() {
@@ -3642,7 +4897,7 @@
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url')" title="Aide">?</button></label>
-        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>. Si elle n'est joignable que chez vous, configurez d'abord un accès distant : <b>Nabu Casa</b> (<a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>) ou <b>DuckDNS</b> (<a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>) — marche à suivre dans l'onglet Fonctionnement.</div>
+        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
         <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
@@ -4464,6 +5719,9 @@
     initTheme();
     trierLangues();
     filterCategory('interface');
+    // Liste des prerequis (onglet Fonctionnement) et aide du champ « URL »
+    // du Test Gratuit : les deux sont rendus depuis ACCES_DISTANT.
+    remplirAccesDistant();
     detectLanguageByIP();
   };
 </script>
