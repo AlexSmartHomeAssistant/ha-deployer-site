@@ -62,6 +62,16 @@
          « Automatisme ». Blanche sur le thème sombre ; redéfinie en gris
          foncé sur le clair, où un sixième du mot serait sinon invisible. */
       --multicolore-tete: #FFFFFF;
+      /* Le dégradé lui-même, partagé par l'onglet de catégorie et par
+         l'en-tête des fiches de la catégorie Service. Une seule définition :
+         deux copies auraient divergé au premier ajustement de teinte. */
+      --degrade-multicolore: linear-gradient(90deg,
+        var(--multicolore-tete) 0%,  var(--multicolore-tete) 13%,
+        #F8C471 20%, #F8C471 30%,
+        #EC7063 37%, #EC7063 46%,
+        #5DADE2 54%, #5DADE2 63%,
+        #52BE80 70%, #52BE80 80%,
+        #BF71B2 87%, #BF71B2 100%);
 
 
       --nav-bg: rgba(31, 35, 41, 0.86);
@@ -830,13 +840,7 @@
          claire, où il devient le gris foncé des écritures (#333333). Même
          raisonnement — et même valeur — que le jeton __PALETTE_BLANC__ du
          module Test Gratuit. */
-      background-image: linear-gradient(90deg,
-        var(--multicolore-tete) 0%,  var(--multicolore-tete) 13%,
-        #F8C471 20%, #F8C471 30%,
-        #EC7063 37%, #EC7063 46%,
-        #5DADE2 54%, #5DADE2 63%,
-        #52BE80 70%, #52BE80 80%,
-        #BF71B2 87%, #BF71B2 100%);
+      background-image: var(--degrade-multicolore);
       /* Sans cela, le dégradé se cale sur la boîte de padding : les 14 px de
          marge latérale absorbent le rouge et le jaune, et l'onglet paraît
          simplement vert. On le cale donc sur le contenu, c'est-à-dire le mot. */
@@ -1037,6 +1041,17 @@
     }
     .pack-entete i { flex: 0 0 auto; font-size: 0.95em; }
 
+    /* Categories sans teinte propre (Service, Automatisme) : leur en-tete
+       reprend la roue de leur onglet. Le decoupage porte sur l'element
+       entier, pictogramme compris — une icone Font Awesome est un glyphe,
+       elle se decoupe comme du texte. */
+    .pack-entete.multicolore {
+      background-image: var(--degrade-multicolore);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
     /* 3 — Le selecteur de theme, seul sur sa rangee.
        Surtout PAS de `:empty { display: none }` : en `subgrid`, un enfant
        masque ne consomme pas sa rangee, et TOUS les suivants remontent d'un
@@ -1060,11 +1075,14 @@
        lignes tombe alors a une seule. */
     .pack-desc { text-align: left; }
     .pack-desc .lien-details { margin-top: 4px; }
+    /* UNE seule ligne, coupee par des points de suspension (02/09/2026 : la
+       fiche ne resume plus, elle annonce — le detail est derriere « Details »,
+       et six colonnes ne laissent plus la place a cinq lignes). */
     .pack-desc .module-desc-text {
-      display: -webkit-box;
-      -webkit-line-clamp: 5;
-      -webkit-box-orient: vertical;
+      display: block;
+      white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
       text-align: left;
     }
 
@@ -1235,6 +1253,81 @@
        grille, ils tombaient dans deux colonnes distinctes et le « Thème » se
        retrouvait a gauche de sa propre liste. */
     .detail-commande { display: flex; flex-direction: column; gap: 4px; }
+    /* Les onze pastilles de theme prennent toute la largeur : elles ne
+       tiennent pas dans une colonne de 240 px. */
+    .detail-commande-large { grid-column: 1 / -1; }
+
+    .detail-themes { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    /* Surbrillance IDENTIQUE a celle des onglets du bandeau de categories :
+       meme soulignement de 3 px, meme fond survole, meme arrondi haut. Le
+       visiteur reconnait le meme geste au meme endroit. */
+    .detail-theme {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px 6px 0 0;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .detail-theme:hover:not(:disabled) {
+      background-color: var(--hover-bg);
+      color: var(--text-main);
+    }
+    .detail-theme.active {
+      color: var(--primary-blue);
+      border-bottom-color: var(--primary-blue);
+      background-color: var(--hover-bg);
+    }
+    /* Theme dont l'animation n'a pas encore ete tournee : visible mais inerte,
+       plutot que masque — le visiteur voit que le choix existe. */
+    .detail-theme.indisponible { opacity: 0.4; cursor: not-allowed; }
+
+    /* ===== DEUX BLOCS DE LA PAGE DETAILS (02/09/2026) =====
+       L'animation a gauche, ce qu'on achete a droite. */
+    .detail-deux-blocs {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+    .detail-colonne-gauche, .detail-colonne-droite {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+    .detail-champs { display: flex; flex-direction: column; gap: 4px; }
+    .detail-champs .param-label:first-child { margin-top: 0; }
+    .detail-champs input, .detail-champs select {
+      width: 100%;
+      padding: 11px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      outline: none;
+    }
+    .detail-sans-champ {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding: 10px 12px;
+      border: 1px dashed var(--card-border);
+      border-radius: 8px;
+    }
+    .detail-ajouter { margin-top: auto; }
+
+    /* Sur telephone les deux blocs s'empilent : l'animation d'abord, ce qu'on
+       achete ensuite — c'est l'ordre de lecture. */
+    @media (max-width: 780px) {
+      .detail-deux-blocs { grid-template-columns: 1fr; }
+    }
     .detail-commandes select {
       width: 100%;
       padding: 11px 12px;
@@ -1369,6 +1462,13 @@
     .deploy-log .line { display: flex; gap: 8px; align-items: flex-start; }
     .deploy-log .line + .line { margin-top: 3px; }
     .deploy-log .line i { width: 14px; text-align: center; flex-shrink: 0; margin-top: 2px; }
+    /* Rang de l'etape : assez marque pour se reperer d'un coup d'oeil dans un
+       journal qui defile, sans voler la vedette au message. */
+    .deploy-log .etape-num {
+      color: var(--primary-blue);
+      font-weight: 700;
+      margin-right: 2px;
+    }
     .deploy-log .ok   { color: var(--col-valide); }
     .deploy-log .err  { color: var(--col-required); }
     .deploy-log .warn { color: var(--col-gold); }
@@ -1698,13 +1798,22 @@
        l'icône — sur un <li> étroit elle déborderait de la carte. */
     .acces-item { position: relative; }
 
+    /* Infobulle en `position: fixed`, placee par `placerInfobulle` (02/09/2026).
+       En `absolute` elle etait enfermee dans le conteneur de la page, qui est
+       en `overflow-y: auto` sur PC : une bulle plus haute que la place
+       restante y faisait apparaitre une barre de defilement, et la bulle se
+       glissait ENTRE les blocs au lieu de passer par-dessus. En `fixed` elle
+       echappe a tous les conteneurs a debordement : elle ne peut plus rien
+       allonger, et elle se superpose. La contrepartie — devoir calculer sa
+       position — est assumee, et c'est ce calcul qui la fait s'ouvrir vers le
+       HAUT quand la place manque en dessous. */
     .acces-infobulle {
       display: none;
-      position: absolute;
-      z-index: 40;
-      left: 0;
-      right: 0;
-      top: calc(100% + 8px);
+      position: fixed;
+      z-index: 1200;
+      max-width: 340px;
+      max-height: 70vh;
+      overflow-y: auto;
       background: var(--modal-bg);
       border: 1px solid var(--card-border);
       border-left: 3px solid var(--col-gold);
@@ -1924,7 +2033,7 @@
          deploiement (texte non coupable, en police a chasse fixe) elargit sa
          colonne au detriment des deux autres des la premiere ligne longue. */
       #section-test .container {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         align-content: start;
       }
       /* La colonne d'action est courte : son bouton se cale en bas de carte
@@ -1966,19 +2075,19 @@
         flex: 1;
         min-height: 0;
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         align-content: start;
       }
 
       /* ALIGNEMENT HORIZONTAL STRICT (02/09/2026).
-         Chaque fiche occupe SEPT rangees de la grille du catalogue et delegue
+         Chaque fiche occupe CINQ rangees de la grille du catalogue et delegue
          leur hauteur a celle-ci (`subgrid`). Les fiches d'une meme rangee
-         partagent donc les memes sept lignes : le media commence a la meme
+         partagent donc les memes cinq lignes : le media commence a la meme
          hauteur, la description aussi, et le bouton « Ajouter » tombe au meme
          pixel — sans qu'aucune hauteur ne soit ecrite en dur, donc sans rien
          a re-mesurer quand un texte change.
 
-         L'auto-placement cree sept rangees implicites PAR rangee de fiches :
+         L'auto-placement cree cinq rangees implicites PAR rangee de fiches :
          l'alignement vaut donc rangee par rangee, et une fiche bavarde plus
          bas dans la liste n'etire pas celles du haut. */
       @supports (grid-template-rows: subgrid) {
@@ -1995,7 +2104,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 7;
+          grid-row: span 5;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -2277,7 +2386,13 @@
             <b style="color: var(--col-gold);">HA-Deployer</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-            Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin. Les textes s'adaptent à votre langue.
+            Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
+          </p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
+            <b style="color: var(--col-gold);">Onze thèmes visuels</b> au choix — d'Élégance Ardoise à Neo Future — que vous
+            sélectionnez pack par pack et prévisualisez avant l'achat. Et les <b>textes s'adaptent
+            automatiquement</b> : langue de votre instance, et pour ce qui dépend du lieu (météo, jours
+            fériés, calendriers, collectes), la langue et les données de <b>l'adresse rattachée au pack</b>.
           </p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
@@ -2411,10 +2526,10 @@
         <h1><i class="fa-solid fa-vial"></i> Espace Test Gratuit</h1>
       </header>
 
-      <!-- Trois colonnes sur PC (01/09/2026) : l'apercu a gauche, la
-           connexion au milieu, l'action a droite. L'ordre du DOM est celui
-           des colonnes -- il vaut aussi comme ordre de lecture quand la
-           grille se replie sur telephone. -->
+      <!-- QUATRE colonnes sur PC (02/09/2026) : l'animation, le descriptif, la
+           connexion, l'action. L'ordre du DOM est celui des colonnes — il vaut
+           aussi comme ordre de lecture quand la grille se replie sur
+           telephone. -->
       <div class="card">
         <div class="module-item module-item-detailed">
           <strong>Pack Découverte</strong>
@@ -2426,19 +2541,24 @@
           <div class="module-video" style="background: #000;">
             <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
           </div>
-          <p class="module-desc-text">
-            Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
-            Chauffage, Eau, Appareil et Sécurité.<br>
-            Gratuit, sans engagement, et sans aucune entité à renseigner.
-          </p>
         </div>
       </div>
 
       <div class="card">
-        <div class="notice-box">
-          <strong>Mode Découverte :</strong> Testez l'injection instantanée d'un pack de démonstration sur votre instance.
-          Aucune entité n'est requise : la carte est entièrement autonome.
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-circle-info"></i> Ce que vous recevez</h3>
+        <p class="module-desc-text" style="text-align: left;">
+          Vitrine animée des <b>7 familles</b> de packs — Service, Ouverture, Éclairage,
+          Chauffage, Eau, Appareil et Sécurité.<br>
+          Gratuit, sans engagement, et sans aucune entité à renseigner.
+        </p>
+        <div class="notice-box" style="margin: 12px 0 0;">
+          <strong>Mode Découverte :</strong> la carte est entièrement autonome — elle
+          s'injecte dans votre tableau de bord sans rien lire de vos entités.
         </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Connexion</h3>
         <div class="form-group">
           <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url')" title="Aide">?</button></label>
           <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="test" style="display:block; margin-top:6px;"></span></div>
@@ -2802,7 +2922,6 @@
       </div>
       <div class="footer-copyright">© 2026 HA-Deployer</div>
       <div class="social-icons">
-        <a href="tel:+33600000000" title="Téléphone"><i class="fa-solid fa-phone"></i></a>
         <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
         <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
         <a href="https://whatsapp.com" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
@@ -2923,7 +3042,53 @@
     document.getElementById('main-nav').classList.remove('mobile-open');
   }
 
+  /* ---------- HISTORIQUE DU NAVIGATEUR (02/09/2026) ----------
+     Le site est une page unique : changer d'onglet ne changeait pas l'URL, et
+     « Precedent » quittait donc le site des le premier clic — un visiteur
+     venu voir trois packs se retrouvait sur son moteur de recherche.
+
+     Chaque onglet ecrit desormais une entree d'historique (`pushState`) avec
+     son etat, et `popstate` la rejoue. `afficherOnglet` fait le travail
+     d'affichage SANS toucher a l'historique : c'est ce qui evite la boucle —
+     `popstate` doit pouvoir montrer un onglet sans en empiler un nouveau. */
+  let ignorerHistorique = false;
+
+  function etatCourant(tabId) {
+    // La fiche de details n'est pas qu'un onglet : elle porte un pack, un
+    // theme et parfois un calendrier ou une variante. Sans eux, revenir en
+    // arriere afficherait la bonne page avec le mauvais contenu.
+    return tabId === 'details'
+      ? { onglet: 'details', details: { ...etatDetails } }
+      : { onglet: tabId, categorie: categorieCourante };
+  }
+
   function switchTab(tabId) {
+    afficherOnglet(tabId);
+    if (ignorerHistorique) return;
+    const etat = etatCourant(tabId);
+    history.pushState(etat, '', '#' + (tabId === 'details' ? 'pack-' + etatDetails.module : tabId));
+  }
+
+  window.addEventListener('popstate', (e) => {
+    const etat = e.state;
+    ignorerHistorique = true;
+    try {
+      if (!etat || !etat.onglet) {
+        afficherOnglet('accueil');
+      } else if (etat.onglet === 'details' && etat.details && etat.details.module) {
+        etatDetails = { ...etat.details };
+        afficherOnglet('details');
+        majDetails();
+      } else {
+        if (etat.categorie) filterCategory(etat.categorie);
+        afficherOnglet(etat.onglet);
+      }
+    } finally {
+      ignorerHistorique = false;
+    }
+  });
+
+  function afficherOnglet(tabId) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-links button, .footer-links button').forEach(btn => btn.classList.remove('active'));
 
@@ -3240,6 +3405,12 @@
      Fonctionnement) et l'aide du champ « URL » du Test Gratuit comme du
      panier. Trois copies écrites à la main auraient divergé au premier
      ajustement, et c'est justement ce texte-là que le client fait évoluer. */
+  /* L'ORDRE de cette table est celui affiche partout : liste des prerequis
+     (onglet Fonctionnement) et aide du champ « URL » du Test Gratuit comme du
+     panier. Fixe par le client le 02/09/2026 : Nabu Casa, DuckDNS,
+     Cloudflare Tunnel, puis le VPN EN DERNIER — c'est la seule solution qui
+     ne convienne pas aux packs payants (voir sa reserve). Reordonner ici
+     reordonne les trois emplacements. */
   const ACCES_DISTANT = [
     {
       cle: 'nabucasa',
@@ -3252,22 +3423,6 @@
              2. Dans Home Assistant : <b>Paramètres → Home Assistant Cloud</b>, puis activez <b>Accès distant</b>.<br>
              3. L'adresse s'affiche à cet endroit. Elle finit par <code>.ui.nabu.casa</code>,
                 elle est en <b>https</b> et son certificat est déjà valide — c'est celle à nous donner.`
-    },
-    {
-      cle: 'vpn',
-      nom: 'VPN',
-      suite: ' (WireGuard, Tailscale…)',
-      url: 'https://www.wireguard.com/',
-      aide: `Un VPN relie <b>vos</b> appareils à votre réseau domestique.<br>
-             1. Installez l'add-on <b>WireGuard</b>
-                (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>)
-                ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>,
-                plus simple car sans ouverture de port.<br>
-             2. Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.
-             <span class="reserve"><b>À savoir :</b> un VPN convient au <b>Test Gratuit</b>, qui se déploie
-             depuis votre propre navigateur. Il ne convient <b>pas</b> aux packs payants : ceux-là sont
-             déployés par nos serveurs, qui ne sont pas sur votre VPN. Pour eux, choisissez Nabu Casa,
-             DuckDNS ou Cloudflare Tunnel.</span>`
     },
     {
       cle: 'duckdns',
@@ -3297,54 +3452,126 @@
              3. Le certificat <b>https</b> est fourni par Cloudflare. L'adresse à nous donner est
                 le nom public du tunnel.<br>
              NGINX n'est utile que si vous publiez plusieurs services derrière le même domaine.`
+    },
+    {
+      cle: 'vpn',
+      nom: 'VPN',
+      suite: ' (WireGuard, Tailscale…)',
+      url: 'https://www.wireguard.com/',
+      aide: `Un VPN relie <b>vos</b> appareils à votre réseau domestique.<br>
+             1. Installez l'add-on <b>WireGuard</b>
+                (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>)
+                ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>,
+                plus simple car sans ouverture de port.<br>
+             2. Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.
+             <span class="reserve"><b>À savoir :</b> un VPN convient au <b>Test Gratuit</b>, qui se déploie
+             depuis votre propre navigateur. Il ne convient <b>pas</b> aux packs payants : ceux-là sont
+             déployés par nos serveurs, qui ne sont pas sur votre VPN. Pour eux, choisissez Nabu Casa,
+             DuckDNS ou Cloudflare Tunnel.</span>`
     }
   ];
 
   /* Le nom, cliquable vers le site officiel, suivi de l'icône « ? ». La ligne
      porte `.acces-item` : c'est ELLE qui ancre l'infobulle, et non l'icône —
      sur une puce étroite, une infobulle calée sur l'icône déborderait. */
-  function accesLigneHtml(a, portee) {
-    const id = `acces-${portee}-${a.cle}`;
+  /* La ligne ne porte QUE le lien et l'icone : le contenu de l'infobulle vit
+     dans un element unique, pose dans <body> (voir `bulleAcces`). Une bulle
+     rendue sur place restait prisonniere de sa carte — `.card` porte un
+     `backdrop-filter`, qui fait d'elle le bloc conteneur des descendants en
+     `position: fixed`. Mesure du 02/09/2026 : la bulle se calait alors sur la
+     carte, allongeait sa zone de defilement de 228 px et se glissait entre
+     les blocs au lieu de passer par-dessus. */
+  function accesLigneHtml(a) {
     return `<a class="lien-acces" href="${a.url}" target="_blank" rel="noopener noreferrer">${a.nom}</a>${a.suite}
-      <button type="button" class="help-icon" onclick="basculerInfobulleAcces('${id}')"
-              aria-label="Guide de configuration ${a.nom}" title="Comment le configurer ?">?</button>
-      <span class="acces-infobulle" id="${id}">
-        <b>${a.nom}</b> — guide de configuration<br>${a.aide}
-        <button type="button" class="acces-fermer" onclick="basculerInfobulleAcces('${id}')">Fermer</button>
-      </span>`;
+      <button type="button" class="help-icon" onclick="basculerInfobulleAcces('${a.cle}', this)"
+              aria-label="Guide de configuration ${a.nom}" title="Comment le configurer ?">?</button>`;
+  }
+
+  /* L'element unique, cree a la demande et rattache a <body> : aucun ancetre
+     ne peut donc capturer son `position: fixed` ni la faire defiler. */
+  function bulleAcces() {
+    let el = document.getElementById('acces-bulle');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'acces-infobulle';
+      el.id = 'acces-bulle';
+      document.body.appendChild(el);
+    }
+    return el;
   }
 
   /* Une seule infobulle ouverte à la fois : deux popovers superposés sur une
      liste de quatre lignes se recouvrent et deviennent illisibles. */
-  function basculerInfobulleAcces(id) {
-    const cible = document.getElementById(id);
-    if (!cible) return;
-    const ouvrir = !cible.classList.contains('open');
-    document.querySelectorAll('.acces-infobulle.open').forEach(e => e.classList.remove('open'));
-    if (ouvrir) cible.classList.add('open');
+  /* Place la bulle AU-DESSUS de son icone, et ne bascule en dessous que si le
+     haut de la fenetre ne laisse pas la place. Le client demande l'ouverture
+     vers le haut : c'est la seule qui ne pousse jamais le contenu ni ne
+     declenche de barre de defilement dans le bloc qui la porte. */
+  function placerInfobulle(bulle, ancre) {
+    const marge = 8;
+    bulle.style.visibility = 'hidden';
+    bulle.classList.add('open');
+    const b = bulle.getBoundingClientRect();
+    const a = ancre.getBoundingClientRect();
+
+    let haut = a.top - b.height - marge;
+    if (haut < marge) {
+      const dessous = a.bottom + marge;
+      // Ni au-dessus ni au-dessous : on la colle en haut de la fenetre, sa
+      // hauteur etant deja bornee a 70vh et son contenu defilant en interne.
+      haut = (dessous + b.height + marge <= window.innerHeight) ? dessous : marge;
+    }
+    let gauche = a.left + a.width / 2 - b.width / 2;
+    gauche = Math.max(marge, Math.min(gauche, window.innerWidth - b.width - marge));
+
+    bulle.style.top = Math.round(haut) + 'px';
+    bulle.style.left = Math.round(gauche) + 'px';
+    bulle.style.visibility = '';
   }
+
+  function fermerInfobulleAcces() {
+    const el = document.getElementById('acces-bulle');
+    if (el) { el.classList.remove('open'); el.dataset.cle = ''; }
+  }
+
+  function basculerInfobulleAcces(cle, bouton) {
+    const bulle = bulleAcces();
+    if (bulle.classList.contains('open') && bulle.dataset.cle === cle) {
+      fermerInfobulleAcces();
+      return;
+    }
+    const a = ACCES_DISTANT.find(x => x.cle === cle);
+    if (!a) return;
+    bulle.dataset.cle = cle;
+    bulle.innerHTML = `<b>${a.nom}</b> — guide de configuration<br>${a.aide}
+      <button type="button" class="acces-fermer" onclick="fermerInfobulleAcces()">Fermer</button>`;
+    placerInfobulle(bulle, bouton);
+  }
+
+  /* Une bulle `fixed` ne suit pas le contenu : au moindre defilement ou
+     redimensionnement elle se retrouverait a cote de son icone. On la referme
+     plutot que de la faire courir apres. */
+  ['scroll', 'resize'].forEach(ev => window.addEventListener(ev, fermerInfobulleAcces, true));
 
   // Un clic hors de l'infobulle la referme — comportement attendu d'un
   // popover. On ignore le clic sur l'icône elle-même, que `basculer` traite
   // déjà, sinon l'infobulle s'ouvrirait et se refermerait dans la foulée.
   document.addEventListener('click', (e) => {
     if (e.target.closest('.acces-infobulle') || e.target.closest('.help-icon')) return;
-    document.querySelectorAll('.acces-infobulle.open').forEach(el => el.classList.remove('open'));
+    fermerInfobulleAcces();
   });
 
   function remplirAccesDistant() {
     const liste = document.getElementById('liste-acces-distant');
     if (liste) {
       liste.innerHTML = ACCES_DISTANT
-        .map(a => `<li class="acces-item">${accesLigneHtml(a, 'fonc')}</li>`).join('');
+        .map(a => `<li class="acces-item">${accesLigneHtml(a)}</li>`).join('');
     }
-    // Aide du champ « URL » : la même chose, en ligne. `portee` distingue les
-    // identifiants — la page porte les trois exemplaires en même temps, et des
-    // identifiants dupliqués feraient ouvrir l'infobulle de l'autre onglet.
+    // Aide du champ « URL » : la même chose, en ligne. Plus besoin de
+    // distinguer les trois exemplaires : l'infobulle est unique et vit dans
+    // <body>, c'est le bouton clique qui lui dit ou se placer.
     document.querySelectorAll('[data-acces-portee]').forEach(hote => {
-      const portee = hote.getAttribute('data-acces-portee');
       hote.innerHTML = ACCES_DISTANT
-        .map(a => `<span class="acces-item" style="display:inline-block; margin-right:14px;">${accesLigneHtml(a, portee)}</span>`)
+        .map(a => `<span class="acces-item" style="display:inline-block; margin-right:14px;">${accesLigneHtml(a)}</span>`)
         .join('');
     });
   }
@@ -3627,13 +3854,22 @@
     const commandes = (aTheme || sel) ? `
       <div class="detail-commandes">
         ${aTheme ? `
-        <div class="detail-commande">
-          <label class="param-label" for="detail-theme">Thème</label>
-          <select id="detail-theme" onchange="changerDetail('theme', this.value)">
-            ${THEMES_SITE.map(t => `<option value="${t.value}"${t.value === cleTheme ? ' selected' : ''}
-               ${dispo.length && !dispo.includes(t.value) ? ' disabled' : ''}>${t.label}${
-               dispo.length && !dispo.includes(t.value) ? ' — aperçu à venir' : ''}</option>`).join('')}
-          </select>
+        <div class="detail-commande detail-commande-large">
+          <span class="param-label">Thème</span>
+          <!-- Onze pastilles plutot qu'une liste deroulante : le theme choisi
+               doit se VOIR, et il porte la meme surbrillance bleue que
+               l'onglet actif du bandeau (soulignement + fond survole). Une
+               liste deroulante ne montre le choix qu'une fois ouverte. -->
+          <div class="detail-themes" role="tablist" aria-label="Thème">
+            ${THEMES_SITE.map(t => {
+              const absent = dispo.length && !dispo.includes(t.value);
+              return `<button type="button" role="tab"
+                        class="detail-theme${t.value === cleTheme ? ' active' : ''}${absent ? ' indisponible' : ''}"
+                        aria-selected="${t.value === cleTheme}"
+                        ${absent ? 'disabled title="Aperçu à venir"' : ''}
+                        onclick="changerDetail('theme', '${t.value}')">${t.label}</button>`;
+            }).join('')}
+          </div>
         </div>` : ''}
         ${sel ? `
         <div class="detail-commande">
@@ -3645,17 +3881,34 @@
       </div>` : '';
 
     const cadre = aTheme ? cadreDuTheme(cleTheme) : '#14181d';
+
+    /* DEUX COLONNES (02/09/2026) : l'animation a gauche, ce qu'on achete a
+       droite — les entites a renseigner, ce que le pack installe, et le
+       bouton d'ajout. Les champs et le bloc « Inclus » ont quitte la fiche du
+       catalogue pour venir ici : la fiche annonce, la page de details engage. */
     const presentation = `
       <div class="detail-sous-bloc">
         ${commandes}
-        ${animation
-          ? `<div class="module-video detail-gif" style="background: ${cadre};">
-               <img src="${animation}" alt="Aperçu ${titre}${
-                 aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}" loading="lazy"></div>`
-          : `<div class="detail-attente">
-               <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
-        <p class="detail-intro">${conf.intro || ''}</p>
-        ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
+        <div class="detail-deux-blocs">
+          <div class="detail-colonne-gauche">
+            ${animation
+              ? `<div class="module-video detail-gif" style="background: ${cadre};">
+                   <img src="${animation}" alt="Aperçu ${titre}${
+                     aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}" loading="lazy"></div>`
+              : `<div class="detail-attente">
+                   <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
+            <p class="detail-intro">${conf.intro || ''}</p>
+            ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
+          </div>
+          <div class="detail-colonne-droite">
+            ${champsDetailHtml(cleModule)}
+            ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
+            <button class="btn-add-big detail-ajouter"
+                    onclick="addModuleToCart('${cleModule}', this)">
+              <i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(cleModule))})
+            </button>
+          </div>
+        </div>
       </div>`;
 
     // --- Sous-bloc 2 : les trois éléments, dans la déclinaison choisie.
@@ -3697,6 +3950,38 @@
           <div class="detail-swipes">${vignettes}</div>
         </div>
       </div>`;
+  }
+
+  /* Les saisies d'un pack, telles qu'elles apparaissent DANS la page de
+     details : les parametres autres que le theme (piece, entites...) et,
+     le cas echeant, le champ principal historique (entite unique, calendrier).
+     Le theme reste en tete de page, c'est lui qui commande l'apercu.
+
+     Ces champs ne sont plus rendus dans la fiche du catalogue : c'est ici
+     qu'on les renseigne, et c'est ici qu'on ajoute au panier. Les
+     identifiants sont les MEMES que ceux qu'attendaient les fiches
+     (`param-<pack>-<PARAM>` / `input-<pack>`), `collecterParams` et
+     `addModuleToCart` n'ont donc rien a changer. */
+  function champsDetailHtml(modName) {
+    const media = MODULE_MEDIA[modName];
+    let principal = '';
+    if (media && media.field && media.field.type === 'calendar') {
+      principal = `<label class="param-label" for="input-${modName}">${media.field.label || 'Calendrier'}</label>
+        <select id="input-${modName}">${media.field.options.map((o, i) =>
+          `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`;
+    } else if (media && media.field) {
+      principal = `<input type="text" class="${media.field.required === false ? 'field-optional' : 'field-required'}"
+                          placeholder="${media.field.placeholder}" id="input-${modName}">`;
+    } else if (!media && !MODULE_PARAMS[modName]) {
+      principal = `<label class="param-label" for="input-${modName}">Entité concernée</label>
+        <input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${modName}">`;
+    }
+    const autres = champsParamsHtml(modName, 'autres');
+    if (!autres && !principal) {
+      return `<p class="detail-sans-champ"><i class="fa-solid fa-wand-magic-sparkles"></i>
+        Rien à renseigner : ce pack découvre lui-même ce dont il a besoin.</p>`;
+    }
+    return `<div class="detail-champs">${autres}${principal}</div>`;
   }
 
   /* Descriptif d'un pack, quelle que soit sa forme de fiche : les packs
@@ -5640,7 +5925,16 @@
     }).join('');
   }
 
+  /* Categorie affichee, retenue pour l'historique : revenir sur l'onglet
+     Packs doit rendre la categorie qu'on y avait laissee, pas « Interface ». */
+  let categorieCourante = 'interface';
+
+  /* Les deux categories sans teinte propre : leur onglet porte deja la roue
+     multicolore, les en-tetes de leurs fiches la reprennent. */
+  const CATEGORIES_MULTICOLORES = new Set(['service', 'automatisme']);
+
   function filterCategory(categoryKey, tabEl) {
+    categorieCourante = categoryKey;
     document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
     (tabEl || document.querySelector(`.subtab.${categoryKey}`)).classList.add('active');
 
@@ -5662,38 +5956,23 @@
       const media = MODULE_MEDIA[mod.name];
       const title = moduleTitle(mod.name);
 
-      // Champ de saisie propre au module. Trois cas : un module détaillé qui
-      // en déclare un, un module de la liste qui attend une entité, et ceux
-      // qui n'ont plus rien à saisir (Météo, ou les modules à paramètres).
-      let fieldHtml = '';
-      if (media && media.field && media.field.type === 'calendar') {
-        fieldHtml = `
-          <select id="input-${mod.name}">
-            ${media.field.options.map((o, i) => `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}
-          </select>
-        `;
-      } else if (media && media.field) {
-        const cls = media.field.required === false ? 'field-optional' : 'field-required';
-        fieldHtml = `<input type="text" class="${cls}" placeholder="${media.field.placeholder}" id="input-${mod.name}">`;
-      } else if (!media && !MODULE_PARAMS[mod.name]) {
-        fieldHtml = `<input type="text" class="field-required" placeholder="Entrez l'entité requise (ex: light.salon)" id="input-${mod.name}">`;
-      }
-
       // Tous les packs ont un cadre, avec ou sans animation : celui qui n'en
       // a pas encore montre un cadre vide, à la bonne taille. Le contenu du
       // cadre est posé par `majApercu` APRÈS l'insertion dans la page — il
       // dépend du thème choisi dans le sélecteur, qui n'existe pas encore ici.
       const detail = detailSepare(media ? media.detail : mod.desc);
 
-      /* SEPT rangees, toujours les memes et toujours dans cet ordre : en-tete,
-         media, selecteur de theme, description, « Inclus », saisies, action.
+      /* CINQ rangees, toujours les memes et toujours dans cet ordre : en-tete,
+         media, selecteur de theme, description, action. Le bloc « Inclus » et
+         les saisies d'entites ont rejoint la page de details le 02/09/2026 :
+         la fiche annonce, la page de details engage.
          Chacune est rendue MEME VIDE — c'est ce qui permet a `subgrid` de les
          faire correspondre d'une fiche a l'autre. Sauter une rangee absente
          decalerait toutes les suivantes, et le bouton « Ajouter » d'un pack se
          retrouverait a la hauteur du champ d'entite de son voisin. */
       item.className = 'module-item module-item-detailed';
       item.innerHTML = `
-        <div class="pack-entete" style="--cat: ${moduleColor(mod.name)};">
+        <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
         </div>
         <div class="pack-media module-video" id="apercu-${mod.name}">
@@ -5704,8 +5983,6 @@
           ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}</p>` : ''}
           <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button>
         </div>
-        <div class="pack-inclus">${inclusHtml(mod.name, detail.inclus)}</div>
-        <div class="pack-champs">${champsParamsHtml(mod.name, 'autres')}${fieldHtml}</div>
         <div class="pack-action">
           <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
         </div>
@@ -5716,7 +5993,30 @@
     });
   }
 
+  /* Un pack reclame-t-il une saisie qui n'est PAS a l'ecran ?
+     Depuis que les entites vivent dans la page de details, le bouton
+     « Ajouter » de la fiche peut porter sur des champs absents du document.
+     Les valider en silence donnerait une ligne de panier sans entite, et le
+     deploiement echouerait chez le client sans que rien ne l'ait prevenu. */
+  function saisiesAbsentes(modName) {
+    const requis = (MODULE_PARAMS[modName] || [])
+      .filter(c => c.required !== false && !estChampTheme(c))
+      .map(c => `param-${modName}-${c.param}`);
+    const media = MODULE_MEDIA[modName];
+    if ((media && media.field && media.field.required !== false)
+        || (!media && !MODULE_PARAMS[modName])) {
+      requis.push(`input-${modName}`);
+    }
+    return requis.some(id => !document.getElementById(id));
+  }
+
   function addModuleToCart(modName, btnEl) {
+    // Les champs sont sur la page de details : on y conduit le visiteur plutot
+    // que d'echouer sur un champ qu'il ne voit pas.
+    if (saisiesAbsentes(modName)) {
+      ouvrirDetails(modName);
+      return;
+    }
     // Modules a plusieurs champs (ex: Eclairage) : on les collecte, on
     // signale le premier champ obligatoire laisse vide, et on les range dans
     // `params` — ce sont eux qui deviendront les variables du runner.
@@ -6141,12 +6441,33 @@
     warn: 'fa-triangle-exclamation', run: 'fa-spinner fa-spin'
   };
 
-  function logLine(boxId, kind, text) {
+  /* Numerotation des etapes (02/09/2026).
+     Le journal alignait des phrases sans reperes : impossible de savoir, en
+     cours de route, combien d'etapes restaient ni si l'on avait rate quelque
+     chose en faisant defiler. Chaque etape porte donc son rang.
+
+     Le compteur est remis a zero au debut de chaque deploiement, et NON a la
+     creation du journal : un second essai dans la meme session reprendrait
+     sinon a 12. Les lignes d'avertissement et d'erreur n'en consomment pas —
+     elles commentent une etape, elles n'en sont pas une. */
+  const etapesJournal = {};
+
+  function reinitialiserEtapes(boxId) { etapesJournal[boxId] = 0; }
+
+  function numeroterEtape(boxId, kind) {
+    if (kind !== 'run' && kind !== 'ok') return '';
+    etapesJournal[boxId] = (etapesJournal[boxId] || 0) + 1;
+    return etapesJournal[boxId];
+  }
+
+  function logLine(boxId, kind, text, numero) {
     const box = document.getElementById(boxId);
     if (!box) return null;
     box.classList.add('open');
     const div = document.createElement('div');
     div.className = 'line ' + kind;
+    const rang = numero === undefined ? numeroterEtape(boxId, kind) : numero;
+    if (rang) { div.dataset.etape = rang; text = `<b class="etape-num">${rang}.</b> ${text}`; }
     div.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
@@ -6159,6 +6480,11 @@
   function replaceLine(el, kind, text) {
     if (!el) return;
     el.className = 'line ' + kind;
+    // Le rang appartient a l'etape, pas a son etat : une etape qui passe de
+    // « en cours » a « terminee » garde son numero, sinon la suite se
+    // renumeroterait a chaque changement.
+    const rang = el.dataset.etape;
+    if (rang) text = `<b class="etape-num">${rang}.</b> ${text}`;
     el.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
     // La ligne reflétée vient de changer d'état (réussie, en échec…) :
     // le bandeau suit, sans quoi il afficherait une étape déjà terminée.
@@ -6289,6 +6615,7 @@
     const { creds, items, boxId, closeBtnId } = opts;
     const log = (kind, text) => logLine(boxId, kind, text);
 
+    reinitialiserEtapes(boxId);
     let courante = log('run', 'Envoi de la demande au serveur de déploiement…');
     try {
       const jobId = await createJob(creds, items);
@@ -6833,6 +7160,16 @@
     // du Test Gratuit : les deux sont rendus depuis ACCES_DISTANT.
     remplirAccesDistant();
     detectLanguageByIP();
+
+    // Etat initial de l'historique, et ouverture directe sur l'ancre demandee
+    // (#packs, #test...) : sans cette premiere entree, le premier changement
+    // d'onglet remplacerait l'accueil au lieu de s'empiler dessus, et
+    // « Precedent » quitterait encore le site.
+    const ancre = (location.hash || '').replace('#', '');
+    const cible = document.getElementById('section-' + ancre) ? ancre : 'accueil';
+    history.replaceState({ onglet: cible, categorie: categorieCourante }, '',
+                         '#' + cible);
+    if (cible !== 'accueil') { ignorerHistorique = true; afficherOnglet(cible); ignorerHistorique = false; }
   };
 </script>
 
