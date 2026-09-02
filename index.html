@@ -3191,6 +3191,9 @@
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
     },
 
+    chauffage_thermostat: {
+      detail: 'Pilotage complet d\'un thermostat : consigne, mode, et une <b>dérogation temporisée</b> qui force une température pour une durée choisie puis remet la consigne d\'avant toute seule. La carte s\'adapte à ce que votre installation expose — le capteur de température, l\'humidité et le contact de fenêtre sont facultatifs, et chacun ajoute ce qu\'il sait dire.',
+    },
     OK_service_meteo: {
       /* Pas de champ d'entité : le module impose Meteorologisk institutt
          (met.no) et l'installe au besoin — la seule source qui publie les
@@ -3503,6 +3506,19 @@
       ]
     },
 
+    chauffage_thermostat: {
+      intro: 'Trois onglets : contrôle, minuteur, historique. Le pack ne se contente pas de poser une consigne — il <b>photographie l\'état d\'avant</b>, applique la température choisie pour la durée voulue, puis restaure exactement ce qui était réglé. Et si vous reprenez la main pendant le décompte, il s\'arrête sans rien vous reprendre.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Contrôle', icone: 'fa-temperature-half',
+          texte: 'La consigne, le mode et la température ambiante. Dès que le thermostat est allumé, la bordure s\'anime et le fond passe au rouge — sans qu\'aucun élément ne bouge de place. Les pastilles d\'humidité et de fenêtre n\'apparaissent que si vous fournissez ces capteurs.' },
+        { titre: '2 — Minuteur', icone: 'fa-hourglass-half',
+          texte: 'Une température à forcer, six durées du quart d\'heure aux douze heures, avec pause, reprise et annulation. À la fin du décompte, la consigne d\'avant revient toute seule.' },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: 'La courbe de température sur le jour, la semaine, le mois ou l\'année. Sans capteur fourni, elle suit la température extérieure de votre localisation.' }
+      ]
+    },
+
     eau_detecteur_fuite: {
       intro: 'Le tableau de bord ne lit jamais votre détecteur directement : le pack pose entre les deux un capteur filtré. C\'est lui qui permet de <b>taire une alerte sans rien débrancher</b> — le détecteur continue de rapporter son état, son historique reste complet, et rien n\'est désactivé dans Home Assistant.',
       carte: () => 'defaut',
@@ -3804,6 +3820,27 @@
       { param: 'BAL_RELEVE', label: 'Capteur de relevé', type: 'text', required: false,
         placeholder: 'ex : binary_sensor.boite_aux_lettres_releve — vide : remise à zéro à la main' },
       champThemeSite('BAL_THEME', 'urban-factory')
+    ],
+    /* Thermostat : le premier champ est obligatoire, les trois autres
+       facultatifs — et ce sont EUX qui décident de la variante déployée.
+         thermostat seul                      -> graphe sur la temp. extérieure
+         + capteur de température             -> graphe sur la pièce
+         + humidité et contact de fenêtre     -> deux pastilles au 1er onglet
+       Rien à choisir dans une liste : le pack se règle sur ce que
+       l'intégration Better Thermostat a réellement sous la main, et le client
+       n'a pas à traduire son matériel en numéro de variante. */
+    chauffage_thermostat: [
+      { param: 'THERMO_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Salon' },
+      { param: 'THERMO_ENTITE', label: 'Entité du thermostat', type: 'text', required: true,
+        placeholder: 'ex : climate.salon_thermostat_1' },
+      { param: 'THERMO_TEMPERATURE', label: 'Capteur de température', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_temperature — vide : température extérieure' },
+      { param: 'THERMO_HUMIDITE', label: 'Capteur d\'humidité', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_humidity — vide : pastille masquée' },
+      { param: 'THERMO_FENETRE', label: 'Contact de fenêtre', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.salon_fenetre_1_contact — vide : pastille masquée' },
+      champThemeSite('THERMO_THEME', 'mars-rouge')
     ]
   };
 
@@ -3843,6 +3880,12 @@
       + 'automatisations et helpers), ainsi que HACS et les cartes personnalisées '
       + 'requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
       + 'card-mod).',
+    chauffage_thermostat:
+      'la vue et ses trois onglets, la dérogation temporisée (deux scripts, deux '
+      + 'automatisations et six helpers), le capteur de température extérieure de '
+      + 'repli si vous n\'en fournissez pas, ainsi que HACS et les cartes '
+      + 'personnalisées requises (better-thermostat-ui-card, button-card, mushroom, '
+      + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
     maintenance_instance:
       'la vue de suivi, ses capteurs et ses helpers, ainsi que HACS et les cartes '
       + 'personnalisées requises. Aucune intégration tierce : le pack ne lit que '
@@ -5158,6 +5201,118 @@
         },
         "gif": "templates/apercus/test-gratuit/sombre.gif"
       }
+    },
+    "thermostat": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/thermostat/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/thermostat/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/thermostat/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/thermostat/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/thermostat/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/thermostat/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/thermostat/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/thermostat/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/mars-rouge-defaut-1.jpg",
+            "templates/apercus/thermostat/mars-rouge-defaut-2.jpg",
+            "templates/apercus/thermostat/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/neo-future-defaut-1.jpg",
+            "templates/apercus/thermostat/neo-future-defaut-2.jpg",
+            "templates/apercus/thermostat/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/thermostat/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/thermostat/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/thermostat/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/thermostat/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/thermostat/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/thermostat/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/thermostat/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/thermostat/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/thermostat/urban-factory-defaut-1.jpg",
+            "templates/apercus/thermostat/urban-factory-defaut-2.jpg",
+            "templates/apercus/thermostat/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/thermostat/urban-factory.gif"
+      }
     }
   };
   /* APERCUS-FIN */
@@ -5168,7 +5323,8 @@
     OK_service_temps: 'temps',
     lumiere_lumiere: 'lumiere',
     eau_detecteur_fuite: 'fuite',
-    service_boite_aux_lettres: 'bal'
+    service_boite_aux_lettres: 'bal',
+    chauffage_thermostat: 'thermostat'
   };
 
   function themeSite(cle) {
@@ -5515,7 +5671,7 @@
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
-    'service_boite_aux_lettres'
+    'service_boite_aux_lettres', 'chauffage_thermostat'
   ]);
 
   const PRIX_PACK = 9;
@@ -5796,7 +5952,10 @@
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
     eau_valve: 'vanne-eau',
-    chauffage_thermostat: 'radiateurs',
+    // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
+    // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
+    // plus expose : il ciblait une piece codee en dur.
+    chauffage_thermostat: 'thermostat',
     lumiere_lumiere: 'lumiere',
     ouverture_garage_porte: 'porte-garage',
     ouverture_volet: 'volet-fenetre'
