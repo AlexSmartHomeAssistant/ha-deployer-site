@@ -33,6 +33,11 @@
       /* « Configuration » n'a plus de pastille claire : sa couleur doit donc
          tenir seule sur le fond du thème, d'où une teinte propre à chacun. */
       --col-configuration: #E4E7EB;
+      /* « Maintenance » : blanc sur le thème sombre, noir sur le clair
+         (demande du client le 02/09/2026). C'est la seule catégorie dont la
+         couleur s'inverse franchement — d'où un jeton par thème plutôt qu'une
+         valeur commune, qui serait invisible sur l'un des deux fonds. */
+      --col-maintenance: #FFFFFF;
       --col-gold: #F8C471;
       --col-required: #EF8377;
 
@@ -98,6 +103,7 @@
       --col-eau: #1F6FA5;
       --col-interface: #8B5E3C;
       --col-configuration: #14171c;
+      --col-maintenance: #000000;
       --col-gold: #B7791F;
       --col-required: #C0392B;
 
@@ -806,6 +812,7 @@
        d'être retirée ; on garde donc le noir sur le thème clair, et son
        équivalent lisible sur le thème sombre (cf. --col-configuration). */
     .subtab.configuration { color: var(--col-configuration); }
+    .subtab.maintenance { color: var(--col-maintenance); }
 
     /* Catégories multicolores (« Automatisme », « Service ») : le dégradé est
        appliqué au TEXTE via background-clip, ce qui impose
@@ -1009,6 +1016,73 @@
 
     /* Le descriptif se lit SOUS l'aperçu, en permanence : plus lisible et
        plus simple sur mobile qu'un texte réservé au survol. */
+    /* ===== FICHE DE PACK EN SEPT RANGEES (02/09/2026) =====
+       En-tete, media, selecteur de theme, description, « Inclus », saisies,
+       action. Les sept sont toujours rendues, meme vides : c'est ce qui
+       permet a `subgrid` (voir le bloc PC) de les aligner d'une fiche a
+       l'autre. */
+
+    /* 1 — En-tete : le pictogramme du pack et son titre, a la couleur de sa
+       categorie (--cat, posee en style inline par `filterCategory`). */
+    .pack-entete {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cat, var(--text-main));
+      text-align: center;
+      line-height: 1.25;
+    }
+    .pack-entete i { flex: 0 0 auto; font-size: 0.95em; }
+
+    /* 3 — Le selecteur de theme, seul sur sa rangee.
+       Surtout PAS de `:empty { display: none }` : en `subgrid`, un enfant
+       masque ne consomme pas sa rangee, et TOUS les suivants remontent d'un
+       cran. Une fiche sans selecteur alignait alors sa description sur le
+       selecteur de sa voisine, et son bouton sur les champs de saisie.
+       Mesure du 02/09/2026 : `pack-action` a 788 px sur trois fiches et 993
+       sur les deux autres. Vide, le bloc reste donc en place et ne pese rien
+       — la rangee se referme d'elle-meme si elle est vide sur TOUTE la
+       rangee de fiches. */
+    .pack-selecteur:empty, .pack-champs:empty { min-height: 0; }
+    .pack-selecteur .param-label { margin-top: 0; }
+    .pack-selecteur select { width: 100%; }
+
+    /* 4 — Description : alignee a gauche et bornee a cinq lignes. Sans cette
+       borne, une fiche bavarde imposait sa hauteur aux deux autres de sa
+       rangee, et la rangee « Inclus » descendait de trois lignes chez des
+       packs qui n'avaient rien de plus a dire. */
+    /* Bloc ordinaire, et SURTOUT pas un conteneur flex : un `-webkit-box`
+       place en element flex est « blockifie » par le navigateur (mesure du
+       02/09/2026 : `display` calcule a `flow-root`), et la limite de cinq
+       lignes tombe alors a une seule. */
+    .pack-desc { text-align: left; }
+    .pack-desc .lien-details { margin-top: 4px; }
+    .pack-desc .module-desc-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    /* 6 — Saisies. `gap` propre : les champs d'un pack qui en reclame trois
+       ne doivent pas se coller. */
+    .pack-champs { display: flex; flex-direction: column; gap: 4px; }
+    .pack-champs .param-label:first-child { margin-top: 0; }
+
+    /* 7 — Action : le bouton occupe toute sa rangee, donc toute la largeur,
+       et se retrouve a la meme hauteur sur les trois fiches de la rangee. */
+    /* 2 — Media. L'image ne depasse jamais son cadre (`max-width`/
+       `max-height`), et porte elle-meme l'arrondi : voir le bloc PC, ou le
+       cadre doit renoncer a `overflow: hidden`. */
+    .pack-media img { max-width: 100%; max-height: 100%; border-radius: 7px; }
+
+    .pack-action { display: flex; align-items: end; }
+    .pack-action .btn-add-big { width: 100%; }
+
     .module-desc-text {
       font-size: 0.82rem;
       color: var(--text-muted);
@@ -1896,6 +1970,48 @@
         align-content: start;
       }
 
+      /* ALIGNEMENT HORIZONTAL STRICT (02/09/2026).
+         Chaque fiche occupe SEPT rangees de la grille du catalogue et delegue
+         leur hauteur a celle-ci (`subgrid`). Les fiches d'une meme rangee
+         partagent donc les memes sept lignes : le media commence a la meme
+         hauteur, la description aussi, et le bouton « Ajouter » tombe au meme
+         pixel — sans qu'aucune hauteur ne soit ecrite en dur, donc sans rien
+         a re-mesurer quand un texte change.
+
+         L'auto-placement cree sept rangees implicites PAR rangee de fiches :
+         l'alignement vaut donc rangee par rangee, et une fiche bavarde plus
+         bas dans la liste n'etire pas celles du haut. */
+      @supports (grid-template-rows: subgrid) {
+        /* `min-width: 0` sur les rangees : un enfant de grille refuse par
+           defaut de descendre sous la largeur MINIMALE de son contenu, et le
+           GIF (300 px de large) debordait alors de sa colonne pour recouvrir
+           la fiche voisine. Meme raison pour `min-height`, sur la hauteur. */
+        #section-module .module-item > * { min-width: 0; }
+        /* `overflow: hidden` ramene a ZERO la contribution du cadre a la
+           hauteur de sa rangee : mesure du 02/09/2026, la rangee tombait a
+           75 px pour une image de 186, qui recouvrait alors la description et
+           le lien « Details ». Le cadre laisse donc deborder — il n'y a rien a
+           deborder, l'image etant deja bornee — et c'est elle qui porte
+           l'arrondi. */
+        #section-module .pack-media { overflow: visible; }
+        #section-module .module-item {
+          grid-row: span 7;
+          display: grid;
+          grid-template-rows: subgrid;
+          /* Une sous-grille herite des gouttieres de sa grille parente. Sans
+             cette valeur propre, les sept rangees d'une fiche seraient
+             espacees comme deux fiches voisines. */
+          row-gap: 8px;
+        }
+      }
+
+      /* Repli sans `subgrid` : les rangees ne se repondent plus, mais le
+         bouton reste colle en bas de sa fiche — la seule ligne dont le
+         desalignement se voit vraiment. */
+      @supports not (grid-template-rows: subgrid) {
+        #section-module .module-item .pack-action { margin-top: auto; }
+      }
+
     }
 
     /* Écrans larges mais peu hauts (portables 1366x768, 1440x810…) : la rangée
@@ -2251,6 +2367,7 @@
         <button class="subtab appareil" onclick="filterCategory('appareil', this)">Appareil</button>
         <button class="subtab securite" onclick="filterCategory('securite', this)">Sécurité</button>
         <button class="subtab automatisme multicolore" onclick="filterCategory('automatisme', this)">Automatisme</button>
+        <button class="subtab maintenance" onclick="filterCategory('maintenance', this)">Maintenance</button>
       </div>
 
       <div class="card">
@@ -2895,6 +3012,13 @@
     ],
     interface: [
       { name: 'interface_dashboard_principal', desc: 'Personnalisation des tuiles et vues Lovelace' }
+    ],
+    // Derniere categorie du catalogue, et derniere pastille du bandeau.
+    maintenance: [
+      { name: 'maintenance_instance',
+        desc: 'Suivi de santé de votre instance : mises à jour disponibles, '
+            + 'sauvegardes, redémarrages, espace disque et état des add-ons — '
+            + 'rassemblés sur une seule vue.' }
     ]
   };
 
@@ -2944,7 +3068,8 @@
     eau_detecteur_fuite: 'Détecteur de Fuite',
     eau_pool: 'Piscine',
     eau_valve: 'Vanne d\'Eau',
-    interface_dashboard_principal: 'Tableau de Bord'
+    interface_dashboard_principal: 'Tableau de Bord',
+    maintenance_instance: 'Maintenance'
   };
 
   /* Icône propre à chaque module, affichée dans le panier. Sans elle, toutes
@@ -2996,7 +3121,8 @@
     eau_detecteur_fuite: 'fa-house-flood-water',
     eau_pool: 'fa-water-ladder',
     eau_valve: 'fa-faucet',
-    interface_dashboard_principal: 'fa-table-cells-large'
+    interface_dashboard_principal: 'fa-table-cells-large',
+    maintenance_instance: 'fa-screwdriver-wrench'
   };
 
   function moduleIcon(rawName) {
@@ -3681,9 +3807,69 @@
     ]
   };
 
-  function champsParamsHtml(modName) {
+
+  /* ---------- LE BLOC « INCLUS », SUR TOUTES LES FICHES (02/09/2026) ----------
+     Il n'existait que sur les six packs de MODULE_MEDIA. Ailleurs la rangée
+     restait vide, et l'engagement commercial — ce que le client reçoit pour
+     son prix — ne se lisait que sur une fiche sur sept.
+
+     Trois sources, dans cet ordre :
+       1. le `<span class="inclus">` déjà écrit dans le `detail` du pack ;
+       2. une mention propre au pack, quand on sait nommer ce qu'il installe ;
+       3. le texte commun, à défaut.
+
+     Le texte commun n'est pas une formule creuse : c'est l'engagement que
+     l'encart en tête de l'onglet Packs énonce déjà pour TOUS les packs
+     (« Chaque pack est livré complet… »). Écrire à la place une liste
+     d'intégrations par pack, sans l'avoir vérifiée module par module,
+     reviendrait à promettre ce qu'on n'a pas contrôlé. */
+  const INCLUS_COMMUN =
+    'le tableau de bord et ses onglets, les scripts, automatisations, capteurs '
+    + 'et helpers dont il a besoin, ainsi que l\'installation de <b>HACS</b>, des '
+    + '<b>cartes personnalisées</b> et des <b>intégrations</b> requises.';
+
+  /* Packs dont on connaît précisément la liste — elle vient de leur script de
+     déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
+     supposition. */
+  const INCLUS_PACK = {
+    lumiere_lumiere:
+      'la vue et ses trois onglets, le minuteur (scripts, automatisations et '
+      + 'helpers), les capteurs de temps d\'allumage, ainsi que HACS et les cartes '
+      + 'personnalisées requises (button-card, mushroom, swipe-card, stack-in-card, '
+      + 'slider-entity-row, apexcharts-card, card-mod).',
+    eau_detecteur_fuite:
+      'la vue et ses trois onglets, le capteur filtré qui permet de taire une '
+      + 'alerte sans rien débrancher, la désactivation temporisée (scripts, '
+      + 'automatisations et helpers), ainsi que HACS et les cartes personnalisées '
+      + 'requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
+      + 'card-mod).',
+    maintenance_instance:
+      'la vue de suivi, ses capteurs et ses helpers, ainsi que HACS et les cartes '
+      + 'personnalisées requises. Aucune intégration tierce : le pack ne lit que '
+      + 'ce que Home Assistant expose déjà.'
+  };
+
+  /* Le bloc « Inclus » d'un pack, quelle que soit sa provenance. */
+  function inclusHtml(modName, detailDejaSepare) {
+    if (detailDejaSepare) return detailDejaSepare;      // écrit dans le `detail`
+    const propre = INCLUS_PACK[modName];
+    return `<span class="inclus"><b>Inclus :</b> ${propre || INCLUS_COMMUN}</span>`;
+  }
+
+  /* Le sélecteur de thème occupe sa PROPRE rangée dans la fiche (rangée 3),
+     séparée des autres saisies (rangée 6) : sans quoi, d'un pack à l'autre,
+     le thème se retrouverait tantôt au-dessus tantôt au-dessous d'un champ
+     d'entité, et les rangées ne se répondraient plus. */
+  function estChampTheme(c) {
+    return c.type === 'select' && c.label === 'Thème';
+  }
+
+  /* `quoi` : 'theme' pour le seul sélecteur de thème, 'autres' pour tout le
+     reste, ou rien pour l'ensemble (usage historique). */
+  function champsParamsHtml(modName, quoi) {
     if (!MODULE_PARAMS[modName]) return '';
-    return MODULE_PARAMS[modName].map(c => {
+    return MODULE_PARAMS[modName].filter(c =>
+        !quoi || (quoi === 'theme' ? estChampTheme(c) : !estChampTheme(c))).map(c => {
       const id = `param-${modName}-${c.param}`;
       if (c.type === 'checkboxes') {
         const cases = c.options.map((o, i) =>
@@ -5177,18 +5363,30 @@
       // dépend du thème choisi dans le sélecteur, qui n'existe pas encore ici.
       const detail = detailSepare(media ? media.detail : mod.desc);
 
+      /* SEPT rangees, toujours les memes et toujours dans cet ordre : en-tete,
+         media, selecteur de theme, description, « Inclus », saisies, action.
+         Chacune est rendue MEME VIDE — c'est ce qui permet a `subgrid` de les
+         faire correspondre d'une fiche a l'autre. Sauter une rangee absente
+         decalerait toutes les suivantes, et le bouton « Ajouter » d'un pack se
+         retrouverait a la hauteur du champ d'entite de son voisin. */
       item.className = 'module-item module-item-detailed';
       item.innerHTML = `
-        <strong>${title}</strong>
-        <div class="module-video" id="apercu-${mod.name}">
+        <div class="pack-entete" style="--cat: ${moduleColor(mod.name)};">
+          <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
+        </div>
+        <div class="pack-media module-video" id="apercu-${mod.name}">
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
-        ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}<br>
-          <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button></p>` : ''}
-        ${champsParamsHtml(mod.name)}
-        ${detail.inclus ? `<p class="module-desc-full">${detail.inclus}</p>` : ''}
-        ${fieldHtml}
-        <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
+        <div class="pack-selecteur">${champsParamsHtml(mod.name, 'theme')}</div>
+        <div class="pack-desc">
+          ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}</p>` : ''}
+          <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button>
+        </div>
+        <div class="pack-inclus">${inclusHtml(mod.name, detail.inclus)}</div>
+        <div class="pack-champs">${champsParamsHtml(mod.name, 'autres')}${fieldHtml}</div>
+        <div class="pack-action">
+          <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
+        </div>
       `;
 
       container.appendChild(item);
