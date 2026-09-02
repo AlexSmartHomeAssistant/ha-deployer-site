@@ -337,6 +337,66 @@
       box-sizing: border-box;
     }
 
+    .nav-groupe-droite { display: flex; align-items: center; gap: 10px; }
+
+    /* Espace client : meme hauteur et meme grammaire visuelle que la pastille
+       du panier, dont il est le voisin immediat. */
+    .nav-compte {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-compte:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
+    .nav-compte i { color: var(--text-muted); }
+    /* Connecte : la pastille se colore, sans crier — c'est un etat, pas une
+       alerte. */
+    .nav-compte.connecte { border-color: var(--col-valide); color: var(--col-valide); }
+    .nav-compte.connecte i { color: var(--col-valide); }
+    @media (max-width: 700px) {
+      .nav-compte .nav-compte-texte { display: none; }
+      .nav-compte { padding: 8px 11px; }
+    }
+
+    .compte-intro {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .compte-erreur {
+      font-size: 0.82rem;
+      color: var(--col-required);
+      margin: 10px 0 0;
+    }
+    .compte-succes {
+      font-size: 0.82rem;
+      color: var(--col-valide);
+      margin: 10px 0 0;
+      line-height: 1.5;
+    }
+    .compte-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .compte-table th, .compte-table td {
+      text-align: left;
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--card-border);
+      vertical-align: top;
+    }
+    .compte-table th { color: var(--text-muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; }
+    .compte-table code { background: var(--input-bg); padding: 1px 5px; border-radius: 4px; }
+    .compte-table .etat-success { color: var(--col-valide); font-weight: 700; }
+    .compte-table .etat-error   { color: var(--col-required); font-weight: 700; }
+    .compte-table .etat-running, .compte-table .etat-pending { color: var(--col-gold); font-weight: 700; }
+
     .nav-cart-total {
       color: var(--col-valide);
     }
@@ -2159,18 +2219,23 @@
         left: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
       }
 
-      .nav-cart {
+      /* C'est le GROUPE qui est calé sur le bord droit, plus le panier seul :
+         sorti du flux, celui-ci ignorait la boîte flex de son groupe et
+         l'espace client restait à l'autre bout du bandeau (mesuré : 589 px
+         d'écart). Le groupe positionné, les deux redeviennent voisins. */
+      .nav-groupe-droite {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
         right: max(var(--nav-edge), calc(50% - var(--content-half) + var(--content-pad)));
       }
 
-      /* Le panier étant centré par translateY, la pulsation doit le conserver */
+      /* La pulsation n'a plus a compenser de centrage : c'est le groupe qui
+         porte le translateY, le panier est redevenu un element ordinaire. */
       @keyframes cartPulse {
-        0%   { transform: translateY(-50%) scale(1); }
-        35%  { transform: translateY(-50%) scale(1.12); }
-        100% { transform: translateY(-50%) scale(1); }
+        0%   { transform: scale(1); }
+        35%  { transform: scale(1.12); }
+        100% { transform: scale(1); }
       }
     }
 
@@ -2226,7 +2291,8 @@
 
       .nav-hamburger { display: flex; order: 1; }
       .nav-brand { order: 2; flex: 1; min-width: 0; }
-      .nav-cart { order: 3; padding: 7px 12px; font-size: 0.85rem; }
+      .nav-groupe-droite { order: 3; }
+      .nav-cart { padding: 7px 12px; font-size: 0.85rem; }
       .nav-side { order: 4; }
 
       /* Le conteneur "pilule" des onglets redevient une liste verticale dépliable */
@@ -2312,10 +2378,22 @@
       <button onclick="switchTab('module')" id="nav-module"><i class="fa-solid fa-cubes"></i> Packs</button>
       <button onclick="switchTab('test')" id="nav-test"><i class="fa-solid fa-vial"></i> Test Gratuit</button>
     </div>
-    <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
-      <i class="fa-solid fa-cart-shopping"></i>
-      <span class="nav-cart-badge" id="nav-cart-badge">0</span>
-      <span class="nav-cart-total" id="nav-cart-total">0 €</span>
+    <!-- Panier et espace client dans UN MEME groupe : le bandeau repartit ses
+         elements, et deux elements freres s'y seraient eloignes l'un de
+         l'autre. Le client veut le second COLLE au prix — c'est la que le
+         regard se pose au moment de payer, et c'est la qu'on vient chercher
+         ses deploiements passes. -->
+    <div class="nav-groupe-droite">
+      <div class="nav-cart" id="nav-cart" onclick="openCartModal()" title="Voir le panier">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="nav-cart-badge" id="nav-cart-badge">0</span>
+        <span class="nav-cart-total" id="nav-cart-total">0 €</span>
+      </div>
+      <button type="button" class="nav-compte" id="nav-compte" onclick="ouvrirCompteModal()"
+              title="Se connecter à votre espace client">
+        <i class="fa-solid fa-user"></i>
+        <span class="nav-compte-texte">Mon espace</span>
+      </button>
     </div>
     <div class="nav-side">
       <!-- Langue : bouton drapeau seul, les noms apparaissent au clic -->
@@ -2945,6 +3023,17 @@
         <button class="modal-close" onclick="closeCartModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body" id="cart-modal-body"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="compte-modal-overlay"
+       onclick="if(event.target.id==='compte-modal-overlay')fermerCompteModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user"></i> Mon espace client</h3>
+        <button class="modal-close" onclick="fermerCompteModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="compte-modal-body"></div>
     </div>
   </div>
 
@@ -6393,6 +6482,191 @@
      ===================================================================== */
 
   const BACKEND_URL = 'https://ha-deployer-api.alexsmarthome.workers.dev';
+
+  /* ---------- ESPACE CLIENT (02/09/2026) ----------
+     Connexion SANS mot de passe : un lien unique envoyé par e-mail. Il n'y a
+     donc rien à retenir, rien à réinitialiser, et aucune empreinte de mot de
+     passe à protéger.
+
+     UN SEUL CHAMP. Le serveur répond toujours la même chose, qu'un compte
+     existe ou non — c'est l'e-mail reçu qui distingue « connexion » de
+     « bienvenue ». On obtient le formulaire unifié voulu sans apprendre à un
+     inconnu si telle adresse est cliente.
+
+     Le jeton de session est rangé dans `localStorage` et envoyé en
+     `Authorization: Bearer`. Un cookie serait plus étanche, mais le site
+     (github.io) et l'API (workers.dev) sont sur deux domaines : il faudrait
+     un cookie tiers, que les navigateurs bloquent de plus en plus. */
+  const CLE_SESSION = 'hadeployer-session';
+
+  function sessionClient() {
+    try { return localStorage.getItem(CLE_SESSION) || ''; } catch (e) { return ''; }
+  }
+  function poserSession(jeton) {
+    try { jeton ? localStorage.setItem(CLE_SESSION, jeton) : localStorage.removeItem(CLE_SESSION); }
+    catch (e) { /* stockage indisponible : la session ne durera que l'onglet */ }
+  }
+
+  let compteConnecte = null;   // { email, depuis } ou null
+
+  function api(chemin, options = {}) {
+    const jeton = sessionClient();
+    return fetch(BACKEND_URL.replace(/\/+$/, '') + chemin, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        ...(jeton ? { Authorization: 'Bearer ' + jeton } : {})
+      }
+    });
+  }
+
+  function majBoutonCompte() {
+    const b = document.getElementById('nav-compte');
+    if (!b) return;
+    b.classList.toggle('connecte', !!compteConnecte);
+    b.querySelector('.nav-compte-texte').textContent =
+      compteConnecte ? compteConnecte.email.split('@')[0] : 'Mon espace';
+    b.title = compteConnecte ? compteConnecte.email : 'Se connecter à votre espace client';
+  }
+
+  async function rafraichirCompte() {
+    if (!sessionClient()) { compteConnecte = null; majBoutonCompte(); return; }
+    try {
+      const r = await api('/api/auth/me');
+      if (r.ok) { compteConnecte = await r.json(); }
+      else { poserSession(''); compteConnecte = null; }   // session expirée
+    } catch (e) { /* hors ligne : on garde l'état précédent */ }
+    majBoutonCompte();
+  }
+
+  /* Le lien reçu par e-mail ramène ici avec `#compte-<jeton>` : le jeton est
+     dans le FRAGMENT, qui n'est envoyé à aucun serveur et n'apparaît dans
+     aucun journal d'accès. On le range, puis on NETTOIE l'adresse — laisser
+     un jeton de session dans la barre d'adresse, c'est l'offrir au premier
+     copier-coller. */
+  async function recupererSessionDepuisLien() {
+    const h = location.hash || '';
+    if (h.startsWith('#compte-echec-')) {
+      history.replaceState(history.state, '', location.pathname + location.search);
+      const raisons = {
+        absent: 'Lien incomplet.',
+        inconnu: 'Ce lien n\'est pas reconnu.',
+        deja: 'Ce lien a déjà servi — demandez-en un nouveau.',
+        expire: 'Ce lien a expiré — demandez-en un nouveau.'
+      };
+      ouvrirCompteModal(raisons[h.replace('#compte-echec-', '')] || 'Connexion impossible.');
+      return;
+    }
+    if (!h.startsWith('#compte-')) return;
+    poserSession(h.slice('#compte-'.length));
+    history.replaceState(history.state, '', location.pathname + location.search);
+    await rafraichirCompte();
+    ouvrirCompteModal();
+  }
+
+  function ouvrirCompteModal(message) {
+    document.getElementById('compte-modal-overlay').classList.add('active');
+    renderCompteModal(message);
+  }
+  function fermerCompteModal() {
+    document.getElementById('compte-modal-overlay').classList.remove('active');
+  }
+
+  function renderCompteModal(message) {
+    const corps = document.getElementById('compte-modal-body');
+    if (compteConnecte) {
+      corps.innerHTML = `
+        <p class="compte-intro">Connecté en tant que <b>${compteConnecte.email}</b>.</p>
+        <div id="compte-deploiements"><p class="compte-intro">Chargement de vos déploiements…</p></div>
+        <div class="modal-footer">
+          <button class="cart-clear-btn" onclick="seDeconnecter()">
+            <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+          </button>
+        </div>`;
+      chargerMesDeploiements();
+      return;
+    }
+    corps.innerHTML = `
+      <p class="compte-intro">
+        Un seul champ : saisissez votre adresse, nous vous envoyons un lien de
+        connexion. <b>Pas de mot de passe</b> — rien à retenir, rien à oublier.
+        Si vous n'avez pas encore de compte, il est créé en ouvrant le lien.
+      </p>
+      ${message ? `<p class="compte-erreur">${message}</p>` : ''}
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="compte-email"><i class="fa-solid fa-envelope"></i> Votre adresse e-mail</label>
+        <input type="email" id="compte-email" class="field-required" autocomplete="email"
+               placeholder="vous@exemple.fr" onkeydown="if(event.key==='Enter')demanderLien()">
+      </div>
+      <div id="compte-retour"></div>
+      <div class="modal-footer">
+        <button class="btn-pay" id="compte-envoyer" onclick="demanderLien()">
+          <i class="fa-solid fa-paper-plane"></i> Recevoir mon lien
+        </button>
+      </div>`;
+  }
+
+  async function demanderLien() {
+    const champ = document.getElementById('compte-email');
+    const retour = document.getElementById('compte-retour');
+    const bouton = document.getElementById('compte-envoyer');
+    const email = (champ.value || '').trim();
+    if (!email || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(email)) {
+      champ.classList.remove('input-error'); void champ.offsetWidth;
+      champ.classList.add('input-error'); champ.focus();
+      return;
+    }
+    bouton.disabled = true;
+    retour.innerHTML = '<p class="compte-intro">Envoi en cours…</p>';
+    try {
+      const r = await api('/api/auth/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const d = await r.json().catch(() => ({}));
+      retour.innerHTML = r.ok
+        ? `<p class="compte-succes"><i class="fa-solid fa-circle-check"></i> ${d.message || 'Lien envoyé.'}</p>`
+        : `<p class="compte-erreur">${d.error || 'Envoi impossible pour le moment.'}</p>`;
+    } catch (e) {
+      retour.innerHTML = '<p class="compte-erreur">Service injoignable. Réessayez dans un instant.</p>';
+    }
+    bouton.disabled = false;
+  }
+
+  async function seDeconnecter() {
+    try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { /* sans effet */ }
+    poserSession(''); compteConnecte = null;
+    majBoutonCompte(); renderCompteModal();
+  }
+
+  async function chargerMesDeploiements() {
+    const zone = document.getElementById('compte-deploiements');
+    if (!zone) return;
+    try {
+      const r = await api('/api/account/jobs');
+      if (!r.ok) { zone.innerHTML = '<p class="compte-intro">Historique indisponible.</p>'; return; }
+      const d = await r.json();
+      if (!d.jobs.length) {
+        zone.innerHTML = `<p class="compte-intro">Aucun déploiement pour l'instant.
+          Ceux que vous lancerez en étant connecté apparaîtront ici.</p>`;
+        return;
+      }
+      const etat = { success: 'Réussi', error: 'Échec', running: 'En cours', pending: 'En attente' };
+      zone.innerHTML = `<table class="compte-table">
+        <tr><th>Date</th><th>Packs</th><th>État</th></tr>
+        ${d.jobs.map(j => `<tr>
+            <td>${new Date(j.created_at).toLocaleString('fr-FR')}</td>
+            <td>${(j.modules || '').split(',').map(m => `<code>${m}</code>`).join(' ')}</td>
+            <td class="etat-${j.status}">${etat[j.status] || j.status}</td>
+          </tr>`).join('')}
+      </table>`;
+    } catch (e) {
+      zone.innerHTML = '<p class="compte-intro">Historique indisponible.</p>';
+    }
+  }
+
+
   const DASHBOARD_PATH = 'accueil-modules';
 
   const POLL_INTERVAL_MS = 3000;
@@ -6563,7 +6837,10 @@
 
   /* ---------- Dialogue avec le Worker ---------- */
   async function createJob(creds, items) {
-    const res = await fetch(BACKEND_URL.replace(/\/+$/, '') + '/api/jobs', {
+    // `api()` ajoute l'en-tete `Authorization` quand une session existe : la
+    // tache est alors rattachee au compte, et le client la retrouve dans son
+    // espace. Sans session, elle reste anonyme — c'est voulu.
+    const res = await api('/api/jobs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -7160,6 +7437,10 @@
     // du Test Gratuit : les deux sont rendus depuis ACCES_DISTANT.
     remplirAccesDistant();
     detectLanguageByIP();
+    // Espace client : on releve d'abord un eventuel retour de lien de
+    // connexion (#compte-...), qui pose la session, puis on interroge le
+    // serveur pour savoir de qui il s'agit.
+    recupererSessionDepuisLien().then(rafraichirCompte);
 
     // Etat initial de l'historique, et ouverture directe sur l'ancre demandee
     // (#packs, #test...) : sans cette premiere entree, le premier changement
