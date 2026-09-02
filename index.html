@@ -3191,6 +3191,9 @@
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
     },
 
+    ouverture_volet: {
+      detail: `Pilotage complet d'un volet roulant : sa représentation en direct, un bouton <b>favori</b> qui le place en un appui à la position que vous choisissez, et un <b>minuteur</b> qui l'ouvre au pourcentage voulu pour une durée choisie avant de remettre tout seul la position d'avant. La carte s'adapte à ce que votre fenêtre expose &mdash; température, luminosité, contact d'ouverture et détecteur de vibration sont facultatifs, et chacun ajoute ce qu'il sait dire.`
+    },
     chauffage_thermostat: {
       detail: 'Pilotage complet d\'un thermostat : consigne, mode, et une <b>dérogation temporisée</b> qui force une température pour une durée choisie puis remet la consigne d\'avant toute seule. La carte s\'adapte à ce que votre installation expose — le capteur de température, l\'humidité et le contact de fenêtre sont facultatifs, et chacun ajoute ce qu\'il sait dire.',
     },
@@ -3503,6 +3506,19 @@
           texte: 'Six durées d\'extinction automatique, du quart d\'heure aux douze heures, avec pause et reprise. Le réglage à appliquer au démarrage se compose ici, sans toucher à la lampe.' },
         { titre: '3 — Historique', icone: 'fa-chart-column',
           texte: 'Temps d\'allumage par jour, semaine, mois et année, lus sur l\'historique réel de la lampe.' }
+      ]
+    },
+
+    ouverture_volet: {
+      intro: `Trois onglets : contrôle, minuteur, historique. Le pack ne se contente pas de bouger le volet &mdash; il <b>photographie la position d'avant</b>, applique le pourcentage choisi pour la durée voulue, puis restaure exactement ce qui était réglé. Et si vous reprenez la main pendant le décompte, il s'arrête sans rien vous reprendre.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Contrôle', icone: 'fa-window-maximize',
+          texte: `Le volet en direct, son pourcentage d'ouverture en gros caractères, et un bouton étoile qui le place à votre position favorite. Dès qu'il n'est plus fermé, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place. Les pastilles de température, de luminosité, de fenêtre et de vibration n'apparaissent que si vous fournissez ces capteurs.` },
+        { titre: '2 — Minuteur', icone: 'fa-hourglass-half',
+          texte: `Un pourcentage d'ouverture à forcer, six durées du quart d'heure aux douze heures, avec pause, reprise et annulation. À la fin du décompte, la position d'avant revient toute seule.` },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: `La courbe de température sur le jour, la semaine, le mois ou l'année. Sans capteur fourni, elle suit la température extérieure de votre localisation.` }
       ]
     },
 
@@ -3821,6 +3837,37 @@
         placeholder: 'ex : binary_sensor.boite_aux_lettres_releve — vide : remise à zéro à la main' },
       champThemeSite('BAL_THEME', 'urban-factory')
     ],
+    /* Volet Roulant : les deux premiers champs sont obligatoires, les
+       quatre suivants facultatifs — et ce sont EUX qui décident de la
+       variante déployée.
+         volet seul                          -> le volet et son pourcentage
+         + température et luminosité         -> pastilles de statut, graphe
+                                                sur le capteur de la pièce
+         + fenêtre et alarme                 -> la carte complète
+       Rien à choisir dans une liste : le pack se règle sur ce que
+       l'installation expose réellement, et le client n'a pas à traduire son
+       matériel en numéro de variante.
+
+       La sensibilité de l'alarme et son mode nuit ne sont PAS demandés : ils
+       vivent sur le même appareil que le capteur d'alarme, et le pack les y
+       retrouve tout seul. */
+    ouverture_volet: [
+      { param: 'VOLET_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Salon' },
+      { param: 'VOLET_ENTITE', label: 'Entité du volet roulant', type: 'text', required: true,
+        placeholder: 'ex : cover.salon_volet_2_low_speed' },
+      { param: 'VOLET_FAVORI', label: 'Position favorite (%)', type: 'text', required: false,
+        placeholder: 'ex : 33 — vide : 33 %, le bouton étoile y place le volet' },
+      { param: 'VOLET_TEMPERATURE', label: 'Capteur de température', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_fenetre_2_device_temperature — vide : température extérieure' },
+      { param: 'VOLET_LUMINOSITE', label: 'Capteur de luminosité', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_illuminance — vide : pastille masquée' },
+      { param: 'VOLET_FENETRE', label: 'Contact de fenêtre', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.salon_fenetre_2_contact — vide : pastille masquée' },
+      { param: 'VOLET_ALARME', label: 'Capteur d\'alarme ou de vibration', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.salon_fenetre_alarme_2_motion — vide : pastilles masquées' },
+      champThemeSite('VOLET_THEME', 'urban-factory')
+    ],
     /* Thermostat : le premier champ est obligatoire, les trois autres
        facultatifs — et ce sont EUX qui décident de la variante déployée.
          thermostat seul                      -> graphe sur la temp. extérieure
@@ -3880,6 +3927,12 @@
       + 'automatisations et helpers), ainsi que HACS et les cartes personnalisées '
       + 'requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
       + 'card-mod).',
+    ouverture_volet:
+      'la vue et ses trois onglets, le positionnement temporisé (deux scripts, '
+      + 'deux automatisations et six helpers), le capteur de température '
+      + 'extérieure de repli si vous n\'en fournissez pas, ainsi que HACS et les '
+      + 'cartes personnalisées requises (shutter-card, button-card, mushroom, '
+      + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
     chauffage_thermostat:
       'la vue et ses trois onglets, la dérogation temporisée (deux scripts, deux '
       + 'automatisations et six helpers), le capteur de température extérieure de '
@@ -5313,6 +5366,118 @@
         },
         "gif": "templates/apercus/thermostat/urban-factory.gif"
       }
+    },
+    "volet": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/volet/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/volet/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/volet/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/volet/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/volet/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/volet/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/volet/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/volet/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/mars-rouge-defaut-1.jpg",
+            "templates/apercus/volet/mars-rouge-defaut-2.jpg",
+            "templates/apercus/volet/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/neo-future-defaut-1.jpg",
+            "templates/apercus/volet/neo-future-defaut-2.jpg",
+            "templates/apercus/volet/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/volet/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/volet/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/volet/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/volet/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/volet/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/volet/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/volet/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/volet/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/volet/urban-factory-defaut-1.jpg",
+            "templates/apercus/volet/urban-factory-defaut-2.jpg",
+            "templates/apercus/volet/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/volet/urban-factory.gif"
+      }
     }
   };
   /* APERCUS-FIN */
@@ -5324,7 +5489,8 @@
     lumiere_lumiere: 'lumiere',
     eau_detecteur_fuite: 'fuite',
     service_boite_aux_lettres: 'bal',
-    chauffage_thermostat: 'thermostat'
+    chauffage_thermostat: 'thermostat',
+    ouverture_volet: 'volet'
   };
 
   function themeSite(cle) {
@@ -5671,7 +5837,7 @@
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
-    'service_boite_aux_lettres', 'chauffage_thermostat'
+    'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet'
   ]);
 
   const PRIX_PACK = 9;
@@ -5958,7 +6124,11 @@
     chauffage_thermostat: 'thermostat',
     lumiere_lumiere: 'lumiere',
     ouverture_garage_porte: 'porte-garage',
-    ouverture_volet: 'volet-fenetre'
+    // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
+    // `volet-fenetre` (deploy_pack_shutter) reste sur le depot mais
+    // n'est plus expose : il ciblait une piece et des entites codees
+    // en dur.
+    ouverture_volet: 'volet-roulant'
   };
 
   /* ---------- Journal de progression ---------- */
