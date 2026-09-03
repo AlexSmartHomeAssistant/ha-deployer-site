@@ -769,6 +769,24 @@
 
     .field-help.open { display: block; }
 
+    /* Bulle volante : elle flotte au-dessus de la page au lieu de pousser le
+       champ et tout ce qui le suit. Meme plan que l'infobulle d'acces distant
+       (4200), qu'elle peut contenir — celle-ci monte a 4400 pour rester
+       devant. */
+    .field-help-flottante {
+      display: block;
+      position: fixed;
+      z-index: 4200;
+      max-width: 380px;
+      max-height: 70vh;
+      overflow-y: auto;
+      margin: 0;
+      background: var(--modal-bg);
+      border: 1px solid var(--card-border);
+      border-left: 3px solid var(--primary-blue);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+
     /* Rappel de suppression du jeton (31/08/2026).
        Il était jusqu'ici la QUATRIÈME étape d'une liste numérotée, juste après
        « copiez le jeton généré ici ». Numéroté, il se lisait comme la suite
@@ -1132,10 +1150,12 @@
     }
     .pack-entete i { flex: 0 0 auto; font-size: 0.95em; }
 
-    /* Categories sans teinte propre (Service, Automatisme) : leur en-tete
-       reprend la roue de leur onglet. Le decoupage porte sur l'element
-       entier, pictogramme compris — une icone Font Awesome est un glyphe,
-       elle se decoupe comme du texte. */
+    /* Titre multicolore : la roue de la categorie decoupee sur le texte. Le
+       decoupage porte sur l'element ENTIER, pictogramme compris — une icone
+       Font Awesome est un glyphe, elle se decoupe comme du texte. La classe
+       sert a trois endroits (fiche du catalogue, titre de la page de details,
+       ligne du panier) : une seule definition, sinon elles divergent. */
+    .multicolore-texte,
     .pack-entete.multicolore {
       background-image: var(--degrade-multicolore);
       -webkit-background-clip: text;
@@ -1288,7 +1308,28 @@
     /* Le conteneur de la page est un flex en colonne : sans ceci le bouton du
        haut s'etire sur toute la largeur et ne ressemble plus a celui du bas
        (harmonisation demandee le 01/09/2026). */
-    #section-details > .container > .detail-retour { align-self: flex-start; }
+    .detail-entete {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+    }
+    .detail-entete .detail-retour {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      margin: 0;
+    }
+    .detail-entete h1 { margin: 0; }
+    /* Sur telephone, le titre passerait sous le lien : on repasse en colonne
+       plutot que de les laisser se chevaucher. */
+    @media (max-width: 640px) {
+      .detail-entete { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .detail-entete .detail-retour { position: static; transform: none; }
+      .detail-entete h1 { text-align: left; }
+    }
     /* Seule difference avec celui du haut, et elle est de POSITION, pas de
        style : sa marge passe au-dessus. Le reste — fond transparent, bordure,
        teinte, alignement a gauche — vient de la meme classe. */
@@ -1542,7 +1583,15 @@
     .deploy-log .etape-num {
       color: var(--primary-blue);
       font-weight: 700;
-      margin-right: 2px;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+    /* Message du runner : une SOUS-etape de la troisieme, mise en retrait pour
+       qu'on ne la compte pas comme une etape de plus. */
+    .deploy-log .sous-etape {
+      display: inline-block;
+      padding-left: 14px;
+      opacity: 0.85;
     }
     .deploy-log .ok   { color: var(--col-valide); }
     .deploy-log .err  { color: var(--col-required); }
@@ -1772,6 +1821,10 @@
     }
 
     .cart-modal-item .cart-item-name i { flex-shrink: 0; }
+    /* `.cart-modal-item .cart-item-name` pose `color: var(--cat)` et l'emporte
+       sur `.multicolore-texte` par sa specificite : sans ce rappel, le nom
+       resterait uni et le degrade ne se verrait pas. */
+    .cart-modal-item .cart-item-name.multicolore-texte { color: transparent; }
 
     .cart-modal-item .entity {
       color: var(--cat, var(--text-muted));
@@ -1888,7 +1941,7 @@
       /* AU-DESSUS de la modale (z-index 4000) : sous elle, les icones « ? »
          de l'etape de connexion du panier semblaient ne rien faire — la bulle
          s'ouvrait bel et bien, mais derriere le voile de la modale. */
-      z-index: 4200;
+      z-index: 4400;
       max-width: 340px;
       max-height: 70vh;
       overflow-y: auto;
@@ -1904,6 +1957,61 @@
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
     }
     .acces-infobulle.open { display: block; }
+
+    /* Titre de la bulle : detache des etapes par un filet, pour qu'on ne le
+       lise pas comme la premiere phrase du mode d'emploi. */
+    .bulle-titre {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .bulle-titre i { color: var(--col-gold); margin-right: 6px; }
+    .bulle-titre span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+    .bulle-intro { margin-bottom: 10px; }
+    /* Numeros en gras et detaches du texte : dans un paragraphe continu, un
+       « 2. » se confond avec la phrase precedente. */
+    .bulle-etapes { list-style: none; counter-reset: etape; margin: 0; padding: 0; }
+    .bulle-etapes li {
+      counter-increment: etape;
+      position: relative;
+      padding-left: 26px;
+      margin-bottom: 8px;
+    }
+    .bulle-etapes li:last-child { margin-bottom: 0; }
+    .bulle-etapes li::before {
+      content: counter(etape);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--col-gold);
+      color: #1a1206;
+      font-weight: 800;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bulle-note {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.75rem;
+      font-style: italic;
+    }
     .acces-infobulle b, .acces-infobulle strong { color: var(--text-main); }
     .acces-infobulle code {
       background: var(--input-bg);
@@ -2488,11 +2596,11 @@
             Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-            Habillez chaque pack comme vous l'entendez : <b style="color: var(--col-gold);">onze thèmes visuels</b>,
+            Habillez chaque pack comme vous l'entendez : <b>onze thèmes visuels</b>,
             de l'ardoise sobre au néon industriel, que vous voyez à l'œuvre avant d'acheter.
-            <b>Les textes, eux, se règlent tout seuls</b> — sur la langue de votre instance, et
-            sur celle du lieu que vous indiquez lorsque le pack en dépend : météo, jours fériés,
-            calendriers ou jours de collecte.
+            Les textes s'adaptent automatiquement à la langue de votre instance, ainsi qu'à
+            celle du lieu configuré pour les modules qui en dépendent (météo, jours fériés,
+            calendriers ou collecte des déchets).
           </p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
@@ -2526,7 +2634,7 @@
           1. Choisissez vos packs dans l'onglet <b>Packs</b>, en renseignant l'entité concernée pour chacun.<br>
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
           3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
-          4. Procédez au paiement — les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance.
+          4. Procédez au paiement — les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance, sous la forme d'une nouvelle vue dans le tableau de bord « Accueil » de la barre latérale.
         </p>
       </div>
 
@@ -2599,10 +2707,13 @@
        diverger. -->
   <div id="section-details" class="page-section">
     <div class="container">
-      <button type="button" class="detail-retour" onclick="switchTab('module')">
-        <i class="fa-solid fa-arrow-left"></i> Retour aux packs
-      </button>
-      <header>
+      <!-- Le lien de retour et le titre sur une MEME ligne. Le lien est en
+           absolu a gauche : dans le flux, il decalait le titre vers la droite
+           et celui-ci n'etait plus centre sur la page. -->
+      <header class="detail-entete">
+        <button type="button" class="detail-retour" onclick="switchTab('module')">
+          <i class="fa-solid fa-arrow-left"></i> Retour aux packs
+        </button>
         <h1 id="detail-titre"></h1>
       </header>
       <div id="detail-corps"></div>
@@ -2660,12 +2771,12 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Connexion</h3>
         <div class="form-group">
-          <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url')" title="Aide">?</button></label>
+          <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url', this)" title="Aide">?</button></label>
           <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="test" style="display:block; margin-top:6px;"></span></div>
           <input type="url" id="test-ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token')" title="Aide">?</button></label>
+          <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token', this)" title="Aide">?</button></label>
           <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
           <input type="password" id="test-ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
         </div>
@@ -3200,6 +3311,11 @@
   });
 
   function afficherOnglet(tabId) {
+    // Les bulles volantes vivent dans <body> : elles survivraient au
+    // changement d'onglet et flotteraient au-dessus d'une page qui n'est plus
+    // la leur.
+    fermerToutesAidesChamp();
+    fermerInfobulleAcces();
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-links button, .footer-links button').forEach(btn => btn.classList.remove('active'));
 
@@ -3546,57 +3662,50 @@
       nom: 'Nabu Casa',
       suite: ' (Home Assistant Cloud)',
       url: 'https://www.nabucasa.com/',
-      aide: `<b>La solution la plus simple : rien à installer, rien à ouvrir sur votre box.</b><br>
-             1. Souscrivez sur <a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a>
-                (l'abonnement finance aussi le développement de Home Assistant).<br>
-             2. Dans Home Assistant : <b>Paramètres → Home Assistant Cloud</b>, puis activez <b>Accès distant</b>.<br>
-             3. L'adresse s'affiche à cet endroit. Elle finit par <code>.ui.nabu.casa</code>,
-                elle est en <b>https</b> et son certificat est déjà valide — c'est celle à nous donner.`
+      intro: 'La solution la plus simple : rien à installer, rien à ouvrir sur votre box.',
+      etapes: [
+        `Souscrivez sur <a href="https://www.nabucasa.com/" target="_blank" rel="noopener noreferrer">nabucasa.com</a> — l'abonnement finance aussi le développement de Home Assistant.`,
+        `Dans Home Assistant : <b>Paramètres → Home Assistant Cloud</b>, puis activez <b>Accès distant</b>.`,
+        `L'adresse s'affiche à cet endroit. Elle finit par <code>.ui.nabu.casa</code>, elle est en <b>https</b> et son certificat est déjà valide — c'est celle à nous donner.`
+      ]
     },
     {
       cle: 'duckdns',
       nom: 'DuckDNS',
       suite: ' + redirection de port',
       url: 'https://www.duckdns.org/',
-      aide: `<b>Gratuit</b>, mais demande d'ouvrir un port sur votre box.<br>
-             1. Créez un sous-domaine sur
-                <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a>
-                (connexion par compte Google, GitHub…) et notez votre <b>token</b>.<br>
-             2. Dans Home Assistant, installez l'add-on <b>DuckDNS</b> et renseignez-y le domaine et le token.
-                Laissez <code>lets_encrypt</code> activé : il obtient le certificat <b>https</b>.<br>
-             3. Sur votre box, redirigez le port <b>8123</b> vers votre Home Assistant.<br>
-             4. L'adresse à nous donner ressemble alors à <code>https://votre-nom.duckdns.org:8123</code>.`
+      intro: `<b>Gratuit</b>, mais demande d'ouvrir un port sur votre box.`,
+      etapes: [
+        `Créez un sous-domaine sur <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">duckdns.org</a> (connexion par compte Google, GitHub…) et notez votre <b>token</b>.`,
+        `Dans Home Assistant, installez l'add-on <b>DuckDNS</b> et renseignez-y le domaine et le token. Laissez <code>lets_encrypt</code> activé : il obtient le certificat <b>https</b>.`,
+        `Sur votre box, redirigez le port <b>8123</b> vers votre Home Assistant.`,
+        `L'adresse à nous donner ressemble alors à <code>https://votre-nom.duckdns.org:8123</code>.`
+      ]
     },
     {
       cle: 'cloudflare',
       nom: 'Cloudflare Tunnel',
       suite: ' + NGINX (reverse proxy)',
       url: 'https://www.cloudflare.com/products/tunnel/',
-      aide: `Publie votre instance <b>sans ouvrir le moindre port</b> : c'est votre Home Assistant
-             qui va vers Cloudflare, et non l'inverse.<br>
-             1. Créez un tunnel sur
-                <a href="https://www.cloudflare.com/products/tunnel/" target="_blank" rel="noopener noreferrer">Cloudflare Zero Trust</a>
-                (un nom de domaine est nécessaire).<br>
-             2. Installez l'add-on <b>Cloudflared</b> dans Home Assistant et rattachez-le au tunnel.<br>
-             3. Le certificat <b>https</b> est fourni par Cloudflare. L'adresse à nous donner est
-                le nom public du tunnel.<br>
-             NGINX n'est utile que si vous publiez plusieurs services derrière le même domaine.`
+      intro: `Publie votre instance <b>sans ouvrir le moindre port</b> : c'est votre Home Assistant qui va vers Cloudflare, et non l'inverse.`,
+      etapes: [
+        `Créez un tunnel sur <a href="https://www.cloudflare.com/products/tunnel/" target="_blank" rel="noopener noreferrer">Cloudflare Zero Trust</a> — un nom de domaine est nécessaire.`,
+        `Installez l'add-on <b>Cloudflared</b> dans Home Assistant et rattachez-le au tunnel.`,
+        `Le certificat <b>https</b> est fourni par Cloudflare. L'adresse à nous donner est le nom public du tunnel.`
+      ],
+      note: `NGINX n'est utile que si vous publiez plusieurs services derrière le même domaine.`
     },
     {
       cle: 'vpn',
       nom: 'VPN',
       suite: ' (WireGuard, Tailscale…)',
       url: 'https://www.wireguard.com/',
-      aide: `Un VPN relie <b>vos</b> appareils à votre réseau domestique.<br>
-             1. Installez l'add-on <b>WireGuard</b>
-                (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>)
-                ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>,
-                plus simple car sans ouverture de port.<br>
-             2. Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.
-             <span class="reserve"><b>À savoir :</b> un VPN convient au <b>Test Gratuit</b>, qui se déploie
-             depuis votre propre navigateur. Il ne convient <b>pas</b> aux packs payants : ceux-là sont
-             déployés par nos serveurs, qui ne sont pas sur votre VPN. Pour eux, choisissez Nabu Casa,
-             DuckDNS ou Cloudflare Tunnel.</span>`
+      intro: `Un VPN relie <b>vos</b> appareils à votre réseau domestique.`,
+      etapes: [
+        `Installez l'add-on <b>WireGuard</b> (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>) ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>, plus simple car sans ouverture de port.`,
+        `Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.`
+      ],
+      reserve: `<b>À savoir :</b> un VPN convient au <b>Test Gratuit</b>, qui se déploie depuis votre propre navigateur. Il ne convient <b>pas</b> aux packs payants : ceux-là sont déployés par nos serveurs, qui ne sont pas sur votre VPN. Pour eux, choisissez Nabu Casa, DuckDNS ou Cloudflare Tunnel.`
     }
   ];
 
@@ -3671,7 +3780,17 @@
     const a = ACCES_DISTANT.find(x => x.cle === cle);
     if (!a) return;
     bulle.dataset.cle = cle;
-    bulle.innerHTML = `<b>${a.nom}</b> — guide de configuration<br>${a.aide}
+    // Titre DETACHE des etapes, et les etapes en liste numerotee : elles
+    // s'enchainaient auparavant en un seul paragraphe separe par des <br>, ou
+    // le titre se confondait avec la premiere phrase et les numeros se
+    // perdaient dans le texte.
+    bulle.innerHTML = `
+      <div class="bulle-titre"><i class="fa-solid fa-circle-question"></i> ${a.nom}
+        <span>guide de configuration</span></div>
+      ${a.intro ? `<p class="bulle-intro">${a.intro}</p>` : ''}
+      ${a.etapes ? `<ol class="bulle-etapes">${a.etapes.map(e => `<li>${e}</li>`).join('')}</ol>` : ''}
+      ${a.note ? `<p class="bulle-note">${a.note}</p>` : ''}
+      ${a.reserve ? `<span class="reserve">${a.reserve}</span>` : ''}
       <button type="button" class="acces-fermer" onclick="fermerInfobulleAcces()">Fermer</button>`;
     placerInfobulle(bulle, bouton);
   }
@@ -3971,6 +4090,13 @@
     const conf = PACK_DETAILS[cleModule];
     // L'icone du titre est celle du pack, pas un cube generique : c'est la
     // meme que porte sa ligne dans le panier, le visiteur la reconnait.
+    const titreEl = document.getElementById('detail-titre');
+    // Le titre de la page reprend EXACTEMENT le traitement de la fiche : roue
+    // multicolore pour les categories sans teinte propre, couleur de categorie
+    // sinon. Deux traitements differents pour le meme pack, d'un ecran a
+    // l'autre, se lisent comme deux packs.
+    titreEl.classList.toggle('multicolore-texte', titreMulticolore(cleModule));
+    titreEl.style.color = titreMulticolore(cleModule) ? '' : moduleColor(cleModule);
     document.getElementById('detail-titre').innerHTML =
       `<i class="fa-solid ${moduleIcon(cleModule)}"></i> ${titre}`;
     const corps = document.getElementById('detail-corps');
@@ -6086,10 +6212,16 @@
 
   /* Les deux categories sans teinte propre : leur onglet porte deja la roue
      multicolore, les en-tetes de leurs fiches la reprennent. */
-  /* Seule « Automatisme » garde l'en-tete en degrade : elle n'a pas de teinte
-     propre et pas encore de pack. « Service », elle, distribue desormais les
-     six couleurs de PALETTE_SERVICE, une par pack (03/09/2026). */
-  const CATEGORIES_MULTICOLORES = new Set(['automatisme']);
+  /* Categories dont le TITRE porte la roue multicolore plutot qu'une teinte
+     unie : celles qui n'ont pas de couleur propre. « Service » y revient le
+     03/09/2026 — la roue de son onglet et le titre de ses packs disent
+     desormais la meme chose. Vaut pour la fiche, le titre de la page de
+     details et la ligne du panier. */
+  const CATEGORIES_MULTICOLORES = new Set(['service', 'automatisme']);
+
+  function titreMulticolore(cleModule) {
+    return CATEGORIES_MULTICOLORES.has(moduleCategory(cleModule));
+  }
 
   function filterCategory(categoryKey, tabEl) {
     categorieCourante = categoryKey;
@@ -6135,7 +6267,7 @@
          retrouverait a la hauteur du champ d'entite de son voisin. */
       item.className = 'module-item module-item-detailed';
       item.innerHTML = `
-        <div class="pack-entete${categoryKey === 'automatisme' ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
+        <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
         </div>
         <div class="pack-media module-video" id="apercu-${mod.name}">
@@ -6173,21 +6305,37 @@
     return requis.some(id => !document.getElementById(id));
   }
 
-  /* Le premier champ obligatoire encore vide, sur la page ouverte. */
-  function premierChampManquant(modName) {
-    const ids = (MODULE_PARAMS[modName] || [])
-      .filter(c => c.required !== false && !estChampTheme(c) && c.type !== 'checkboxes')
-      .map(c => `param-${modName}-${c.param}`);
+  /* Les champs de saisie d'un pack, dans l'ordre ou ils sont poses, avec le
+     caractere obligatoire de chacun. */
+  function champsSaisie(modName) {
+    const liste = (MODULE_PARAMS[modName] || [])
+      .filter(c => !estChampTheme(c) && c.type !== 'checkboxes')
+      .map(c => ({ id: `param-${modName}-${c.param}`, requis: c.required !== false, label: c.label }));
     const media = MODULE_MEDIA[modName];
-    if ((media && media.field && media.field.required !== false && media.field.type !== 'calendar')
-        || (!media && !MODULE_PARAMS[modName])) {
-      ids.push(`input-${modName}`);
+    if (media && media.field) {
+      liste.push({ id: `input-${modName}`, requis: media.field.required !== false,
+                   label: media.field.label || 'Entité concernée' });
+    } else if (!media && !MODULE_PARAMS[modName]) {
+      liste.push({ id: `input-${modName}`, requis: true, label: 'Entité concernée' });
     }
-    for (const id of ids) {
-      const el = document.getElementById(id);
-      if (el && !String(el.value || '').trim()) return el;
-    }
-    return null;
+    return liste;
+  }
+
+  /* Le champ sur lequel poser le curseur en arrivant sur la page de details.
+     Priorite : une case OBLIGATOIRE encore vide ; a defaut une case
+     facultative vide ; a defaut le premier champ, meme deja rempli — arriver
+     sans curseur nulle part laisse le visiteur chercher ce qu'on attend de
+     lui. `requis` dit s'il faut aussi ouvrir la bulle d'avertissement : on ne
+     reproche pas un champ facultatif laisse vide. */
+  function champACibler(modName) {
+    const champs = champsSaisie(modName)
+      .map(c => ({ ...c, el: document.getElementById(c.id) }))
+      .filter(c => c.el);
+    const vide = c => !String(c.el.value || '').trim();
+    return champs.find(c => c.requis && vide(c))
+        || champs.find(c => vide(c))
+        || champs[0]
+        || null;
   }
 
   /* Signale UN champ : curseur dedans, cadre rouge, et une bulle qui dit quoi
@@ -6233,7 +6381,19 @@
       ouvrirDetails(modName);
       // Apres le rendu de la page : le champ n'existe pas encore a cet
       // instant precis.
-      setTimeout(() => signalerChampManquant(premierChampManquant(modName)), 60);
+      setTimeout(() => {
+        const cible = champACibler(modName);
+        if (!cible) return;
+        if (cible.requis && !String(cible.el.value || '').trim()) {
+          signalerChampManquant(cible.el,
+            `Veuillez renseigner « ${cible.label} » avant d'ajouter au panier.`);
+        } else {
+          // Rien d'obligatoire ne manque : on amene simplement le curseur sur
+          // le premier champ, sans cadre rouge ni reproche.
+          cible.el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          cible.el.focus({ preventScroll: true });
+        }
+      }, 60);
       return;
     }
     // Modules a plusieurs champs (ex: Eclairage) : on les collecte, on
@@ -6390,6 +6550,10 @@
   let cartModalStep = 'list';
 
   function openCartModal() {
+    // Meme raison : une aide restee ouverte sur l'onglet precedent se
+    // retrouverait par-dessus la modale.
+    fermerToutesAidesChamp();
+    fermerInfobulleAcces();
     cartModalStep = 'list';
     renderCartModalBody();
     document.getElementById('cart-modal-overlay').classList.add('active');
@@ -6414,7 +6578,7 @@
       modulesHtml = cart.map((item, i) => `
         <div class="cart-modal-item" style="--cat: ${moduleColor(item.key)};">
           <div>
-            <strong class="cart-item-name"><i class="fa-solid ${moduleIcon(item.key)}"></i> ${item.name}</strong>
+            <strong class="cart-item-name${titreMulticolore(item.key) ? ' multicolore-texte' : ''}"><i class="fa-solid ${moduleIcon(item.key)}"></i> ${item.name}</strong>
             <span class="entity">${item.entity}</span>
             ${detailParamsHtml(item)}
           </div>
@@ -6458,21 +6622,65 @@
     renderCartModalBody();
   }
 
-  function toggleFieldHelp(id) {
-    document.getElementById(id).classList.toggle('open');
+  /* Aide de champ : bulle VOLANTE, et non plus un bloc qui se deplie sous le
+     libelle (03/09/2026). Depliee sur place, elle poussait le champ et tout ce
+     qui suit vers le bas — sur l'onglet Test Gratuit, la colonne entiere
+     descendait et le bouton sortait de l'ecran.
+
+     L'element est DEPLACE dans <body> le temps de son ouverture, puis remis a
+     sa place : `.card` porte un `backdrop-filter`, qui ferait d'elle le bloc
+     conteneur d'un descendant en `position: fixed`. Le deplacer conserve son
+     contenu — y compris les liens d'acces distant qu'il porte — et leurs
+     gestionnaires. */
+  const aidesDeplacees = new Map();
+
+  function fermerAideChamp(el) {
+    if (!el) return;
+    el.classList.remove('open', 'field-help-flottante');
+    el.style.top = el.style.left = el.style.visibility = '';
+    const origine = aidesDeplacees.get(el.id);
+    if (origine && origine.parent) {
+      origine.parent.insertBefore(el, origine.suivant);
+      aidesDeplacees.delete(el.id);
+    }
   }
+
+  function fermerToutesAidesChamp() {
+    document.querySelectorAll('.field-help.open').forEach(fermerAideChamp);
+  }
+
+  function toggleFieldHelp(id, bouton) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.classList.contains('open')) { fermerAideChamp(el); return; }
+    fermerToutesAidesChamp();
+    aidesDeplacees.set(id, { parent: el.parentNode, suivant: el.nextSibling });
+    document.body.appendChild(el);
+    el.classList.add('field-help-flottante');
+    placerInfobulle(el, bouton || document.body);
+  }
+
+  /* Un clic ailleurs referme, comme pour l'infobulle d'acces distant. On
+     ignore les clics DANS la bulle et sur les icones « ? » — dont celles que
+     la bulle contient elle-meme. */
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.field-help') || e.target.closest('.help-icon')) return;
+    fermerToutesAidesChamp();
+  });
+  ['scroll', 'resize'].forEach(ev =>
+    window.addEventListener(ev, fermerToutesAidesChamp, true));
 
   function cartCheckoutStepHtml() {
     return `
       <button class="modal-back" onclick="backToCartListStep()"><i class="fa-solid fa-arrow-left"></i> Retour à la sélection</button>
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
-        <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url')" title="Aide">?</button></label>
+        <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url', this)" title="Aide">?</button></label>
         <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse doit être en <b>https</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
         <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
-        <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token')" title="Aide">?</button></label>
+        <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token', this)" title="Aide">?</button></label>
         <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
         <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
       </div>
@@ -6853,10 +7061,16 @@
      elles commentent une etape, elles n'en sont pas une. */
   const etapesJournal = {};
 
+  /* Un deploiement compte QUATRE etapes, toujours les memes : c'est ce qui
+     permet d'afficher « Étape 2/4 » et de savoir ou l'on en est. Les messages
+     que remonte le runner sont des SOUS-etapes de la troisieme — leur nombre
+     varie d'un pack a l'autre, et les numeroter donnerait un denominateur
+     different a chaque commande. */
+  const ETAPES_DEPLOIEMENT = 4;
+
   function reinitialiserEtapes(boxId) { etapesJournal[boxId] = 0; }
 
-  function numeroterEtape(boxId, kind) {
-    if (kind !== 'run' && kind !== 'ok') return '';
+  function numeroterEtape(boxId) {
     etapesJournal[boxId] = (etapesJournal[boxId] || 0) + 1;
     return etapesJournal[boxId];
   }
@@ -6867,8 +7081,14 @@
     box.classList.add('open');
     const div = document.createElement('div');
     div.className = 'line ' + kind;
-    const rang = numero === undefined ? numeroterEtape(boxId, kind) : numero;
-    if (rang) { div.dataset.etape = rang; text = `<b class="etape-num">${rang}.</b> ${text}`; }
+    // `numero` explicite : 0 pour une ligne qui n'est PAS une etape (message
+    // du runner, avertissement). Sans lui, chaque sous-etape consommerait un
+    // rang et le compteur depasserait le total annonce.
+    const rang = numero === undefined ? numeroterEtape(boxId) : numero;
+    if (rang) {
+      div.dataset.etape = rang;
+      text = `<b class="etape-num">Étape ${rang}/${ETAPES_DEPLOIEMENT}</b> ${text}`;
+    }
     div.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
@@ -6885,7 +7105,7 @@
     // « en cours » a « terminee » garde son numero, sinon la suite se
     // renumeroterait a chaque changement.
     const rang = el.dataset.etape;
-    if (rang) text = `<b class="etape-num">${rang}.</b> ${text}`;
+    if (rang) text = `<b class="etape-num">Étape ${rang}/${ETAPES_DEPLOIEMENT}</b> ${text}`;
     el.innerHTML = `<i class="fa-solid ${LOG_ICONS[kind]}"></i><span>${text}</span>`;
     // La ligne reflétée vient de changer d'état (réussie, en échec…) :
     // le bandeau suit, sans quoi il afficherait une étape déjà terminée.
@@ -7020,15 +7240,33 @@
     const log = (kind, text) => logLine(boxId, kind, text);
 
     reinitialiserEtapes(boxId);
+    // Etape 1/4
     let courante = log('run', 'Envoi de la demande au serveur de déploiement…');
     try {
       const jobId = await createJob(creds, items);
       replaceLine(courante, 'ok', `Demande acceptée — ${items.length} pack(s) en file d'attente.`);
 
-      courante = log('run', 'Déploiement en cours sur votre instance…');
+      // Etape 2/4
+      courante = log('run', 'Prise en charge par le déployeur…');
+      let priseEnCharge = false;
+
+      // Etape 3/4 — les messages du runner s'y rangent en SOUS-etapes
+      // (numero 0 : elles ne consomment pas de rang).
+      let deploiement = null;
       const job = await pollJob(jobId, etapes => {
-        etapes.forEach(e => log(e.step === 'error' ? 'err' : 'ok', e.message));
+        if (!priseEnCharge) {
+          priseEnCharge = true;
+          replaceLine(courante, 'ok', 'Demande prise en charge.');
+          deploiement = log('run', 'Déploiement en cours sur votre instance…');
+        }
+        etapes.forEach(e => logLine(boxId, e.step === 'error' ? 'err' : 'ok',
+                                    `<span class="sous-etape">${e.message}</span>`, 0));
       });
+      if (!priseEnCharge) {
+        replaceLine(courante, 'ok', 'Demande prise en charge.');
+        deploiement = log('run', 'Déploiement en cours sur votre instance…');
+      }
+      courante = deploiement;
 
       if (job.status === 'success') {
         const lien = `${creds.url}/${DASHBOARD_PATH}`;
@@ -7039,7 +7277,8 @@
           cart.length = 0;
           updateCartUI();
         }
-        log('ok', `<a href="${lien}" target="_blank" rel="noopener">Ouvrir votre tableau de bord</a>`);
+        // Etape 4/4
+        log('ok', `Terminé — <a href="${lien}" target="_blank" rel="noopener">ouvrir votre tableau de bord</a>.`);
       } else {
         replaceLine(courante, 'err', job.error || 'Le déploiement a échoué.');
       }
