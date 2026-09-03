@@ -2303,10 +2303,16 @@
         display: flex;
         flex-direction: column;
       }
-      /* Le bouton suit immediatement le texte (02/09/2026 : `margin-top: auto`
-         le collait en bas de colonne, a plusieurs centimetres de la phrase qui
-         l'annonce — on ne savait plus a quoi il se rapportait). */
-      #section-test .test-action .btn-add-big { margin-top: 4px; }
+      /* Le bouton COLLE EN BAS DE CARTE (03/09/2026, demande explicite du
+         client — revient sur la decision du 02/09/2026). En grille 2x2, la
+         rangee du bas est mesuree sur la carte « Connexion », plus haute que
+         celle-ci : le texte d'intro laissait donc un grand vide sous le
+         bouton, remonte pres de la phrase qui l'annonce. `margin-top: auto`
+         dans une colonne flex pousse le bouton (et tout ce qui le suit) au
+         ras du bas — c'est le vide qui remonte AU-DESSUS du bouton, pas
+         l'inverse, et l'ecart avec l'intro ne se voit plus puisqu'il n'y a
+         plus qu'une seule carte pour comparer. */
+      #section-test .test-action .btn-add-big { margin-top: auto; }
       #section-test .test-action .deploy-log { margin-top: 12px; }
 
       /* Onglet Packs : le catalogue prend TOUTE la largeur, sous les
@@ -3643,6 +3649,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_machine_laver: {
+      resume: "Phase du cycle en direct, temps restant, coût et consommation.",
+      detail: `Suivi complet d'un lave-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre en direct ce qui se passe dans le tambour : le voyant clignote et le hublot tourne au rythme de la phase en cours (<b>lavage</b>, <b>chauffage</b>, <b>essorage</b>), et le <b>temps restant</b> est estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers lavages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Sans historique exploitable, il pose des valeurs génériques et vous le dit &mdash; un redéploiement plus tard les affinera.`
+    },
     /* ---- Categorie « Configuration » (01/09/2026) ----
        Ces quatre-la n'ont pas d'apercu par THEME : ils n'affichent aucune
        carte Lovelace, il n'y a donc rien a filmer sur une instance. Ils
@@ -3971,6 +3981,18 @@
       ]
     },
 
+    appareil_machine_laver: {
+      intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au lave-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de la prise</b> et en déduit les seuils de puissance qui séparent le lavage, le chauffage et l'essorage.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-washing-machine',
+          texte: `Le lave-linge en direct : le voyant clignote et le hublot tourne au rythme de la phase &mdash; <b>bleu</b> pour le brassage, <b>rouge</b> pour le chauffage de l'eau, <b>orange</b> pour l'essorage, immobile en veille. La phase est nommée en clair, et le <b>temps restant</b> est estimé d'après la durée moyenne de vos cycles précédents. Dès que la machine tourne, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Statistiques', icone: 'fa-chart-simple',
+          texte: `La <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage. Un compteur suit les cycles depuis le dernier <b>nettoyage du tambour</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq derniers lavages</b> sont listés avec leur heure et leur durée. Et si vous fournissez l'interrupteur de la prise, un bouton la coupe d'un appui bref, la redémarre d'un appui long.` },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
+      ]
+    },
     OK_service_meteo: {
       intro: 'Trois onglets, balayés du doigt. Les données viennent de l\'intégration Meteorologisk institutt (met.no), installée par le pack si elle manque — la seule source native qui publie d\'un bloc les cinq relevés du troisième onglet. Les textes suivent la langue de votre instance.',
       carte: () => 'defaut',
@@ -4440,6 +4462,34 @@
       { param: 'DUCKDNS_TOKEN', label: 'Jeton DuckDNS', type: 'text', required: true,
         placeholder: 'le token affiche en haut de duckdns.org' }
     ],
+    /* Machine a Laver : le capteur de PUISSANCE de la prise connectee est
+       le seul champ obligatoire, et c'est de lui que tout depend -- le
+       synoptique, le decoupage en cycles, la duree, la phase. Les deux
+       suivants sont facultatifs, et ce sont EUX qui decident de la variante :
+         puissance seule    -> synoptique, durees, entretien, journal ;
+                               3e onglet sur la puissance moyenne
+         + energie          -> energie et cout du cycle ; 3e onglet sur
+                               l'energie cumulee en kWh
+         + interrupteur     -> bouton de coupure / redemarrage de la prise
+       En pratique le client n'a pas a les saisir : sur une prise connectee,
+       puissance, energie et relais vivent sur le MEME appareil, et le pack
+       les y retrouve par leur `device_class`. Les champs ne servent qu'a
+       designer l'entite quand la deduction se trompe. */
+    appareil_machine_laver: [
+      { param: 'LAVAGE_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Salle de bain' },
+      { param: 'LAVAGE_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
+        placeholder: 'ex : sensor.lave_linge_mss305_power_w_main_channel' },
+      { param: 'LAVAGE_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
+        placeholder: 'ex : sensor.lave_linge_mss305_energy_kwh — vide : déduit de la prise' },
+      { param: 'LAVAGE_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
+        placeholder: 'ex : switch.lave_linge_mss305_main_channel — vide : déduit de la prise' },
+      { param: 'LAVAGE_TARIF', label: 'Prix du kWh', type: 'text', required: false,
+        placeholder: 'ex : 0.25 — vide : 0,25, ajustable ensuite sans redéploiement' },
+      { param: 'LAVAGE_ENTRETIEN', label: 'Cycles entre deux entretiens du tambour', type: 'text', required: false,
+        placeholder: 'ex : 30 — vide : 30 cycles' },
+      champThemeSite('LAVAGE_THEME', 'urban-factory')
+    ],
     OK_service_meteo: [champThemeSite('METEO_THEME', 'terre-de-carmin')],
     OK_service_temps: [champThemeSite('TEMPS_THEME', 'neo-future')],
     lumiere_lumiere: [
@@ -4590,6 +4640,14 @@
       + 'repli si vous n\'en fournissez pas, ainsi que HACS et les cartes '
       + 'personnalisées requises (better-thermostat-ui-card, button-card, mushroom, '
       + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
+    appareil_machine_laver:
+      'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
+      + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
+      + 'restant, les deux automatisations de début et de fin de cycle, les trois '
+      + 'scripts d\u2019action (entretien, coupure, redémarrage de la prise) et les '
+      + 'onze helpers du suivi, ainsi que HACS et les cartes personnalisées '
+      + 'requises (button-card, mushroom, swipe-card, stack-in-card, '
+      + 'apexcharts-card, card-mod).',
     maintenance_instance:
       'la vue de suivi, ses capteurs et ses helpers, ainsi que HACS et les cartes '
       + 'personnalisées requises. Aucune intégration tierce : le pack ne lit que '
@@ -6615,7 +6673,8 @@
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
-    'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet'
+    'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
+    'appareil_machine_laver'
   ]);
 
   const PRIX_PACK = 9;
@@ -7128,6 +7187,11 @@
     service_boite_aux_lettres: 'boite-aux-lettres',
     service_person: 'personne',
     appareil_refrigerateur: 'refrigerateur',
+    // Pack Machine a Laver (03/09/2026), ecrit sur le gabarit du pack
+    // Lumiere : synoptique de cycle, statistiques et historique de
+    // consommation, seuils de puissance mesures sur l'historique de la
+    // prise connectee.
+    appareil_machine_laver: 'machine-a-laver',
     appareil_raspberry: 'systeme',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
