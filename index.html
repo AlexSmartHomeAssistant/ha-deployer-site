@@ -62,6 +62,18 @@
          « Automatisme ». Blanche sur le thème sombre ; redéfinie en gris
          foncé sur le clair, où un sixième du mot serait sinon invisible. */
       --multicolore-tete: #FFFFFF;
+      /* Palette de la categorie Service (03/09/2026) : chaque pack de la
+         categorie prend l'une de ces six teintes, a tour de role. La premiere
+         suit le theme — un blanc pur serait invisible sur le fond clair, d'ou
+         --multicolore-tete, deja utilise par la roue des onglets. Le titre, le
+         pictogramme et la ligne du panier partagent la meme couleur : c'est
+         elle qui fait reconnaitre un pack d'un ecran a l'autre. */
+      --pal-1: var(--multicolore-tete);
+      --pal-2: #52BE80;
+      --pal-3: #F8C471;
+      --pal-4: #EC7063;
+      --pal-5: #5DADE2;
+      --pal-6: #BF71B2;
       /* Le dégradé lui-même, partagé par l'onglet de catégorie et par
          l'en-tête des fiches de la catégorie Service. Une seule définition :
          deux copies auraient divergé au premier ajustement de teinte. */
@@ -366,6 +378,25 @@
       .nav-compte .nav-compte-texte { display: none; }
       .nav-compte { padding: 8px 11px; }
     }
+
+    /* Bulle d'aide posee sur un champ obligatoire laisse vide. Dans <body> et
+       en `position: fixed`, comme l'infobulle d'acces distant : les cartes
+       portent un `backdrop-filter` et captureraient le positionnement. */
+    .bulle-champ {
+      position: fixed;
+      z-index: 4300;
+      max-width: 280px;
+      padding: 9px 12px;
+      background: var(--modal-bg);
+      border: 1px solid var(--col-required);
+      border-left: 3px solid var(--col-required);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+    .bulle-champ i { color: var(--col-required); margin-right: 6px; }
 
     .compte-intro {
       font-size: 0.84rem;
@@ -1135,14 +1166,16 @@
        lignes tombe alors a une seule. */
     .pack-desc { text-align: left; }
     .pack-desc .lien-details { margin-top: 4px; }
-    /* UNE seule ligne, coupee par des points de suspension (02/09/2026 : la
-       fiche ne resume plus, elle annonce — le detail est derriere « Details »,
-       et six colonnes ne laissent plus la place a cinq lignes). */
+    /* TROIS lignes pleines (03/09/2026). Pas de points de suspension : les
+       descriptifs ont ete RACCOURCIS pour tenir, plutot que coupes a
+       l'affichage — une phrase tronquee en plein mot se lit comme un defaut,
+       et le visiteur ne sait pas ce qu'il manque. La borne reste, en dernier
+       recours, pour un descriptif qui deborderait malgre tout. */
     .pack-desc .module-desc-text {
-      display: block;
-      white-space: nowrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
       text-align: left;
     }
 
@@ -1313,39 +1346,21 @@
        grille, ils tombaient dans deux colonnes distinctes et le « Thème » se
        retrouvait a gauche de sa propre liste. */
     .detail-commande { display: flex; flex-direction: column; gap: 4px; }
-    /* Les onze pastilles de theme prennent toute la largeur : elles ne
-       tiennent pas dans une colonne de 240 px. */
-    .detail-commande-large { grid-column: 1 / -1; }
-
-    .detail-themes { display: flex; flex-wrap: wrap; gap: 4px; }
-
-    /* Surbrillance IDENTIQUE a celle des onglets du bandeau de categories :
-       meme soulignement de 3 px, meme fond survole, meme arrondi haut. Le
-       visiteur reconnait le meme geste au meme endroit. */
-    .detail-theme {
-      background: none;
-      border: none;
-      border-bottom: 3px solid transparent;
-      border-radius: 6px 6px 0 0;
-      padding: 8px 12px;
-      font-size: 0.82rem;
+    /* Le selecteur de theme est MIS EN EVIDENCE : c'est lui qui commande
+       l'animation et les trois captures, et on doit le voir avant elles. Meme
+       bleu que l'onglet actif du bandeau — le visiteur reconnait la couleur du
+       « choix en cours ». */
+    .detail-commande-theme select {
+      border: 2px solid var(--primary-blue) !important;
+      background: var(--hover-bg);
       font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
-    }
-    .detail-theme:hover:not(:disabled) {
-      background-color: var(--hover-bg);
       color: var(--text-main);
     }
-    .detail-theme.active {
+    .detail-commande-theme .param-label {
       color: var(--primary-blue);
-      border-bottom-color: var(--primary-blue);
-      background-color: var(--hover-bg);
+      font-size: 0.76rem;
     }
-    /* Theme dont l'animation n'a pas encore ete tournee : visible mais inerte,
-       plutot que masque — le visiteur voit que le choix existe. */
-    .detail-theme.indisponible { opacity: 0.4; cursor: not-allowed; }
+    .detail-commande-theme .param-label i { margin-right: 4px; }
 
     /* ===== DEUX BLOCS DE LA PAGE DETAILS (02/09/2026) =====
        L'animation a gauche, ce qu'on achete a droite. */
@@ -1870,7 +1885,10 @@
     .acces-infobulle {
       display: none;
       position: fixed;
-      z-index: 1200;
+      /* AU-DESSUS de la modale (z-index 4000) : sous elle, les icones « ? »
+         de l'etape de connexion du panier semblaient ne rien faire — la bulle
+         s'ouvrait bel et bien, mais derriere le voile de la modale. */
+      z-index: 4200;
       max-width: 340px;
       max-height: 70vh;
       overflow-y: auto;
@@ -2102,7 +2120,10 @@
         display: flex;
         flex-direction: column;
       }
-      #section-test .test-action .btn-add-big { margin-top: auto; }
+      /* Le bouton suit immediatement le texte (02/09/2026 : `margin-top: auto`
+         le collait en bas de colonne, a plusieurs centimetres de la phrase qui
+         l'annonce — on ne savait plus a quoi il se rapportait). */
+      #section-test .test-action .btn-add-big { margin-top: 4px; }
       #section-test .test-action .deploy-log { margin-top: 12px; }
 
       /* Onglet Packs : le catalogue prend TOUTE la largeur, sous les
@@ -2467,10 +2488,11 @@
             Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
-            <b style="color: var(--col-gold);">Onze thèmes visuels</b> au choix — d'Élégance Ardoise à Neo Future — que vous
-            sélectionnez pack par pack et prévisualisez avant l'achat. Et les <b>textes s'adaptent
-            automatiquement</b> : langue de votre instance, et pour ce qui dépend du lieu (météo, jours
-            fériés, calendriers, collectes), la langue et les données de <b>l'adresse rattachée au pack</b>.
+            Habillez chaque pack comme vous l'entendez : <b style="color: var(--col-gold);">onze thèmes visuels</b>,
+            de l'ardoise sobre au néon industriel, que vous voyez à l'œuvre avant d'acheter.
+            <b>Les textes, eux, se règlent tout seuls</b> — sur la langue de votre instance, et
+            sur celle du lieu que vous indiquez lorsque le pack en dépend : météo, jours fériés,
+            calendriers ou jours de collecte.
           </p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
@@ -3270,9 +3292,7 @@
     // Derniere categorie du catalogue, et derniere pastille du bandeau.
     maintenance: [
       { name: 'maintenance_instance',
-        desc: 'Suivi de santé de votre instance : mises à jour disponibles, '
-            + 'sauvegardes, redémarrages, espace disque et état des add-ons — '
-            + 'rassemblés sur une seule vue.' }
+        desc: 'Mises à jour, sauvegardes et espace disque, sur une vue.' }
     ]
   };
 
@@ -3402,8 +3422,20 @@
      multicolore, il n'existe pas de --col-automatisme. Elle retombe donc sur
      le bleu de l'interface plutôt que sur une variable CSS inexistante, qui
      laisserait la ligne sans couleur du tout. */
+  /* La categorie Service n'a pas UNE teinte mais SIX, distribuees a tour de
+     role sur ses packs : c'est le seul groupe assez fourni pour qu'une teinte
+     unique rende ses fiches indiscernables. Le rang vient de l'ordre de
+     `modulesData`, donc de l'ordre affiche — deux packs voisins n'ont jamais
+     la meme couleur. */
+  const PALETTE_SERVICE = ['var(--pal-1)', 'var(--pal-2)', 'var(--pal-3)',
+                           'var(--pal-4)', 'var(--pal-5)', 'var(--pal-6)'];
+
   function moduleColor(rawName) {
     const cat = moduleCategory(rawName);
+    if (cat === 'service') {
+      const rang = (modulesData.service || []).findIndex(m => m.name === rawName);
+      return PALETTE_SERVICE[(rang < 0 ? 0 : rang) % PALETTE_SERVICE.length];
+    }
     return (cat && cat !== 'automatisme') ? 'var(--col-' + cat + ')' : 'var(--primary-blue)';
   }
 
@@ -3429,35 +3461,43 @@
        `_generer_logos_config.py` — que `majApercu` sait distinguer d'un
        apercu de theme. */
     configuration_file_editor: {
+      resume: "L'éditeur de fichiers intégré. Tous nos packs en dépendent.",
       logo: 'templates/config/file-editor.gif',
       detail: `Installe et configure l'add-on officiel <b>File editor</b>, l'editeur de fichiers integre a Home Assistant. C'est par lui que passent tous nos autres packs pour ecrire <code>configuration.yaml</code> et deposer leurs fonds d'ecran : posez-le en premier sur une instance neuve. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale.</span>`
     },
     configuration_terminal_ssh: {
+      resume: "Un terminal complet dans la barre latérale.",
       logo: 'templates/config/terminal-ssh.gif',
       detail: `Installe et configure l'add-on officiel <b>Terminal &amp; SSH</b>. Vous obtenez un terminal complet directement dans la barre laterale de Home Assistant, sans rien installer sur votre ordinateur. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale. Aucune cle SSH n'est posee a votre place : l'acces distant reste ferme tant que vous n'avez pas depose la votre.</span>`
     },
     configuration_hacs: {
+      resume: "Ajoute le dépôt GitHub de votre choix à HACS, puis le tient à jour.",
       logo: 'templates/config/hacs.gif',
       detail: `Ajoute un depot <b>GitHub</b> de votre choix a <b>HACS</b>, le magasin communautaire, puis le telecharge &mdash; et le met a jour s'il y est deja. Indiquez l'adresse du depot et sa categorie ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> mise a jour de HACS lui-meme s'il est en retard, ajout du depot personnalise, telechargement, et redemarrage de Home Assistant uniquement si la categorie l'exige. <b>Prerequis :</b> HACS doit deja etre en service sur votre instance &mdash; sa mise en service passe par un appairage GitHub personnel, que nous ne pouvons pas faire a votre place.</span>`
     },
     configuration_duckdns: {
+      resume: "Une adresse fixe et un certificat https gratuit, joignable de l'extérieur.",
       logo: 'templates/config/duckdns.gif',
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
     },
 
     ouverture_volet: {
+      resume: "Volets et fenêtres : position, ouverture temporisée, contact.",
       detail: `Pilotage complet d'un volet roulant : sa représentation en direct, un bouton <b>favori</b> qui le place en un appui à la position que vous choisissez, et un <b>minuteur</b> qui l'ouvre au pourcentage voulu pour une durée choisie avant de remettre tout seul la position d'avant. La carte s'adapte à ce que votre fenêtre expose &mdash; température, luminosité, contact d'ouverture et détecteur de vibration sont facultatifs, et chacun ajoute ce qu'il sait dire.`
     },
     chauffage_thermostat: {
+      resume: "Consigne, dérogation temporisée, température de la pièce et historique.",
       detail: 'Pilotage complet d\'un thermostat : consigne, mode, et une <b>dérogation temporisée</b> qui force une température pour une durée choisie puis remet la consigne d\'avant toute seule. La carte s\'adapte à ce que votre installation expose — le capteur de température, l\'humidité et le contact de fenêtre sont facultatifs, et chacun ajoute ce qu\'il sait dire.',
     },
     OK_service_meteo: {
+      resume: "Prévisions horaires et journalières, vent, pression et humidité.",
       /* Pas de champ d'entité : le module impose Meteorologisk institutt
          (met.no) et l'installe au besoin — la seule source qui publie les
          cinq attributs du 3e onglet. Il n'y a donc plus rien à saisir. */
       detail: 'Tableau de bord météo complet et traduit selon la ville du client : prévisions horaires et journalières, couverture nuageuse, vent, pression, humidité et ultraviolet, avec horloge météo animée. <br><br><span class="inclus"><b>Inclus :</b> l\'intégration Meteorologisk institutt (met.no) installée si nécessaire, HACS, et les cartes personnalisées requises (clock-weather-card, swipe-card, stack-in-card, card-mod).</span>',
     },
     OK_service_temps: {
+      resume: "Horloge, cycle solaire et lunaire, et calendrier des grandes fêtes.",
       detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.</span>',
       field: {
         type: 'calendar',
@@ -3898,7 +3938,34 @@
     majDetails();
   }
 
+  /* `majDetails` reconstruit tout le corps de la page : les champs deja
+     remplis seraient donc vides apres chaque changement de theme. On releve
+     leurs valeurs avant, on les repose apres. Sans cela, choisir son theme
+     apres avoir saisi une piece et une entite effacait les deux — en
+     silence. */
+  function saisiesEnCours() {
+    const valeurs = {};
+    document.querySelectorAll('#detail-corps input[id], #detail-corps select[id]')
+      .forEach(e => { valeurs[e.id] = e.value; });
+    return valeurs;
+  }
+
+  function reposerSaisies(valeurs) {
+    Object.entries(valeurs).forEach(([id, v]) => {
+      const e = document.getElementById(id);
+      // Le selecteur de theme et celui du calendrier sont deja rendus a la
+      // bonne valeur : les ecraser avec l'ancienne annulerait le changement
+      // qu'on vient de faire.
+      if (e && id !== 'detail-theme' && v) {
+        if (e.tagName === 'SELECT') {
+          if ([...e.options].some(o => o.value === v)) e.value = v;
+        } else { e.value = v; }
+      }
+    });
+  }
+
   function majDetails() {
+    const saisies = saisiesEnCours();
     const cleModule = etatDetails.module;
     const titre = moduleTitle(cleModule);
     const conf = PACK_DETAILS[cleModule];
@@ -3943,28 +4010,17 @@
     const commandes = (aTheme || sel) ? `
       <div class="detail-commandes">
         ${aTheme ? `
-        <div class="detail-commande detail-commande-large">
-          <span class="param-label">Thème</span>
-          <!-- Onze pastilles plutot qu'une liste deroulante : le theme choisi
-               doit se VOIR, et il porte la meme surbrillance bleue que
-               l'onglet actif du bandeau (soulignement + fond survole). Une
-               liste deroulante ne montre le choix qu'une fois ouverte. -->
-          <div class="detail-themes" role="tablist" aria-label="Thème">
-            ${THEMES_SITE.map(t => {
-              const absent = dispo.length && !dispo.includes(t.value);
-              return `<button type="button" role="tab"
-                        class="detail-theme${t.value === cleTheme ? ' active' : ''}${absent ? ' indisponible' : ''}"
-                        aria-selected="${t.value === cleTheme}"
-                        ${absent ? 'disabled title="Aperçu à venir"' : ''}
-                        onclick="changerDetail('theme', '${t.value}')">${t.label}</button>`;
-            }).join('')}
-          </div>
-        </div>` : ''}
-        ${sel ? `
-        <div class="detail-commande">
-          <label class="param-label" for="detail-${sel.cle}">${sel.label}</label>
-          <select id="detail-${sel.cle}" onchange="changerDetail('${sel.cle}', this.value)">
-            ${sel.options.map(o => `<option value="${o.value}"${o.value === option.value ? ' selected' : ''}>${o.label}</option>`).join('')}
+        <!-- Retour a la LISTE DEROULANTE (03/09/2026), mais mise en evidence :
+             onze pastilles occupaient deux rangees et poussaient l'animation
+             sous la ligne de flottaison. La liste retrouve sa place, et c'est
+             son encadrement bleu — la meme teinte que l'onglet actif — qui
+             signale que c'est ici que tout se commande. -->
+        <div class="detail-commande detail-commande-theme">
+          <label class="param-label" for="detail-theme"><i class="fa-solid fa-palette"></i> Thème</label>
+          <select id="detail-theme" onchange="changerDetail('theme', this.value)">
+            ${THEMES_SITE.map(t => `<option value="${t.value}"${t.value === cleTheme ? ' selected' : ''}
+               ${dispo.length && !dispo.includes(t.value) ? ' disabled' : ''}>${t.label}${
+               dispo.length && !dispo.includes(t.value) ? ' — aperçu à venir' : ''}</option>`).join('')}
           </select>
         </div>` : ''}
       </div>` : '';
@@ -3988,10 +4044,13 @@
                    <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
             <p class="detail-intro">${conf.intro || ''}</p>
             ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
+            <!-- « Inclus » suit le descriptif (03/09/2026) : c'est la suite de
+                 la meme phrase — ce que fait le pack, puis ce qu'il apporte.
+                 A droite, il separait les champs du bouton d'ajout. -->
+            ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
           </div>
           <div class="detail-colonne-droite">
             ${champsDetailHtml(cleModule)}
-            ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
             <button class="btn-add-big detail-ajouter"
                     onclick="addModuleToCart('${cleModule}', this)">
               <i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(cleModule))})
@@ -4039,6 +4098,7 @@
           <div class="detail-swipes">${vignettes}</div>
         </div>
       </div>`;
+    reposerSaisies(saisies);
   }
 
   /* Les saisies d'un pack, telles qu'elles apparaissent DANS la page de
@@ -4055,9 +4115,18 @@
     const media = MODULE_MEDIA[modName];
     let principal = '';
     if (media && media.field && media.field.type === 'calendar') {
+      // Le pack Temps portait DEUX selecteurs de calendrier : un en tete de
+      // page et celui-ci. Le premier a ete retire (03/09/2026) ; c'est donc
+      // celui-ci qui commande la 3e capture, quand la fiche declare un
+      // selecteur aux memes valeurs.
+      const conf = PACK_DETAILS[modName];
+      const pilote = conf && conf.selecteur
+        && media.field.options.some(o => conf.selecteur.options.some(x => x.value === o.value))
+        ? ` onchange="changerDetail('${conf.selecteur.cle}', this.value)"` : '';
+      const choisi = conf && conf.selecteur ? etatDetails[conf.selecteur.cle] : null;
       principal = `<label class="param-label" for="input-${modName}">${media.field.label || 'Calendrier'}</label>
-        <select id="input-${modName}">${media.field.options.map((o, i) =>
-          `<option value="${o.value}"${i === 0 ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`;
+        <select id="input-${modName}"${pilote}>${media.field.options.map((o, i) =>
+          `<option value="${o.value}"${o.value === choisi || (!choisi && i === 0) ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`;
     } else if (media && media.field) {
       principal = `<input type="text" class="${media.field.required === false ? 'field-optional' : 'field-required'}"
                           placeholder="${media.field.placeholder}" id="input-${modName}">`;
@@ -5967,10 +6036,7 @@
       const el = document.getElementById(id);
       const valeur = el ? el.value.trim() : '';
       if (c.required && !valeur) {
-        el.classList.remove('input-error');
-        void el.offsetWidth;          // relance l'animation si deja jouee
-        el.classList.add('input-error');
-        el.focus();
+        signalerChampManquant(el, `Veuillez renseigner « ${c.label} » avant d'ajouter au panier.`);
         return null;
       }
       params[c.param] = valeur;
@@ -6020,7 +6086,10 @@
 
   /* Les deux categories sans teinte propre : leur onglet porte deja la roue
      multicolore, les en-tetes de leurs fiches la reprennent. */
-  const CATEGORIES_MULTICOLORES = new Set(['service', 'automatisme']);
+  /* Seule « Automatisme » garde l'en-tete en degrade : elle n'a pas de teinte
+     propre et pas encore de pack. « Service », elle, distribue desormais les
+     six couleurs de PALETTE_SERVICE, une par pack (03/09/2026). */
+  const CATEGORIES_MULTICOLORES = new Set(['automatisme']);
 
   function filterCategory(categoryKey, tabEl) {
     categorieCourante = categoryKey;
@@ -6049,7 +6118,12 @@
       // a pas encore montre un cadre vide, à la bonne taille. Le contenu du
       // cadre est posé par `majApercu` APRÈS l'insertion dans la page — il
       // dépend du thème choisi dans le sélecteur, qui n'existe pas encore ici.
+      // La fiche affiche le RESUME quand il existe : ecrit court, il tient en
+      // trois lignes pleines. Le `detail` long, lui, reste pour la page de
+      // details. Couper le long a l'affichage donnait une phrase arretee en
+      // plein mot, et le visiteur ne savait pas ce qu'il manquait.
       const detail = detailSepare(media ? media.detail : mod.desc);
+      const resume = (media && media.resume) || detail.descriptif;
 
       /* CINQ rangees, toujours les memes et toujours dans cet ordre : en-tete,
          media, selecteur de theme, description, action. Le bloc « Inclus » et
@@ -6061,7 +6135,7 @@
          retrouverait a la hauteur du champ d'entite de son voisin. */
       item.className = 'module-item module-item-detailed';
       item.innerHTML = `
-        <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
+        <div class="pack-entete${categoryKey === 'automatisme' ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
         </div>
         <div class="pack-media module-video" id="apercu-${mod.name}">
@@ -6069,7 +6143,7 @@
         </div>
         <div class="pack-selecteur">${champsParamsHtml(mod.name, 'theme')}</div>
         <div class="pack-desc">
-          ${detail.descriptif ? `<p class="module-desc-text">${detail.descriptif}</p>` : ''}
+          ${resume ? `<p class="module-desc-text">${resume}</p>` : ''}
           <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button>
         </div>
         <div class="pack-action">
@@ -6099,11 +6173,67 @@
     return requis.some(id => !document.getElementById(id));
   }
 
+  /* Le premier champ obligatoire encore vide, sur la page ouverte. */
+  function premierChampManquant(modName) {
+    const ids = (MODULE_PARAMS[modName] || [])
+      .filter(c => c.required !== false && !estChampTheme(c) && c.type !== 'checkboxes')
+      .map(c => `param-${modName}-${c.param}`);
+    const media = MODULE_MEDIA[modName];
+    if ((media && media.field && media.field.required !== false && media.field.type !== 'calendar')
+        || (!media && !MODULE_PARAMS[modName])) {
+      ids.push(`input-${modName}`);
+    }
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (el && !String(el.value || '').trim()) return el;
+    }
+    return null;
+  }
+
+  /* Signale UN champ : curseur dedans, cadre rouge, et une bulle qui dit quoi
+     faire. `reportValidity()` du navigateur ne convient pas ici — le champ
+     n'est pas dans un <form>, et son style n'est pas le notre. */
+  function signalerChampManquant(el, message) {
+    if (!el) return;
+    el.classList.remove('input-error');
+    void el.offsetWidth;                 // relance l'animation si deja jouee
+    el.classList.add('input-error');
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.focus({ preventScroll: true });
+
+    document.querySelectorAll('.bulle-champ').forEach(b => b.remove());
+    const bulle = document.createElement('div');
+    bulle.className = 'bulle-champ';
+    bulle.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${
+      message || "Veuillez renseigner cette information avant d'ajouter au panier."}`;
+    document.body.appendChild(bulle);
+    const r = el.getBoundingClientRect();
+    // Au-dessus du champ quand la place existe, en dessous sinon : la bulle
+    // ne doit jamais sortir de la fenetre ni masquer le champ qu'elle designe.
+    // EN DESSOUS de preference : au-dessus, la bulle recouvre le libelle du
+    // champ qu'elle designe — on montrait un cadre rouge en cachant le nom de
+    // ce qu'il fallait remplir.
+    const h = bulle.getBoundingClientRect().height;
+    bulle.style.top = (r.bottom + 8 + h <= window.innerHeight - 8
+                       ? r.bottom + 8
+                       : Math.max(8, r.top - h - 8)) + 'px';
+    bulle.style.left = Math.max(8, Math.min(r.left,
+      window.innerWidth - bulle.getBoundingClientRect().width - 8)) + 'px';
+
+    const retirer = () => bulle.remove();
+    el.addEventListener('input', retirer, { once: true });
+    setTimeout(retirer, 6000);
+  }
+
   function addModuleToCart(modName, btnEl) {
-    // Les champs sont sur la page de details : on y conduit le visiteur plutot
-    // que d'echouer sur un champ qu'il ne voit pas.
+    // Les champs vivent sur la page de details : on y conduit le visiteur,
+    // curseur dans la case manquante et bulle a l'appui, plutot que d'echouer
+    // sur un champ qu'il ne voit pas.
     if (saisiesAbsentes(modName)) {
       ouvrirDetails(modName);
+      // Apres le rendu de la page : le champ n'existe pas encore a cet
+      // instant precis.
+      setTimeout(() => signalerChampManquant(premierChampManquant(modName)), 60);
       return;
     }
     // Modules a plusieurs champs (ex: Eclairage) : on les collecte, on
@@ -6145,10 +6275,7 @@
       const isOptional = media && media.field.required === false;
 
       if (!entityVal && !isOptional) {
-        fieldEl.classList.remove('input-error');
-        void fieldEl.offsetWidth; // relance l'animation si déjà jouée
-        fieldEl.classList.add('input-error');
-        fieldEl.focus();
+        signalerChampManquant(fieldEl, "Veuillez renseigner l'entité concernée avant d'ajouter au panier.");
         return;
       }
       if (!entityVal) entityVal = 'Non renseigné (détection automatique)';
