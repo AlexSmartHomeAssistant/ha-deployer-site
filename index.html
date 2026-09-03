@@ -3649,6 +3649,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    service_capteur: {
+      resume: "Confort, point de rosée et tendance barométrique en direct.",
+      detail: `Tout ce que votre <b>capteur d'ambiance</b> sait dire, lu et interprété. Le premier onglet porte deux <b>jauges circulaires</b> : l'anneau extérieur suit la valeur, l'anneau intérieur marque votre <b>plage idéale</b> et s'allume quand vous y êtes. Dessous, un <b>diagnostic de confort</b> calculé en croisant température et humidité &mdash; « Confortable », « Air trop sec », « Frais et humide &mdash; condensation »... &mdash; puis la pression avec sa <b>flèche de tendance</b>, et la comparaison <b>intérieur / extérieur</b> qui révèle l'inertie thermique du logement.<br><br>Le deuxième onglet va plus loin : le <b>point de rosée</b>, qui dit la sensation réelle d'humidité là où le pourcentage seul ne dit rien (60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout pareil), et la <b>dérivée de la pression sur trois heures</b>, qui anticipe le passage d'un front. Le troisième trace l'historique de chaque grandeur, par jour, semaine, mois ou année.<br><br>Un seul capteur à indiquer : celui de la <b>température</b>. Les autres grandeurs sont retrouvées <b>toutes seules</b> sur le même appareil, et la carte s'adapte à ce que votre matériel sait mesurer &mdash; ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`
+    },
     appareil_machine_laver: {
       resume: "Phase du cycle en direct, temps restant, coût et consommation.",
       detail: `Suivi complet d'un lave-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre en direct ce qui se passe dans le tambour : le voyant clignote et le hublot tourne au rythme de la phase en cours (<b>lavage</b>, <b>chauffage</b>, <b>essorage</b>), et le <b>temps restant</b> est estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers lavages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Sans historique exploitable, il pose des valeurs génériques et vous le dit &mdash; un redéploiement plus tard les affinera.`
@@ -3991,6 +3995,18 @@
           texte: `La <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage. Un compteur suit les cycles depuis le dernier <b>nettoyage du tambour</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq derniers lavages</b> sont listés avec leur heure et leur durée. Et si vous fournissez l'interrupteur de la prise, un bouton la coupe d'un appui bref, la redémarre d'un appui long.` },
         { titre: '3 — Historique', icone: 'fa-chart-column',
           texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
+      ]
+    },
+    service_capteur: {
+      intro: `Trois onglets : synthèse, statistiques, historique. Tout est lu sur le <b>capteur d'ambiance</b> de la pièce &mdash; vous n'indiquez que celui de la température, le pack retrouve les autres grandeurs sur le même appareil. La carte s'adapte à ce que votre matériel mesure : ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Synthèse', icone: 'fa-gauge',
+          texte: `Deux <b>jauges circulaires</b> : l'anneau extérieur suit la valeur, l'anneau intérieur marque votre <b>plage idéale</b> et s'allume quand vous y entrez. Dessous, un <b>diagnostic de confort</b> croisant température et humidité en neuf cas, la pression avec sa <b>flèche de tendance</b>, et la comparaison <b>intérieur / exterieur</b> qui montre l'inertie thermique du logement. Quand les trois seuils d'alerte sont franchis en même temps, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Statistiques', icone: 'fa-droplet',
+          texte: `Le <b>point de rosée</b>, calculé par la formule de Magnus-Tetens : c'est lui, et non le pourcentage d'humidité, qui dit la sensation réelle &mdash; 60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout de la même façon. Et la <b>tendance barométrique sur trois heures</b>, la fenêtre des services météo, qui anticipe le passage d'un front. Les relevés extérieurs de votre station météo complètent la lecture.` },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: `L'évolution de chaque grandeur sur le jour, la semaine, le mois ou l'année. Le <b>sélecteur du bas</b> choisit la grandeur tracée : son icône s'anime et se colore quand elle est active. Seules les grandeurs que votre capteur mesure vraiment y figurent.` }
       ]
     },
     OK_service_meteo: {
@@ -4490,6 +4506,33 @@
         placeholder: 'ex : 30 — vide : 30 cycles' },
       champThemeSite('LAVAGE_THEME', 'urban-factory')
     ],
+    /* Pack Capteur (03/09/2026). UN SEUL champ obligatoire : le capteur de
+       TEMPERATURE de l'appareil d'ambiance. Les trois autres grandeurs et
+       l'entite meteo sont facultatives, et la variante s'en deduit :
+         temperature seule -> jauge et graphe de temperature
+         + humidite        -> seconde jauge, diagnostic de confort, point de rosee
+         + pression        -> tendance barometrique sur trois heures
+         + luminosite      -> quatrieme metrique du 3e onglet
+         + meteo           -> comparatif interieur / exterieur
+       En pratique le client n'a pas a saisir les trois grandeurs voisines : un
+       capteur d'ambiance du commerce les expose sur le MEME appareil, et le
+       pack les y retrouve par leur `device_class`. Les champs ne servent qu'a
+       designer l'entite quand la deduction se trompe. */
+    service_capteur: [
+      { param: 'CAPTEUR_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Salon' },
+      { param: 'CAPTEUR_TEMPERATURE', label: 'Capteur de température', type: 'text', required: true,
+        placeholder: 'ex : sensor.salon_capteur_temperature' },
+      { param: 'CAPTEUR_HUMIDITE', label: 'Hygromètre', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_humidity — vide : déduit de l’appareil' },
+      { param: 'CAPTEUR_PRESSION', label: 'Baromètre', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_pressure — vide : déduit de l’appareil' },
+      { param: 'CAPTEUR_LUMINOSITE', label: 'Capteur de luminosité', type: 'text', required: false,
+        placeholder: 'ex : sensor.salon_capteur_illuminance — vide : déduit de l’appareil' },
+      { param: 'CAPTEUR_METEO', label: 'Météo extérieure de référence', type: 'text', required: false,
+        placeholder: 'ex : weather.forecast_maison — vide : met.no de votre instance' },
+      champThemeSite('CAPTEUR_THEME', 'urban-factory')
+    ],
     OK_service_meteo: [champThemeSite('METEO_THEME', 'terre-de-carmin')],
     OK_service_temps: [champThemeSite('TEMPS_THEME', 'neo-future')],
     lumiere_lumiere: [
@@ -4648,6 +4691,15 @@
       + 'onze helpers du suivi, ainsi que HACS et les cartes personnalisées '
       + 'requises (button-card, mushroom, swipe-card, stack-in-card, '
       + 'apexcharts-card, card-mod).',
+    service_capteur:
+      'la vue et ses trois onglets, le capteur d’alerte qui porte les trois '
+      + 'seuils, le diagnostic de confort (matrice croisée température / '
+      + 'humidité), le point de rosée, la tendance barométrique sur trois heures '
+      + 'avec son relevé horaire (un script et une automatisation), et les '
+      + 'helpers de plages idéales et de seuils, tous ajustables sans '
+      + 'redéploiement, ainsi que HACS et les cartes personnalisées requises '
+      + '(button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
+      + 'card-mod).',
     maintenance_instance:
       'la vue de suivi, ses capteurs et ses helpers, ainsi que HACS et les cartes '
       + 'personnalisées requises. Aucune intégration tierce : le pack ne lit que '
@@ -4838,6 +4890,118 @@
           ]
         },
         "gif": "templates/apercus/bal/urban-factory.gif"
+      }
+    },
+    "capteur": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/capteur/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/capteur/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/capteur/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/capteur/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/capteur/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/capteur/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/capteur/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/capteur/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/mars-rouge-defaut-1.jpg",
+            "templates/apercus/capteur/mars-rouge-defaut-2.jpg",
+            "templates/apercus/capteur/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/neo-future-defaut-1.jpg",
+            "templates/apercus/capteur/neo-future-defaut-2.jpg",
+            "templates/apercus/capteur/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/capteur/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/capteur/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/capteur/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/capteur/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/capteur/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/capteur/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/capteur/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/capteur/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/capteur/urban-factory-defaut-1.jpg",
+            "templates/apercus/capteur/urban-factory-defaut-2.jpg",
+            "templates/apercus/capteur/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/capteur/urban-factory.gif"
       }
     },
     "fuite": {
@@ -6312,7 +6476,8 @@
     service_boite_aux_lettres: 'bal',
     chauffage_thermostat: 'thermostat',
     ouverture_volet: 'volet',
-    appareil_machine_laver: 'machine'
+    appareil_machine_laver: 'machine',
+    service_capteur: 'capteur'
   };
 
   function themeSite(cle) {
@@ -6787,7 +6952,7 @@
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
-    'appareil_machine_laver'
+    'appareil_machine_laver', 'service_capteur'
   ]);
 
   const PRIX_PACK = 9;
@@ -7298,6 +7463,11 @@
     OK_service_temps: 'temps',
     service_gestion_dechets: 'poubelles',
     service_boite_aux_lettres: 'boite-aux-lettres',
+    // Pack Capteur (03/09/2026), ecrit sur le gabarit du pack Lumiere pour
+    // l'agencement et sur celui du pack Meteo pour l'architecture de famille
+    // « Service » : jauges circulaires, diagnostic de confort, point de rosee
+    // et tendance barometrique.
+    service_capteur: 'capteur',
     service_person: 'personne',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Machine a Laver (03/09/2026), ecrit sur le gabarit du pack
