@@ -1163,6 +1163,18 @@
       color: transparent;
     }
 
+    /* Le pictogramme, lui, ne suit PAS le degrade : etroit, il ne couvre que
+       la toute premiere bande (blanche en sombre, gris fonce en clair) et
+       ressort gris/noir — jamais colore, contrairement aux icones des autres
+       categories, toutes peintes dans une teinte vive. On lui donne donc sa
+       propre couleur pleine (celle deja assignee au pack via `--cat`), le
+       degrade restant reserve au texte qui le suit. */
+    .multicolore-texte i,
+    .pack-entete.multicolore i {
+      color: var(--cat, var(--primary-blue));
+      -webkit-text-fill-color: var(--cat, var(--primary-blue));
+    }
+
     /* 3 — Le selecteur de theme, seul sur sa rangee.
        Surtout PAS de `:empty { display: none }` : en `subgrid`, un enfant
        masque ne consomme pas sa rangee, et TOUS les suivants remontent d'un
@@ -1186,17 +1198,21 @@
        lignes tombe alors a une seule. */
     .pack-desc { text-align: left; }
     .pack-desc .lien-details { margin-top: 4px; }
-    /* TROIS lignes pleines (03/09/2026). Pas de points de suspension : les
-       descriptifs ont ete RACCOURCIS pour tenir, plutot que coupes a
-       l'affichage — une phrase tronquee en plein mot se lit comme un defaut,
-       et le visiteur ne sait pas ce qu'il manque. La borne reste, en dernier
-       recours, pour un descriptif qui deborderait malgre tout. */
+    /* DEUX lignes pleines, en corps reduit (03/09/2026, revu le meme jour) :
+       les fiches serrees sur cinq colonnes n'avaient plus la place pour trois
+       lignes a 0.82rem sans deborder de leur rangee « description » commune.
+       Pas de points de suspension : les descriptifs ont ete RACCOURCIS pour
+       tenir, plutot que coupes a l'affichage — une phrase tronquee en plein
+       mot se lit comme un defaut, et le visiteur ne sait pas ce qu'il manque.
+       La borne reste, en dernier recours, pour un descriptif qui deborderait
+       malgre tout. */
     .pack-desc .module-desc-text {
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-align: left;
+      font-size: 0.76rem;
     }
 
     /* 6 — Saisies. `gap` propre : les champs d'un pack qui en reclame trois
@@ -1332,8 +1348,14 @@
     }
     /* Seule difference avec celui du haut, et elle est de POSITION, pas de
        style : sa marge passe au-dessus. Le reste — fond transparent, bordure,
-       teinte, alignement a gauche — vient de la meme classe. */
-    .detail-retour-bas { margin-top: 18px; margin-bottom: 0; }
+       teinte — vient de la meme classe `.detail-retour`.
+       L'alignement a gauche, lui, NE VENAIT PAS tout seul (bug corrige le
+       03/09/2026) : `.container` est un flex en colonne dont les enfants
+       s'etirent par defaut (`align-items: stretch`), et le bouton du bas, en
+       enfant direct, prenait donc toute la largeur du conteneur — 634px
+       mesures contre 159px pour celui du haut, qui echappe a la regle en
+       etant positionne en absolu dans `.detail-entete`. */
+    .detail-retour-bas { margin-top: 18px; margin-bottom: 0; align-self: flex-start; }
 
     .detail-intro {
       font-size: 0.85rem;
@@ -1403,15 +1425,20 @@
     }
     .detail-commande-theme .param-label i { margin-right: 4px; }
 
-    /* ===== DEUX BLOCS DE LA PAGE DETAILS (02/09/2026) =====
-       L'animation a gauche, ce qu'on achete a droite. */
-    .detail-deux-blocs {
+    /* ===== TROIS BLOCS DE LA PAGE DETAILS (03/09/2026, remplace les deux
+       blocs du 02/09/2026) =====
+       Zone 1 : le GIF seul. Zone 2 : le descriptif detaille et « Inclus ».
+       Zone 3 : les entites (obligatoires/optionnelles), les eventuels autres
+       selecteurs, et le bouton « Ajouter ». Le selecteur de THEME, lui, reste
+       au-dessus des trois zones (`.detail-commandes`) : il commande l'apercu
+       des trois zones a la fois, il ne peut pas appartenir a une seule. */
+    .detail-trois-blocs {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
       gap: 18px;
       align-items: start;
     }
-    .detail-colonne-gauche, .detail-colonne-droite {
+    .detail-colonne-media, .detail-colonne-info, .detail-colonne-action {
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -1439,10 +1466,17 @@
     }
     .detail-ajouter { margin-top: auto; }
 
-    /* Sur telephone les deux blocs s'empilent : l'animation d'abord, ce qu'on
-       achete ensuite — c'est l'ordre de lecture. */
+    /* Sous 980px les trois colonnes serrent trop le descriptif et les champs
+       de saisie : la zone media garde sa largeur propre (elle est bornee a
+       400px par `.detail-gif` de toute facon) pendant que l'info et l'action
+       se partagent la ligne suivante. Sur telephone (780px), tout s'empile —
+       media, puis descriptif, puis saisies — dans l'ordre de lecture. */
+    @media (max-width: 980px) {
+      .detail-trois-blocs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .detail-colonne-media { grid-column: 1 / -1; }
+    }
     @media (max-width: 780px) {
-      .detail-deux-blocs { grid-template-columns: 1fr; }
+      .detail-trois-blocs { grid-template-columns: 1fr; }
     }
     .detail-commandes select {
       width: 100%;
@@ -1800,6 +1834,7 @@
        à sa teinte sans relire les noms. Le vert de validation reste réservé
        au prix et aux boutons d'action, qui eux engagent l'achat. */
     .cart-modal-item {
+      position: relative;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -1813,6 +1848,24 @@
       font-size: 0.85rem;
     }
 
+    /* Categorie « Service » (et « Automatisme ») : le filet de gauche reprend
+       la roue multicolore plutot que la teinte unique tiree au hasard dans
+       `PALETTE_SERVICE` (`--cat`) — les autres categories, elles, gardent une
+       couleur fixe qui leur est propre, ce filet-la reste donc solide.
+       `border-left` ne sait pas peindre un degrade : on l'efface et on le
+       remplace par une bande peinte en arriere-plan. */
+    .cart-modal-item.multicolore {
+      border-left-color: transparent;
+    }
+    .cart-modal-item.multicolore::before {
+      content: '';
+      position: absolute;
+      left: -1px; top: -1px; bottom: -1px;
+      width: 4px;
+      background-image: var(--degrade-multicolore);
+      border-radius: 8px 0 0 8px;
+    }
+
     .cart-modal-item .cart-item-name {
       display: flex;
       align-items: baseline;
@@ -1823,8 +1876,13 @@
     .cart-modal-item .cart-item-name i { flex-shrink: 0; }
     /* `.cart-modal-item .cart-item-name` pose `color: var(--cat)` et l'emporte
        sur `.multicolore-texte` par sa specificite : sans ce rappel, le nom
-       resterait uni et le degrade ne se verrait pas. */
-    .cart-modal-item .cart-item-name.multicolore-texte { color: transparent; }
+       resterait uni et le degrade ne se verrait pas. Meme rappel pour
+       `.entity` et `.cart-param b`, qui posent chacun leur propre `color:
+       var(--cat)` — les trois restaient donc en couleur pleine malgre la
+       classe `multicolore-texte` posee dessus par `cartListStepHtml`. */
+    .cart-modal-item .cart-item-name.multicolore-texte,
+    .cart-modal-item .entity.multicolore-texte,
+    .cart-modal-item .cart-param b.multicolore-texte { color: transparent; }
 
     .cart-modal-item .entity {
       color: var(--cat, var(--text-muted));
@@ -2742,16 +2800,14 @@
            aussi comme ordre de lecture quand la grille se replie sur
            telephone. -->
       <div class="card">
-        <div class="module-item module-item-detailed">
-          <strong>Pack Découverte</strong>
-          <!-- Animation ENREGISTREE dans le navigateur, sur la vue reellement
-               deployee (`_generer_apercus.py`) : elle montre les icones
-               animees et les transitions de balayage des sept volets. Elle
-               remplace le diaporama de captures fixes du 31/08/2026, qui ne
-               montrait ni les unes ni les autres. -->
-          <div class="module-video" style="background: #000;">
-            <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
-          </div>
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-film"></i> Pack Découverte</h3>
+        <!-- Animation ENREGISTREE dans le navigateur, sur la vue reellement
+             deployee (`_generer_apercus.py`) : elle montre les icones
+             animees et les transitions de balayage des sept volets. Elle
+             remplace le diaporama de captures fixes du 31/08/2026, qui ne
+             montrait ni les unes ni les autres. -->
+        <div class="module-video" style="background: #000;">
+          <img src="templates/apercus/test-gratuit/sombre.gif" alt="Démonstration animée du Pack Découverte" loading="lazy">
         </div>
       </div>
 
@@ -4097,6 +4153,11 @@
     // l'autre, se lisent comme deux packs.
     titreEl.classList.toggle('multicolore-texte', titreMulticolore(cleModule));
     titreEl.style.color = titreMulticolore(cleModule) ? '' : moduleColor(cleModule);
+    // `--cat` porte la couleur pleine du pictogramme quand le titre est
+    // multicolore (voir `.multicolore-texte i`) : sans elle l'icone du titre
+    // de la page de details resterait grise, comme celle de la fiche avant
+    // correction.
+    titreEl.style.setProperty('--cat', moduleColor(cleModule));
     document.getElementById('detail-titre').innerHTML =
       `<i class="fa-solid ${moduleIcon(cleModule)}"></i> ${titre}`;
     const corps = document.getElementById('detail-corps');
@@ -4153,29 +4214,33 @@
 
     const cadre = aTheme ? cadreDuTheme(cleTheme) : '#14181d';
 
-    /* DEUX COLONNES (02/09/2026) : l'animation a gauche, ce qu'on achete a
-       droite — les entites a renseigner, ce que le pack installe, et le
-       bouton d'ajout. Les champs et le bloc « Inclus » ont quitte la fiche du
-       catalogue pour venir ici : la fiche annonce, la page de details engage. */
+    /* TROIS ZONES COTE A COTE (03/09/2026, remplace les deux colonnes du
+       02/09/2026) : le GIF seul, le descriptif detaille suivi de « Inclus »,
+       puis les entites a renseigner et le bouton d'ajout. Trois blocs bien
+       distincts se reperent d'un coup d'oeil, la ou deux blocs melaient
+       encore descriptif et « Inclus » a l'animation. Le selecteur de theme
+       (`commandes`) reste au-dessus, inchange : il commande l'apercu des
+       trois zones a la fois. */
     const presentation = `
       <div class="detail-sous-bloc">
         ${commandes}
-        <div class="detail-deux-blocs">
-          <div class="detail-colonne-gauche">
+        <div class="detail-trois-blocs">
+          <div class="detail-colonne-media">
             ${animation
               ? `<div class="module-video detail-gif" style="background: ${cadre};">
                    <img src="${animation}" alt="Aperçu ${titre}${
                      aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}" loading="lazy"></div>`
               : `<div class="detail-attente">
                    <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
+          </div>
+          <div class="detail-colonne-info">
             <p class="detail-intro">${conf.intro || ''}</p>
             ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
-            <!-- « Inclus » suit le descriptif (03/09/2026) : c'est la suite de
-                 la meme phrase — ce que fait le pack, puis ce qu'il apporte.
-                 A droite, il separait les champs du bouton d'ajout. -->
+            <!-- « Inclus » suit le descriptif : c'est la suite de la meme
+                 phrase — ce que fait le pack, puis ce qu'il apporte. -->
             ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
           </div>
-          <div class="detail-colonne-droite">
+          <div class="detail-colonne-action">
             ${champsDetailHtml(cleModule)}
             <button class="btn-add-big detail-ajouter"
                     onclick="addModuleToCart('${cleModule}', this)">
@@ -6191,6 +6256,9 @@
   function detailParamsHtml(item) {
     const champs = MODULE_PARAMS[item.key];
     if (!champs || !item.params) return '';
+    // Categorie multicolore (Service, Automatisme) : la valeur suit le meme
+    // degrade que le nom de la ligne, plutot que la teinte unique de `--cat`.
+    const multi = titreMulticolore(item.key) ? ' multicolore-texte' : '';
     return champs.map(c => {
       const valeur = item.params[c.param];
       if (!valeur) return '';
@@ -6202,7 +6270,7 @@
           .map(v => (c.options.find(o => o.value === v) || {}).label || v)
           .join(' + ');
       }
-      return `<span class="cart-param">${c.label} : <b>${lisible}</b></span>`;
+      return `<span class="cart-param">${c.label} : <b class="${multi.trim()}">${lisible}</b></span>`;
     }).join('');
   }
 
@@ -6276,10 +6344,14 @@
         <div class="pack-selecteur">${champsParamsHtml(mod.name, 'theme')}</div>
         <div class="pack-desc">
           ${resume ? `<p class="module-desc-text">${resume}</p>` : ''}
-          <button type="button" class="lien-details" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-circle-info"></i> Détails</button>
         </div>
         <div class="pack-action">
-          <button class="btn-add-big" onclick="addModuleToCart('${mod.name}', this)"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
+          <!-- L'icone « Détails » a disparu (03/09/2026) : « Ajouter » ouvre
+               desormais directement la page de details, ou se fait le
+               veritable ajout au panier (voir .detail-ajouter dans
+               majDetails / addModuleToCart). Un clic ici n'ajoute jamais
+               rien seul. -->
+          <button class="btn-add-big" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
         </div>
       `;
 
@@ -6418,6 +6490,7 @@
       flyToCart(btnEl.closest('.module-item'));
       updateCartUI();
       reinitialiserParams(modName);
+      retourAuxPacksApresAjout();
       return;
     }
 
@@ -6472,6 +6545,18 @@
       fieldEl.value = '';
       fieldEl.classList.remove('input-error');
     }
+    retourAuxPacksApresAjout();
+  }
+
+  /* Depuis le 03/09/2026, « Ajouter » de la fiche du catalogue n'ajoute plus
+     rien lui-meme : il ouvre la page de details (`ouvrirDetails`), seul
+     endroit ou `addModuleToCart` est encore appelee. Un ajout reussi ramene
+     donc systematiquement a l'onglet Packs — sans rappeler `filterCategory`,
+     qui laisserait la liste telle qu'elle etait (categorie et defilement
+     compris) : c'est `categorieCourante` qui la retient depuis le premier
+     filtrage, `afficherOnglet` ne la touche pas. */
+  function retourAuxPacksApresAjout() {
+    switchTab('module');
   }
 
   function flyToCart(sourceEl) {
@@ -6575,11 +6660,13 @@
     if (cart.length === 0) {
       modulesHtml = `<div class="cart-modal-empty"><i class="fa-solid fa-box-open" style="font-size:1.6rem; display:block; margin-bottom:8px;"></i>Aucun pack sélectionné pour le moment.<br>Ajoutez un pack depuis l'onglet Packs.</div>`;
     } else {
-      modulesHtml = cart.map((item, i) => `
-        <div class="cart-modal-item" style="--cat: ${moduleColor(item.key)};">
+      modulesHtml = cart.map((item, i) => {
+        const multi = titreMulticolore(item.key);
+        return `
+        <div class="cart-modal-item${multi ? ' multicolore' : ''}" style="--cat: ${moduleColor(item.key)};">
           <div>
-            <strong class="cart-item-name${titreMulticolore(item.key) ? ' multicolore-texte' : ''}"><i class="fa-solid ${moduleIcon(item.key)}"></i> ${item.name}</strong>
-            <span class="entity">${item.entity}</span>
+            <strong class="cart-item-name${multi ? ' multicolore-texte' : ''}"><i class="fa-solid ${moduleIcon(item.key)}"></i> ${item.name}</strong>
+            <span class="entity${multi ? ' multicolore-texte' : ''}">${item.entity}</span>
             ${detailParamsHtml(item)}
           </div>
           <div class="cart-modal-item-actions">
@@ -6587,7 +6674,8 @@
             <button class="cart-remove-btn" onclick="removeFromCart(${i})" title="Retirer du panier"><i class="fa-solid fa-trash"></i></button>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     const disabled = cart.length === 0 ? 'disabled style="opacity:.5;cursor:not-allowed;"' : '';
