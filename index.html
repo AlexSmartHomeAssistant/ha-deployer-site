@@ -2271,14 +2271,31 @@
       }
       #section-accueil .hero-pitch .hero-sub { margin-top: 8px; font-size: 0.84rem; }
 
-      /* Onglet Test Gratuit : trois colonnes cote a cote (01/09/2026).
-         L'apercu a gauche, la connexion au milieu, l'action a droite.
-         `minmax(0, 1fr)` plutot que `1fr` : sans lui, le journal de
-         deploiement (texte non coupable, en police a chasse fixe) elargit sa
-         colonne au detriment des deux autres des la premiere ligne longue. */
+      /* Onglet Test Gratuit : grille CARREE 2x2 (03/09/2026, remplace la
+         rangee unique de quatre colonnes du 01/09/2026 — demande explicite du
+         client). L'apercu en haut a gauche, ce qu'on recoit en haut a droite,
+         la connexion en bas a gauche, l'action en bas a droite : deux rangees
+         de deux cartes, dans l'ordre du DOM (auto-placement d'une grille a
+         deux colonnes). `minmax(0, 1fr)` plutot que `1fr` : sans lui, le
+         journal de deploiement (texte non coupable, en police a chasse fixe)
+         elargirait sa colonne au detriment de l'autre. */
       #section-test .container {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         align-content: start;
+      }
+      /* Le carre de l'apercu suit la largeur de SA colonne (`aspect-ratio:
+         1/1` de `.module-video`) — deux fois plus large qu'en quatre
+         colonnes, donc deux fois plus haut. Plafonne, sans quoi la premiere
+         rangee a elle seule depasse la hauteur de l'ecran et fait apparaitre
+         l'ascenseur que la disposition en carre doit justement eviter.
+         Un plafond fixe en px suffisait sur un 1366x768 (mesure a 250px) mais
+         debordait encore de 27px sur un 1280x720 : c'est la hauteur de
+         l'ECRAN qui doit borner le carre, pas une largeur de colonne fixee
+         au hasard. `min(250px, 30vh)` cede donc la main a `30vh` des que la
+         fenetre est trop basse pour les 250px. */
+      #section-test .module-video {
+        max-width: min(250px, 30vh);
+        margin: 0 auto;
       }
       /* La colonne d'action est courte : son bouton se cale en bas de carte
          plutot que de flotter au milieu d'un grand vide. */
@@ -3420,7 +3437,7 @@
     ],
     securite: [
       { name: 'securite_alarme', desc: 'Centrale d\'alarme et statuts' },
-      { name: 'securite_camera', desc: 'Flux et détection caméras de surveillance' }
+      { name: 'securite_camera', desc: 'Caméras : flux et détection.' }
     ],
     appareil: [
       { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
@@ -3445,7 +3462,7 @@
     service: [
       { name: 'OK_service_meteo', desc: 'Service Météo & Prévisions' },
       { name: 'OK_service_temps', desc: 'Gestion du temps et calendriers' },
-      { name: 'service_boite_aux_lettres', desc: 'Courrier et colis déposés, comptés et notifiés sur vos mobiles' },
+      { name: 'service_boite_aux_lettres', desc: 'Courrier et colis comptés et notifiés.' },
       { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
       { name: 'service_compteur_electricite', desc: 'Compteur électrique principal' },
       { name: 'service_gestion_dechets', desc: 'Poubelles & calendrier de collecte' },
@@ -3464,7 +3481,7 @@
     // Derniere categorie du catalogue, et derniere pastille du bandeau.
     maintenance: [
       { name: 'maintenance_instance',
-        desc: 'Mises à jour, sauvegardes et espace disque, sur une vue.' }
+        desc: 'Mises à jour, sauvegardes, disque.' }
     ]
   };
 
@@ -3633,7 +3650,7 @@
        `_generer_logos_config.py` — que `majApercu` sait distinguer d'un
        apercu de theme. */
     configuration_file_editor: {
-      resume: "L'éditeur de fichiers intégré. Tous nos packs en dépendent.",
+      resume: "L'éditeur de fichiers, base des packs.",
       logo: 'templates/config/file-editor.gif',
       detail: `Installe et configure l'add-on officiel <b>File editor</b>, l'editeur de fichiers integre a Home Assistant. C'est par lui que passent tous nos autres packs pour ecrire <code>configuration.yaml</code> et deposer leurs fonds d'ecran : posez-le en premier sur une instance neuve. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale.</span>`
     },
@@ -3643,33 +3660,33 @@
       detail: `Installe et configure l'add-on officiel <b>Terminal &amp; SSH</b>. Vous obtenez un terminal complet directement dans la barre laterale de Home Assistant, sans rien installer sur votre ordinateur. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale. Aucune cle SSH n'est posee a votre place : l'acces distant reste ferme tant que vous n'avez pas depose la votre.</span>`
     },
     configuration_hacs: {
-      resume: "Ajoute le dépôt GitHub de votre choix à HACS, puis le tient à jour.",
+      resume: "Ajoute et met à jour un dépôt HACS.",
       logo: 'templates/config/hacs.gif',
       detail: `Ajoute un depot <b>GitHub</b> de votre choix a <b>HACS</b>, le magasin communautaire, puis le telecharge &mdash; et le met a jour s'il y est deja. Indiquez l'adresse du depot et sa categorie ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> mise a jour de HACS lui-meme s'il est en retard, ajout du depot personnalise, telechargement, et redemarrage de Home Assistant uniquement si la categorie l'exige. <b>Prerequis :</b> HACS doit deja etre en service sur votre instance &mdash; sa mise en service passe par un appairage GitHub personnel, que nous ne pouvons pas faire a votre place.</span>`
     },
     configuration_duckdns: {
-      resume: "Une adresse fixe et un certificat https gratuit, joignable de l'extérieur.",
+      resume: "Adresse fixe et https gratuit.",
       logo: 'templates/config/duckdns.gif',
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
     },
 
     ouverture_volet: {
-      resume: "Volets et fenêtres : position, ouverture temporisée, contact.",
+      resume: "Volet : position, minuterie, contact.",
       detail: `Pilotage complet d'un volet roulant : sa représentation en direct, un bouton <b>favori</b> qui le place en un appui à la position que vous choisissez, et un <b>minuteur</b> qui l'ouvre au pourcentage voulu pour une durée choisie avant de remettre tout seul la position d'avant. La carte s'adapte à ce que votre fenêtre expose &mdash; température, luminosité, contact d'ouverture et détecteur de vibration sont facultatifs, et chacun ajoute ce qu'il sait dire.`
     },
     chauffage_thermostat: {
-      resume: "Consigne, dérogation temporisée, température de la pièce et historique.",
+      resume: "Consigne, dérogation et historique.",
       detail: 'Pilotage complet d\'un thermostat : consigne, mode, et une <b>dérogation temporisée</b> qui force une température pour une durée choisie puis remet la consigne d\'avant toute seule. La carte s\'adapte à ce que votre installation expose — le capteur de température, l\'humidité et le contact de fenêtre sont facultatifs, et chacun ajoute ce qu\'il sait dire.',
     },
     OK_service_meteo: {
-      resume: "Prévisions horaires et journalières, vent, pression et humidité.",
+      resume: "Prévisions horaires, vent, humidité.",
       /* Pas de champ d'entité : le module impose Meteorologisk institutt
          (met.no) et l'installe au besoin — la seule source qui publie les
          cinq attributs du 3e onglet. Il n'y a donc plus rien à saisir. */
       detail: 'Tableau de bord météo complet et traduit selon la ville du client : prévisions horaires et journalières, couverture nuageuse, vent, pression, humidité et ultraviolet, avec horloge météo animée. <br><br><span class="inclus"><b>Inclus :</b> l\'intégration Meteorologisk institutt (met.no) installée si nécessaire, HACS, et les cartes personnalisées requises (clock-weather-card, swipe-card, stack-in-card, card-mod).</span>',
     },
     OK_service_temps: {
-      resume: "Horloge, cycle solaire et lunaire, et calendrier des grandes fêtes.",
+      resume: "Horloge, cycle solaire et fêtes.",
       detail: 'Horloge analogique, cycle solaire/lunaire et calendrier des grandes fêtes adapté à votre lieu de résidence, calendrier personnalisable ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> installation de HACS si nécessaire, des cartes personnalisées (analog-clock, horizon-card, mushroom…) et de l\'intégration calendrier correspondant à votre choix.</span>',
       field: {
         type: 'calendar',
@@ -6487,7 +6504,7 @@
         params: params,
         price: prixDe(modName)
       });
-      flyToCart(btnEl.closest('.module-item'));
+      flyToCart(btnEl);
       updateCartUI();
       reinitialiserParams(modName);
       retourAuxPacksApresAjout();
@@ -6538,7 +6555,7 @@
       params: params,
       price: prixDe(modName)
     });
-    flyToCart(btnEl.closest('.module-item'));
+    flyToCart(btnEl);
     updateCartUI();
     reinitialiserParams(modName);
     if (fieldEl && fieldEl.tagName === 'INPUT') {
