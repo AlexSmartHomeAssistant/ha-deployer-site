@@ -3450,7 +3450,7 @@
       { name: 'appareil_box_internet', desc: 'Surveillance routeur et réseau' },
       { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
-      { name: 'appareil_machine_laver', desc: 'Suivi cycle machine à laver' },
+      { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
       { name: 'appareil_microwave', desc: 'Micro-ondes connecté' },
       { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
       { name: 'appareil_printer', desc: 'Imprimante et niveaux d\'encre' },
@@ -3511,7 +3511,7 @@
     appareil_box_internet: 'Box Internet',
     appareil_enceinte: 'Enceinte Connectée',
     appareil_lave_vaisselle: 'Lave-Vaisselle',
-    appareil_machine_laver: 'Machine à Laver',
+    appareil_lave_linge: 'Lave-linge',
     appareil_microwave: 'Micro-Ondes',
     appareil_panneau_solaire: 'Panneau Solaire',
     appareil_printer: 'Imprimante',
@@ -3562,7 +3562,7 @@
     appareil_box_internet: 'fa-wifi',
     appareil_enceinte: 'fa-volume-high',
     appareil_lave_vaisselle: 'fa-sink',
-    appareil_machine_laver: 'fa-soap',
+    appareil_lave_linge: 'fa-soap',
     appareil_microwave: 'fa-kitchen-set',
     appareil_panneau_solaire: 'fa-solar-panel',
     appareil_printer: 'fa-print',
@@ -3653,9 +3653,9 @@
       resume: "Confort, point de rosée et tendance barométrique en direct.",
       detail: `Tout ce que votre <b>capteur d'ambiance</b> sait dire, lu et interprété. Le premier onglet dispose ses trois grandeurs en <b>triangle</b> : température et humidité en haut, pression en bas, et au centre le <b>diagnostic de confort</b> calculé en croisant les deux premières &mdash; « Confortable », « Air trop sec », « Frais et humide &mdash; condensation »... Chaque grandeur est une <b>jauge circulaire</b> à deux anneaux : l'extérieur suit la valeur, affichée en chiffres au centre du cadran, et l'intérieur marque votre <b>plage idéale</b> et s'allume quand vous y êtes &mdash; en <b>vert</b> pour la pression, dont le seuil nominal se lit d'un coup d'œil.<br><br>Le deuxième onglet met en valeur le <b>point de rosée</b>, qui dit la sensation réelle d'humidité là où le pourcentage seul ne dit rien (60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout pareil), puis compare vos trois grandeurs à celles de la <b>météo locale</b> &mdash; c'est l'écart qui révèle l'inertie thermique du logement. Le troisième trace l'historique de chaque grandeur, par jour, semaine, mois ou année.<br><br>Un seul capteur à indiquer : celui de la <b>température</b>. Les autres grandeurs sont retrouvées <b>toutes seules</b> sur le même appareil, et la carte s'adapte à ce que votre matériel sait mesurer &mdash; ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`
     },
-    appareil_machine_laver: {
+    appareil_lave_linge: {
       resume: "Phase du cycle en direct, temps restant, coût et consommation.",
-      detail: `Suivi complet d'un lave-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre en direct ce qui se passe dans le tambour : le voyant clignote et le hublot tourne au rythme de la phase en cours (<b>lavage</b>, <b>chauffage</b>, <b>essorage</b>), et le <b>temps restant</b> est estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers lavages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Sans historique exploitable, il pose des valeurs génériques et vous le dit &mdash; un redéploiement plus tard les affinera.`
+      detail: `Suivi complet d'un lave-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre l'appareil en direct : il <b>change d'aspect</b> quand le cycle démarre, la phase s'inscrit dans son <b>écran</b>, le <b>voyant</b> prend la couleur de ce qui se passe dans le tambour (<b>bleu</b> au lavage, <b>rouge</b> au chauffage de l'eau, <b>orange</b> à l'essorage) et une <b>barre décroissante</b> matérialise le temps restant, estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, la <b>consommation</b> et le <b>coût</b> du dernier lavage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers lavages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Le prix du kWh, lui, est repris de votre <b>tableau de bord Énergie</b> quand vous y avez déclaré un tarif d'électricité.`
     },
     /* ---- Categorie « Configuration » (01/09/2026) ----
        Ces quatre-la n'ont pas d'apercu par THEME : ils n'affichent aucune
@@ -3985,14 +3985,14 @@
       ]
     },
 
-    appareil_machine_laver: {
-      intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au lave-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de la prise</b> et en déduit les seuils de puissance qui séparent le lavage, le chauffage et l'essorage.`,
+    appareil_lave_linge: {
+      intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au lave-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de votre prise</b> et en déduit les seuils de puissance qui séparent le lavage, le chauffage et l'essorage.`,
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Indicateur', icone: 'fa-washing-machine',
-          texte: `Le lave-linge en direct : le voyant clignote et le hublot tourne au rythme de la phase &mdash; <b>bleu</b> pour le brassage, <b>rouge</b> pour le chauffage de l'eau, <b>orange</b> pour l'essorage, immobile en veille. La phase est nommée en clair, et le <b>temps restant</b> est estimé d'après la durée moyenne de vos cycles précédents. Dès que la machine tourne, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '1 — Indicateur', icone: 'fa-soap',
+          texte: `Le lave-linge en direct. L'appareil <b>change d'aspect</b> dès que le cycle démarre, la phase s'inscrit dans son <b>écran</b>, et le <b>voyant</b> prend la couleur de ce qui se passe dans le tambour &mdash; <b>bleu</b> au brassage, <b>rouge</b> au chauffage de l'eau, <b>orange</b> à l'essorage, éteint en veille. Une <b>barre décroissante</b> sous le hublot matérialise le temps restant. Autour, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
         { titre: '2 — Statistiques', icone: 'fa-chart-simple',
-          texte: `La <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier lavage. Un compteur suit les cycles depuis le dernier <b>nettoyage du tambour</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq derniers lavages</b> sont listés avec leur heure et leur durée. Et si vous fournissez l'interrupteur de la prise, un bouton la coupe d'un appui bref, la redémarre d'un appui long.` },
+          texte: `La <b>durée</b>, la <b>consommation</b> et le <b>coût</b> du dernier lavage, chacun avec son icône animée. Un compteur suit les cycles depuis le dernier <b>nettoyage du tambour</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq derniers lavages</b> sont listés avec leur date et leur durée. Et la prise se coupe d'un appui bref, se redémarre d'un appui long.` },
         { titre: '3 — Historique', icone: 'fa-chart-column',
           texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
       ]
@@ -4478,7 +4478,7 @@
       { param: 'DUCKDNS_TOKEN', label: 'Jeton DuckDNS', type: 'text', required: true,
         placeholder: 'le token affiche en haut de duckdns.org' }
     ],
-    /* Machine a Laver : le capteur de PUISSANCE de la prise connectee est
+    /* Lave-linge : le capteur de PUISSANCE de la prise connectee est
        le seul champ obligatoire, et c'est de lui que tout depend -- le
        synoptique, le decoupage en cycles, la duree, la phase. Les deux
        suivants sont facultatifs, et ce sont EUX qui decident de la variante :
@@ -4491,7 +4491,7 @@
        puissance, energie et relais vivent sur le MEME appareil, et le pack
        les y retrouve par leur `device_class`. Les champs ne servent qu'a
        designer l'entite quand la deduction se trompe. */
-    appareil_machine_laver: [
+    appareil_lave_linge: [
       { param: 'LAVAGE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salle de bain' },
       { param: 'LAVAGE_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
@@ -4501,7 +4501,7 @@
       { param: 'LAVAGE_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
         placeholder: 'ex : switch.lave_linge_mss305_main_channel — vide : déduit de la prise' },
       { param: 'LAVAGE_TARIF', label: 'Prix du kWh', type: 'text', required: false,
-        placeholder: 'ex : 0.25 — vide : 0,25, ajustable ensuite sans redéploiement' },
+        placeholder: 'ex : 0.25 — vide : repris de votre tableau de bord Énergie' },
       { param: 'LAVAGE_ENTRETIEN', label: 'Cycles entre deux entretiens du tambour', type: 'text', required: false,
         placeholder: 'ex : 30 — vide : 30 cycles' },
       champThemeSite('LAVAGE_THEME', 'urban-factory')
@@ -4682,7 +4682,7 @@
       + 'repli si vous n\'en fournissez pas, ainsi que HACS et les cartes '
       + 'personnalisées requises (better-thermostat-ui-card, button-card, mushroom, '
       + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
-    appareil_machine_laver:
+    appareil_lave_linge:
       'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
       + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
       + 'restant, les deux automatisations de début et de fin de cycle, les trois '
@@ -5113,6 +5113,118 @@
           ]
         },
         "gif": "templates/apercus/fuite/urban-factory.gif"
+      }
+    },
+    "lave-linge": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/lave-linge/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/lave-linge/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/lave-linge/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/lave-linge/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/lave-linge/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/lave-linge/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/lave-linge/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/lave-linge/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/mars-rouge-defaut-1.jpg",
+            "templates/apercus/lave-linge/mars-rouge-defaut-2.jpg",
+            "templates/apercus/lave-linge/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/neo-future-defaut-1.jpg",
+            "templates/apercus/lave-linge/neo-future-defaut-2.jpg",
+            "templates/apercus/lave-linge/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/lave-linge/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/lave-linge/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/lave-linge/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/lave-linge/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/lave-linge/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/lave-linge/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/lave-linge/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/lave-linge/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/lave-linge/urban-factory-defaut-1.jpg",
+            "templates/apercus/lave-linge/urban-factory-defaut-2.jpg",
+            "templates/apercus/lave-linge/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/lave-linge/urban-factory.gif"
       }
     },
     "lumiere": {
@@ -5610,118 +5722,6 @@
           ]
         },
         "gif": "templates/apercus/lumiere/urban-factory.gif"
-      }
-    },
-    "machine": {
-      "bleu-evasion": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/bleu-evasion-defaut-1.jpg",
-            "templates/apercus/machine/bleu-evasion-defaut-2.jpg",
-            "templates/apercus/machine/bleu-evasion-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/bleu-evasion.gif"
-      },
-      "carbon-pulse": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/carbon-pulse-defaut-1.jpg",
-            "templates/apercus/machine/carbon-pulse-defaut-2.jpg",
-            "templates/apercus/machine/carbon-pulse-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/carbon-pulse.gif"
-      },
-      "creme-gourmande": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/creme-gourmande-defaut-1.jpg",
-            "templates/apercus/machine/creme-gourmande-defaut-2.jpg",
-            "templates/apercus/machine/creme-gourmande-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/creme-gourmande.gif"
-      },
-      "elegance-ardoise": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/elegance-ardoise-defaut-1.jpg",
-            "templates/apercus/machine/elegance-ardoise-defaut-2.jpg",
-            "templates/apercus/machine/elegance-ardoise-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/elegance-ardoise.gif"
-      },
-      "mars-rouge": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/mars-rouge-defaut-1.jpg",
-            "templates/apercus/machine/mars-rouge-defaut-2.jpg",
-            "templates/apercus/machine/mars-rouge-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/mars-rouge.gif"
-      },
-      "neo-future": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/neo-future-defaut-1.jpg",
-            "templates/apercus/machine/neo-future-defaut-2.jpg",
-            "templates/apercus/machine/neo-future-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/neo-future.gif"
-      },
-      "nocturne-artistique": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/nocturne-artistique-defaut-1.jpg",
-            "templates/apercus/machine/nocturne-artistique-defaut-2.jpg",
-            "templates/apercus/machine/nocturne-artistique-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/nocturne-artistique.gif"
-      },
-      "pure-lumiere": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/pure-lumiere-defaut-1.jpg",
-            "templates/apercus/machine/pure-lumiere-defaut-2.jpg",
-            "templates/apercus/machine/pure-lumiere-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/pure-lumiere.gif"
-      },
-      "sahara-elegance": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/sahara-elegance-defaut-1.jpg",
-            "templates/apercus/machine/sahara-elegance-defaut-2.jpg",
-            "templates/apercus/machine/sahara-elegance-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/sahara-elegance.gif"
-      },
-      "terre-de-carmin": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/terre-de-carmin-defaut-1.jpg",
-            "templates/apercus/machine/terre-de-carmin-defaut-2.jpg",
-            "templates/apercus/machine/terre-de-carmin-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/terre-de-carmin.gif"
-      },
-      "urban-factory": {
-        "cartes": {
-          "defaut": [
-            "templates/apercus/machine/urban-factory-defaut-1.jpg",
-            "templates/apercus/machine/urban-factory-defaut-2.jpg",
-            "templates/apercus/machine/urban-factory-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/machine/urban-factory.gif"
       }
     },
     "meteo": {
@@ -6475,7 +6475,7 @@
     service_boite_aux_lettres: 'bal',
     chauffage_thermostat: 'thermostat',
     ouverture_volet: 'volet',
-    appareil_machine_laver: 'machine',
+    appareil_lave_linge: 'lave-linge',
     service_capteur: 'capteur'
   };
 
@@ -6951,7 +6951,7 @@
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
-    'appareil_machine_laver', 'service_capteur'
+    'appareil_lave_linge', 'service_capteur'
   ]);
 
   const PRIX_PACK = 9;
@@ -7469,11 +7469,11 @@
     service_capteur: 'capteur',
     service_person: 'personne',
     appareil_refrigerateur: 'refrigerateur',
-    // Pack Machine a Laver (03/09/2026), ecrit sur le gabarit du pack
+    // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
     // consommation, seuils de puissance mesures sur l'historique de la
     // prise connectee.
-    appareil_machine_laver: 'machine-a-laver',
+    appareil_lave_linge: 'lave-linge',
     appareil_raspberry: 'systeme',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
