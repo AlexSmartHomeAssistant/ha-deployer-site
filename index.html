@@ -3651,7 +3651,7 @@
   const MODULE_MEDIA = {
     service_capteur: {
       resume: "Confort, point de rosée et tendance barométrique en direct.",
-      detail: `Tout ce que votre <b>capteur d'ambiance</b> sait dire, lu et interprété. Le premier onglet porte deux <b>jauges circulaires</b> : l'anneau extérieur suit la valeur, l'anneau intérieur marque votre <b>plage idéale</b> et s'allume quand vous y êtes. Dessous, un <b>diagnostic de confort</b> calculé en croisant température et humidité &mdash; « Confortable », « Air trop sec », « Frais et humide &mdash; condensation »... &mdash; puis la pression avec sa <b>flèche de tendance</b>, et la comparaison <b>intérieur / extérieur</b> qui révèle l'inertie thermique du logement.<br><br>Le deuxième onglet va plus loin : le <b>point de rosée</b>, qui dit la sensation réelle d'humidité là où le pourcentage seul ne dit rien (60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout pareil), et la <b>dérivée de la pression sur trois heures</b>, qui anticipe le passage d'un front. Le troisième trace l'historique de chaque grandeur, par jour, semaine, mois ou année.<br><br>Un seul capteur à indiquer : celui de la <b>température</b>. Les autres grandeurs sont retrouvées <b>toutes seules</b> sur le même appareil, et la carte s'adapte à ce que votre matériel sait mesurer &mdash; ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`
+      detail: `Tout ce que votre <b>capteur d'ambiance</b> sait dire, lu et interprété. Le premier onglet dispose ses trois grandeurs en <b>triangle</b> : température et humidité en haut, pression en bas, et au centre le <b>diagnostic de confort</b> calculé en croisant les deux premières &mdash; « Confortable », « Air trop sec », « Frais et humide &mdash; condensation »... Chaque grandeur est une <b>jauge circulaire</b> à deux anneaux : l'extérieur suit la valeur, affichée en chiffres au centre du cadran, et l'intérieur marque votre <b>plage idéale</b> et s'allume quand vous y êtes &mdash; en <b>vert</b> pour la pression, dont le seuil nominal se lit d'un coup d'œil.<br><br>Le deuxième onglet met en valeur le <b>point de rosée</b>, qui dit la sensation réelle d'humidité là où le pourcentage seul ne dit rien (60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout pareil), puis compare vos trois grandeurs à celles de la <b>météo locale</b> &mdash; c'est l'écart qui révèle l'inertie thermique du logement. Le troisième trace l'historique de chaque grandeur, par jour, semaine, mois ou année.<br><br>Un seul capteur à indiquer : celui de la <b>température</b>. Les autres grandeurs sont retrouvées <b>toutes seules</b> sur le même appareil, et la carte s'adapte à ce que votre matériel sait mesurer &mdash; ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`
     },
     appareil_machine_laver: {
       resume: "Phase du cycle en direct, temps restant, coût et consommation.",
@@ -4002,9 +4002,9 @@
       carte: () => 'defaut',
       onglets: [
         { titre: '1 — Synthèse', icone: 'fa-gauge',
-          texte: `Deux <b>jauges circulaires</b> : l'anneau extérieur suit la valeur, l'anneau intérieur marque votre <b>plage idéale</b> et s'allume quand vous y entrez. Dessous, un <b>diagnostic de confort</b> croisant température et humidité en neuf cas, la pression avec sa <b>flèche de tendance</b>, et la comparaison <b>intérieur / exterieur</b> qui montre l'inertie thermique du logement. Quand les trois seuils d'alerte sont franchis en même temps, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
-        { titre: '2 — Statistiques', icone: 'fa-droplet',
-          texte: `Le <b>point de rosée</b>, calculé par la formule de Magnus-Tetens : c'est lui, et non le pourcentage d'humidité, qui dit la sensation réelle &mdash; 60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout de la même façon. Et la <b>tendance barométrique sur trois heures</b>, la fenêtre des services météo, qui anticipe le passage d'un front. Les relevés extérieurs de votre station météo complètent la lecture.` },
+          texte: `Les trois grandeurs disposées en <b>triangle</b> : température et humidité en haut, pression en bas, et au centre le <b>diagnostic de confort</b> croisant les deux premières en neuf cas. Chaque jauge porte deux anneaux &mdash; l'extérieur suit la valeur, affichée en <b>chiffres au centre du cadran</b>, l'intérieur marque votre <b>plage idéale</b> et s'allume quand vous y entrez, en <b>vert</b> pour le seuil nominal de la pression. Quand les trois seuils d'alerte sont franchis en même temps, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Point de rosée', icone: 'fa-droplet',
+          texte: `Le <b>point de rosée</b> en grand, avec son icône animée : calculé par la formule de Magnus-Tetens, c'est lui, et non le pourcentage d'humidité, qui dit la sensation réelle &mdash; 60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout de la même façon. Dessous, le comparatif <b>intérieur / extérieur</b> aligné sur les trois grandeurs, de gauche à droite : c'est l'écart avec la météo locale qui révèle l'inertie thermique du logement.` },
         { titre: '3 — Historique', icone: 'fa-chart-line',
           texte: `L'évolution de chaque grandeur sur le jour, la semaine, le mois ou l'année. Le <b>sélecteur du bas</b> choisit la grandeur tracée : son icône s'anime et se colore quand elle est active. Seules les grandeurs que votre capteur mesure vraiment y figurent.` }
       ]
@@ -4506,18 +4506,19 @@
         placeholder: 'ex : 30 — vide : 30 cycles' },
       champThemeSite('LAVAGE_THEME', 'urban-factory')
     ],
-    /* Pack Capteur (03/09/2026). UN SEUL champ obligatoire : le capteur de
-       TEMPERATURE de l'appareil d'ambiance. Les trois autres grandeurs et
-       l'entite meteo sont facultatives, et la variante s'en deduit :
-         temperature seule -> jauge et graphe de temperature
+    /* Pack Capteur (03/09/2026, refondu le 04/09/2026). UN SEUL champ
+       obligatoire : le capteur de TEMPERATURE de l'appareil d'ambiance. Les
+       deux autres grandeurs et l'entite meteo sont facultatives, et la
+       variante s'en deduit :
+         temperature seule -> une jauge, un graphe
          + humidite        -> seconde jauge, diagnostic de confort, point de rosee
-         + pression        -> tendance barometrique sur trois heures
-         + luminosite      -> quatrieme metrique du 3e onglet
+         + pression        -> troisieme jauge (seuil nominal vert), tendance 3 h
          + meteo           -> comparatif interieur / exterieur
-       En pratique le client n'a pas a saisir les trois grandeurs voisines : un
+       En pratique le client n'a pas a saisir les deux grandeurs voisines : un
        capteur d'ambiance du commerce les expose sur le MEME appareil, et le
        pack les y retrouve par leur `device_class`. Les champs ne servent qu'a
-       designer l'entite quand la deduction se trompe. */
+       designer l'entite quand la deduction se trompe.
+       La LUMINOSITE a ete retiree definitivement le 04/09/2026. */
     service_capteur: [
       { param: 'CAPTEUR_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
@@ -4527,8 +4528,6 @@
         placeholder: 'ex : sensor.salon_capteur_humidity — vide : déduit de l’appareil' },
       { param: 'CAPTEUR_PRESSION', label: 'Baromètre', type: 'text', required: false,
         placeholder: 'ex : sensor.salon_capteur_pressure — vide : déduit de l’appareil' },
-      { param: 'CAPTEUR_LUMINOSITE', label: 'Capteur de luminosité', type: 'text', required: false,
-        placeholder: 'ex : sensor.salon_capteur_illuminance — vide : déduit de l’appareil' },
       { param: 'CAPTEUR_METEO', label: 'Météo extérieure de référence', type: 'text', required: false,
         placeholder: 'ex : weather.forecast_maison — vide : met.no de votre instance' },
       champThemeSite('CAPTEUR_THEME', 'urban-factory')
