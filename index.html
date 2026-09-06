@@ -3471,7 +3471,7 @@
       { name: 'service_boite_aux_lettres', desc: 'Courrier et colis comptés et notifiés.' },
       { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
       { name: 'service_compteur_electricite', desc: 'Compteur électrique principal' },
-      { name: 'service_gestion_dechets', desc: 'Poubelles & calendrier de collecte' },
+      { name: 'service_gestion_dechets', desc: 'Poubelles, compte à rebours et déchèterie' },
       { name: 'service_person', desc: 'Présence des résidents' },
       { name: 'service_transport', desc: 'Horaires transports en commun' }
     ],
@@ -3686,6 +3686,11 @@
       resume: "Adresse fixe et https gratuit.",
       logo: 'templates/config/duckdns.gif',
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
+    },
+
+    service_gestion_dechets: {
+      resume: "Poubelles, compte à rebours et déchèterie.",
+      detail: `Le calendrier de vos collectes, montré comme vos poubelles : vous décrivez <b>vos bacs</b> &mdash; d'un à cinq &mdash; en choisissant pour chacun le <b>type de déchet</b> et la <b>couleur du couvercle</b>, et la carte les dessine côte à côte, chacun avec son pictogramme. Au-dessus de chaque bac, un compte à rebours <b>J&nbsp;&minus;&nbsp;n</b> dit dans combien de jours il sort ; à la veille, il prend la couleur du bac et se met à clignoter.<br><br>Un <b>rappel part sur vos mobiles</b> le soir précédant chaque collecte, en nommant les bacs à sortir. Un deuxième onglet suit les <b>encombrants</b>, et un troisième trouve tout seul la <b>déchèterie la plus proche</b> de chez vous &mdash; nom, adresse, téléphone, horaires &mdash; sans que vous ayez rien à saisir.`
     },
 
     ouverture_garage_porte: {
@@ -4115,6 +4120,19 @@
       ]
     },
 
+    service_gestion_dechets: {
+      intro: `Trois onglets : collecte, encombrants, déchèterie. Le pack crée lui-même les capteurs de calendrier &mdash; il installe l'intégration <b>Waste Collection Schedule</b> si elle manque &mdash; et vous n'avez rien à appairer : ce sont vos jours de collecte qui font la carte, pas du matériel.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Collecte', icone: 'fa-recycle',
+          texte: `Vos bacs, d'un à cinq, alignés et posés sur la même ligne : le type de déchet donne le pictogramme, la couleur du couvercle donne le bac. Au-dessus de chacun, le compte à rebours <b>J&nbsp;&minus;&nbsp;n</b>. La veille et le jour même, il passe à la couleur de son bac et clignote, la bordure de la carte s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Encombrants', icone: 'fa-couch',
+          texte: `La collecte des encombrants a son propre rythme et son propre onglet : même compte à rebours, même signal la veille. Elle est toujours présente, quel que soit le nombre de bacs que vous avez déclarés.` },
+        { titre: '3 — Déchèterie', icone: 'fa-location-dot',
+          texte: `La déchèterie la plus proche de chez vous, trouvée automatiquement à partir de la position de votre Home Assistant : nom, adresse, distance, téléphone, site et horaires. Un script la rappelle aussi en notification, pour l'avoir sous les yeux une fois la carte quittée.` }
+      ]
+    },
+
     ouverture_garage_porte: {
       intro: `Trois onglets : contrôle, minuteur, historique. Le pack ne se contente pas de commander le moteur &mdash; il montre <b>votre</b> porte, celle des six types que vous choisissez à l'achat, et la dessine ouverte ou fermée selon son état réel. Toute ouverture passe par une <b>confirmation</b>, et une alerte part sur vos mobiles si la porte reste ouverte plus que le délai que vous avez fixé.`,
       carte: () => 'defaut',
@@ -4481,7 +4499,80 @@
      Chaque champ porte le nom de la variable transmise au runner : le Worker
      ne laisse passer que des noms en MAJUSCULES_ET_SOULIGNES, et le module
      Python les relit dans son environnement. */
+
+  /* Les seize types de dechet et les treize couleurs de bac du pack Dechets.
+     Ces listes doivent rester d'accord avec `TYPES_DECHET` et `COULEURS_BAC`
+     de `deploy_pack_service_dechets.py` : un type absent de la liste Python
+     retomberait en silence sur « Ordures ménagères », et une couleur absente
+     sur « Grise ». */
+  const DECHETS_TYPES = [
+    ['dechets_menagers', 'Ordures ménagères'], ['emballage', 'Emballages et papiers'],
+    ['vegetaux', 'Déchets végétaux'], ['carton', 'Cartons'],
+    ['aluminium', 'Métaux et canettes'], ['flacon', 'Flacons et bouteilles'],
+    ['bouchon', 'Bouchons'], ['textile', 'Textiles'],
+    ['pile', 'Piles et batteries'], ['ampoule', 'Ampoules'],
+    ['appareils', 'Appareils électriques'], ['medicaments', 'Médicaments'],
+    ['dechets_chimiques', 'Déchets chimiques'], ['risque_biologique', 'Déchets à risque'],
+    ['cafe', 'Capsules de café'], ['cigarette', 'Mégots']
+  ];
+  const DECHETS_COULEURS = [
+    ['grise', 'Grise'], ['jaune', 'Jaune'], ['verte', 'Verte'], ['bleue', 'Bleue'],
+    ['marron', 'Marron'], ['rouge', 'Rouge'], ['orange', 'Orange'], ['noire', 'Noire'],
+    ['blanche', 'Blanche'], ['bordeaux', 'Bordeaux'], ['rose', 'Rose'],
+    ['turquoise', 'Turquoise'], ['violet', 'Violette']
+  ];
+
+  function champTypeDechet(rang, obligatoire) {
+    return { param: 'DECHETS_TYPE_' + rang,
+             label: 'Poubelle ' + rang + ' — type de déchet',
+             type: 'select', required: obligatoire,
+             defaut: obligatoire ? 'dechets_menagers' : '',
+             options: (obligatoire ? [] : [{ value: '', label: '— aucune —' }])
+               .concat(DECHETS_TYPES.map(function (t) {
+                 return { value: t[0], label: t[1] }; })) };
+  }
+
+  function champCouleurBac(rang, obligatoire) {
+    return { param: 'DECHETS_COULEUR_' + rang,
+             label: 'Poubelle ' + rang + ' — couleur du bac',
+             type: 'select', required: obligatoire,
+             defaut: 'grise',
+             options: DECHETS_COULEURS.map(function (c) {
+               return { value: c[0], label: c[1] }; }) };
+  }
+
+  function champCollecte(rang, exemple) {
+    return { param: 'DECHETS_COLLECTE_' + rang,
+             label: 'Poubelle ' + rang + ' — jour de collecte',
+             type: 'text', required: false,
+             placeholder: exemple + ' — accepte aussi « mardi, vendredi », '
+                        + '« tous les jours », « dernier mercredi »' };
+  }
+
   const MODULE_PARAMS = {
+    /* Pack Dechets — LA VARIANTE EST LE NOMBRE DE POUBELLES.
+       Une obligatoire, quatre facultatives ; chacune se decrit par DEUX choix,
+       le TYPE de dechet (qui donne le pictogramme) et la COULEUR du bac (qui
+       donne le visuel). Le pack deduit la variante du nombre de bacs saisis :
+       rien a choisir dans une liste de variantes.
+
+       Le jour de collecte est un TROISIEME champ, facultatif, et il depasse la
+       demande — mais sans lui `waste_collection_schedule` n'a aucun calendrier
+       a suivre, et le compte a rebours « J - n » n'aurait rien a compter. */
+    service_gestion_dechets: [
+      { param: 'DECHETS_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Maison' },
+      champTypeDechet(1, true), champCouleurBac(1, true), champCollecte(1, 'ex : mardi'),
+      champTypeDechet(2, false), champCouleurBac(2, false), champCollecte(2, 'ex : vendredi'),
+      champTypeDechet(3, false), champCouleurBac(3, false), champCollecte(3, 'ex : mercredi'),
+      champTypeDechet(4, false), champCouleurBac(4, false), champCollecte(4, 'ex : jeudi'),
+      champTypeDechet(5, false), champCouleurBac(5, false), champCollecte(5, 'ex : samedi'),
+      { param: 'DECHETS_ENCOMBRANTS', label: 'Collecte des encombrants', type: 'text', required: false,
+        placeholder: 'ex : premier lundi — vide : premier lundi du mois' },
+      { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille', type: 'text', required: false,
+        placeholder: 'ex : 19:00 — vide : 19h00' },
+      champThemeSite('DECHETS_THEME', 'urban-factory')
+    ],
     /* Les packs « Configuration » n'ont pas de theme : ils n'affichent aucune
        carte. Seuls deux d'entre eux reclament une saisie — File editor et
        Terminal & SSH n'ont aucun parametre obligatoire, et n'apparaissent
@@ -4769,6 +4860,13 @@
       + 'automatisations et helpers), ainsi que HACS et les cartes personnalisées '
       + 'requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
       + 'card-mod).',
+    service_gestion_dechets:
+      'la vue et ses trois onglets, l\u2019intégration <b>Waste Collection '
+      + 'Schedule</b> installée si elle manque, un capteur de calendrier par bac '
+      + 'plus celui des encombrants, l\u2019automatisation de rappel de la veille '
+      + 'qui prévient tous vos mobiles, le script de la déchèterie, les visuels '
+      + 'de vos bacs, ainsi que HACS et les cartes personnalisées requises '
+      + '(swipe-card, stack-in-card, card-mod).',
     ouverture_garage_porte:
       'la vue et ses trois onglets, les deux visuels du type de porte choisi, '
       + 'l\u2019ouverture temporisée (deux scripts, deux automatisations et six '
@@ -5115,6 +5213,118 @@
           ]
         },
         "gif": "templates/apercus/capteur/urban-factory.gif"
+      }
+    },
+    "dechets": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/dechets/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/dechets/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/dechets/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/dechets/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/dechets/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/dechets/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/dechets/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/dechets/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/mars-rouge-defaut-1.jpg",
+            "templates/apercus/dechets/mars-rouge-defaut-2.jpg",
+            "templates/apercus/dechets/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/neo-future-defaut-1.jpg",
+            "templates/apercus/dechets/neo-future-defaut-2.jpg",
+            "templates/apercus/dechets/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/dechets/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/dechets/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/dechets/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/dechets/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/dechets/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/dechets/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/dechets/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/dechets/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/dechets/urban-factory-defaut-1.jpg",
+            "templates/apercus/dechets/urban-factory-defaut-2.jpg",
+            "templates/apercus/dechets/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/dechets/urban-factory.gif"
       }
     },
     "fuite": {
@@ -6814,6 +7024,7 @@
     chauffage_thermostat: 'thermostat',
     ouverture_volet: 'volet',
     ouverture_garage_porte: 'porte-garage',
+    service_gestion_dechets: 'dechets',
     appareil_lave_linge: 'lave-linge',
     appareil_seche_linge: 'seche-linge',
     service_capteur: 'capteur'
@@ -7292,7 +7503,13 @@
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
     'ouverture_garage_porte',
-    'appareil_lave_linge', 'appareil_seche_linge', 'service_capteur'
+    'appareil_lave_linge', 'appareil_seche_linge', 'service_capteur',
+    // `service_gestion_dechets` ajoute le 06/09/2026, comme les precedents :
+    // phase de test, le client doit pouvoir re-deployer le pack depuis le
+    // site sans passer par le paiement. Cette liste ne fait qu'ACCOMPAGNER
+    // celle du Worker (`FREE_MODULES` de backend/src/jobs.js) : c'est le
+    // serveur qui decide, et lui seul.
+    'service_gestion_dechets'
   ]);
 
   const PRIX_PACK = 9;
@@ -7801,7 +8018,11 @@
     configuration_duckdns: 'config-duckdns',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
-    service_gestion_dechets: 'poubelles',
+    /* Reecriture du 06/09/2026 : `poubelles`
+       (deploy_pack_waste) reste sur le depot mais n'est plus
+       expose -- il ciblait une adresse et des capteurs codes en
+       dur. */
+    service_gestion_dechets: 'dechets',
     service_boite_aux_lettres: 'boite-aux-lettres',
     // Pack Capteur (03/09/2026), ecrit sur le gabarit du pack Lumiere pour
     // l'agencement et sur celui du pack Meteo pour l'architecture de famille
