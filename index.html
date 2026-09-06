@@ -3649,6 +3649,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_refrigerateur: {
+      resume: "Froid en direct, porte, temperature et degivrage temporise.",
+      detail: `Suivi complet d'un refrigerateur ou d'un congelateur depuis la <b>prise connectee</b> qui l'alimente. Vous choisissez d'abord le <b>type d'appareil</b> &mdash; refrigerateur, congelateur, mini, <b>americain</b>, <b>refrigerateur/congelateur</b> ou <b>multi-portes</b> &mdash; et la carte dessine le votre, avec ses vraies portes. Le premier onglet le montre en direct : il <b>change d'aspect</b> des que le froid tourne, le palier s'inscrit dans son <b>ecran</b>, et une <b>icone de refroidissement</b> s'anime au milieu de chaque porte &mdash; en <b>bleu</b> au regime normal du compresseur, en <b>vert</b> au froid intense.<br><br>Le deuxieme coupe l'appareil pour une duree choisie, de quinze minutes a douze heures &mdash; le temps d'un <b>degivrage</b> &mdash; et le <b>remet sous tension tout seul</b> a la fin. Toute desactivation demande une <b>confirmation</b> : on ne coupe pas un congelateur plein d'un clic malencontreux. Le troisieme trace la consommation par heure, par jour ou par mois.<br><br>Les deux seuils de puissance qui separent la veille, le froid normal et le froid intense ne sont pas devines : le pack <b>mesure l'historique de votre prise</b> au deploiement et les en deduit. Et une <b>alerte part sur vos mobiles</b> des que la consommation tombe a zero, que la prise est coupee ou qu'elle ne repond plus &mdash; un appareil qui ne refroidit plus met son contenu en danger.`
+    },
     appareil_seche_linge: {
       resume: "Phase du séchage en direct, temps restant, coût et consommation.",
       detail: `Suivi complet d'un sèche-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre en direct ce qui se passe dans le tambour : le voyant clignote et le hublot tourne au rythme de la phase en cours (<b>séchage</b>, <b>chauffage</b>, <b>rotation</b>), et le <b>temps restant</b> est estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier séchage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers séchages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. C'est ce qui lui permet de s'adapter aussi bien à une machine à condensation qu'à une <b>pompe à chaleur</b>, dont la puissance de pointe est trois fois moindre.`
@@ -3998,6 +4002,18 @@
       ]
     },
 
+    appareil_refrigerateur: {
+      intro: `Trois onglets : indicateur, désactivation, historique. Tout est lu sur la <b>prise connectée</b> qui alimente l'appareil. Vous choisissez le <b>type</b> qui correspond au vôtre parmi six, et la carte dessine celui-là. Le pack apprend de lui-même à quoi ressemble son fonctionnement : il <b>mesure l'historique de la prise</b> et en déduit les seuils qui séparent la veille, le froid normal et le froid intense.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-snowflake',
+          texte: `L'appareil en direct : il <b>change d'aspect</b> dès que le froid tourne, le palier s'inscrit dans son <b>écran</b>, et une <b>icône de refroidissement</b> s'anime au milieu de chaque porte &mdash; <b>bleu</b> au régime du compresseur, <b>vert</b> au froid intense, rien en veille. À gauche, la <b>détection d'ouverture</b> : le battant s'anime en vert tant que la porte est ouverte. À droite, la <b>température intérieure</b>, qui passe du bleu à l'orange puis au corail selon qu'elle reste normale, tiède ou franchement chaude &mdash; les seuils suivent le type d'appareil, un congélateur n'ayant rien de normal à 4 °C. Porte ouverte ou froid en marche, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Désactivation', icone: 'fa-power-off',
+          texte: `Le <b>dégivrage temporisé</b> : vous choisissez une durée de quinze minutes à douze heures, la prise se coupe, et le courant <b>revient tout seul</b> à la fin. Un appui bref met en pause, un appui long annule et remet immédiatement sous tension. Toute désactivation passe par une <b>confirmation</b> : couper un congélateur plein par mégarde ne se rattrape pas. Le compte à rebours reste affiché, et l'état réel de la prise &mdash; sous tension ou hors tension &mdash; est écrit au-dessus.` },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
+      ]
+    },
     appareil_seche_linge: {
       intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au sèche-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de la prise</b> et en déduit les seuils de puissance qui séparent le séchage, le chauffage et la rotation.`,
       carte: () => 'defaut',
@@ -4549,6 +4565,19 @@
                         + '« tous les jours », « dernier mercredi »' };
   }
 
+  /* Les six types d'appareil du pack Refrigerateur. Cette liste doit rester
+     d'accord avec `TYPES_APPAREIL` de `deploy_pack_appareil_refrigerateur.py`.
+     C'est le type qui decide des deux visuels, du milieu de chaque porte ou
+     se pose l'icone de refroidissement, et du titre de la carte. */
+  const FRIGO_TYPES = [
+    { value: 'refrigerateur', label: 'Réfrigérateur' },
+    { value: 'congelateur', label: 'Congélateur' },
+    { value: 'mini_refrigerateur', label: 'Mini réfrigérateur' },
+    { value: 'refrigerateur_americain', label: 'Réfrigérateur américain' },
+    { value: 'refrigerateur_congelateur', label: 'Réfrigérateur / Congélateur' },
+    { value: 'refrigerateur_congelateur_multi', label: 'Réfrigérateur / Congélateur multi-portes' }
+  ];
+
   const MODULE_PARAMS = {
     /* Pack Dechets — LA VARIANTE EST LE NOMBRE DE POUBELLES.
        Une obligatoire, quatre facultatives ; chacune se decrit par DEUX choix,
@@ -4653,6 +4682,36 @@
        puissance, energie et relais vivent sur le MEME appareil, et le pack
        les y retrouve. Les champs ne servent qu'a designer l'entite quand la
        deduction se trompe. */
+    /* Pack Refrigerateur — LA VARIANTE EST LE TYPE D'APPAREIL.
+       Six types, choisis dans une liste : un type libre n'aurait aucune image
+       a afficher. Le decompte d'entites, lui, reste une variante a part et se
+       DEDUIT de ce que le client fournit :
+         puissance seule   -> synoptique, 3e onglet sur la puissance moyenne
+         + energie         -> 3e onglet sur l'energie cumulee en kWh
+         + interrupteur    -> 2e onglet (desactivation pour degivrage)
+         + porte           -> pastille de gauche
+         + temperature     -> pastille de droite
+       En pratique le client n'a a saisir ni l'energie ni l'interrupteur : sur
+       une prise connectee ils vivent sur le MEME appareil que la puissance, et
+       le pack les y retrouve. Le capteur de porte et celui de temperature, eux,
+       vivent ailleurs et ne se devinent pas. */
+    appareil_refrigerateur: [
+      { param: 'FRIGO_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Cuisine' },
+      { param: 'FRIGO_TYPE', label: 'Type d\u2019appareil', type: 'select', required: true,
+        defaut: 'refrigerateur', options: FRIGO_TYPES },
+      { param: 'FRIGO_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
+        placeholder: 'ex : sensor.refrigerateur_mss310_power_w_main_channel' },
+      { param: 'FRIGO_PORTE', label: 'Capteur d\u2019ouverture de porte', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.refrigerateur_porte — vide : pas de pastille de porte' },
+      { param: 'FRIGO_TEMPERATURE', label: 'Capteur de température intérieure', type: 'text', required: false,
+        placeholder: 'ex : sensor.refrigerateur_temperature — vide : pas de pastille de température' },
+      { param: 'FRIGO_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
+        placeholder: 'ex : sensor.refrigerateur_mss310_energy_kwh — vide : déduit de la prise' },
+      { param: 'FRIGO_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
+        placeholder: 'ex : switch.refrigerateur_mss310_main_channel — vide : déduit de la prise' },
+      champThemeSite('FRIGO_THEME', 'urban-factory')
+    ],
     appareil_seche_linge: [
       { param: 'SECHAGE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Buanderie' },
@@ -4911,6 +4970,15 @@
       + 'repli si vous n\'en fournissez pas, ainsi que HACS et les cartes '
       + 'personnalisées requises (better-thermostat-ui-card, button-card, mushroom, '
       + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
+    appareil_refrigerateur:
+      'la vue et ses trois onglets, les deux visuels du type d\u2019appareil '
+      + 'choisi, le capteur de froid et celui du palier, la désactivation '
+      + 'temporisée pour dégivrage (deux scripts, deux automatisations et cinq '
+      + 'helpers), l\u2019automatisation d\u2019alerte qui prévient tous vos '
+      + 'mobiles quand la consommation tombe à zéro, que la prise est coupée ou '
+      + 'qu\u2019elle ne répond plus, ainsi que HACS et les cartes '
+      + 'personnalisées requises (button-card, mushroom, swipe-card, '
+      + 'stack-in-card, apexcharts-card, card-mod).',
     appareil_seche_linge:
       'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
       + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
@@ -6297,6 +6365,118 @@
         "gif": "templates/apercus/porte-garage/urban-factory.gif"
       }
     },
+    "refrigerateur": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/refrigerateur/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/refrigerateur/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/refrigerateur/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/refrigerateur/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/refrigerateur/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/refrigerateur/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/refrigerateur/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/refrigerateur/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/mars-rouge-defaut-1.jpg",
+            "templates/apercus/refrigerateur/mars-rouge-defaut-2.jpg",
+            "templates/apercus/refrigerateur/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/neo-future-defaut-1.jpg",
+            "templates/apercus/refrigerateur/neo-future-defaut-2.jpg",
+            "templates/apercus/refrigerateur/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/refrigerateur/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/refrigerateur/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/refrigerateur/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/refrigerateur/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/refrigerateur/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/refrigerateur/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/refrigerateur/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/refrigerateur/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/refrigerateur/urban-factory-defaut-1.jpg",
+            "templates/apercus/refrigerateur/urban-factory-defaut-2.jpg",
+            "templates/apercus/refrigerateur/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/refrigerateur/urban-factory.gif"
+      }
+    },
     "seche-linge": {
       "bleu-evasion": {
         "cartes": {
@@ -7052,6 +7232,7 @@
     service_gestion_dechets: 'dechets',
     appareil_lave_linge: 'lave-linge',
     appareil_seche_linge: 'seche-linge',
+    appareil_refrigerateur: 'refrigerateur',
     service_capteur: 'capteur'
   };
 
@@ -7534,7 +7715,12 @@
     // site sans passer par le paiement. Cette liste ne fait qu'ACCOMPAGNER
     // celle du Worker (`FREE_MODULES` de backend/src/jobs.js) : c'est le
     // serveur qui decide, et lui seul.
-    'service_gestion_dechets'
+    'service_gestion_dechets',
+    // `appareil_refrigerateur` ajoute le 07/09/2026, comme les
+    // precedents : phase de test. Cette liste ne fait
+    // qu'ACCOMPAGNER celle du Worker (`FREE_MODULES` de
+    // backend/src/jobs.js) : c'est le serveur qui decide.
+    'appareil_refrigerateur'
   ]);
 
   const PRIX_PACK = 9;
