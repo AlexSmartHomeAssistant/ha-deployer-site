@@ -3433,7 +3433,7 @@
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
     ],
     ouverture: [
-      { name: 'ouverture_garage_porte', desc: 'Contrôle et état porte de garage' },
+      { name: 'ouverture_garage_porte', desc: 'Porte de garage : état et minuteur' },
       { name: 'ouverture_volet', desc: 'Gestion des volets roulants' }
     ],
     chauffage: [
@@ -3456,7 +3456,7 @@
       { name: 'appareil_printer', desc: 'Imprimante et niveaux d\'encre' },
       { name: 'appareil_raspberry', desc: 'Surveillance système Raspberry Pi' },
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
-      { name: 'appareil_seche_linge', desc: 'Sèche-linge' },
+      { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
       { name: 'appareil_serpillere', desc: 'Robot serpillière' },
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
       { name: 'appareil_soundbar', desc: 'Barre de son' },
@@ -3517,7 +3517,7 @@
     appareil_printer: 'Imprimante',
     appareil_raspberry: 'Raspberry Pi',
     appareil_refrigerateur: 'Réfrigérateur',
-    appareil_seche_linge: 'Sèche-Linge',
+    appareil_seche_linge: 'Sèche-linge',
     appareil_serpillere: 'Robot Serpillière',
     appareil_sonnette: 'Sonnette',
     appareil_soundbar: 'Barre de Son',
@@ -3649,6 +3649,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_seche_linge: {
+      resume: "Phase du séchage en direct, temps restant, coût et consommation.",
+      detail: `Suivi complet d'un sèche-linge depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser dans la machine. Le premier onglet montre en direct ce qui se passe dans le tambour : le voyant clignote et le hublot tourne au rythme de la phase en cours (<b>séchage</b>, <b>chauffage</b>, <b>rotation</b>), et le <b>temps restant</b> est estimé d'après vos cycles précédents. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier séchage, compte les cycles pour vous alerter du <b>nettoyage du tambour</b>, garde les cinq derniers séchages et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. C'est ce qui lui permet de s'adapter aussi bien à une machine à condensation qu'à une <b>pompe à chaleur</b>, dont la puissance de pointe est trois fois moindre.`
+    },
     service_capteur: {
       resume: "Confort, point de rosée et tendance barométrique en direct.",
       detail: `Tout ce que votre <b>capteur d'ambiance</b> sait dire, lu et interprété. Le premier onglet dispose ses trois grandeurs en <b>triangle</b> : température et humidité en haut, pression en bas, et au centre le <b>diagnostic de confort</b> calculé en croisant les deux premières &mdash; « Confortable », « Air trop sec », « Frais et humide &mdash; condensation »... Chaque grandeur est une <b>jauge circulaire</b> à deux anneaux : l'extérieur suit la valeur, affichée en chiffres au centre du cadran, et l'intérieur marque votre <b>plage idéale</b> et s'allume quand vous y êtes &mdash; en <b>vert</b> pour la pression, dont le seuil nominal se lit d'un coup d'œil.<br><br>Le deuxième onglet met en valeur le <b>point de rosée</b>, qui dit la sensation réelle d'humidité là où le pourcentage seul ne dit rien (60 % à 18 °C et 60 % à 28 °C ne se ressentent pas du tout pareil), puis compare vos trois grandeurs à celles de la <b>météo locale</b> &mdash; c'est l'écart qui révèle l'inertie thermique du logement. Le troisième trace l'historique de chaque grandeur, par jour, semaine, mois ou année.<br><br>Un seul capteur à indiquer : celui de la <b>température</b>. Les autres grandeurs sont retrouvées <b>toutes seules</b> sur le même appareil, et la carte s'adapte à ce que votre matériel sait mesurer &mdash; ce qui manque n'apparaît pas, plutôt que d'afficher « indisponible » pour toujours.`
@@ -3684,6 +3688,10 @@
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
     },
 
+    ouverture_garage_porte: {
+      resume: "Porte de garage : état, minuteur, alerte.",
+      detail: `Pilotage complet d'une porte de garage, avec <b>son dessin réel</b> : vous choisissez le type qui correspond au vôtre &mdash; <b>basculante</b>, <b>sectionnelle plafond</b> ou <b>latérale</b>, <b>enroulable</b>, <b>battante</b>, <b>pliante</b> &mdash; et la carte le montre s'ouvrir et se refermer. Trois commandes (monter, arrêter, descendre), un <b>minuteur</b> qui l'ouvre pour une durée choisie puis la referme tout seul, et une <b>alerte sur votre mobile</b> si elle reste ouverte plus longtemps que vous ne le vouliez.<br><br>L'ouverture demande toujours une <b>confirmation</b> : un garage ne s'ouvre pas d'un clic malencontreux. La carte s'adapte ensuite à ce que votre installation expose &mdash; contact d'ouverture, détecteur de vibration et capteur de luminosité sont facultatifs, et chacun ajoute ce qu'il sait dire.`
+    },
     ouverture_volet: {
       resume: "Volet : position, minuterie, contact.",
       detail: `Pilotage complet d'un volet roulant : sa représentation en direct, un bouton <b>favori</b> qui le place en un appui à la position que vous choisissez, et un <b>minuteur</b> qui l'ouvre au pourcentage voulu pour une durée choisie avant de remettre tout seul la position d'avant. La carte s'adapte à ce que votre fenêtre expose &mdash; température, luminosité, contact d'ouverture et détecteur de vibration sont facultatifs, et chacun ajoute ce qu'il sait dire.`
@@ -3985,6 +3993,18 @@
       ]
     },
 
+    appareil_seche_linge: {
+      intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au sèche-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de la prise</b> et en déduit les seuils de puissance qui séparent le séchage, le chauffage et la rotation.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-wind',
+          texte: `Le sèche-linge en direct : le voyant clignote et le hublot tourne au rythme de la phase &mdash; <b>bleu</b> quand le tambour tourne seul, <b>rouge</b> au chauffage de l'air, <b>orange</b> au palier haut, immobile en veille. La phase est nommée en clair dans l'écran de l'appareil, et le <b>temps restant</b> est estimé d'après la durée moyenne de vos cycles précédents. Dès que la machine tourne, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Statistiques', icone: 'fa-chart-simple',
+          texte: `La <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> du dernier séchage. Un compteur suit les cycles depuis le dernier <b>nettoyage du tambour</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq derniers séchages</b> sont listés avec leur heure et leur durée. Et si vous fournissez l'interrupteur de la prise, un bouton la coupe d'un appui bref, la redémarre d'un appui long.` },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
+      ]
+    },
     appareil_lave_linge: {
       intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente la machine &mdash; rien à poser dans le tambour, rien à connecter au lave-linge. Le pack apprend de lui-même à quoi ressemble un de vos cycles : il <b>mesure l'historique de votre prise</b> et en déduit les seuils de puissance qui séparent le lavage, le chauffage et l'essorage.`,
       carte: () => 'defaut',
@@ -4095,6 +4115,18 @@
       ]
     },
 
+    ouverture_garage_porte: {
+      intro: `Trois onglets : contrôle, minuteur, historique. Le pack ne se contente pas de commander le moteur &mdash; il montre <b>votre</b> porte, celle des six types que vous choisissez à l'achat, et la dessine ouverte ou fermée selon son état réel. Toute ouverture passe par une <b>confirmation</b>, et une alerte part sur vos mobiles si la porte reste ouverte plus que le délai que vous avez fixé.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Contrôle', icone: 'fa-warehouse',
+          texte: `La porte en direct : son état écrit en clair (<b>Ouverte</b>, <b>Fermée</b>, <b>En ouverture</b>) et son dessin qui suit. Trois boutons ronds la font monter, l'arrêtent et la font descendre &mdash; seule l'ouverture demande confirmation. Dès qu'elle n'est plus fermée, la bordure s'anime et le fond s'allume, sans qu'aucun élément ne bouge de place. Les pastilles de luminosité et de vibration n'apparaissent que si vous fournissez ces capteurs.` },
+        { titre: '2 — Minuteur', icone: 'fa-hourglass-half',
+          texte: `Six durées, du quart d'heure aux douze heures : la porte s'ouvre, le décompte part, et à la fin elle <b>se referme toute seule</b>. Pause, reprise et annulation d'un appui long. Et si vous reprenez la main pendant le décompte &mdash; télécommande, bouton mural &mdash; il s'arrête sans rien vous reprendre.` },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: `La courbe d'ouverture de la porte sur le jour, la semaine, le mois ou l'année &mdash; de quoi voir d'un coup d'œil à quelles heures le garage est resté ouvert. Si vous fournissez un capteur de luminosité, c'est lui que l'onglet trace à la place.` }
+      ]
+    },
     ouverture_volet: {
       intro: `Trois onglets : contrôle, minuteur, historique. Le pack ne se contente pas de bouger le volet &mdash; il <b>photographie la position d'avant</b>, applique le pourcentage choisi pour la durée voulue, puis restaure exactement ce qui était réglé. Et si vous reprenez la main pendant le décompte, il s'arrête sans rien vous reprendre.`,
       carte: () => 'defaut',
@@ -4491,6 +4523,35 @@
        puissance, energie et relais vivent sur le MEME appareil, et le pack
        les y retrouve par leur `device_class`. Les champs ne servent qu'a
        designer l'entite quand la deduction se trompe. */
+    /* Seche-linge : memes champs que le pack Lave-linge, dont il derive.
+       Le capteur de PUISSANCE de la prise connectee est le seul champ
+       obligatoire, et c'est de lui que tout depend -- le synoptique, le
+       decoupage en cycles, la duree, la phase. Les deux suivants sont
+       facultatifs, et ce sont EUX qui decident de la variante :
+         puissance seule    -> synoptique, durees, entretien, journal ;
+                               3e onglet sur la puissance moyenne
+         + energie          -> energie et cout du cycle ; 3e onglet sur
+                               l'energie cumulee en kWh
+         + interrupteur     -> bouton de coupure / redemarrage de la prise
+       En pratique le client n'a pas a les saisir : sur une prise connectee,
+       puissance, energie et relais vivent sur le MEME appareil, et le pack
+       les y retrouve. Les champs ne servent qu'a designer l'entite quand la
+       deduction se trompe. */
+    appareil_seche_linge: [
+      { param: 'SECHAGE_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Buanderie' },
+      { param: 'SECHAGE_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
+        placeholder: 'ex : sensor.seche_linge_mss305_power_w_main_channel' },
+      { param: 'SECHAGE_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
+        placeholder: 'ex : sensor.seche_linge_mss305_energy_kwh — vide : déduit de la prise' },
+      { param: 'SECHAGE_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
+        placeholder: 'ex : switch.seche_linge_mss305_main_channel — vide : déduit de la prise' },
+      { param: 'SECHAGE_TARIF', label: 'Prix du kWh', type: 'text', required: false,
+        placeholder: 'ex : 0.25 — vide : 0,25, ajustable ensuite sans redéploiement' },
+      { param: 'SECHAGE_ENTRETIEN', label: 'Cycles entre deux entretiens du tambour', type: 'text', required: false,
+        placeholder: 'ex : 30 — vide : 30 cycles' },
+      champThemeSite('SECHAGE_THEME', 'urban-factory')
+    ],
     appareil_lave_linge: [
       { param: 'LAVAGE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salle de bain' },
@@ -4594,6 +4655,44 @@
        La sensibilité de l'alarme et son mode nuit ne sont PAS demandés : ils
        vivent sur le même appareil que le capteur d'alarme, et le pack les y
        retrouve tout seul. */
+    /* Porte de garage : le TYPE de porte et la pièce d'abord, l'entité
+       ensuite. Les trois champs suivants sont facultatifs, et ce sont EUX qui
+       décident de ce que la carte sait dire :
+         porte seule            -> libellé d'état, dessin et trois commandes
+         + contact d'ouverture  -> l'état vient du capteur PHYSIQUE, pas de ce
+                                   que le moteur croit — et c'est lui que
+                                   l'alerte des 30 minutes surveille
+         + alarme / vibration   -> une pastille violette à droite du libellé
+         + luminosité           -> une pastille à gauche, et le 3e onglet trace
+                                   la luminosité du garage au lieu de
+                                   l'historique d'ouverture
+       Rien à choisir dans une liste de variantes : le pack se règle sur ce que
+       l'installation expose réellement. */
+    ouverture_garage_porte: [
+      { param: 'GARAGE_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Garage' },
+      { param: 'GARAGE_ENTITE', label: 'Entité de la porte', type: 'text', required: true,
+        placeholder: 'ex : cover.garage_porte' },
+      { param: 'GARAGE_TYPE', label: 'Type de porte', type: 'select', required: true,
+        defaut: 'basculante',
+        options: [
+          { value: 'basculante', label: 'Basculante' },
+          { value: 'plafond', label: 'Sectionnelle plafond' },
+          { value: 'laterale', label: 'Sectionnelle latérale' },
+          { value: 'enroulable', label: 'Enroulable' },
+          { value: 'battante', label: 'Battante' },
+          { value: 'pliante', label: 'Pliante' }
+        ] },
+      { param: 'GARAGE_CONTACT', label: 'Contact d\u2019ouverture de la porte', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.garage_porte_contact — vide : l\u2019état vient du moteur' },
+      { param: 'GARAGE_ALARME', label: 'Capteur d\u2019alarme ou de vibration', type: 'text', required: false,
+        placeholder: 'ex : binary_sensor.garage_porte_vibration — vide : pastille masquée' },
+      { param: 'GARAGE_LUMINOSITE', label: 'Capteur de luminosité', type: 'text', required: false,
+        placeholder: 'ex : sensor.garage_capteur_illuminance — vide : historique d\u2019ouverture' },
+      { param: 'GARAGE_ALERTE', label: 'Alerte porte ouverte (minutes)', type: 'text', required: false,
+        placeholder: 'ex : 30 — vide : 30 minutes' },
+      champThemeSite('GARAGE_THEME', 'urban-factory')
+    ],
     ouverture_volet: [
       { param: 'VOLET_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Salon' },
@@ -4670,6 +4769,13 @@
       + 'automatisations et helpers), ainsi que HACS et les cartes personnalisées '
       + 'requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, '
       + 'card-mod).',
+    ouverture_garage_porte:
+      'la vue et ses trois onglets, les deux visuels du type de porte choisi, '
+      + 'l\u2019ouverture temporisée (deux scripts, deux automatisations et six '
+      + 'helpers), l\u2019automatisation d\u2019alerte « porte restée ouverte » qui '
+      + 'prévient tous vos mobiles, le capteur d\u2019historique d\u2019ouverture, '
+      + 'ainsi que HACS et les cartes personnalisées requises (button-card, '
+      + 'mushroom, swipe-card, stack-in-card, plotly-graph, card-mod).',
     ouverture_volet:
       'la vue et ses trois onglets, le positionnement temporisé (deux scripts, '
       + 'deux automatisations et six helpers), le capteur de température '
@@ -4682,6 +4788,14 @@
       + 'repli si vous n\'en fournissez pas, ainsi que HACS et les cartes '
       + 'personnalisées requises (better-thermostat-ui-card, button-card, mushroom, '
       + 'swipe-card, stack-in-card, plotly-graph, card-mod).',
+    appareil_seche_linge:
+      'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
+      + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
+      + 'restant, les deux automatisations de début et de fin de cycle, les trois '
+      + 'scripts d\u2019action (entretien, coupure, redémarrage de la prise) et les '
+      + 'onze helpers du suivi, ainsi que HACS et les cartes personnalisées '
+      + 'requises (button-card, mushroom, swipe-card, stack-in-card, '
+      + 'apexcharts-card, card-mod).',
     appareil_lave_linge:
       'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
       + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
@@ -5836,6 +5950,230 @@
         "gif": "templates/apercus/meteo/urban-factory.gif"
       }
     },
+    "porte-garage": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/porte-garage/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/porte-garage/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/porte-garage/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/porte-garage/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/porte-garage/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/porte-garage/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/porte-garage/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/porte-garage/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/mars-rouge-defaut-1.jpg",
+            "templates/apercus/porte-garage/mars-rouge-defaut-2.jpg",
+            "templates/apercus/porte-garage/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/neo-future-defaut-1.jpg",
+            "templates/apercus/porte-garage/neo-future-defaut-2.jpg",
+            "templates/apercus/porte-garage/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/porte-garage/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/porte-garage/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/porte-garage/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/porte-garage/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/porte-garage/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/porte-garage/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/porte-garage/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/porte-garage/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/porte-garage/urban-factory-defaut-1.jpg",
+            "templates/apercus/porte-garage/urban-factory-defaut-2.jpg",
+            "templates/apercus/porte-garage/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/porte-garage/urban-factory.gif"
+      }
+    },
+    "seche-linge": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/seche-linge/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/seche-linge/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/seche-linge/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/seche-linge/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/seche-linge/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/seche-linge/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/seche-linge/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/seche-linge/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/mars-rouge-defaut-1.jpg",
+            "templates/apercus/seche-linge/mars-rouge-defaut-2.jpg",
+            "templates/apercus/seche-linge/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/neo-future-defaut-1.jpg",
+            "templates/apercus/seche-linge/neo-future-defaut-2.jpg",
+            "templates/apercus/seche-linge/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/seche-linge/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/seche-linge/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/seche-linge/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/seche-linge/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/seche-linge/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/seche-linge/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/seche-linge/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/seche-linge/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/seche-linge/urban-factory-defaut-1.jpg",
+            "templates/apercus/seche-linge/urban-factory-defaut-2.jpg",
+            "templates/apercus/seche-linge/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/seche-linge/urban-factory.gif"
+      }
+    },
     "temps": {
       "bleu-evasion": {
         "cartes": {
@@ -6475,7 +6813,9 @@
     service_boite_aux_lettres: 'bal',
     chauffage_thermostat: 'thermostat',
     ouverture_volet: 'volet',
+    ouverture_garage_porte: 'porte-garage',
     appareil_lave_linge: 'lave-linge',
+    appareil_seche_linge: 'seche-linge',
     service_capteur: 'capteur'
   };
 
@@ -6951,7 +7291,8 @@
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
-    'appareil_lave_linge', 'service_capteur'
+    'ouverture_garage_porte',
+    'appareil_lave_linge', 'appareil_seche_linge', 'service_capteur'
   ]);
 
   const PRIX_PACK = 9;
@@ -7474,6 +7815,11 @@
     // consommation, seuils de puissance mesures sur l'historique de la
     // prise connectee.
     appareil_lave_linge: 'lave-linge',
+    // Pack Seche-linge (06/09/2026), derive du pack Lave-linge : meme
+    // synoptique de cycle, memes statistiques, meme historique de
+    // consommation. Seuls changent les visuels, l'icone du tambour et le
+    // vocabulaire (sechage / rotation au lieu de lavage / essorage).
+    appareil_seche_linge: 'seche-linge',
     appareil_raspberry: 'systeme',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
@@ -7483,7 +7829,11 @@
     // plus expose : il ciblait une piece codee en dur.
     chauffage_thermostat: 'thermostat',
     lumiere_lumiere: 'lumiere',
-    ouverture_garage_porte: 'porte-garage',
+    // Reecrit le 06/09/2026 sur le gabarit du pack Lumiere. L'ancien
+    // `porte-garage` (deploy_pack_garagedoor) reste sur le depot mais
+    // n'est plus expose : il ciblait une piece et des entites codees
+    // en dur.
+    ouverture_garage_porte: 'porte-de-garage',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `volet-fenetre` (deploy_pack_shutter) reste sur le depot mais
     // n'est plus expose : il ciblait une piece et des entites codees
