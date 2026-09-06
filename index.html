@@ -3690,7 +3690,7 @@
 
     service_gestion_dechets: {
       resume: "Poubelles, compte à rebours et déchèterie.",
-      detail: `Le calendrier de vos collectes, montré comme vos poubelles : vous décrivez <b>vos bacs</b> &mdash; d'un à cinq &mdash; en choisissant pour chacun le <b>type de déchet</b> et la <b>couleur du couvercle</b>, et la carte les dessine côte à côte, chacun avec son pictogramme. Au-dessus de chaque bac, un compte à rebours <b>J&nbsp;&minus;&nbsp;n</b> dit dans combien de jours il sort ; à la veille, il prend la couleur du bac et se met à clignoter.<br><br>Un <b>rappel part sur vos mobiles</b> le soir précédant chaque collecte, en nommant les bacs à sortir. Un deuxième onglet suit les <b>encombrants</b>, et un troisième trouve tout seul la <b>déchèterie la plus proche</b> de chez vous &mdash; nom, adresse, téléphone, horaires &mdash; sans que vous ayez rien à saisir.`
+      detail: `Le calendrier de vos collectes, montré comme vos poubelles : vous décrivez <b>vos bacs</b> &mdash; d'un à cinq &mdash; en choisissant pour chacun le <b>type de déchet</b> et la <b>couleur du couvercle</b>, et la carte les dessine côte à côte, chacun avec son pictogramme. Au-dessus de chaque bac, un compte à rebours <b>D&nbsp;&minus;&nbsp;n</b> dit dans combien de jours il sort ; à la veille, il prend la couleur du bac et se met à clignoter.<br><br>Un <b>rappel part sur vos mobiles</b> le soir précédant chaque collecte, en nommant les bacs à sortir. Un deuxième onglet suit les <b>encombrants</b>, et un troisième trouve tout seul la <b>déchèterie la plus proche</b> de chez vous &mdash; nom, adresse, téléphone, horaires &mdash; sans que vous ayez rien à saisir.`
     },
 
     ouverture_garage_porte: {
@@ -4125,7 +4125,7 @@
       carte: () => 'defaut',
       onglets: [
         { titre: '1 — Collecte', icone: 'fa-recycle',
-          texte: `Vos bacs, d'un à cinq, alignés et posés sur la même ligne : le type de déchet donne le pictogramme, la couleur du couvercle donne le bac. Au-dessus de chacun, le compte à rebours <b>J&nbsp;&minus;&nbsp;n</b>. La veille et le jour même, il passe à la couleur de son bac et clignote, la bordure de la carte s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+          texte: `Vos bacs, d'un à cinq, alignés et posés sur la même ligne : le type de déchet donne le pictogramme, la couleur du couvercle donne le bac. Au-dessus de chacun, le compte à rebours <b>D&nbsp;&minus;&nbsp;n</b> &mdash; la lettre suit la langue que vous choisissez, parmi vingt. La veille et le jour même, il passe à la couleur de son bac et clignote, la bordure de la carte s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
         { titre: '2 — Encombrants', icone: 'fa-couch',
           texte: `La collecte des encombrants a son propre rythme et son propre onglet : même compte à rebours, même signal la veille. Elle est toujours présente, quel que soit le nombre de bacs que vous avez déclarés.` },
         { titre: '3 — Déchèterie', icone: 'fa-location-dot',
@@ -4571,6 +4571,31 @@
         placeholder: 'ex : premier lundi — vide : premier lundi du mois' },
       { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille', type: 'text', required: false,
         placeholder: 'ex : 19:00 — vide : 19h00' },
+      { param: 'DECHETS_LANGUE', label: 'Compte à rebours — langue',
+        type: 'select', required: false, defaut: 'en',
+        options: [
+          { value: 'auto', label: 'Langue de mon Home Assistant' },
+          { value: 'ar', label: 'العربية (—)' },
+          { value: 'bn', label: 'বাংলা (—)' },
+          { value: 'de', label: 'Deutsch (T)' },
+          { value: 'en', label: 'English (D)' },
+          { value: 'es', label: 'Español (D)' },
+          { value: 'fa', label: 'فارسی (—)' },
+          { value: 'fr', label: 'Français (J)' },
+          { value: 'he', label: 'עברית (—)' },
+          { value: 'hi', label: 'हिन्दी (—)' },
+          { value: 'it', label: 'Italiano (G)' },
+          { value: 'ja', label: '日本語 (—)' },
+          { value: 'ko', label: '한국어 (—)' },
+          { value: 'nl', label: 'Nederlands (D)' },
+          { value: 'pl', label: 'Polski (D)' },
+          { value: 'pt', label: 'Português (D)' },
+          { value: 'ru', label: 'Русский (—)' },
+          { value: 'th', label: 'ไทย (—)' },
+          { value: 'tr', label: 'Türkçe (G)' },
+          { value: 'vi', label: 'Tiếng Việt (N)' },
+          { value: 'zh', label: '中文 (—)' },
+        ] },
       champThemeSite('DECHETS_THEME', 'urban-factory')
     ],
     /* Les packs « Configuration » n'ont pas de theme : ils n'affichent aucune
