@@ -1460,6 +1460,18 @@
       gap: 10px 16px;
       align-items: start;
     }
+    /* UN SOUS-BLOC TIENT SUR UNE SEULE LIGNE (demande du client, 07/09/2026 :
+       « mettre les 6 champs sur une seule ligne »). Le nombre de colonnes est
+       celui des champs du sous-bloc, pose en variable par `groupesDeParams` :
+       une grille `auto-fill` les repartirait sur deux rangees des que la
+       largeur manque, et une valeur figee a six laisserait la ligne du foyer,
+       qui n'a que deux champs, s'etirer sur toute la page.
+       `minmax(0, 1fr)` -- et non `1fr` -- est indispensable : la taille
+       minimale par defaut d'une piste de grille est `auto`, et un selecteur au
+       libelle long refuserait alors de retrecir, debordant la ligne. */
+    .detail-champs-ligne {
+      grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+    }
     .param-champ { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 
     /* SOUS-BLOCS DE SAISIE (07/09/2026) : un cadre par famille de champs --
@@ -1511,7 +1523,14 @@
        puis le descriptif, puis les saisies. */
     @media (max-width: 780px) {
       .detail-trois-blocs { grid-template-columns: 1fr; }
-      .detail-champs { grid-template-columns: 1fr; }
+      .detail-champs, .detail-champs-ligne { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 861px) and (max-width: 1200px) {
+      /* Six colonnes ne tiennent pas sous 1200 px : les champs y deviendraient
+         trop etroits pour lire un jour de collecte. On plafonne a trois, et le
+         sous-bloc prend deux rangees -- ce qui reste lisible, contrairement a
+         six colonnes de 90 px. */
+      .detail-champs-ligne { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     .detail-commandes select {
       width: 100%;
@@ -4499,7 +4518,8 @@
       return groupes.map(g => `
         <fieldset class="detail-groupe">
           <legend class="detail-groupe-titre">${g.titre}</legend>
-          <div class="detail-champs">${g.html}</div>
+          <div class="detail-champs detail-champs-ligne"
+               style="--cols:${g.champs}">${g.html}</div>
         </fieldset>`).join('') + (principal
           ? `<div class="detail-champs">${principal}</div>` : '');
     }
@@ -4591,27 +4611,44 @@
     ['cafe', '☕ Capsules de café'], ['cigarette', '🚬 Mégots']
   ];
 
-  /* La COULEUR DU BAC : l'option porte le FOND de la couleur reelle du
-     couvercle, et son texte passe en noir ou en blanc selon ce qui s'y lit.
-     Une pastille « ⬤ » teintee ne suffisait pas -- le client l'a trouvee « pas
-     assez coloree et representative » le 07/09/2026 --, et pour cause : sur
-     fond blanc, un jaune ou un vert doivent etre assombris jusqu'a l'olive et
-     au sapin pour rester lisibles EN TEXTE. En FOND, ils gardent leur teinte
-     franche, et c'est le texte qui s'adapte.
+  /* La COULEUR DU BAC : un PETIT RECTANGLE de la teinte reelle du couvercle,
+     a gauche du nom -- et non le fond de toute la case (demande du client le
+     07/09/2026, apres un fond plein qui « remplissait la case complete »).
+
+     UN `<option>` N'ACCEPTE NI BALISE NI PSEUDO-ELEMENT : on ne peut pas y
+     colorer une partie du texte. Le rectangle est donc une IMAGE DE FOND --
+     un degrade d'une seule couleur, non repete, cale a gauche -- et la marge
+     interne gauche lui reserve sa place. C'est la seule pastille exacte
+     possible : les carres emoji ne couvrent que neuf teintes, ni le bordeaux,
+     ni le turquoise, ni le gris.
+
+     Une pastille « ⬤ » COLOREE ne convenait pas non plus : sur fond blanc, un
+     jaune ou un vert doivent etre assombris jusqu'a l'olive et au sapin pour
+     rester lisibles en texte -- la teinte affichee n'est alors plus celle du
+     couvercle. En rectangle, elle reste franche et le nom garde la couleur du
+     theme.
 
      Troisieme colonne : la teinte du couvercle, relevee dans le visuel (jeu
-     « sombre » de `TEINTES_BAC`, le plus proche du plastique reel).
-     Quatrieme : la couleur de texte qui s'y lit -- calculee sur la luminance
-     relative, pas choisie a l'oeil. */
+     « sombre » de `TEINTES_BAC`, le plus proche du plastique reel). */
   const DECHETS_COULEURS = [
-    ['grise', 'Grise', '#929292', '#000000'], ['jaune', 'Jaune', '#E7D689', '#000000'],
-    ['verte', 'Verte', '#6EC871', '#000000'], ['bleue', 'Bleue', '#4666BE', '#FFFFFF'],
-    ['marron', 'Marron', '#BE7055', '#000000'], ['rouge', 'Rouge', '#F76060', '#000000'],
-    ['orange', 'Orange', '#F6925C', '#000000'], ['noire', 'Noire', '#585858', '#FFFFFF'],
-    ['blanche', 'Blanche', '#DBDBDB', '#000000'], ['bordeaux', 'Bordeaux', '#B9475B', '#FFFFFF'],
-    ['rose', 'Rose', '#F17F93', '#000000'], ['turquoise', 'Turquoise', '#4DCDDE', '#000000'],
-    ['violet', 'Violette', '#8057BF', '#FFFFFF']
+    ['grise', 'Grise', '#929292'], ['jaune', 'Jaune', '#E7D689'],
+    ['verte', 'Verte', '#6EC871'], ['bleue', 'Bleue', '#4666BE'],
+    ['marron', 'Marron', '#BE7055'], ['rouge', 'Rouge', '#F76060'],
+    ['orange', 'Orange', '#F6925C'], ['noire', 'Noire', '#585858'],
+    ['blanche', 'Blanche', '#DBDBDB'], ['bordeaux', 'Bordeaux', '#B9475B'],
+    ['rose', 'Rose', '#F17F93'], ['turquoise', 'Turquoise', '#4DCDDE'],
+    ['violet', 'Violette', '#8057BF']
   ];
+
+  /* Le rectangle, en image de fond. `linear-gradient` d'une seule couleur est
+     la facon la plus courte de peindre un aplat en `background-image` -- et
+     c'est bien une IMAGE, donc dimensionnable et positionnable, ce qu'un
+     `background-color` ne serait pas. */
+  function rectangleCouleur(teinte) {
+    return 'background-image:linear-gradient(' + teinte + ',' + teinte + ');'
+      + 'background-size:14px 12px;background-position:8px center;'
+      + 'background-repeat:no-repeat;padding-left:30px;';
+  }
 
   /* Les sept jours. Le CODE est celui qu'attend `waste_collection_schedule`
      (`TU`, `premier-TU`, `dernier-WE`) : il traverse le Worker et le runner
@@ -4657,7 +4694,7 @@
 
   function champTypeDechet(rang, obligatoire) {
     return { param: 'DECHETS_TYPE_' + rang,
-             label: 'Poubelle ' + rang + ' — type de déchet',
+             label: 'Type de déchet',
              groupe: '🗑️ Poubelle ' + rang,
              type: 'select', required: obligatoire,
              defaut: obligatoire ? 'dechets_menagers' : '',
@@ -4668,12 +4705,11 @@
 
   function champCouleurBac(rang, obligatoire) {
     return { param: 'DECHETS_COULEUR_' + rang,
-             label: 'Poubelle ' + rang + ' — couleur du bac',
+             label: 'Couleur du bac',
              groupe: '🗑️ Poubelle ' + rang,
              type: 'select', required: obligatoire, defaut: 'grise',
              options: DECHETS_COULEURS.map(function (c) {
-               return { value: c[0], label: '⬤ ' + c[1],
-                        fond: c[2], couleur: c[3] }; }) };
+               return { value: c[0], label: c[1], rectangle: c[2] }; }) };
   }
 
   /* La FREQUENCE prime sur ce que le champ du jour laisse deviner, et elle
@@ -4681,9 +4717,14 @@
      changement. Sans cela, un client qui choisit « Chaque mois » resterait
      devant sept jours nus, et rien ne dirait s'il s'agit du premier ou du
      dernier du mois. */
+  /* `libelle` vaut « Poubelle 3 » pour un bac, « Encombrants » pour la ligne
+     du dessus. VIDE, le libelle se reduit a son nom secondaire : le sous-bloc
+     porte deja « 🗑️ Poubelle 3 », et le repeter dans chacun de ses six champs
+     n'apprend rien (demande du client, 07/09/2026). */
   function champFrequence(rang, groupe, libelle) {
     return { param: 'DECHETS_FREQUENCE_' + rang,
-             label: (libelle || 'Poubelle ' + rang) + ' — fréquence',
+             label: libelle === '' ? 'Fréquence'
+                    : (libelle || 'Poubelle ' + rang) + ' — fréquence',
              groupe: groupe || ('🗑️ Poubelle ' + rang),
              type: 'select', required: false, defaut: 'semaine',
              pilote: 'DECHETS_COLLECTE_' + rang,
@@ -4696,7 +4737,8 @@
 
   function champCollecte(rang, groupe, libelle) {
     return { param: 'DECHETS_COLLECTE_' + rang,
-             label: (libelle || 'Poubelle ' + rang) + ' — jour de collecte',
+             label: libelle === '' ? 'Jour de collecte'
+                    : (libelle || 'Poubelle ' + rang) + ' — jour de collecte',
              groupe: groupe || ('🗑️ Poubelle ' + rang),
              type: 'select', required: false, defaut: 'TU',
              options: optionsJour('semaine') };
@@ -4708,45 +4750,37 @@
      soit un couple `{start, end}` (verifie dans son code source le
      07/09/2026). Les deux dates saisies ici y vont telles quelles.
 
-     Le selecteur precede les dates : sans lui, deux champs de date vides au
-     bas de chaque poubelle ne diraient pas a quoi ils servent. */
-  function champException(rang) {
-    return { param: 'DECHETS_EXCEPTION_' + rang,
-             label: 'Poubelle ' + rang + ' — exception',
-             groupe: '🗑️ Poubelle ' + rang,
-             type: 'select', required: false, defaut: 'aucune',
-             options: [
-               { value: 'aucune', label: '✅ Aucune exception' },
-               { value: 'periode', label: '🚫 Exclure une période' }
-             ] };
-  }
-
+     PAS DE SELECTEUR « aucune / periode » (retire le 07/09/2026) : deux
+     champs de date vides disent deja qu'il n'y a pas d'exception. Un
+     selecteur qui ne ferait que repeter l'etat des deux champs suivants est
+     un troisieme champ a remplir pour rien -- et une occasion de se
+     contredire, si le client saisit des dates en laissant « aucune ». */
   function champExceptionDates(rang) {
     return [
-      { param: 'DECHETS_EXCEPTION_DEBUT_' + rang,
-        label: 'Poubelle ' + rang + ' — exception, début',
+      { param: 'DECHETS_EXCEPTION_DEBUT_' + rang, label: 'Exception, début',
         groupe: '🗑️ Poubelle ' + rang, type: 'date', required: false },
-      { param: 'DECHETS_EXCEPTION_FIN_' + rang,
-        label: 'Poubelle ' + rang + ' — exception, fin',
+      { param: 'DECHETS_EXCEPTION_FIN_' + rang, label: 'Exception, fin',
         groupe: '🗑️ Poubelle ' + rang, type: 'date', required: false }
     ];
   }
 
   /* UN `<select>` FERME NE MONTRE PAS LE STYLE DE SON OPTION. Le navigateur
-     le peint avec ses propres couleurs : la teinte posee sur l'`<option>` ne
-     se voit qu'une fois la liste DEROULEE, et le client se retrouve devant un
-     « ⬤ Grise » noir sur blanc tant qu'il n'a pas ouvert le menu.
+     le peint avec ses propres couleurs : le rectangle pose sur l'`<option>`
+     ne se voit qu'une fois la liste DEROULEE, et le client reste devant un
+     « Grise » nu tant qu'il n'a pas ouvert le menu.
 
-     On reporte donc la teinte de l'option retenue sur le selecteur lui-meme,
-     au chargement puis a chaque changement. La couleur du bac est alors
-     visible en permanence, ce que le client demande depuis deux tours. */
+     On reporte donc le rectangle de l'option retenue sur le selecteur
+     lui-meme, au rendu puis a chaque changement. La couleur du bac est alors
+     visible en permanence. */
   function refleterCouleur(select) {
     if (!select) return;
     const o = select.options[select.selectedIndex];
-    if (!o || !o.style.backgroundColor) return;
-    select.style.backgroundColor = o.style.backgroundColor;
-    select.style.color = o.style.color;
-    select.style.fontWeight = '600';
+    if (!o || !o.style.backgroundImage) return;
+    select.style.backgroundImage = o.style.backgroundImage;
+    select.style.backgroundSize = o.style.backgroundSize;
+    select.style.backgroundPosition = o.style.backgroundPosition;
+    select.style.backgroundRepeat = o.style.backgroundRepeat;
+    select.style.paddingLeft = o.style.paddingLeft;
   }
 
   /* Applique le reflet a tous les selecteurs colores d'une page. Appelee apres
@@ -4808,20 +4842,25 @@
       champFrequence('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
       champCollecte('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
       champTypeDechet(1, true), champCouleurBac(1, true),
-      champFrequence(1), champCollecte(1),
-      champException(1), ...champExceptionDates(1),
+      champFrequence(1, '🗑️ Poubelle 1', ''),
+      champCollecte(1, '🗑️ Poubelle 1', ''),
+      ...champExceptionDates(1),
       champTypeDechet(2, false), champCouleurBac(2, false),
-      champFrequence(2), champCollecte(2),
-      champException(2), ...champExceptionDates(2),
+      champFrequence(2, '🗑️ Poubelle 2', ''),
+      champCollecte(2, '🗑️ Poubelle 2', ''),
+      ...champExceptionDates(2),
       champTypeDechet(3, false), champCouleurBac(3, false),
-      champFrequence(3), champCollecte(3),
-      champException(3), ...champExceptionDates(3),
+      champFrequence(3, '🗑️ Poubelle 3', ''),
+      champCollecte(3, '🗑️ Poubelle 3', ''),
+      ...champExceptionDates(3),
       champTypeDechet(4, false), champCouleurBac(4, false),
-      champFrequence(4), champCollecte(4),
-      champException(4), ...champExceptionDates(4),
+      champFrequence(4, '🗑️ Poubelle 4', ''),
+      champCollecte(4, '🗑️ Poubelle 4', ''),
+      ...champExceptionDates(4),
       champTypeDechet(5, false), champCouleurBac(5, false),
-      champFrequence(5), champCollecte(5),
-      champException(5), ...champExceptionDates(5)
+      champFrequence(5, '🗑️ Poubelle 5', ''),
+      champCollecte(5, '🗑️ Poubelle 5', ''),
+      ...champExceptionDates(5)
     ],
     /* Les packs « Configuration » n'ont pas de theme : ils n'affichent aucune
        carte. Seuls deux d'entre eux reclament une saisie — File editor et
@@ -5235,8 +5274,9 @@
       const titre = c.groupe || '⚙️ Autres réglages';
       let bloc = sortie.length && sortie[sortie.length - 1].titre === titre
         ? sortie[sortie.length - 1] : null;
-      if (!bloc) { bloc = { titre: titre, html: '' }; sortie.push(bloc); }
+      if (!bloc) { bloc = { titre: titre, html: '', champs: 0 }; sortie.push(bloc); }
       bloc.html += champHtml(modName, c);
+      bloc.champs += 1;
     });
     return sortie;
   }
@@ -5275,8 +5315,8 @@
       const saisie = c.type === 'select'
         ? `<select id="${id}" onchange="refleterCouleur(this);majApercu('${modName}');${apres}">${c.options.map(o =>
              `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}${
-               o.fond ? ` style="background-color:${o.fond};color:${o.couleur}"`
-                      : (o.couleur ? ` style="color:${o.couleur}"` : '')
+               o.rectangle ? ` style="${rectangleCouleur(o.rectangle)}"`
+                           : (o.couleur ? ` style="color:${o.couleur}"` : '')
              }>${o.label}</option>`).join('')}</select>`
         : `<input type="${c.type === 'date' ? 'date' : 'text'}"
                   class="${c.required === false ? 'field-optional' : 'field-required'}"
@@ -7570,12 +7610,49 @@
         continue;
       }
       const el = document.getElementById(id);
-      const valeur = el ? el.value.trim() : '';
+      /* LE SELECTEUR DE THEME D'UNE PAGE DE DETAILS N'EST PAS DANS LE CORPS :
+         il est rendu en tete de page, sous l'id `detail-theme`, et
+         `champsDetailHtml` l'exclut donc des champs. Sans ce repli,
+         `collecterParams` ne le trouvait pas, le jugeait « requis et vide » et
+         renvoyait `null` : LE BOUTON « AJOUTER » NE FAISAIT RIEN, sans le
+         moindre message, sur les SIX packs a theme (mesure le 07/09/2026 --
+         Lave-linge, Thermostat et Dechets rendaient tous les trois `null`).
+         C'est la valeur affichee en tete qui fait foi : c'est elle que le
+         client voit, et elle pilote deja l'apercu. */
+        const enTete = (!el && estChampTheme(c))
+          ? (document.getElementById('detail-theme')
+             || { value: etatDetails.theme || c.defaut || '' })
+          : null;
+      const valeur = (el || enTete) ? (el || enTete).value.trim() : '';
       if (c.required && !valeur) {
-        signalerChampManquant(el, `Veuillez renseigner « ${c.label} » avant d'ajouter au panier.`);
+        signalerChampManquant(el || document.getElementById('detail-theme'),
+          `Veuillez renseigner « ${c.label} » avant d'ajouter au panier.`);
         return null;
       }
       params[c.param] = valeur;
+    }
+    return sansPoubellesVides(modName, params);
+  }
+
+  /* UNE POUBELLE SANS TYPE NE DOIT RIEN DEPLOYER (demande du client,
+     07/09/2026). Le module l'ignore deja -- un bac n'existe que si son TYPE
+     est renseigne, la couleur et le calendrier n'ayant que des defauts --,
+     mais le formulaire envoyait quand meme la couleur, la frequence, le jour
+     et les deux dates des cinq poubelles, puisque ces champs-la ont tous une
+     valeur par defaut. Cinq jeux de reglages orphelins traversaient donc
+     toute la chaine pour etre jetes a l'arrivee.
+
+     On les retire ici, au plus pres de la saisie : ce qui ne part pas ne peut
+     pas etre mal interprete en chemin. La regle ne vaut que pour ce pack --
+     elle se reconnait au nom de ses champs, et ne touche a rien d'autre. */
+  function sansPoubellesVides(modName, params) {
+    if (!params) return params;
+    for (let rang = 1; rang <= 5; rang++) {
+      if (params['DECHETS_TYPE_' + rang]) continue;
+      if (!('DECHETS_TYPE_' + rang in params)) continue;
+      ['TYPE', 'COULEUR', 'FREQUENCE', 'COLLECTE',
+       'EXCEPTION_DEBUT', 'EXCEPTION_FIN'].forEach(
+        suffixe => { delete params['DECHETS_' + suffixe + '_' + rang]; });
     }
     return params;
   }
