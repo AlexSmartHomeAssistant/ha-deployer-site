@@ -8861,9 +8861,22 @@
           ${LOGO_APPLE} Continuer avec Apple
         </button>
       </div>
-      ${(f.google || f.apple) ? '' : `<p class="auth-note">
-        <i class="fa-solid fa-circle-info"></i> La connexion Google et Apple sera activée
-        prochainement. En attendant, créez un compte avec votre e-mail.</p>`}`;
+      ${noteFournisseurs(f)}`;
+  }
+
+  /* La note ne disparait que lorsque les DEUX fournisseurs fonctionnent, et
+     elle nomme celui qui manque. Elle s'effacait des que l'un des deux etait
+     configure : Google actif, plus rien n'expliquait pourquoi Apple restait
+     grise, et un bouton inerte sans un mot se lit comme un bouton casse. */
+  function noteFournisseurs(f) {
+    if (f.google && f.apple) return '';
+    const absents = [!f.google && 'Google', !f.apple && 'Apple'].filter(Boolean);
+    const repli = (f.google || f.apple)
+      ? "utilisez l'autre bouton, ou votre e-mail et votre mot de passe."
+      : "créez un compte avec votre e-mail.";
+    return `<p class="auth-note"><i class="fa-solid fa-circle-info"></i>
+      La connexion ${absents.join(' et ')} sera activée prochainement.
+      En attendant, ${repli}</p>`;
   }
 
   function connexionSociale(fournisseur) {
