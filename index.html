@@ -1473,6 +1473,12 @@
       grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
     }
     .param-champ { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .param-note {
+      justify-content: center;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      color: var(--text-muted);
+    }
 
     /* SOUS-BLOCS DE SAISIE (07/09/2026) : un cadre par famille de champs --
        le foyer, les encombrants, puis chaque poubelle. Vingt-huit champs
@@ -4721,18 +4727,27 @@
      du dessus. VIDE, le libelle se reduit a son nom secondaire : le sous-bloc
      porte deja « 🗑️ Poubelle 3 », et le repeter dans chacun de ses six champs
      n'apprend rien (demande du client, 07/09/2026). */
-  function champFrequence(rang, groupe, libelle) {
+  function champFrequence(rang, groupe, libelle, facultative) {
+    /* `facultative` ouvre la liste sur « aucune collecte », et en fait le
+       defaut. C'est le cas des ENCOMBRANTS depuis le 07/09/2026 : beaucoup de
+       communes n'ont pas de collecte a date fixe -- on y prend rendez-vous --
+       et un onglet qui compte les jours jusqu'a une collecte qui n'existe pas
+       est pire qu'un onglet absent. Sans frequence, le pack n'ecrit ni source
+       ni capteur, et son 2e onglet est elague : la carte n'a que deux
+       onglets. Les poubelles, elles, gardent « Chaque semaine ». */
+    const aucune = [{ value: '', label: '🚫 Aucune collecte' }];
     return { param: 'DECHETS_FREQUENCE_' + rang,
              label: libelle === '' ? 'Fréquence'
                     : (libelle || 'Poubelle ' + rang) + ' — fréquence',
              groupe: groupe || ('🗑️ Poubelle ' + rang),
-             type: 'select', required: false, defaut: 'semaine',
+             type: 'select', required: false,
+             defaut: facultative ? '' : 'semaine',
              pilote: 'DECHETS_COLLECTE_' + rang,
-             options: [
+             options: (facultative ? aucune : []).concat([
                { value: 'semaine', label: '🔁 Chaque semaine' },
                { value: 'mois', label: '🗓️ Chaque mois' },
                { value: 'annee', label: '🎍 Chaque année' }
-             ] };
+             ]) };
   }
 
   function champCollecte(rang, groupe, libelle) {
@@ -4838,8 +4853,13 @@
       { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille',
         type: 'text', required: false, groupe: '🏠 Votre foyer',
         placeholder: 'ex : 19:00 — vide : 19h00' },
+      { param: 'DECHETS_ENCOMBRANTS_NOTE', label: '', type: 'note',
+        groupe: '🛋️ Collecte des encombrants',
+        texte: 'Sans fréquence, le pack ne crée pas d’onglet Encombrants : '
+             + 'votre carte n’en a alors que deux.' },
       champThemeSite('DECHETS_THEME', 'urban-factory'),
-      champFrequence('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
+      champFrequence('ENCOMBRANTS', '🛋️ Collecte des encombrants',
+                     'Encombrants', true),
       champCollecte('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
       champTypeDechet(1, true), champCouleurBac(1, true),
       champFrequence(1, '🗑️ Poubelle 1', ''),
@@ -5293,6 +5313,12 @@
   function champHtml(modName, c) {
     {
       const id = `param-${modName}-${c.param}`;
+      /* Une NOTE n'est pas une saisie : elle explique ce que l'absence de
+         reglage produit. Un champ facultatif dont on ignore l'effet n'est
+         jamais rempli -- ni laisse vide en connaissance de cause. */
+      if (c.type === 'note') {
+        return `<div class="param-champ param-note">${c.texte}</div>`;
+      }
       if (c.type === 'checkboxes') {
         const cases = c.options.map((o, i) =>
           `<label class="param-checkbox"><input type="checkbox" id="${id}-${o.value}"
@@ -7595,6 +7621,7 @@
     if (!champs) return {};
     const params = {};
     for (const c of champs) {
+      if (c.type === 'note') continue;
       const id = `param-${modName}-${c.param}`;
       if (c.type === 'checkboxes') {
         const groupe = document.getElementById(id);
