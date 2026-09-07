@@ -1461,6 +1461,26 @@
       align-items: start;
     }
     .param-champ { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+    /* SOUS-BLOCS DE SAISIE (07/09/2026) : un cadre par famille de champs --
+       le foyer, les encombrants, puis chaque poubelle. Vingt-huit champs
+       d'affilee ne se lisent pas ; separes, ils se parcourent. */
+    .detail-groupe {
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px 14px;
+      margin: 0 0 12px 0;
+      min-width: 0;
+    }
+    .detail-groupe-titre {
+      padding: 0 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--primary-blue);
+    }
+    .detail-groupe:last-of-type { margin-bottom: 0; }
     .detail-champs .param-label { margin-top: 0; }
     .detail-champs input, .detail-champs select {
       width: 100%;
@@ -4466,6 +4486,19 @@
       return `<p class="detail-sans-champ"><i class="fa-solid fa-wand-magic-sparkles"></i>
         Rien à renseigner : ce pack découvre lui-même ce dont il a besoin.</p>`;
     }
+    // LES `groupe` DECOUPENT LA SAISIE EN SOUS-BLOCS. Un pack a vingt-huit
+    // champs -- Dechets -- ne se lit pas d'une traite : le client a demande
+    // une ligne pour le foyer, une pour les encombrants, puis une par
+    // poubelle. Un pack sans `groupe` garde une grille unique, inchangee.
+    const groupes = groupesDeParams(modName);
+    if (groupes.length) {
+      return groupes.map(g => `
+        <fieldset class="detail-groupe">
+          <legend class="detail-groupe-titre">${g.titre}</legend>
+          <div class="detail-champs">${g.html}</div>
+        </fieldset>`).join('') + (principal
+          ? `<div class="detail-champs">${principal}</div>` : '');
+    }
     return `<div class="detail-champs">${autres}${principal}</div>`;
   }
 
@@ -4521,8 +4554,9 @@
      de la fiche, et le thème sur lequel s'ouvre la page de détails. Les
      dissocier ferait changer de fond au clic sur « Détails », ce qui se lit
      comme un défaut d'affichage. */
-  function champThemeSite(param, defaut) {
+  function champThemeSite(param, defaut, groupe) {
     return { param: param, label: 'Thème', type: 'select', required: true,
+             groupe: groupe,
              defaut: defaut || THEMES_SITE[0].value, options: THEMES_SITE };
   }
 
@@ -4535,27 +4569,89 @@
      Ces listes doivent rester d'accord avec `TYPES_DECHET` et `COULEURS_BAC`
      de `deploy_pack_service_dechets.py` : un type absent de la liste Python
      retomberait en silence sur « Ordures ménagères », et une couleur absente
-     sur « Grise ». */
+     sur « Grise ».
+
+     CHAQUE ENTREE PORTE SON EMOJI. Une `<option>` n'accepte ni balise ni
+     police d'icones -- Font Awesome y est inerte --, mais elle accepte
+     parfaitement un caractere Unicode. C'est la seule facon de prefixer une
+     icone au texte d'un selecteur natif, et elle vaut sur tous les
+     navigateurs. */
   const DECHETS_TYPES = [
-    ['dechets_menagers', 'Ordures ménagères'], ['emballage', 'Emballages et papiers'],
-    ['vegetaux', 'Déchets végétaux'], ['carton', 'Cartons'],
-    ['aluminium', 'Métaux et canettes'], ['flacon', 'Flacons et bouteilles'],
-    ['bouchon', 'Bouchons'], ['textile', 'Textiles'],
-    ['pile', 'Piles et batteries'], ['ampoule', 'Ampoules'],
-    ['appareils', 'Appareils électriques'], ['medicaments', 'Médicaments'],
-    ['dechets_chimiques', 'Déchets chimiques'], ['risque_biologique', 'Déchets à risque'],
-    ['cafe', 'Capsules de café'], ['cigarette', 'Mégots']
+    ['dechets_menagers', '🗑️ Ordures ménagères'], ['emballage', '📦 Emballages et papiers'],
+    ['vegetaux', '🌿 Déchets végétaux'], ['carton', '📥 Cartons'],
+    ['aluminium', '🥫 Métaux et canettes'], ['flacon', '🧴 Flacons et bouteilles'],
+    ['bouchon', '🍾 Bouchons'], ['textile', '👕 Textiles'],
+    ['pile', '🔋 Piles et batteries'], ['ampoule', '💡 Ampoules'],
+    ['appareils', '🖥️ Appareils électriques'], ['medicaments', '💊 Médicaments'],
+    ['dechets_chimiques', '☠️ Déchets chimiques'], ['risque_biologique', '☣️ Déchets à risque'],
+    ['cafe', '☕ Capsules de café'], ['cigarette', '🚬 Mégots']
   ];
+
+  /* La COULEUR DU BAC est prefixee de sa propre teinte : « ⬤ » puis le nom, le
+     tout colore par un `style` pose sur l'`<option>`. C'est ce que le client a
+     demande -- « les couleurs associees prefixees au nom » -- et c'est la
+     seule pastille exacte possible : les carres emoji ne couvrent que neuf
+     teintes, ni le bordeaux, ni le turquoise, ni le gris.
+
+     Les valeurs sont celles du jeu CLAIR de `TEINTES_BAC` : le formulaire est
+     sur fond blanc, et une teinte reglee pour la texture sombre d'une carte y
+     serait illisible. */
   const DECHETS_COULEURS = [
-    ['grise', 'Grise'], ['jaune', 'Jaune'], ['verte', 'Verte'], ['bleue', 'Bleue'],
-    ['marron', 'Marron'], ['rouge', 'Rouge'], ['orange', 'Orange'], ['noire', 'Noire'],
-    ['blanche', 'Blanche'], ['bordeaux', 'Bordeaux'], ['rose', 'Rose'],
-    ['turquoise', 'Turquoise'], ['violet', 'Violette']
+    ['grise', 'Grise', '#515151'], ['jaune', 'Jaune', '#C0A116'],
+    ['verte', 'Verte', '#268129'], ['bleue', 'Bleue', '#1E336E'],
+    ['marron', 'Marron', '#733621'], ['rouge', 'Rouge', '#B40505'],
+    ['orange', 'Orange', '#B24105'], ['noire', 'Noire', '#313131'],
+    ['blanche', 'Blanche', '#808080'], ['bordeaux', 'Bordeaux', '#6B1F2C'],
+    ['rose', 'Rose', '#D10529'], ['turquoise', 'Turquoise', '#0E8493'],
+    ['violet', 'Violette', '#422274']
   ];
+
+  /* Les sept jours. Le CODE est celui qu'attend `waste_collection_schedule`
+     (`TU`, `premier-TU`, `dernier-WE`) : il traverse le Worker et le runner
+     sans traduction. */
+  const DECHETS_JOURS = [
+    ['MO', 'lundi'], ['TU', 'mardi'], ['WE', 'mercredi'], ['TH', 'jeudi'],
+    ['FR', 'vendredi'], ['SA', 'samedi'], ['SU', 'dimanche']
+  ];
+
+  /* La langue de la lettre du compte a rebours. Le defaut suit la LANGUE DE
+     L'INSTANCE : « J » pour Jour en francais, « D » pour Day en anglais
+     (tranche par le client le 07/09/2026). Les vingt restent proposees pour
+     qui veut forcer ; la lettre obtenue est indiquee entre parentheses, et
+     « — » signale les ecritures ou la famille mdi:alpha-<lettre>-circle
+     n'existe pas. */
+  const LANGUES_COMPTEUR = [
+    { value: 'auto', label: '🏠 Langue de mon Home Assistant' },
+    { value: 'ar', label: 'العربية (—)' }, { value: 'bn', label: 'বাংলা (—)' },
+    { value: 'de', label: 'Deutsch (T)' }, { value: 'en', label: 'English (D)' },
+    { value: 'es', label: 'Español (D)' }, { value: 'fa', label: 'فارسی (—)' },
+    { value: 'fr', label: 'Français (J)' }, { value: 'he', label: 'עברית (—)' },
+    { value: 'hi', label: 'हिन्दी (—)' }, { value: 'it', label: 'Italiano (G)' },
+    { value: 'ja', label: '日本語 (—)' }, { value: 'ko', label: '한국어 (—)' },
+    { value: 'nl', label: 'Nederlands (D)' }, { value: 'pl', label: 'Polski (D)' },
+    { value: 'pt', label: 'Português (D)' }, { value: 'ru', label: 'Русский (—)' },
+    { value: 'th', label: 'ไทย (—)' }, { value: 'tr', label: 'Türkçe (G)' },
+    { value: 'vi', label: 'Tiếng Việt (N)' }, { value: 'zh', label: '中文 (—)' }
+  ];
+
+  function optionsJour(frequence) {
+    // Chaque semaine : les sept jours. Chaque mois ou chaque annee : les
+    // memes, EN DOUBLE, prefixes de « Premier » et « Dernier » -- c'est la
+    // forme que le client a donnee en exemple (« Premier Mardi du mois »).
+    const quoi = frequence === 'annee' ? "de l'année" : 'du mois';
+    if (frequence !== 'mois' && frequence !== 'annee') {
+      return DECHETS_JOURS.map(j => ({ value: j[0], label: '📅 Chaque ' + j[1] }));
+    }
+    return DECHETS_JOURS.map(j => ({ value: 'premier-' + j[0],
+                                     label: '🔼 Premier ' + j[1] + ' ' + quoi }))
+      .concat(DECHETS_JOURS.map(j => ({ value: 'dernier-' + j[0],
+                                        label: '🔽 Dernier ' + j[1] + ' ' + quoi })));
+  }
 
   function champTypeDechet(rang, obligatoire) {
     return { param: 'DECHETS_TYPE_' + rang,
              label: 'Poubelle ' + rang + ' — type de déchet',
+             groupe: '🗑️ Poubelle ' + rang,
              type: 'select', required: obligatoire,
              defaut: obligatoire ? 'dechets_menagers' : '',
              options: (obligatoire ? [] : [{ value: '', label: '— aucune —' }])
@@ -4566,38 +4662,56 @@
   function champCouleurBac(rang, obligatoire) {
     return { param: 'DECHETS_COULEUR_' + rang,
              label: 'Poubelle ' + rang + ' — couleur du bac',
-             type: 'select', required: obligatoire,
-             defaut: 'grise',
+             groupe: '🗑️ Poubelle ' + rang,
+             type: 'select', required: obligatoire, defaut: 'grise',
              options: DECHETS_COULEURS.map(function (c) {
-               return { value: c[0], label: c[1] }; }) };
+               return { value: c[0], label: '⬤ ' + c[1], couleur: c[2] }; }) };
   }
 
-  /* La FREQUENCE de chaque bac, choisie plutot que devinee (07/09/2026).
-     Elle prime sur ce que le champ du jour laisse deviner : « mardi » avec
-     « Mois » donne le premier mardi du mois, et non chaque mardi. */
-  function champFrequence(rang) {
+  /* La FREQUENCE prime sur ce que le champ du jour laisse deviner, et elle
+     COMMANDE ses options : `majJoursCollecte` les recompose a chaque
+     changement. Sans cela, un client qui choisit « Chaque mois » resterait
+     devant sept jours nus, et rien ne dirait s'il s'agit du premier ou du
+     dernier du mois. */
+  function champFrequence(rang, groupe, libelle) {
     return { param: 'DECHETS_FREQUENCE_' + rang,
-             label: 'Poubelle ' + rang + ' — fréquence',
+             label: (libelle || 'Poubelle ' + rang) + ' — fréquence',
+             groupe: groupe || ('🗑️ Poubelle ' + rang),
              type: 'select', required: false, defaut: 'semaine',
+             pilote: 'DECHETS_COLLECTE_' + rang,
              options: [
-               { value: 'semaine', label: 'Chaque semaine' },
-               { value: 'mois', label: 'Chaque mois' },
-               { value: 'annee', label: 'Chaque année' }
+               { value: 'semaine', label: '🔁 Chaque semaine' },
+               { value: 'mois', label: '🗓️ Chaque mois' },
+               { value: 'annee', label: '🎍 Chaque année' }
              ] };
   }
 
-  function champCollecte(rang, exemple) {
+  function champCollecte(rang, groupe, libelle) {
     return { param: 'DECHETS_COLLECTE_' + rang,
-             label: 'Poubelle ' + rang + ' — jour de collecte',
-             type: 'text', required: false,
-             placeholder: exemple + ' — accepte aussi « mardi, vendredi », '
-                        + '« tous les jours », « dernier mercredi »' };
+             label: (libelle || 'Poubelle ' + rang) + ' — jour de collecte',
+             groupe: groupe || ('🗑️ Poubelle ' + rang),
+             type: 'select', required: false, defaut: 'TU',
+             options: optionsJour('semaine') };
   }
 
-  /* Les six types d'appareil du pack Refrigerateur. Cette liste doit rester
-     d'accord avec `TYPES_APPAREIL` de `deploy_pack_appareil_refrigerateur.py`.
-     C'est le type qui decide des deux visuels, du milieu de chaque porte ou
-     se pose l'icone de refroidissement, et du titre de la carte. */
+  function majJoursCollecte(modName, paramFrequence, paramJour) {
+    const freq = document.getElementById('param-' + modName + '-' + paramFrequence);
+    const jour = document.getElementById('param-' + modName + '-' + paramJour);
+    if (!freq || !jour) return;
+    const avant = jour.value;
+    const options = optionsJour(freq.value);
+    jour.innerHTML = options.map(o =>
+      '<option value="' + o.value + '">' + o.label + '</option>').join('');
+    // On CONSERVE le jour choisi quand il survit au changement de forme :
+    // « premier-TU » et « TU » designent le meme mardi, seule la position
+    // change. Repartir de zero effacerait un choix que le client vient de
+    // faire.
+    const code = avant.replace(/^(premier|dernier)-/, '');
+    const garde = options.find(o => o.value === avant)
+      || options.find(o => o.value.replace(/^(premier|dernier)-/, '') === code);
+    if (garde) jour.value = garde.value;
+  }
+
   const FRIGO_TYPES = [
     { value: 'refrigerateur', label: 'Réfrigérateur' },
     { value: 'congelateur', label: 'Congélateur' },
@@ -4609,60 +4723,38 @@
 
   const MODULE_PARAMS = {
     /* Pack Dechets — LA VARIANTE EST LE NOMBRE DE POUBELLES.
-       Une obligatoire, quatre facultatives ; chacune se decrit par DEUX choix,
-       le TYPE de dechet (qui donne le pictogramme) et la COULEUR du bac (qui
-       donne le visuel). Le pack deduit la variante du nombre de bacs saisis :
-       rien a choisir dans une liste de variantes.
+       Une obligatoire, quatre facultatives ; chacune se decrit par quatre
+       choix -- le TYPE de dechet (qui donne le pictogramme), la COULEUR du bac
+       (qui donne le visuel), la FREQUENCE et le JOUR de collecte. Le pack
+       deduit la variante du nombre de bacs saisis : rien a choisir dans une
+       liste de variantes.
 
-       Le jour de collecte est un TROISIEME champ, facultatif, et il depasse la
-       demande — mais sans lui `waste_collection_schedule` n'a aucun calendrier
-       a suivre, et le compte a rebours « J - n » n'aurait rien a compter. */
+       LES `groupe` DECOUPENT LA SAISIE EN SOUS-BLOCS (07/09/2026). Vingt-huit
+       champs d'affilee ne se lisent pas : le client a demande une ligne pour
+       le foyer, une pour les encombrants, puis une par poubelle.
+       `champsDetailHtml` ouvre un cadre a chaque changement de `groupe`. */
     service_gestion_dechets: [
       { param: 'DECHETS_PIECE', label: 'Pièce', type: 'text', required: true,
-        placeholder: 'ex : Maison' },
-      champTypeDechet(1, true), champCouleurBac(1, true),
-      champFrequence(1), champCollecte(1, 'ex : mardi'),
-      champTypeDechet(2, false), champCouleurBac(2, false),
-      champFrequence(2), champCollecte(2, 'ex : vendredi'),
-      champTypeDechet(3, false), champCouleurBac(3, false),
-      champFrequence(3), champCollecte(3, 'ex : mercredi'),
-      champTypeDechet(4, false), champCouleurBac(4, false),
-      champFrequence(4), champCollecte(4, 'ex : jeudi'),
-      champTypeDechet(5, false), champCouleurBac(5, false),
-      champFrequence(5), champCollecte(5, 'ex : samedi'),
-      { param: 'DECHETS_ENCOMBRANTS', label: 'Collecte des encombrants', type: 'text', required: false,
-        placeholder: 'ex : premier lundi — vide : premier lundi du mois' },
-      { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille', type: 'text', required: false,
+        groupe: '🏠 Votre foyer', placeholder: 'ex : Maison' },
+      { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille',
+        type: 'text', required: false, groupe: '🏠 Votre foyer',
         placeholder: 'ex : 19:00 — vide : 19h00' },
-      /* Le defaut suit la LANGUE DE L'INSTANCE : « J » pour Jour en francais,
-         « D » pour Day en anglais (tranche par le client le 07/09/2026). Les
-         vingt langues restent proposees pour qui veut forcer. */
       { param: 'DECHETS_LANGUE', label: 'Compte à rebours — langue',
         type: 'select', required: false, defaut: 'auto',
-        options: [
-          { value: 'auto', label: 'Langue de mon Home Assistant' },
-          { value: 'ar', label: 'العربية (—)' },
-          { value: 'bn', label: 'বাংলা (—)' },
-          { value: 'de', label: 'Deutsch (T)' },
-          { value: 'en', label: 'English (D)' },
-          { value: 'es', label: 'Español (D)' },
-          { value: 'fa', label: 'فارسی (—)' },
-          { value: 'fr', label: 'Français (J)' },
-          { value: 'he', label: 'עברית (—)' },
-          { value: 'hi', label: 'हिन्दी (—)' },
-          { value: 'it', label: 'Italiano (G)' },
-          { value: 'ja', label: '日本語 (—)' },
-          { value: 'ko', label: '한국어 (—)' },
-          { value: 'nl', label: 'Nederlands (D)' },
-          { value: 'pl', label: 'Polski (D)' },
-          { value: 'pt', label: 'Português (D)' },
-          { value: 'ru', label: 'Русский (—)' },
-          { value: 'th', label: 'ไทย (—)' },
-          { value: 'tr', label: 'Türkçe (G)' },
-          { value: 'vi', label: 'Tiếng Việt (N)' },
-          { value: 'zh', label: '中文 (—)' },
-        ] },
-      champThemeSite('DECHETS_THEME', 'urban-factory')
+        groupe: '🏠 Votre foyer', options: LANGUES_COMPTEUR },
+      champThemeSite('DECHETS_THEME', 'urban-factory', '🏠 Votre foyer'),
+      champFrequence('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
+      champCollecte('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
+      champTypeDechet(1, true), champCouleurBac(1, true),
+      champFrequence(1), champCollecte(1),
+      champTypeDechet(2, false), champCouleurBac(2, false),
+      champFrequence(2), champCollecte(2),
+      champTypeDechet(3, false), champCouleurBac(3, false),
+      champFrequence(3), champCollecte(3),
+      champTypeDechet(4, false), champCouleurBac(4, false),
+      champFrequence(4), champCollecte(4),
+      champTypeDechet(5, false), champCouleurBac(5, false),
+      champFrequence(5), champCollecte(5)
     ],
     /* Les packs « Configuration » n'ont pas de theme : ils n'affichent aucune
        carte. Seuls deux d'entre eux reclament une saisie — File editor et
@@ -5064,10 +5156,35 @@
 
   /* `quoi` : 'theme' pour le seul sélecteur de thème, 'autres' pour tout le
      reste, ou rien pour l'ensemble (usage historique). */
+  /* Les champs d'un pack, regroupes par `groupe` et dans l'ordre declare.
+     Rend une liste vide quand aucun champ n'en porte : le pack garde alors sa
+     grille unique. */
+  function groupesDeParams(modName) {
+    const champs = (MODULE_PARAMS[modName] || []).filter(
+      c => !estChampTheme(c) || c.groupe);
+    if (!champs.some(c => c.groupe)) return [];
+    const sortie = [];
+    champs.forEach(c => {
+      const titre = c.groupe || '⚙️ Autres réglages';
+      let bloc = sortie.length && sortie[sortie.length - 1].titre === titre
+        ? sortie[sortie.length - 1] : null;
+      if (!bloc) { bloc = { titre: titre, html: '' }; sortie.push(bloc); }
+      bloc.html += champHtml(modName, c);
+    });
+    return sortie;
+  }
+
   function champsParamsHtml(modName, quoi) {
     if (!MODULE_PARAMS[modName]) return '';
     return MODULE_PARAMS[modName].filter(c =>
-        !quoi || (quoi === 'theme' ? estChampTheme(c) : !estChampTheme(c))).map(c => {
+        !quoi || (quoi === 'theme' ? estChampTheme(c) : !estChampTheme(c)))
+      .map(c => champHtml(modName, c)).join('');
+  }
+
+  /* Le rendu d'UN champ. Extrait de `champsParamsHtml` pour que les deux
+     chemins -- grille unique et sous-blocs -- ne puissent pas diverger. */
+  function champHtml(modName, c) {
+    {
       const id = `param-${modName}-${c.param}`;
       if (c.type === 'checkboxes') {
         const cases = c.options.map((o, i) =>
@@ -5082,9 +5199,16 @@
       // Calculé APRÈS le test de type : un champ texte n'a pas d'`options`,
       // et y lire `options[0]` faisait échouer le rendu de toute la catégorie.
       const parDefaut = c.type === 'select' ? (c.defaut || c.options[0].value) : null;
+      // `pilote` : ce selecteur COMMANDE les options d'un autre (la frequence
+      // de collecte commande le jour). `couleur` : l'option porte sa propre
+      // teinte -- c'est ainsi qu'on prefixe une pastille au nom d'une couleur,
+      // une `<option>` n'acceptant aucune balise.
+      const apres = c.pilote
+        ? ` majJoursCollecte('${modName}', '${c.param}', '${c.pilote}');` : '';
       const saisie = c.type === 'select'
-        ? `<select id="${id}" onchange="majApercu('${modName}')">${c.options.map(o =>
-             `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
+        ? `<select id="${id}" onchange="majApercu('${modName}');${apres}">${c.options.map(o =>
+             `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}${
+               o.couleur ? ` style="color:${o.couleur}"` : ''}>${o.label}</option>`).join('')}</select>`
         : `<input type="text" class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
       // CHAQUE CHAMP EST ENVELOPPE dans son propre conteneur. Rendus en
@@ -5093,7 +5217,7 @@
       // changent pas, `collecterParams` et `reposerSaisies` n'ont rien a
       // savoir de cette enveloppe.
       return `<div class="param-champ"><label class="param-label" for="${id}">${c.label}</label>${saisie}</div>`;
-    }).join('');
+    }
   }
 
   /* Descriptif et mention « Inclus » sont deux paragraphes distincts sous
