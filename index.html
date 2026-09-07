@@ -4281,6 +4281,9 @@
     return valeurs;
   }
 
+  /* Repose les valeurs saisies, PUIS le reflet de couleur : une valeur
+     restauree change l'option retenue, et le selecteur garderait sinon la
+     teinte de la precedente. */
   function reposerSaisies(valeurs) {
     Object.entries(valeurs).forEach(([id, v]) => {
       const e = document.getElementById(id);
@@ -4446,6 +4449,7 @@
         </div>
       </div>`;
     reposerSaisies(saisies);
+    refleterCouleurs(corps);
   }
 
   /* Les saisies d'un pack, telles qu'elles apparaissent DANS la page de
@@ -4587,23 +4591,26 @@
     ['cafe', '☕ Capsules de café'], ['cigarette', '🚬 Mégots']
   ];
 
-  /* La COULEUR DU BAC est prefixee de sa propre teinte : « ⬤ » puis le nom, le
-     tout colore par un `style` pose sur l'`<option>`. C'est ce que le client a
-     demande -- « les couleurs associees prefixees au nom » -- et c'est la
-     seule pastille exacte possible : les carres emoji ne couvrent que neuf
-     teintes, ni le bordeaux, ni le turquoise, ni le gris.
+  /* La COULEUR DU BAC : l'option porte le FOND de la couleur reelle du
+     couvercle, et son texte passe en noir ou en blanc selon ce qui s'y lit.
+     Une pastille « ⬤ » teintee ne suffisait pas -- le client l'a trouvee « pas
+     assez coloree et representative » le 07/09/2026 --, et pour cause : sur
+     fond blanc, un jaune ou un vert doivent etre assombris jusqu'a l'olive et
+     au sapin pour rester lisibles EN TEXTE. En FOND, ils gardent leur teinte
+     franche, et c'est le texte qui s'adapte.
 
-     Les valeurs sont celles du jeu CLAIR de `TEINTES_BAC` : le formulaire est
-     sur fond blanc, et une teinte reglee pour la texture sombre d'une carte y
-     serait illisible. */
+     Troisieme colonne : la teinte du couvercle, relevee dans le visuel (jeu
+     « sombre » de `TEINTES_BAC`, le plus proche du plastique reel).
+     Quatrieme : la couleur de texte qui s'y lit -- calculee sur la luminance
+     relative, pas choisie a l'oeil. */
   const DECHETS_COULEURS = [
-    ['grise', 'Grise', '#515151'], ['jaune', 'Jaune', '#C0A116'],
-    ['verte', 'Verte', '#268129'], ['bleue', 'Bleue', '#1E336E'],
-    ['marron', 'Marron', '#733621'], ['rouge', 'Rouge', '#B40505'],
-    ['orange', 'Orange', '#B24105'], ['noire', 'Noire', '#313131'],
-    ['blanche', 'Blanche', '#808080'], ['bordeaux', 'Bordeaux', '#6B1F2C'],
-    ['rose', 'Rose', '#D10529'], ['turquoise', 'Turquoise', '#0E8493'],
-    ['violet', 'Violette', '#422274']
+    ['grise', 'Grise', '#929292', '#000000'], ['jaune', 'Jaune', '#E7D689', '#000000'],
+    ['verte', 'Verte', '#6EC871', '#000000'], ['bleue', 'Bleue', '#4666BE', '#FFFFFF'],
+    ['marron', 'Marron', '#BE7055', '#000000'], ['rouge', 'Rouge', '#F76060', '#000000'],
+    ['orange', 'Orange', '#F6925C', '#000000'], ['noire', 'Noire', '#585858', '#FFFFFF'],
+    ['blanche', 'Blanche', '#DBDBDB', '#000000'], ['bordeaux', 'Bordeaux', '#B9475B', '#FFFFFF'],
+    ['rose', 'Rose', '#F17F93', '#000000'], ['turquoise', 'Turquoise', '#4DCDDE', '#000000'],
+    ['violet', 'Violette', '#8057BF', '#FFFFFF']
   ];
 
   /* Les sept jours. Le CODE est celui qu'attend `waste_collection_schedule`
@@ -4665,7 +4672,8 @@
              groupe: '🗑️ Poubelle ' + rang,
              type: 'select', required: obligatoire, defaut: 'grise',
              options: DECHETS_COULEURS.map(function (c) {
-               return { value: c[0], label: '⬤ ' + c[1], couleur: c[2] }; }) };
+               return { value: c[0], label: '⬤ ' + c[1],
+                        fond: c[2], couleur: c[3] }; }) };
   }
 
   /* La FREQUENCE prime sur ce que le champ du jour laisse deviner, et elle
@@ -4692,6 +4700,60 @@
              groupe: groupe || ('🗑️ Poubelle ' + rang),
              type: 'select', required: false, defaut: 'TU',
              options: optionsJour('semaine') };
+  }
+
+  /* L'EXCEPTION : une periode a exclure de la collecte -- les vacances de
+     Noel, par exemple. `waste_collection_schedule` l'accepte nativement : la
+     source `static` prend un `excludes` ou chaque entree est soit une date,
+     soit un couple `{start, end}` (verifie dans son code source le
+     07/09/2026). Les deux dates saisies ici y vont telles quelles.
+
+     Le selecteur precede les dates : sans lui, deux champs de date vides au
+     bas de chaque poubelle ne diraient pas a quoi ils servent. */
+  function champException(rang) {
+    return { param: 'DECHETS_EXCEPTION_' + rang,
+             label: 'Poubelle ' + rang + ' — exception',
+             groupe: '🗑️ Poubelle ' + rang,
+             type: 'select', required: false, defaut: 'aucune',
+             options: [
+               { value: 'aucune', label: '✅ Aucune exception' },
+               { value: 'periode', label: '🚫 Exclure une période' }
+             ] };
+  }
+
+  function champExceptionDates(rang) {
+    return [
+      { param: 'DECHETS_EXCEPTION_DEBUT_' + rang,
+        label: 'Poubelle ' + rang + ' — exception, début',
+        groupe: '🗑️ Poubelle ' + rang, type: 'date', required: false },
+      { param: 'DECHETS_EXCEPTION_FIN_' + rang,
+        label: 'Poubelle ' + rang + ' — exception, fin',
+        groupe: '🗑️ Poubelle ' + rang, type: 'date', required: false }
+    ];
+  }
+
+  /* UN `<select>` FERME NE MONTRE PAS LE STYLE DE SON OPTION. Le navigateur
+     le peint avec ses propres couleurs : la teinte posee sur l'`<option>` ne
+     se voit qu'une fois la liste DEROULEE, et le client se retrouve devant un
+     « ⬤ Grise » noir sur blanc tant qu'il n'a pas ouvert le menu.
+
+     On reporte donc la teinte de l'option retenue sur le selecteur lui-meme,
+     au chargement puis a chaque changement. La couleur du bac est alors
+     visible en permanence, ce que le client demande depuis deux tours. */
+  function refleterCouleur(select) {
+    if (!select) return;
+    const o = select.options[select.selectedIndex];
+    if (!o || !o.style.backgroundColor) return;
+    select.style.backgroundColor = o.style.backgroundColor;
+    select.style.color = o.style.color;
+    select.style.fontWeight = '600';
+  }
+
+  /* Applique le reflet a tous les selecteurs colores d'une page. Appelee apres
+     chaque rendu : les champs sont reconstruits a chaque ouverture de la page
+     de details, et un style pose une fois disparaitrait avec eux. */
+  function refleterCouleurs(racine) {
+    (racine || document).querySelectorAll('select').forEach(refleterCouleur);
   }
 
   function majJoursCollecte(modName, paramFrequence, paramJour) {
@@ -4723,38 +4785,43 @@
 
   const MODULE_PARAMS = {
     /* Pack Dechets — LA VARIANTE EST LE NOMBRE DE POUBELLES.
-       Une obligatoire, quatre facultatives ; chacune se decrit par quatre
-       choix -- le TYPE de dechet (qui donne le pictogramme), la COULEUR du bac
-       (qui donne le visuel), la FREQUENCE et le JOUR de collecte. Le pack
-       deduit la variante du nombre de bacs saisis : rien a choisir dans une
-       liste de variantes.
+       Une obligatoire, quatre facultatives ; chacune se decrit par le TYPE de
+       dechet (qui donne le pictogramme), la COULEUR du bac (qui donne le
+       visuel), la FREQUENCE, le JOUR de collecte et une EXCEPTION facultative.
+       Le pack deduit la variante du nombre de bacs saisis.
 
-       LES `groupe` DECOUPENT LA SAISIE EN SOUS-BLOCS (07/09/2026). Vingt-huit
-       champs d'affilee ne se lisent pas : le client a demande une ligne pour
-       le foyer, une pour les encombrants, puis une par poubelle.
-       `champsDetailHtml` ouvre un cadre a chaque changement de `groupe`. */
+       LES `groupe` DECOUPENT LA SAISIE EN SOUS-BLOCS : le foyer, les
+       encombrants, puis une ligne par poubelle. `champsDetailHtml` ouvre un
+       cadre a chaque changement de valeur.
+
+       NI LA LANGUE NI LE THEME n'y figurent (retires le 07/09/2026) : la
+       lettre du compte a rebours suit la langue de l'instance, il n'y a donc
+       rien a choisir ; et le theme se commande deja en tete de page, ou il
+       pilote l'apercu -- l'avoir aux deux endroits etait un doublon. */
     service_gestion_dechets: [
       { param: 'DECHETS_PIECE', label: 'Pièce', type: 'text', required: true,
         groupe: '🏠 Votre foyer', placeholder: 'ex : Maison' },
       { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille',
         type: 'text', required: false, groupe: '🏠 Votre foyer',
         placeholder: 'ex : 19:00 — vide : 19h00' },
-      { param: 'DECHETS_LANGUE', label: 'Compte à rebours — langue',
-        type: 'select', required: false, defaut: 'auto',
-        groupe: '🏠 Votre foyer', options: LANGUES_COMPTEUR },
-      champThemeSite('DECHETS_THEME', 'urban-factory', '🏠 Votre foyer'),
+      champThemeSite('DECHETS_THEME', 'urban-factory'),
       champFrequence('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
       champCollecte('ENCOMBRANTS', '🛋️ Collecte des encombrants', 'Encombrants'),
       champTypeDechet(1, true), champCouleurBac(1, true),
       champFrequence(1), champCollecte(1),
+      champException(1), ...champExceptionDates(1),
       champTypeDechet(2, false), champCouleurBac(2, false),
       champFrequence(2), champCollecte(2),
+      champException(2), ...champExceptionDates(2),
       champTypeDechet(3, false), champCouleurBac(3, false),
       champFrequence(3), champCollecte(3),
+      champException(3), ...champExceptionDates(3),
       champTypeDechet(4, false), champCouleurBac(4, false),
       champFrequence(4), champCollecte(4),
+      champException(4), ...champExceptionDates(4),
       champTypeDechet(5, false), champCouleurBac(5, false),
-      champFrequence(5), champCollecte(5)
+      champFrequence(5), champCollecte(5),
+      champException(5), ...champExceptionDates(5)
     ],
     /* Les packs « Configuration » n'ont pas de theme : ils n'affichent aucune
        carte. Seuls deux d'entre eux reclament une saisie — File editor et
@@ -5206,10 +5273,13 @@
       const apres = c.pilote
         ? ` majJoursCollecte('${modName}', '${c.param}', '${c.pilote}');` : '';
       const saisie = c.type === 'select'
-        ? `<select id="${id}" onchange="majApercu('${modName}');${apres}">${c.options.map(o =>
+        ? `<select id="${id}" onchange="refleterCouleur(this);majApercu('${modName}');${apres}">${c.options.map(o =>
              `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}${
-               o.couleur ? ` style="color:${o.couleur}"` : ''}>${o.label}</option>`).join('')}</select>`
-        : `<input type="text" class="${c.required === false ? 'field-optional' : 'field-required'}"
+               o.fond ? ` style="background-color:${o.fond};color:${o.couleur}"`
+                      : (o.couleur ? ` style="color:${o.couleur}"` : '')
+             }>${o.label}</option>`).join('')}</select>`
+        : `<input type="${c.type === 'date' ? 'date' : 'text'}"
+                  class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
       // CHAQUE CHAMP EST ENVELOPPE dans son propre conteneur. Rendus en
       // freres, l'etiquette et sa saisie ne peuvent pas etre disposees en
