@@ -423,10 +423,168 @@
       vertical-align: top;
     }
     .compte-table th { color: var(--text-muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; }
-    .compte-table code { background: var(--input-bg); padding: 1px 5px; border-radius: 4px; }
+    .compte-table code {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      padding: 1px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
     .compte-table .etat-success { color: var(--col-valide); font-weight: 700; }
     .compte-table .etat-error   { color: var(--col-required); font-weight: 700; }
     .compte-table .etat-running, .compte-table .etat-pending { color: var(--col-gold); font-weight: 700; }
+    .compte-table a { color: var(--primary-blue); }
+
+    /* ---------- Authentification (07/09/2026) ----------
+       Deux chemins d'entree dans le meme encart : mot de passe, et connexion
+       sociale. Le separateur « ou » est une regle horizontale coupee par le
+       mot — un simple texte centre laisserait croire a un titre de section. */
+    .auth-bascule {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 16px;
+    }
+    .auth-bascule button {
+      padding: 9px 6px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .auth-bascule button:hover { color: var(--text-main); }
+    .auth-bascule button.actif {
+      background: var(--primary-blue);
+      color: #fff;
+    }
+
+    /* Le champ et son oeil partagent une meme boite : l'oeil est en absolu
+       DANS le conteneur, sinon il suivrait la largeur du champ au pixel pres
+       et deborderait sur les ecrans etroits. */
+    .auth-champ-mdp { position: relative; }
+    .auth-champ-mdp input { padding-right: 42px !important; }
+    .auth-oeil {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .auth-oeil:hover { color: var(--primary-blue); }
+
+    .auth-oubli {
+      display: block;
+      width: fit-content;
+      margin: 8px 0 0 auto;
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--primary-blue);
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .auth-oubli:hover { color: var(--text-main); }
+
+    .auth-ou {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 16px;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .auth-ou::before, .auth-ou::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border);
+    }
+
+    .auth-social { display: grid; gap: 10px; }
+    /* Fond BLANC et texte sombre : ce sont les couleurs imposees par les
+       chartes Google et Apple pour leur bouton clair, et s'en ecarter est le
+       moyen le plus sur de rendre les logos illisibles. */
+    .auth-social button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 9px;
+      border: 1px solid #747775;
+      background: #FFFFFF;
+      color: #1F1F1F;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.12s;
+    }
+    .auth-social button:hover:not(:disabled) {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+      transform: translateY(-1px);
+    }
+    .auth-social button.auth-apple { background: #000000; color: #FFFFFF; border-color: #000000; }
+    .auth-social button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .auth-social svg { width: 18px; height: 18px; flex: 0 0 18px; }
+
+    .auth-note {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    /* ---------- Page Historique (07/09/2026) ---------- */
+    .histo-resume {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .histo-case {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .histo-case .n {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+    .histo-case .l {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-top: 2px;
+    }
+    /* Le tableau deborde plutot que de comprimer ses colonnes : sur telephone
+       on le fait glisser, on ne casse pas les dates en deux lignes. */
+    .histo-defile { overflow-x: auto; }
+    .histo-defile .compte-table { min-width: 620px; }
+    .compte-table .nw { white-space: nowrap; }
 
     .nav-cart-total {
       color: var(--col-valide);
@@ -2934,6 +3092,25 @@
   </div>
 
   <!-- SECTION 5 : À PROPOS -->
+  <!-- Historique des deploiements (07/09/2026).
+       Une PAGE et non un tableau dans la fenetre du compte : l'historique se
+       consulte, se fait defiler et se partage par son adresse
+       (#historique) — trois choses qu'une fenetre modale ne sait pas faire. -->
+  <div id="section-historique" class="page-section">
+    <div class="container">
+      <header>
+        <h1><i class="fa-solid fa-clock-rotate-left"></i> Mon historique</h1>
+        <p class="subtitle" id="histo-sous-titre">Tous les déploiements lancés depuis votre compte.</p>
+      </header>
+
+      <div class="card">
+        <div id="histo-contenu">
+          <p class="compte-intro">Chargement…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="section-apropos" class="page-section">
     <div class="container">
       <header>
@@ -3264,6 +3441,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-links">
+        <button onclick="switchTab('historique')" id="nav-historique">Historique</button>
         <button onclick="switchTab('apropos')" id="nav-apropos">À propos</button>
         <button onclick="switchTab('faq')" id="nav-faq">FAQ</button>
         <button onclick="switchTab('aide')" id="nav-aide">Aide</button>
@@ -3276,7 +3454,7 @@
         <a href="https://linkedin.com" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
         <a href="https://whatsapp.com" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
         <a href="https://instagram.com" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-        <a href="https://facebook.com" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=61594369044526" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
       </div>
     </div>
   </footer>
@@ -3468,6 +3646,10 @@
     // La fiche de détails d'un pack n'a pas d'onglet non plus, mais elle
     // appartient au catalogue : c'est « Packs » qui reste allumé.
     if (tabId === 'details') document.getElementById('nav-module').classList.add('active');
+
+    // L'historique est relu a CHAQUE affichage : un deploiement lance entre
+    // deux visites de la page doit y figurer sans avoir a recharger le site.
+    if (tabId === 'historique') chargerHistorique();
 
     closeMobileMenu();
     document.querySelectorAll('.page-section').forEach(sec => { sec.scrollTop = 0; });
@@ -4396,7 +4578,7 @@
         </div>` : ''}
       </div>` : '';
 
-    const cadre = aTheme ? cadreDuTheme(cleTheme) : '#14181d';
+    const cadre = aTheme ? cadreDuTheme(cleTheme, fiche) : '#14181d';
 
     /* TROIS ZONES COTE A COTE (03/09/2026, remplace les deux colonnes du
        02/09/2026) : le GIF seul, le descriptif detaille suivi de « Inclus »,
@@ -5388,6 +5570,7 @@
   {
     "bal": {
       "bleu-evasion": {
+        "cadre": "#0C1E36",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/bleu-evasion-defaut-1.jpg",
@@ -5398,6 +5581,7 @@
         "gif": "templates/apercus/bal/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#242324",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/carbon-pulse-defaut-1.jpg",
@@ -5408,6 +5592,7 @@
         "gif": "templates/apercus/bal/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D7D2D8",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/creme-gourmande-defaut-1.jpg",
@@ -5418,6 +5603,7 @@
         "gif": "templates/apercus/bal/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#201E1F",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/elegance-ardoise-defaut-1.jpg",
@@ -5428,6 +5614,7 @@
         "gif": "templates/apercus/bal/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#783A33",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/mars-rouge-defaut-1.jpg",
@@ -5438,6 +5625,7 @@
         "gif": "templates/apercus/bal/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#271735",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/neo-future-defaut-1.jpg",
@@ -5448,6 +5636,7 @@
         "gif": "templates/apercus/bal/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#111111",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/nocturne-artistique-defaut-1.jpg",
@@ -5458,6 +5647,7 @@
         "gif": "templates/apercus/bal/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#B3A3A1",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/pure-lumiere-defaut-1.jpg",
@@ -5468,6 +5658,7 @@
         "gif": "templates/apercus/bal/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#854524",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/sahara-elegance-defaut-1.jpg",
@@ -5478,6 +5669,7 @@
         "gif": "templates/apercus/bal/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#5E2D2D",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/terre-de-carmin-defaut-1.jpg",
@@ -5488,6 +5680,7 @@
         "gif": "templates/apercus/bal/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2D282F",
         "cartes": {
           "defaut": [
             "templates/apercus/bal/urban-factory-defaut-1.jpg",
@@ -5500,6 +5693,7 @@
     },
     "capteur": {
       "bleu-evasion": {
+        "cadre": "#0C1935",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/bleu-evasion-defaut-1.jpg",
@@ -5510,6 +5704,7 @@
         "gif": "templates/apercus/capteur/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#222121",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/carbon-pulse-defaut-1.jpg",
@@ -5520,6 +5715,7 @@
         "gif": "templates/apercus/capteur/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D4CFD5",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/creme-gourmande-defaut-1.jpg",
@@ -5530,6 +5726,7 @@
         "gif": "templates/apercus/capteur/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1D1C1C",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/elegance-ardoise-defaut-1.jpg",
@@ -5540,6 +5737,7 @@
         "gif": "templates/apercus/capteur/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7D3D39",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/mars-rouge-defaut-1.jpg",
@@ -5550,6 +5748,7 @@
         "gif": "templates/apercus/capteur/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#211438",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/neo-future-defaut-1.jpg",
@@ -5560,6 +5759,7 @@
         "gif": "templates/apercus/capteur/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#101010",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/nocturne-artistique-defaut-1.jpg",
@@ -5570,6 +5770,7 @@
         "gif": "templates/apercus/capteur/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#C0B4C5",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/pure-lumiere-defaut-1.jpg",
@@ -5580,6 +5781,7 @@
         "gif": "templates/apercus/capteur/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#8B4823",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/sahara-elegance-defaut-1.jpg",
@@ -5590,6 +5792,7 @@
         "gif": "templates/apercus/capteur/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#542621",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/terre-de-carmin-defaut-1.jpg",
@@ -5600,6 +5803,7 @@
         "gif": "templates/apercus/capteur/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2C242C",
         "cartes": {
           "defaut": [
             "templates/apercus/capteur/urban-factory-defaut-1.jpg",
@@ -5612,6 +5816,7 @@
     },
     "dechets": {
       "bleu-evasion": {
+        "cadre": "#0A1D35",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/bleu-evasion-defaut-1.jpg",
@@ -5622,6 +5827,7 @@
         "gif": "templates/apercus/dechets/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#252425",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/carbon-pulse-defaut-1.jpg",
@@ -5632,6 +5838,7 @@
         "gif": "templates/apercus/dechets/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D2CCD2",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/creme-gourmande-defaut-1.jpg",
@@ -5642,6 +5849,7 @@
         "gif": "templates/apercus/dechets/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#201F20",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/elegance-ardoise-defaut-1.jpg",
@@ -5652,6 +5860,7 @@
         "gif": "templates/apercus/dechets/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7E4448",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/mars-rouge-defaut-1.jpg",
@@ -5662,6 +5871,7 @@
         "gif": "templates/apercus/dechets/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#322340",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/neo-future-defaut-1.jpg",
@@ -5672,6 +5882,7 @@
         "gif": "templates/apercus/dechets/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#101010",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/nocturne-artistique-defaut-1.jpg",
@@ -5682,6 +5893,7 @@
         "gif": "templates/apercus/dechets/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#BBABAE",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/pure-lumiere-defaut-1.jpg",
@@ -5692,6 +5904,7 @@
         "gif": "templates/apercus/dechets/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#884923",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/sahara-elegance-defaut-1.jpg",
@@ -5702,6 +5915,7 @@
         "gif": "templates/apercus/dechets/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#5D2D2B",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/terre-de-carmin-defaut-1.jpg",
@@ -5712,6 +5926,7 @@
         "gif": "templates/apercus/dechets/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#30262F",
         "cartes": {
           "defaut": [
             "templates/apercus/dechets/urban-factory-defaut-1.jpg",
@@ -5724,6 +5939,7 @@
     },
     "fuite": {
       "bleu-evasion": {
+        "cadre": "#0F1F3D",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/bleu-evasion-defaut-1.jpg",
@@ -5734,6 +5950,7 @@
         "gif": "templates/apercus/fuite/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#242324",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/carbon-pulse-defaut-1.jpg",
@@ -5744,6 +5961,7 @@
         "gif": "templates/apercus/fuite/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D7D2D9",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/creme-gourmande-defaut-1.jpg",
@@ -5754,6 +5972,7 @@
         "gif": "templates/apercus/fuite/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#212221",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/elegance-ardoise-defaut-1.jpg",
@@ -5764,6 +5983,7 @@
         "gif": "templates/apercus/fuite/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7F3D3D",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/mars-rouge-defaut-1.jpg",
@@ -5774,6 +5994,7 @@
         "gif": "templates/apercus/fuite/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#27153A",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/neo-future-defaut-1.jpg",
@@ -5784,6 +6005,7 @@
         "gif": "templates/apercus/fuite/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#111111",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/nocturne-artistique-defaut-1.jpg",
@@ -5794,6 +6016,7 @@
         "gif": "templates/apercus/fuite/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#C0BDC8",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/pure-lumiere-defaut-1.jpg",
@@ -5804,6 +6027,7 @@
         "gif": "templates/apercus/fuite/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#894924",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/sahara-elegance-defaut-1.jpg",
@@ -5814,6 +6038,7 @@
         "gif": "templates/apercus/fuite/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#562822",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/terre-de-carmin-defaut-1.jpg",
@@ -5824,6 +6049,7 @@
         "gif": "templates/apercus/fuite/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#32282F",
         "cartes": {
           "defaut": [
             "templates/apercus/fuite/urban-factory-defaut-1.jpg",
@@ -5836,6 +6062,7 @@
     },
     "lave-linge": {
       "bleu-evasion": {
+        "cadre": "#081D36",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/bleu-evasion-defaut-1.jpg",
@@ -5846,6 +6073,7 @@
         "gif": "templates/apercus/lave-linge/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#1E1F1E",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/carbon-pulse-defaut-1.jpg",
@@ -5856,6 +6084,7 @@
         "gif": "templates/apercus/lave-linge/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D3D1D4",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/creme-gourmande-defaut-1.jpg",
@@ -5866,6 +6095,7 @@
         "gif": "templates/apercus/lave-linge/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1F1F20",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/elegance-ardoise-defaut-1.jpg",
@@ -5876,6 +6106,7 @@
         "gif": "templates/apercus/lave-linge/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#6F4437",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/mars-rouge-defaut-1.jpg",
@@ -5886,6 +6117,7 @@
         "gif": "templates/apercus/lave-linge/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#1D1631",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/neo-future-defaut-1.jpg",
@@ -5896,6 +6128,7 @@
         "gif": "templates/apercus/lave-linge/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#0F100F",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/nocturne-artistique-defaut-1.jpg",
@@ -5906,6 +6139,7 @@
         "gif": "templates/apercus/lave-linge/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#6B987A",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/pure-lumiere-defaut-1.jpg",
@@ -5916,6 +6150,7 @@
         "gif": "templates/apercus/lave-linge/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#834926",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/sahara-elegance-defaut-1.jpg",
@@ -5926,6 +6161,7 @@
         "gif": "templates/apercus/lave-linge/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#4A2724",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/terre-de-carmin-defaut-1.jpg",
@@ -5936,6 +6172,7 @@
         "gif": "templates/apercus/lave-linge/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2D2C2F",
         "cartes": {
           "defaut": [
             "templates/apercus/lave-linge/urban-factory-defaut-1.jpg",
@@ -5948,6 +6185,7 @@
     },
     "lumiere": {
       "bleu-evasion": {
+        "cadre": "#091D36",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/bleu-evasion-variante-1-1.jpg",
@@ -5993,6 +6231,7 @@
         "gif": "templates/apercus/lumiere/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#201E1B",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/carbon-pulse-variante-1-1.jpg",
@@ -6038,6 +6277,7 @@
         "gif": "templates/apercus/lumiere/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D9D2D8",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/creme-gourmande-variante-1-1.jpg",
@@ -6083,6 +6323,7 @@
         "gif": "templates/apercus/lumiere/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1F1D1D",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/elegance-ardoise-variante-1-1.jpg",
@@ -6128,6 +6369,7 @@
         "gif": "templates/apercus/lumiere/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7D3D33",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/mars-rouge-variante-1-1.jpg",
@@ -6173,6 +6415,7 @@
         "gif": "templates/apercus/lumiere/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#201238",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/neo-future-variante-1-1.jpg",
@@ -6218,6 +6461,7 @@
         "gif": "templates/apercus/lumiere/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#101010",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/nocturne-artistique-variante-1-1.jpg",
@@ -6263,6 +6507,7 @@
         "gif": "templates/apercus/lumiere/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#D0B27C",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/pure-lumiere-variante-1-1.jpg",
@@ -6308,6 +6553,7 @@
         "gif": "templates/apercus/lumiere/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#934925",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/sahara-elegance-variante-1-1.jpg",
@@ -6353,6 +6599,7 @@
         "gif": "templates/apercus/lumiere/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#582822",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/terre-de-carmin-variante-1-1.jpg",
@@ -6398,6 +6645,7 @@
         "gif": "templates/apercus/lumiere/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#362B28",
         "cartes": {
           "variante-1": [
             "templates/apercus/lumiere/urban-factory-variante-1-1.jpg",
@@ -6445,6 +6693,7 @@
     },
     "meteo": {
       "bleu-evasion": {
+        "cadre": "#0D1F37",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/bleu-evasion-defaut-1.jpg",
@@ -6455,6 +6704,7 @@
         "gif": "templates/apercus/meteo/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#292728",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/carbon-pulse-defaut-1.jpg",
@@ -6465,6 +6715,7 @@
         "gif": "templates/apercus/meteo/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D1CCD1",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/creme-gourmande-defaut-1.jpg",
@@ -6475,6 +6726,7 @@
         "gif": "templates/apercus/meteo/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#212020",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/elegance-ardoise-defaut-1.jpg",
@@ -6485,6 +6737,7 @@
         "gif": "templates/apercus/meteo/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#824749",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/mars-rouge-defaut-1.jpg",
@@ -6495,6 +6748,7 @@
         "gif": "templates/apercus/meteo/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#352243",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/neo-future-defaut-1.jpg",
@@ -6505,6 +6759,7 @@
         "gif": "templates/apercus/meteo/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#111111",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/nocturne-artistique-defaut-1.jpg",
@@ -6515,6 +6770,7 @@
         "gif": "templates/apercus/meteo/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#A09696",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/pure-lumiere-defaut-1.jpg",
@@ -6525,6 +6781,7 @@
         "gif": "templates/apercus/meteo/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#93492B",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/sahara-elegance-defaut-1.jpg",
@@ -6535,6 +6792,7 @@
         "gif": "templates/apercus/meteo/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#602F2C",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/terre-de-carmin-defaut-1.jpg",
@@ -6545,6 +6803,7 @@
         "gif": "templates/apercus/meteo/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#312731",
         "cartes": {
           "defaut": [
             "templates/apercus/meteo/urban-factory-defaut-1.jpg",
@@ -6557,6 +6816,7 @@
     },
     "porte-garage": {
       "bleu-evasion": {
+        "cadre": "#0A1D36",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/bleu-evasion-defaut-1.jpg",
@@ -6567,6 +6827,7 @@
         "gif": "templates/apercus/porte-garage/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#212020",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/carbon-pulse-defaut-1.jpg",
@@ -6577,6 +6838,7 @@
         "gif": "templates/apercus/porte-garage/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D7D2D8",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/creme-gourmande-defaut-1.jpg",
@@ -6587,6 +6849,7 @@
         "gif": "templates/apercus/porte-garage/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1C1C1C",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/elegance-ardoise-defaut-1.jpg",
@@ -6597,6 +6860,7 @@
         "gif": "templates/apercus/porte-garage/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7E3B36",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/mars-rouge-defaut-1.jpg",
@@ -6607,6 +6871,7 @@
         "gif": "templates/apercus/porte-garage/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#22143A",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/neo-future-defaut-1.jpg",
@@ -6617,6 +6882,7 @@
         "gif": "templates/apercus/porte-garage/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#10100F",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/nocturne-artistique-defaut-1.jpg",
@@ -6627,6 +6893,7 @@
         "gif": "templates/apercus/porte-garage/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#BFBCC3",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/pure-lumiere-defaut-1.jpg",
@@ -6637,6 +6904,7 @@
         "gif": "templates/apercus/porte-garage/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#8B4923",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/sahara-elegance-defaut-1.jpg",
@@ -6647,6 +6915,7 @@
         "gif": "templates/apercus/porte-garage/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#582722",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/terre-de-carmin-defaut-1.jpg",
@@ -6657,6 +6926,7 @@
         "gif": "templates/apercus/porte-garage/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2B272D",
         "cartes": {
           "defaut": [
             "templates/apercus/porte-garage/urban-factory-defaut-1.jpg",
@@ -6669,6 +6939,7 @@
     },
     "refrigerateur": {
       "bleu-evasion": {
+        "cadre": "#0C1C38",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/bleu-evasion-defaut-1.jpg",
@@ -6679,6 +6950,7 @@
         "gif": "templates/apercus/refrigerateur/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#181919",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/carbon-pulse-defaut-1.jpg",
@@ -6689,6 +6961,7 @@
         "gif": "templates/apercus/refrigerateur/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D5D1D4",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/creme-gourmande-defaut-1.jpg",
@@ -6699,6 +6972,7 @@
         "gif": "templates/apercus/refrigerateur/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#201F20",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/elegance-ardoise-defaut-1.jpg",
@@ -6709,6 +6983,7 @@
         "gif": "templates/apercus/refrigerateur/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#6E4434",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/mars-rouge-defaut-1.jpg",
@@ -6719,6 +6994,7 @@
         "gif": "templates/apercus/refrigerateur/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#1E1C33",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/neo-future-defaut-1.jpg",
@@ -6729,6 +7005,7 @@
         "gif": "templates/apercus/refrigerateur/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#111010",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/nocturne-artistique-defaut-1.jpg",
@@ -6739,6 +7016,7 @@
         "gif": "templates/apercus/refrigerateur/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#7FA48C",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/pure-lumiere-defaut-1.jpg",
@@ -6749,6 +7027,7 @@
         "gif": "templates/apercus/refrigerateur/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#844725",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/sahara-elegance-defaut-1.jpg",
@@ -6759,6 +7038,7 @@
         "gif": "templates/apercus/refrigerateur/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#4E2924",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/terre-de-carmin-defaut-1.jpg",
@@ -6769,6 +7049,7 @@
         "gif": "templates/apercus/refrigerateur/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2E2B2E",
         "cartes": {
           "defaut": [
             "templates/apercus/refrigerateur/urban-factory-defaut-1.jpg",
@@ -6781,6 +7062,7 @@
     },
     "seche-linge": {
       "bleu-evasion": {
+        "cadre": "#081D36",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/bleu-evasion-defaut-1.jpg",
@@ -6791,6 +7073,7 @@
         "gif": "templates/apercus/seche-linge/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#191B1A",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/carbon-pulse-defaut-1.jpg",
@@ -6801,6 +7084,7 @@
         "gif": "templates/apercus/seche-linge/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D3D1D4",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/creme-gourmande-defaut-1.jpg",
@@ -6811,6 +7095,7 @@
         "gif": "templates/apercus/seche-linge/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1D1E1E",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/elegance-ardoise-defaut-1.jpg",
@@ -6821,6 +7106,7 @@
         "gif": "templates/apercus/seche-linge/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#6F443B",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/mars-rouge-defaut-1.jpg",
@@ -6831,6 +7117,7 @@
         "gif": "templates/apercus/seche-linge/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#1A1831",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/neo-future-defaut-1.jpg",
@@ -6841,6 +7128,7 @@
         "gif": "templates/apercus/seche-linge/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#10100F",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/nocturne-artistique-defaut-1.jpg",
@@ -6851,6 +7139,7 @@
         "gif": "templates/apercus/seche-linge/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#629975",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/pure-lumiere-defaut-1.jpg",
@@ -6861,6 +7150,7 @@
         "gif": "templates/apercus/seche-linge/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#824726",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/sahara-elegance-defaut-1.jpg",
@@ -6871,6 +7161,7 @@
         "gif": "templates/apercus/seche-linge/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#472723",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/terre-de-carmin-defaut-1.jpg",
@@ -6881,6 +7172,7 @@
         "gif": "templates/apercus/seche-linge/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2E2B2D",
         "cartes": {
           "defaut": [
             "templates/apercus/seche-linge/urban-factory-defaut-1.jpg",
@@ -6893,6 +7185,7 @@
     },
     "temps": {
       "bleu-evasion": {
+        "cadre": "#0C1F39",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/bleu-evasion-bouddhisme-1.jpg",
@@ -6928,6 +7221,7 @@
         "gif": "templates/apercus/temps/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#282628",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/carbon-pulse-bouddhisme-1.jpg",
@@ -6963,6 +7257,7 @@
         "gif": "templates/apercus/temps/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D1CAD1",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/creme-gourmande-bouddhisme-1.jpg",
@@ -6998,6 +7293,7 @@
         "gif": "templates/apercus/temps/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#212021",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/elegance-ardoise-bouddhisme-1.jpg",
@@ -7033,6 +7329,7 @@
         "gif": "templates/apercus/temps/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#874346",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/mars-rouge-bouddhisme-1.jpg",
@@ -7068,6 +7365,7 @@
         "gif": "templates/apercus/temps/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#2F2042",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/neo-future-bouddhisme-1.jpg",
@@ -7103,6 +7401,7 @@
         "gif": "templates/apercus/temps/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#111111",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/nocturne-artistique-bouddhisme-1.jpg",
@@ -7138,6 +7437,7 @@
         "gif": "templates/apercus/temps/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#A0949D",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/pure-lumiere-bouddhisme-1.jpg",
@@ -7173,6 +7473,7 @@
         "gif": "templates/apercus/temps/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#954A2B",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/sahara-elegance-bouddhisme-1.jpg",
@@ -7208,6 +7509,7 @@
         "gif": "templates/apercus/temps/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#612F31",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/terre-de-carmin-bouddhisme-1.jpg",
@@ -7243,6 +7545,7 @@
         "gif": "templates/apercus/temps/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#302A31",
         "cartes": {
           "bouddhisme": [
             "templates/apercus/temps/urban-factory-bouddhisme-1.jpg",
@@ -7280,6 +7583,7 @@
     },
     "test-gratuit": {
       "sombre": {
+        "cadre": "#121212",
         "cartes": {
           "defaut": [
             "templates/apercus/test-gratuit/sombre-defaut-1.jpg",
@@ -7296,6 +7600,7 @@
     },
     "thermostat": {
       "bleu-evasion": {
+        "cadre": "#0B1D37",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/bleu-evasion-defaut-1.jpg",
@@ -7306,6 +7611,7 @@
         "gif": "templates/apercus/thermostat/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#211F20",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/carbon-pulse-defaut-1.jpg",
@@ -7316,6 +7622,7 @@
         "gif": "templates/apercus/thermostat/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D8D2D8",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/creme-gourmande-defaut-1.jpg",
@@ -7326,6 +7633,7 @@
         "gif": "templates/apercus/thermostat/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1E1B1B",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/elegance-ardoise-defaut-1.jpg",
@@ -7336,6 +7644,7 @@
         "gif": "templates/apercus/thermostat/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#813935",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/mars-rouge-defaut-1.jpg",
@@ -7346,6 +7655,7 @@
         "gif": "templates/apercus/thermostat/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#231536",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/neo-future-defaut-1.jpg",
@@ -7356,6 +7666,7 @@
         "gif": "templates/apercus/thermostat/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#100F0F",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/nocturne-artistique-defaut-1.jpg",
@@ -7366,6 +7677,7 @@
         "gif": "templates/apercus/thermostat/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#C47574",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/pure-lumiere-defaut-1.jpg",
@@ -7376,6 +7688,7 @@
         "gif": "templates/apercus/thermostat/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#8A4722",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/sahara-elegance-defaut-1.jpg",
@@ -7386,6 +7699,7 @@
         "gif": "templates/apercus/thermostat/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#582621",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/terre-de-carmin-defaut-1.jpg",
@@ -7396,6 +7710,7 @@
         "gif": "templates/apercus/thermostat/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2F262D",
         "cartes": {
           "defaut": [
             "templates/apercus/thermostat/urban-factory-defaut-1.jpg",
@@ -7408,6 +7723,7 @@
     },
     "volet": {
       "bleu-evasion": {
+        "cadre": "#0A1E3A",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/bleu-evasion-defaut-1.jpg",
@@ -7418,6 +7734,7 @@
         "gif": "templates/apercus/volet/bleu-evasion.gif"
       },
       "carbon-pulse": {
+        "cadre": "#232223",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/carbon-pulse-defaut-1.jpg",
@@ -7428,6 +7745,7 @@
         "gif": "templates/apercus/volet/carbon-pulse.gif"
       },
       "creme-gourmande": {
+        "cadre": "#D6D2D7",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/creme-gourmande-defaut-1.jpg",
@@ -7438,6 +7756,7 @@
         "gif": "templates/apercus/volet/creme-gourmande.gif"
       },
       "elegance-ardoise": {
+        "cadre": "#1D1D1D",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/elegance-ardoise-defaut-1.jpg",
@@ -7448,6 +7767,7 @@
         "gif": "templates/apercus/volet/elegance-ardoise.gif"
       },
       "mars-rouge": {
+        "cadre": "#7B3F3B",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/mars-rouge-defaut-1.jpg",
@@ -7458,6 +7778,7 @@
         "gif": "templates/apercus/volet/mars-rouge.gif"
       },
       "neo-future": {
+        "cadre": "#23173B",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/neo-future-defaut-1.jpg",
@@ -7468,6 +7789,7 @@
         "gif": "templates/apercus/volet/neo-future.gif"
       },
       "nocturne-artistique": {
+        "cadre": "#101010",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/nocturne-artistique-defaut-1.jpg",
@@ -7478,6 +7800,7 @@
         "gif": "templates/apercus/volet/nocturne-artistique.gif"
       },
       "pure-lumiere": {
+        "cadre": "#C0BBC2",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/pure-lumiere-defaut-1.jpg",
@@ -7488,6 +7811,7 @@
         "gif": "templates/apercus/volet/pure-lumiere.gif"
       },
       "sahara-elegance": {
+        "cadre": "#8B4821",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/sahara-elegance-defaut-1.jpg",
@@ -7498,6 +7822,7 @@
         "gif": "templates/apercus/volet/sahara-elegance.gif"
       },
       "terre-de-carmin": {
+        "cadre": "#542621",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/terre-de-carmin-defaut-1.jpg",
@@ -7508,6 +7833,7 @@
         "gif": "templates/apercus/volet/terre-de-carmin.gif"
       },
       "urban-factory": {
+        "cadre": "#2D282E",
         "cartes": {
           "defaut": [
             "templates/apercus/volet/urban-factory-defaut-1.jpg",
@@ -7546,7 +7872,16 @@
      un aperçu clair posé sur un cadre noir se lit comme un défaut d'affichage.
      C'est le même raisonnement que l'ancien couple sombre/clair, étendu aux
      onze. */
-  function cadreDuTheme(cle) {
+  /* Teinte du cadre qui entoure une animation.
+     Elle est RELEVEE sur l'animation elle-meme (`_teinte_cadres.py` : mediane
+     du pourtour de la premiere image, rangee dans le manifeste), et non
+     deduite de la polarite du theme. Un noir uni autour d'un apercu « Terre de
+     Carmin » ou « Sahara Elegance » n'avait rien a voir avec l'image : la
+     carte est carree, l'animation ne remplit pas toujours sa largeur, et les
+     bandes laterales sautaient aux yeux. Le repli noir/blanc reste pour un
+     apercu qui n'aurait pas encore de teinte relevee. */
+  function cadreDuTheme(cle, fiche) {
+    if (fiche && fiche.cadre) return fiche.cadre;
     const t = themeSite(cle);
     return t && t.clair ? '#FFFFFF' : '#000000';
   }
@@ -7603,7 +7938,7 @@
 
     const cle = themeChoisi(modName);
     const fiche = apercuDuTheme(modName, cle);
-    cadre.style.background = cadreDuTheme(cle);
+    cadre.style.background = cadreDuTheme(cle, fiche);
     if (fiche && fiche.gif) {
       cadre.innerHTML = `<img src="${fiche.gif}" alt="Démonstration ${moduleTitle(modName)}" loading="lazy">`;
     } else {
@@ -8424,29 +8759,70 @@
     majBoutonCompte();
   }
 
-  /* Le lien reçu par e-mail ramène ici avec `#compte-<jeton>` : le jeton est
-     dans le FRAGMENT, qui n'est envoyé à aucun serveur et n'apparaît dans
-     aucun journal d'accès. On le range, puis on NETTOIE l'adresse — laisser
-     un jeton de session dans la barre d'adresse, c'est l'offrir au premier
-     copier-coller. */
+  /* ---------- Retour d'un lien ou d'une connexion sociale ----------
+     Le jeton arrive dans le FRAGMENT (`#compte-<jeton>`), qui n'est envoyé à
+     aucun serveur et n'apparaît dans aucun journal d'accès. On le range, puis
+     on NETTOIE l'adresse — laisser un jeton de session dans la barre
+     d'adresse, c'est l'offrir au premier copier-coller. */
+  const RAISONS_ECHEC = {
+    absent: 'Lien incomplet.',
+    inconnu: "Ce lien n'est pas reconnu.",
+    deja: 'Ce lien a déjà servi — demandez-en un nouveau.',
+    expire: 'Ce lien a expiré — demandez-en un nouveau.',
+    'google-non-configure': "La connexion Google n'est pas encore activée sur ce service. " +
+                            'Utilisez votre e-mail et votre mot de passe.',
+    'apple-non-configure': "La connexion Apple n'est pas encore activée sur ce service. " +
+                           'Utilisez votre e-mail et votre mot de passe.',
+    fournisseur: 'Fournisseur de connexion inconnu.',
+    'oauth-annule': 'Connexion annulée.',
+    'oauth-expire': 'La demande de connexion a expiré. Recommencez.',
+    'oauth-echange': 'Le fournisseur a refusé la connexion. Réessayez.',
+    'oauth-identite': "Le fournisseur n'a pas renvoyé d'identité exploitable.",
+    'oauth-nonce': 'Réponse de connexion incohérente — connexion refusée.',
+    'oauth-erreur': 'Connexion impossible pour le moment.'
+  };
+
+  function nettoyerAdresse() {
+    history.replaceState(history.state, '', location.pathname + location.search);
+  }
+
   async function recupererSessionDepuisLien() {
     const h = location.hash || '';
     if (h.startsWith('#compte-echec-')) {
-      history.replaceState(history.state, '', location.pathname + location.search);
-      const raisons = {
-        absent: 'Lien incomplet.',
-        inconnu: 'Ce lien n\'est pas reconnu.',
-        deja: 'Ce lien a déjà servi — demandez-en un nouveau.',
-        expire: 'Ce lien a expiré — demandez-en un nouveau.'
-      };
-      ouvrirCompteModal(raisons[h.replace('#compte-echec-', '')] || 'Connexion impossible.');
+      nettoyerAdresse();
+      const cle = h.replace('#compte-echec-', '');
+      ouvrirCompteModal(RAISONS_ECHEC[cle] || 'Connexion impossible.');
+      return;
+    }
+    // Lien « mot de passe oublié » : on n'a pas encore de session, seulement
+    // le droit d'en choisir un nouveau.
+    if (h.startsWith('#reinitialiser-')) {
+      etatAuth = { mode: 'reinit', jeton: h.slice('#reinitialiser-'.length) };
+      nettoyerAdresse();
+      ouvrirCompteModal();
       return;
     }
     if (!h.startsWith('#compte-')) return;
     poserSession(h.slice('#compte-'.length));
-    history.replaceState(history.state, '', location.pathname + location.search);
+    nettoyerAdresse();
     await rafraichirCompte();
     ouvrirCompteModal();
+  }
+
+  /* ---------- Fenêtre de connexion ---------- */
+
+  let etatAuth = { mode: 'connexion', jeton: '' };
+  let fournisseurs = null;   // { google, apple, email } — lu une seule fois
+
+  async function chargerFournisseurs() {
+    if (fournisseurs) return fournisseurs;
+    try {
+      const r = await api('/api/auth/providers');
+      fournisseurs = r.ok ? await r.json() : { google: false, apple: false, email: false };
+    } catch (e) {
+      fournisseurs = { google: false, apple: false, email: false };
+    }
+    return fournisseurs;
   }
 
   function ouvrirCompteModal(message) {
@@ -8457,8 +8833,69 @@
     document.getElementById('compte-modal-overlay').classList.remove('active');
   }
 
-  function renderCompteModal(message) {
+  function basculerAuth(mode) {
+    etatAuth = { mode: mode, jeton: etatAuth.jeton };
+    renderCompteModal();
+  }
+
+  /* Logos OFFICIELS, en SVG dans la page : le « G » de Google est
+     quadrichrome et le jeu d'icônes du site est monochrome — une lettre G
+     grise ne serait pas le logo Google, et les deux chartes l'interdisent. */
+  const LOGO_GOOGLE = '<svg viewBox="0 0 48 48" aria-hidden="true">' +
+    '<path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>' +
+    '<path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>' +
+    '<path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z"/>' +
+    '<path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/></svg>';
+  const LOGO_APPLE = '<svg viewBox="0 0 384 512" aria-hidden="true"><path fill="currentColor" ' +
+    'd="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>';
+
+  function blocSocial(f) {
+    const indispo = ' disabled title="Pas encore activé sur ce service"';
+    return `
+      <div class="auth-ou">ou</div>
+      <div class="auth-social">
+        <button type="button" onclick="connexionSociale('google')"${f.google ? '' : indispo}>
+          ${LOGO_GOOGLE} Continuer avec Google
+        </button>
+        <button type="button" class="auth-apple" onclick="connexionSociale('apple')"${f.apple ? '' : indispo}>
+          ${LOGO_APPLE} Continuer avec Apple
+        </button>
+      </div>
+      ${(f.google || f.apple) ? '' : `<p class="auth-note">
+        <i class="fa-solid fa-circle-info"></i> La connexion Google et Apple sera activée
+        prochainement. En attendant, créez un compte avec votre e-mail.</p>`}`;
+  }
+
+  function connexionSociale(fournisseur) {
+    // Navigation pleine page, et non un appel XHR : le fournisseur doit
+    // afficher SON écran de consentement dans la barre d'adresse du visiteur,
+    // c'est ce qui lui permet de vérifier à qui il confie son compte.
+    location.href = BACKEND_URL.replace(/\/+$/, '') + '/api/auth/oauth/' + fournisseur + '/start';
+  }
+
+  function champMotDePasse(id, placeholder, autocomplete, action) {
+    return `<div class="auth-champ-mdp">
+        <input type="password" id="${id}" class="field-required" autocomplete="${autocomplete}"
+               placeholder="${placeholder}" onkeydown="if(event.key==='Enter')${action}">
+        <button type="button" class="auth-oeil" onclick="basculerOeil('${id}', this)"
+                title="Afficher le mot de passe" aria-label="Afficher le mot de passe">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>`;
+  }
+
+  function basculerOeil(id, bouton) {
+    const champ = document.getElementById(id);
+    if (!champ) return;
+    const cache = champ.type === 'password';
+    champ.type = cache ? 'text' : 'password';
+    bouton.innerHTML = `<i class="fa-solid fa-eye${cache ? '-slash' : ''}"></i>`;
+    champ.focus();
+  }
+
+  async function renderCompteModal(message) {
     const corps = document.getElementById('compte-modal-body');
+
     if (compteConnecte) {
       corps.innerHTML = `
         <p class="compte-intro">Connecté en tant que <b>${compteConnecte.email}</b>.</p>
@@ -8467,63 +8904,241 @@
           <button class="cart-clear-btn" onclick="seDeconnecter()">
             <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
           </button>
+          <button class="btn-pay" onclick="fermerCompteModal();switchTab('historique')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Voir tout mon historique
+          </button>
         </div>`;
       chargerMesDeploiements();
       return;
     }
+
+    const erreur = message ? `<p class="compte-erreur">${message}</p>` : '';
+
+    // Choix d'un nouveau mot de passe, depuis le lien reçu par e-mail.
+    if (etatAuth.mode === 'reinit') {
+      corps.innerHTML = `
+        <p class="compte-intro">Choisissez un nouveau mot de passe. Il doit faire
+          <b>au moins 10 caractères</b> — une phrase courte est plus sûre et plus
+          facile à retenir qu'un mot compliqué.</p>
+        ${erreur}
+        <div class="form-group">
+          <label for="auth-mdp"><i class="fa-solid fa-lock"></i> Nouveau mot de passe</label>
+          ${champMotDePasse('auth-mdp', 'au moins 10 caractères', 'new-password', 'validerReinit()')}
+        </div>
+        <div id="compte-retour"></div>
+        <div class="modal-footer">
+          <button class="btn-pay" id="compte-envoyer" onclick="validerReinit()">
+            <i class="fa-solid fa-key"></i> Enregistrer
+          </button>
+        </div>`;
+      return;
+    }
+
+    // Demande d'un lien de réinitialisation.
+    if (etatAuth.mode === 'oubli') {
+      corps.innerHTML = `
+        <p class="compte-intro">Saisissez votre adresse : nous vous envoyons un lien
+          pour choisir un nouveau mot de passe. Il est valable 30 minutes et ne
+          fonctionne qu'une fois.</p>
+        ${erreur}
+        <div class="form-group">
+          <label for="auth-email"><i class="fa-solid fa-envelope"></i> Votre adresse e-mail</label>
+          <input type="email" id="auth-email" class="field-required" autocomplete="email"
+                 placeholder="vous@exemple.fr" onkeydown="if(event.key==='Enter')demanderReinit()">
+        </div>
+        <div id="compte-retour"></div>
+        <div class="modal-footer">
+          <button class="cart-clear-btn" onclick="basculerAuth('connexion')">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+          </button>
+          <button class="btn-pay" id="compte-envoyer" onclick="demanderReinit()">
+            <i class="fa-solid fa-paper-plane"></i> Envoyer le lien
+          </button>
+        </div>`;
+      return;
+    }
+
+    const f = await chargerFournisseurs();
+    const inscription = etatAuth.mode === 'inscription';
+
     corps.innerHTML = `
-      <p class="compte-intro">
-        Un seul champ : saisissez votre adresse, nous vous envoyons un lien de
-        connexion. <b>Pas de mot de passe</b> — rien à retenir, rien à oublier.
-        Si vous n'avez pas encore de compte, il est créé en ouvrant le lien.
-      </p>
-      ${message ? `<p class="compte-erreur">${message}</p>` : ''}
+      <div class="auth-bascule">
+        <button type="button" class="${inscription ? '' : 'actif'}"
+                onclick="basculerAuth('connexion')">Connexion</button>
+        <button type="button" class="${inscription ? 'actif' : ''}"
+                onclick="basculerAuth('inscription')">Créer un compte</button>
+      </div>
+      <p class="compte-intro">${inscription
+        ? `Votre compte garde la trace de chaque déploiement : date, packs, résultat.
+           Le mot de passe doit faire <b>au moins 10 caractères</b> — une phrase courte
+           est plus sûre qu'un mot compliqué.`
+        : 'Retrouvez votre espace et l\'historique de vos déploiements.'}</p>
+      ${erreur}
+      <div class="form-group">
+        <label for="auth-email"><i class="fa-solid fa-envelope"></i> Adresse e-mail</label>
+        <input type="email" id="auth-email" class="field-required" autocomplete="email"
+               placeholder="vous@exemple.fr" onkeydown="if(event.key==='Enter')validerAuth()">
+      </div>
       <div class="form-group" style="margin-bottom: 0;">
-        <label for="compte-email"><i class="fa-solid fa-envelope"></i> Votre adresse e-mail</label>
-        <input type="email" id="compte-email" class="field-required" autocomplete="email"
-               placeholder="vous@exemple.fr" onkeydown="if(event.key==='Enter')demanderLien()">
+        <label for="auth-mdp"><i class="fa-solid fa-lock"></i> Mot de passe</label>
+        ${champMotDePasse('auth-mdp',
+            inscription ? 'au moins 10 caractères' : 'votre mot de passe',
+            inscription ? 'new-password' : 'current-password', 'validerAuth()')}
+        ${inscription ? '' : `<button type="button" class="auth-oubli"
+            onclick="basculerAuth('oubli')">Mot de passe oublié ?</button>`}
       </div>
       <div id="compte-retour"></div>
       <div class="modal-footer">
-        <button class="btn-pay" id="compte-envoyer" onclick="demanderLien()">
-          <i class="fa-solid fa-paper-plane"></i> Recevoir mon lien
+        <button class="btn-pay" id="compte-envoyer" onclick="validerAuth()">
+          <i class="fa-solid fa-${inscription ? 'user-plus' : 'right-to-bracket'}"></i>
+          ${inscription ? 'Créer mon compte' : 'Se connecter'}
         </button>
-      </div>`;
+      </div>
+      ${blocSocial(f)}
+      ${f.email ? `<p class="auth-note">Vous préférez ne pas retenir de mot de passe ?
+        <button type="button" class="auth-oubli" style="display:inline;width:auto;margin:0"
+                onclick="demanderLien()">Recevoir un lien de connexion par e-mail</button></p>` : ''}`;
+
+    const champ = document.getElementById('auth-email');
+    if (champ) champ.focus();
   }
 
-  async function demanderLien() {
-    const champ = document.getElementById('compte-email');
+  /* Signale un champ mal rempli. Le `void offsetWidth` force le navigateur à
+     recalculer la mise en page : sans lui, réappliquer la même classe ne
+     rejouerait pas l'animation, et un second essai fautif ne se verrait pas. */
+  function signalerChamp(champ) {
+    champ.classList.remove('input-error'); void champ.offsetWidth;
+    champ.classList.add('input-error'); champ.focus();
+  }
+
+  const EMAIL_PLAUSIBLE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+  async function appelAuth(chemin, charge, bouton, retour) {
+    bouton.disabled = true;
+    retour.innerHTML = '<p class="compte-intro">Un instant…</p>';
+    try {
+      const r = await api(chemin, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(charge)
+      });
+      const d = await r.json().catch(() => ({}));
+      bouton.disabled = false;
+      return { ok: r.ok, statut: r.status, d: d };
+    } catch (e) {
+      bouton.disabled = false;
+      retour.innerHTML = '<p class="compte-erreur">Service injoignable. Réessayez dans un instant.</p>';
+      return null;
+    }
+  }
+
+  async function validerAuth() {
+    const inscription = etatAuth.mode === 'inscription';
+    const champEmail = document.getElementById('auth-email');
+    const champMdp = document.getElementById('auth-mdp');
+    const retour = document.getElementById('compte-retour');
+    const bouton = document.getElementById('compte-envoyer');
+
+    const email = (champEmail.value || '').trim();
+    const mdp = champMdp.value || '';
+    if (!EMAIL_PLAUSIBLE.test(email)) { signalerChamp(champEmail); return; }
+    // La longueur n'est contrôlée qu'à l'inscription : à la connexion, refuser
+    // un mot de passe court apprendrait la règle en vigueur le jour où le
+    // compte a été créé.
+    if (!mdp || (inscription && mdp.length < 10)) { signalerChamp(champMdp); return; }
+
+    const rep = await appelAuth(inscription ? '/api/auth/register' : '/api/auth/login',
+                                { email: email, password: mdp }, bouton, retour);
+    if (!rep) return;
+    if (!rep.ok || !rep.d.session) {
+      retour.innerHTML = `<p class="compte-erreur">${rep.d.error || 'Connexion impossible.'}</p>`;
+      return;
+    }
+    poserSession(rep.d.session);
+    await rafraichirCompte();
+    renderCompteModal();
+  }
+
+  async function demanderReinit() {
+    const champ = document.getElementById('auth-email');
     const retour = document.getElementById('compte-retour');
     const bouton = document.getElementById('compte-envoyer');
     const email = (champ.value || '').trim();
-    if (!email || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(email)) {
-      champ.classList.remove('input-error'); void champ.offsetWidth;
-      champ.classList.add('input-error'); champ.focus();
+    if (!EMAIL_PLAUSIBLE.test(email)) { signalerChamp(champ); return; }
+
+    const rep = await appelAuth('/api/auth/password/forgot', { email: email }, bouton, retour);
+    if (!rep) return;
+    retour.innerHTML = rep.ok
+      ? `<p class="compte-succes"><i class="fa-solid fa-circle-check"></i> ${rep.d.message || 'Lien envoyé.'}</p>`
+      : `<p class="compte-erreur">${rep.d.error || 'Envoi impossible pour le moment.'}</p>`;
+  }
+
+  async function validerReinit() {
+    const champ = document.getElementById('auth-mdp');
+    const retour = document.getElementById('compte-retour');
+    const bouton = document.getElementById('compte-envoyer');
+    const mdp = champ.value || '';
+    if (mdp.length < 10) { signalerChamp(champ); return; }
+
+    const rep = await appelAuth('/api/auth/password/reset',
+                                { token: etatAuth.jeton, password: mdp }, bouton, retour);
+    if (!rep) return;
+    if (!rep.ok || !rep.d.session) {
+      retour.innerHTML = `<p class="compte-erreur">${rep.d.error || 'Réinitialisation impossible.'}</p>`;
       return;
     }
-    bouton.disabled = true;
-    retour.innerHTML = '<p class="compte-intro">Envoi en cours…</p>';
-    try {
-      const r = await api('/api/auth/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
-      const d = await r.json().catch(() => ({}));
-      retour.innerHTML = r.ok
-        ? `<p class="compte-succes"><i class="fa-solid fa-circle-check"></i> ${d.message || 'Lien envoyé.'}</p>`
-        : `<p class="compte-erreur">${d.error || 'Envoi impossible pour le moment.'}</p>`;
-    } catch (e) {
-      retour.innerHTML = '<p class="compte-erreur">Service injoignable. Réessayez dans un instant.</p>';
-    }
-    bouton.disabled = false;
+    poserSession(rep.d.session);
+    etatAuth = { mode: 'connexion', jeton: '' };
+    await rafraichirCompte();
+    renderCompteModal();
+  }
+
+  /* Lien magique — conservé, mais offert uniquement quand l'envoi d'e-mails
+     est configuré : proposer un bouton qui ne peut qu'échouer est pire que de
+     ne rien proposer. */
+  async function demanderLien() {
+    const champ = document.getElementById('auth-email');
+    const retour = document.getElementById('compte-retour');
+    const bouton = document.getElementById('compte-envoyer');
+    const email = (champ.value || '').trim();
+    if (!EMAIL_PLAUSIBLE.test(email)) { signalerChamp(champ); return; }
+
+    const rep = await appelAuth('/api/auth/start', { email: email }, bouton, retour);
+    if (!rep) return;
+    retour.innerHTML = rep.ok
+      ? `<p class="compte-succes"><i class="fa-solid fa-circle-check"></i> ${rep.d.message || 'Lien envoyé.'}</p>`
+      : `<p class="compte-erreur">${rep.d.error || 'Envoi impossible pour le moment.'}</p>`;
   }
 
   async function seDeconnecter() {
     try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) { /* sans effet */ }
     poserSession(''); compteConnecte = null;
+    etatAuth = { mode: 'connexion', jeton: '' };
     majBoutonCompte(); renderCompteModal();
+    // La page d'historique afficherait sinon les déploiements de la session
+    // qu'on vient de fermer.
+    const page = document.getElementById('section-historique');
+    if (page && page.classList.contains('active')) chargerHistorique();
   }
+
+  /* ---------- Historique ---------- */
+
+  const ETAT_LIBELLE = { success: 'Réussi', error: 'Échec', running: 'En cours', pending: 'En attente' };
+
+  const dateFr = (iso) => {
+    const d = new Date(iso);
+    return isNaN(d) ? (iso || '') : d.toLocaleString('fr-FR');
+  };
+  const eurosFr = (c) => ((c || 0) / 100).toLocaleString('fr-FR',
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  function dureeFr(debut, fin) {
+    if (!debut || !fin) return '';
+    const s = (new Date(fin) - new Date(debut)) / 1000;
+    if (!(s >= 0)) return '';
+    return s < 90 ? s.toFixed(1) + ' s' : Math.round(s / 60) + ' min';
+  }
+  const packsFr = (mods) => (mods || '').split(',').filter(Boolean)
+    .map(m => `<code>${m}</code>`).join(' ');
 
   async function chargerMesDeploiements() {
     const zone = document.getElementById('compte-deploiements');
@@ -8537,18 +9152,103 @@
           Ceux que vous lancerez en étant connecté apparaîtront ici.</p>`;
         return;
       }
-      const etat = { success: 'Réussi', error: 'Échec', running: 'En cours', pending: 'En attente' };
-      zone.innerHTML = `<table class="compte-table">
+      // Fenêtre du compte : les cinq derniers seulement. Le reste est sur la
+      // page Historique, qui a la place de tout afficher.
+      zone.innerHTML = `<div class="histo-defile"><table class="compte-table">
         <tr><th>Date</th><th>Packs</th><th>État</th></tr>
-        ${d.jobs.map(j => `<tr>
-            <td>${new Date(j.created_at).toLocaleString('fr-FR')}</td>
-            <td>${(j.modules || '').split(',').map(m => `<code>${m}</code>`).join(' ')}</td>
-            <td class="etat-${j.status}">${etat[j.status] || j.status}</td>
+        ${d.jobs.slice(0, 5).map(j => `<tr>
+            <td class="nw">${dateFr(j.created_at)}</td>
+            <td>${packsFr(j.modules)}</td>
+            <td class="etat-${j.status} nw">${ETAT_LIBELLE[j.status] || j.status}</td>
           </tr>`).join('')}
-      </table>`;
+      </table></div>
+      ${d.jobs.length > 5 ? `<p class="auth-note">${d.jobs.length - 5} déploiement(s)
+        de plus sur la page Historique.</p>` : ''}`;
     } catch (e) {
       zone.innerHTML = '<p class="compte-intro">Historique indisponible.</p>';
     }
+  }
+
+  async function chargerHistorique() {
+    const zone = document.getElementById('histo-contenu');
+    const sous = document.getElementById('histo-sous-titre');
+    if (!zone) return;
+
+    if (!sessionClient()) {
+      sous.textContent = 'Connectez-vous pour retrouver vos déploiements.';
+      zone.innerHTML = `<p class="compte-intro">Votre historique est rattaché à votre compte :
+        chaque déploiement y est enregistré avec sa date, les packs concernés et son résultat.</p>
+        <div class="modal-footer" style="justify-content:flex-start">
+          <button class="btn-pay" onclick="ouvrirCompteModal()">
+            <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+          </button>
+        </div>`;
+      return;
+    }
+
+    zone.innerHTML = '<p class="compte-intro">Chargement…</p>';
+    let d;
+    try {
+      const r = await api('/api/account/jobs');
+      if (!r.ok) {
+        // 401 : la session a expiré pendant que l'onglet était ouvert. On la
+        // jette et on redessine — l'écran de connexion vaut mieux qu'un
+        // « indisponible » qui ne dit pas quoi faire.
+        if (r.status === 401) {
+          poserSession(''); compteConnecte = null; majBoutonCompte();
+          return chargerHistorique();
+        }
+        zone.innerHTML = '<p class="compte-intro">Historique indisponible pour le moment.</p>';
+        return;
+      }
+      d = await r.json();
+    } catch (e) {
+      zone.innerHTML = '<p class="compte-intro">Service injoignable. Réessayez dans un instant.</p>';
+      return;
+    }
+
+    sous.innerHTML = `Déploiements du compte <b>${d.email}</b>.`;
+    if (!d.jobs.length) {
+      zone.innerHTML = `<p class="compte-intro">Aucun déploiement pour l'instant.
+        Ceux que vous lancerez <b>en étant connecté</b> apparaîtront ici, avec leur
+        date, les packs concernés et leur résultat.</p>`;
+      return;
+    }
+
+    const total = d.jobs.length;
+    const reussis = d.jobs.filter(j => j.status === 'success').length;
+    const echecs = d.jobs.filter(j => j.status === 'error').length;
+    const montant = d.jobs.reduce((n, j) => n + (j.amount_cents || 0), 0);
+    // Les packs sont comptés SANS doublon : redéployer le même pack trois fois
+    // ne fait pas trois packs.
+    const packs = new Set();
+    d.jobs.forEach(j => (j.modules || '').split(',').filter(Boolean).forEach(m => packs.add(m)));
+
+    zone.innerHTML = `
+      <div class="histo-resume">
+        <div class="histo-case"><div class="n">${total}</div><div class="l">Déploiements</div></div>
+        <div class="histo-case"><div class="n" style="color:var(--col-valide)">${reussis}</div><div class="l">Réussis</div></div>
+        <div class="histo-case"><div class="n" style="color:var(--col-required)">${echecs}</div><div class="l">Échecs</div></div>
+        <div class="histo-case"><div class="n">${packs.size}</div><div class="l">Packs distincts</div></div>
+        <div class="histo-case"><div class="n">${eurosFr(montant)}</div><div class="l">Total</div></div>
+      </div>
+      <div class="histo-defile">
+        <table class="compte-table">
+          <tr><th>Date</th><th>Packs</th><th>Montant</th><th>État</th><th>Durée</th>
+              <th>Étapes</th><th>Journal</th></tr>
+          ${d.jobs.map(j => `<tr>
+            <td class="nw">${dateFr(j.created_at)}</td>
+            <td>${packsFr(j.modules)}</td>
+            <td class="nw">${eurosFr(j.amount_cents)}</td>
+            <td class="etat-${j.status} nw">${ETAT_LIBELLE[j.status] || j.status}</td>
+            <td class="nw">${dureeFr(j.created_at, j.finished_at)}</td>
+            <td>${j.steps || 0}</td>
+            <td class="nw">${j.run_url
+              ? `<a href="${j.run_url}" target="_blank" rel="noopener noreferrer">voir</a>` : '—'}</td>
+          </tr>${j.error ? `<tr><td colspan="7" style="color:var(--col-required);font-size:.74rem;
+            padding-top:0;border-top:none">${j.error}</td></tr>` : ''}`).join('')}
+        </table>
+      </div>`;
   }
 
 
