@@ -1432,20 +1432,36 @@
        selecteurs, et le bouton « Ajouter ». Le selecteur de THEME, lui, reste
        au-dessus des trois zones (`.detail-commandes`) : il commande l'apercu
        des trois zones a la fois, il ne peut pas appartenir a une seule. */
+    /* DEUX ZONES EN HAUT, UNE EN BAS SUR TOUTE LA LARGEUR (07/09/2026,
+       demande du client) : le GIF a gauche, le descriptif et « Inclus » a
+       droite, puis les entites a renseigner sous les deux. Les trois colonnes
+       cote a cote du 03/09 serraient trop les saisies -- et un pack a vingt et
+       un champs, comme Dechets, y devenait illisible. */
     .detail-trois-blocs {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 18px;
       align-items: start;
     }
+    .detail-colonne-action { grid-column: 1 / -1; }
     .detail-colonne-media, .detail-colonne-info, .detail-colonne-action {
       display: flex;
       flex-direction: column;
       gap: 12px;
       min-width: 0;
     }
-    .detail-champs { display: flex; flex-direction: column; gap: 4px; }
-    .detail-champs .param-label:first-child { margin-top: 0; }
+    /* LES SAISIES EN GRILLE, et non en colonne unique. Le pack Dechets en
+       porte vingt et une (cinq bacs x trois champs, plus la piece, les
+       encombrants, l'heure, la langue et le theme) : empilees, elles faisaient
+       une page interminable ou l'on ne voyait plus le bouton d'ajout. */
+    .detail-champs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 10px 16px;
+      align-items: start;
+    }
+    .param-champ { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .detail-champs .param-label { margin-top: 0; }
     .detail-champs input, .detail-champs select {
       width: 100%;
       padding: 11px 12px;
@@ -1464,19 +1480,18 @@
       border: 1px dashed var(--card-border);
       border-radius: 8px;
     }
-    .detail-ajouter { margin-top: auto; }
+    .detail-ajouter { margin-top: 6px; justify-self: start; }
 
     /* Sous 980px les trois colonnes serrent trop le descriptif et les champs
        de saisie : la zone media garde sa largeur propre (elle est bornee a
        400px par `.detail-gif` de toute facon) pendant que l'info et l'action
        se partagent la ligne suivante. Sur telephone (780px), tout s'empile —
        media, puis descriptif, puis saisies — dans l'ordre de lecture. */
-    @media (max-width: 980px) {
-      .detail-trois-blocs { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-      .detail-colonne-media { grid-column: 1 / -1; }
-    }
+    /* Sur telephone tout s'empile dans l'ordre de lecture : l'animation,
+       puis le descriptif, puis les saisies. */
     @media (max-width: 780px) {
       .detail-trois-blocs { grid-template-columns: 1fr; }
+      .detail-champs { grid-template-columns: 1fr; }
     }
     .detail-commandes select {
       width: 100%;
@@ -4557,6 +4572,20 @@
                return { value: c[0], label: c[1] }; }) };
   }
 
+  /* La FREQUENCE de chaque bac, choisie plutot que devinee (07/09/2026).
+     Elle prime sur ce que le champ du jour laisse deviner : « mardi » avec
+     « Mois » donne le premier mardi du mois, et non chaque mardi. */
+  function champFrequence(rang) {
+    return { param: 'DECHETS_FREQUENCE_' + rang,
+             label: 'Poubelle ' + rang + ' — fréquence',
+             type: 'select', required: false, defaut: 'semaine',
+             options: [
+               { value: 'semaine', label: 'Chaque semaine' },
+               { value: 'mois', label: 'Chaque mois' },
+               { value: 'annee', label: 'Chaque année' }
+             ] };
+  }
+
   function champCollecte(rang, exemple) {
     return { param: 'DECHETS_COLLECTE_' + rang,
              label: 'Poubelle ' + rang + ' — jour de collecte',
@@ -4591,17 +4620,25 @@
     service_gestion_dechets: [
       { param: 'DECHETS_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Maison' },
-      champTypeDechet(1, true), champCouleurBac(1, true), champCollecte(1, 'ex : mardi'),
-      champTypeDechet(2, false), champCouleurBac(2, false), champCollecte(2, 'ex : vendredi'),
-      champTypeDechet(3, false), champCouleurBac(3, false), champCollecte(3, 'ex : mercredi'),
-      champTypeDechet(4, false), champCouleurBac(4, false), champCollecte(4, 'ex : jeudi'),
-      champTypeDechet(5, false), champCouleurBac(5, false), champCollecte(5, 'ex : samedi'),
+      champTypeDechet(1, true), champCouleurBac(1, true),
+      champFrequence(1), champCollecte(1, 'ex : mardi'),
+      champTypeDechet(2, false), champCouleurBac(2, false),
+      champFrequence(2), champCollecte(2, 'ex : vendredi'),
+      champTypeDechet(3, false), champCouleurBac(3, false),
+      champFrequence(3), champCollecte(3, 'ex : mercredi'),
+      champTypeDechet(4, false), champCouleurBac(4, false),
+      champFrequence(4), champCollecte(4, 'ex : jeudi'),
+      champTypeDechet(5, false), champCouleurBac(5, false),
+      champFrequence(5), champCollecte(5, 'ex : samedi'),
       { param: 'DECHETS_ENCOMBRANTS', label: 'Collecte des encombrants', type: 'text', required: false,
         placeholder: 'ex : premier lundi — vide : premier lundi du mois' },
       { param: 'DECHETS_HEURE', label: 'Heure du rappel de la veille', type: 'text', required: false,
         placeholder: 'ex : 19:00 — vide : 19h00' },
+      /* Le defaut suit la LANGUE DE L'INSTANCE : « J » pour Jour en francais,
+         « D » pour Day en anglais (tranche par le client le 07/09/2026). Les
+         vingt langues restent proposees pour qui veut forcer. */
       { param: 'DECHETS_LANGUE', label: 'Compte à rebours — langue',
-        type: 'select', required: false, defaut: 'en',
+        type: 'select', required: false, defaut: 'auto',
         options: [
           { value: 'auto', label: 'Langue de mon Home Assistant' },
           { value: 'ar', label: 'العربية (—)' },
@@ -5037,7 +5074,7 @@
           `<label class="param-checkbox"><input type="checkbox" id="${id}-${o.value}"
              name="${id}" value="${o.value}"${i === 0 ? ' checked' : ''}> ${o.label}</label>`
         ).join('');
-        return `<span class="param-label">${c.label}</span><span class="param-checkboxes" id="${id}">${cases}</span>`;
+        return `<div class="param-champ"><span class="param-label">${c.label}</span><span class="param-checkboxes" id="${id}">${cases}</span></div>`;
       }
       // L'option présélectionnée est celle que le champ DÉCLARE, et non la
       // première de la liste : c'est ce qui donne à chaque pack son thème
@@ -5050,7 +5087,12 @@
              `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}>${o.label}</option>`).join('')}</select>`
         : `<input type="text" class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
-      return `<label class="param-label" for="${id}">${c.label}</label>${saisie}`;
+      // CHAQUE CHAMP EST ENVELOPPE dans son propre conteneur. Rendus en
+      // freres, l'etiquette et sa saisie ne peuvent pas etre disposees en
+      // grille : une colonne couperait entre les deux. Les identifiants ne
+      // changent pas, `collecterParams` et `reposerSaisies` n'ont rien a
+      // savoir de cette enveloppe.
+      return `<div class="param-champ"><label class="param-label" for="${id}">${c.label}</label>${saisie}</div>`;
     }).join('');
   }
 
