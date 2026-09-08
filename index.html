@@ -3693,7 +3693,7 @@
       { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
       { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
-      { name: 'appareil_microwave', desc: 'Micro-ondes connecté' },
+      { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
       { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
       { name: 'appareil_printer', desc: 'Imprimante et niveaux d\'encre' },
       { name: 'appareil_raspberry', desc: 'Surveillance système Raspberry Pi' },
@@ -3754,7 +3754,7 @@
     appareil_enceinte: 'Enceinte Connectée',
     appareil_lave_vaisselle: 'Lave-vaisselle',
     appareil_lave_linge: 'Lave-linge',
-    appareil_microwave: 'Micro-Ondes',
+    appareil_micro_onde: 'Micro-ondes',
     appareil_panneau_solaire: 'Panneau Solaire',
     appareil_printer: 'Imprimante',
     appareil_raspberry: 'Raspberry Pi',
@@ -3805,7 +3805,7 @@
     appareil_enceinte: 'fa-volume-high',
     appareil_lave_vaisselle: 'fa-sink',
     appareil_lave_linge: 'fa-soap',
-    appareil_microwave: 'fa-kitchen-set',
+    appareil_micro_onde: 'fa-kitchen-set',
     appareil_panneau_solaire: 'fa-solar-panel',
     appareil_printer: 'fa-print',
     appareil_raspberry: 'fa-microchip',
@@ -3891,6 +3891,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_micro_onde: {
+      resume: "Phase de la cuisson en direct, temps restant, coût et consommation.",
+      detail: `Suivi complet d'un four à micro-ondes depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser sur l'appareil. Le premier onglet montre en direct ce qui s'y passe : le voyant du bandeau clignote et un disque tourne dans la cavité au rythme de la phase en cours (<b>plateau</b>, <b>dégel</b>, <b>cuisson</b>), la phase est nommée en clair dans l'écran de l'appareil, et le <b>temps restant</b> est estimé d'après vos cuissons précédentes. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> de la dernière cuisson, compte les passages pour vous rappeler le <b>nettoyage de la cavité</b>, garde les cinq dernières cuissons et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Un micro-ondes de 800 W et un de 1 800 W sont donc suivis aussi justement l'un que l'autre, sans rien à régler.`
+    },
     appareil_refrigerateur: {
       resume: "Froid en direct, porte, temperature et degivrage temporise.",
       detail: `Suivi complet d'un refrigerateur ou d'un congelateur depuis la <b>prise connectee</b> qui l'alimente. Vous choisissez d'abord le <b>type d'appareil</b> &mdash; refrigerateur, congelateur, mini, <b>americain</b>, <b>refrigerateur/congelateur</b> ou <b>multi-portes</b> &mdash; et la carte dessine le votre, avec ses vraies portes. Le premier onglet le montre en direct : il <b>change d'aspect</b> des que le froid tourne, le palier s'inscrit dans son <b>ecran</b>, et une <b>icone de refroidissement</b> s'anime au milieu de chaque porte &mdash; en <b>bleu</b> au regime normal du compresseur, en <b>vert</b> au froid intense.<br><br>Le deuxieme coupe l'appareil pour une duree choisie, de quinze minutes a douze heures &mdash; le temps d'un <b>degivrage</b> &mdash; et le <b>remet sous tension tout seul</b> a la fin. Toute desactivation demande une <b>confirmation</b> : on ne coupe pas un congelateur plein d'un clic malencontreux. Le troisieme trace la consommation par heure, par jour ou par mois.<br><br>Les deux seuils de puissance qui separent la veille, le froid normal et le froid intense ne sont pas devines : le pack <b>mesure l'historique de votre prise</b> au deploiement et les en deduit. Et une <b>alerte part sur vos mobiles</b> des que la consommation tombe a zero, que la prise est coupee ou qu'elle ne repond plus &mdash; un appareil qui ne refroidit plus met son contenu en danger.`
@@ -4256,6 +4260,18 @@
           texte: `L'appareil en direct : il <b>change d'aspect</b> dès que le froid tourne, le palier s'inscrit dans son <b>écran</b>, et une <b>icône de refroidissement</b> s'anime au milieu de chaque porte &mdash; <b>bleu</b> au régime du compresseur, <b>vert</b> au froid intense, rien en veille. À gauche, la <b>détection d'ouverture</b> : le battant s'anime en vert tant que la porte est ouverte. À droite, la <b>température intérieure</b>, qui passe du bleu à l'orange puis au corail selon qu'elle reste normale, tiède ou franchement chaude &mdash; les seuils suivent le type d'appareil, un congélateur n'ayant rien de normal à 4 °C. Porte ouverte ou froid en marche, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
         { titre: '2 — Désactivation', icone: 'fa-power-off',
           texte: `Le <b>dégivrage temporisé</b> : vous choisissez une durée de quinze minutes à douze heures, la prise se coupe, et le courant <b>revient tout seul</b> à la fin. Un appui bref met en pause, un appui long annule et remet immédiatement sous tension. Toute désactivation passe par une <b>confirmation</b> : couper un congélateur plein par mégarde ne se rattrape pas. Le compte à rebours reste affiché, et l'état réel de la prise &mdash; sous tension ou hors tension &mdash; est écrit au-dessus.` },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
+      ]
+    },
+    appareil_micro_onde: {
+      intro: `Trois onglets : indicateur, statistiques, historique. Tout est lu sur la <b>prise connectée</b> qui alimente le four &mdash; rien à poser sur l'appareil, rien à y connecter. Le pack apprend de lui-même à quoi ressemble une de vos cuissons : il <b>mesure l'historique de la prise</b> et en déduit les seuils de puissance qui séparent le plateau tournant, le dégel et la cuisson.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-kitchen-set',
+          texte: `Le micro-ondes en direct : le voyant du bandeau clignote et un disque tourne dans la cavité au rythme de la phase &mdash; <b>bleu</b> quand seuls le plateau et la ventilation tournent, <b>orange</b> à puissance réduite, <b>rouge</b> quand le magnétron chauffe à pleine charge, immobile en veille. La phase est nommée en clair dans l'écran de l'appareil, et le <b>temps restant</b> est estimé d'après la durée moyenne de vos cuissons. Dès que le four tourne, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Statistiques', icone: 'fa-chart-simple',
+          texte: `La <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> de la dernière cuisson. Un compteur suit les passages depuis le dernier <b>nettoyage de la cavité</b> et passe au rouge quand l'entretien est dû : un appui le remet à zéro. Les <b>cinq dernières cuissons</b> sont listées avec leur heure et leur durée. Et si vous fournissez l'interrupteur de la prise, un bouton la coupe d'un appui bref, la redémarre d'un appui long.` },
         { titre: '3 — Historique', icone: 'fa-chart-column',
           texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.` }
       ]
@@ -5180,6 +5196,35 @@
         placeholder: 'ex : 30 — vide : 30 cycles' },
       champThemeSite('VAISSELLE_THEME', 'urban-factory')
     ],
+    /* Micro-onde : memes champs que les packs Lave-linge et Seche-linge,
+       dont il derive. Le capteur de PUISSANCE de la prise connectee est le
+       seul champ obligatoire, et c'est de lui que tout depend -- le
+       synoptique, le decoupage en cuissons, la duree, la phase. Les deux
+       suivants sont facultatifs, et ce sont EUX qui decident de la variante :
+         puissance seule    -> synoptique, durees, entretien, journal ;
+                               3e onglet sur la puissance moyenne
+         + energie          -> energie et cout de la cuisson ; 3e onglet sur
+                               l'energie cumulee en kWh
+         + interrupteur     -> bouton de coupure / redemarrage de la prise
+       En pratique le client n'a pas a les saisir : sur une prise connectee,
+       puissance, energie et relais vivent sur le MEME appareil, et le pack
+       les y retrouve. Les champs ne servent qu'a designer l'entite quand la
+       deduction se trompe. */
+    appareil_micro_onde: [
+      { param: 'MICRO_PIECE', label: 'Pièce', type: 'text', required: true,
+        placeholder: 'ex : Cuisine' },
+      { param: 'MICRO_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
+        placeholder: 'ex : sensor.micro_onde_mss305_power_w_main_channel' },
+      { param: 'MICRO_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
+        placeholder: 'ex : sensor.micro_onde_mss305_energy_kwh — vide : déduit de la prise' },
+      { param: 'MICRO_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
+        placeholder: 'ex : switch.micro_onde_mss305_main_channel — vide : déduit de la prise' },
+      { param: 'MICRO_TARIF', label: 'Prix du kWh', type: 'text', required: false,
+        placeholder: 'ex : 0.25 — vide : 0,25, ajustable ensuite sans redéploiement' },
+      { param: 'MICRO_ENTRETIEN', label: 'Cuissons entre deux nettoyages', type: 'text', required: false,
+        placeholder: 'ex : 30 — vide : 30 cuissons' },
+      champThemeSite('MICRO_THEME', 'urban-factory')
+    ],
     appareil_seche_linge: [
       { param: 'SECHAGE_PIECE', label: 'Pièce', type: 'text', required: true,
         placeholder: 'ex : Buanderie' },
@@ -5447,6 +5492,14 @@
       + 'qu\u2019elle ne répond plus, ainsi que HACS et les cartes '
       + 'personnalisées requises (button-card, mushroom, swipe-card, '
       + 'stack-in-card, apexcharts-card, card-mod).',
+    appareil_micro_onde:
+      'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
+      + 'puissance en cuissons, le capteur de phase et l\u2019estimation du temps '
+      + 'restant, les trois automatisations (début et fin de cuisson, rappel de '
+      + 'nettoyage), les trois scripts d\u2019action (entretien, coupure, '
+      + 'redémarrage de la prise) et les onze helpers du suivi, ainsi que HACS '
+      + 'et les cartes personnalisées requises (button-card, mushroom, '
+      + 'swipe-card, stack-in-card, apexcharts-card, card-mod).',
     appareil_seche_linge:
       'la vue et ses trois onglets, le capteur de marche qui découpe le flux de '
       + 'puissance en cycles, le capteur de phase et l\u2019estimation du temps '
@@ -6853,6 +6906,118 @@
         "gif": "templates/apercus/meteo/urban-factory.gif"
       }
     },
+    "micro-onde": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/micro-onde/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/micro-onde/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/micro-onde/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/micro-onde/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/micro-onde/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/micro-onde/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/micro-onde/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/micro-onde/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/mars-rouge-defaut-1.jpg",
+            "templates/apercus/micro-onde/mars-rouge-defaut-2.jpg",
+            "templates/apercus/micro-onde/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/neo-future-defaut-1.jpg",
+            "templates/apercus/micro-onde/neo-future-defaut-2.jpg",
+            "templates/apercus/micro-onde/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/micro-onde/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/micro-onde/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/micro-onde/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/micro-onde/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/micro-onde/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/micro-onde/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/micro-onde/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/micro-onde/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/micro-onde/urban-factory-defaut-1.jpg",
+            "templates/apercus/micro-onde/urban-factory-defaut-2.jpg",
+            "templates/apercus/micro-onde/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/micro-onde/urban-factory.gif"
+      }
+    },
     "porte-garage": {
       "bleu-evasion": {
         "cadre": "#0A1D36",
@@ -7097,25 +7262,6 @@
           ]
         },
         "gif": "templates/apercus/refrigerateur/urban-factory.gif"
-      }
-    },
-    "lave-vaisselle": {
-      /* Un seul theme genere a ce jour (08/09/2026), depuis le deploiement
-         reel du client (prise Meross, piece Cuisine) plutot qu'une
-         demonstration fictive -- l'appareil etait en veille au moment de la
-         capture, d'ou un apercu peu anime. Les dix autres themes restent a
-         generer, cf. `_deployer_lave_vaisselle.py` (a ecrire, sur le modele
-         de `_deployer_seche_linge.py`) puis `_generer_apercus.py`. */
-      "urban-factory": {
-        "cadre": "#332E33",
-        "cartes": {
-          "defaut": [
-            "templates/apercus/lave-vaisselle/urban-factory-defaut-1.jpg",
-            "templates/apercus/lave-vaisselle/urban-factory-defaut-2.jpg",
-            "templates/apercus/lave-vaisselle/urban-factory-defaut-3.jpg"
-          ]
-        },
-        "gif": "templates/apercus/lave-vaisselle/urban-factory.gif"
       }
     },
     "seche-linge": {
@@ -7919,6 +8065,7 @@
     appareil_lave_linge: 'lave-linge',
     appareil_seche_linge: 'seche-linge',
     appareil_lave_vaisselle: 'lave-vaisselle',
+    appareil_micro_onde: 'micro-onde',
     appareil_refrigerateur: 'refrigerateur',
     service_capteur: 'capteur'
   };
@@ -8458,7 +8605,12 @@
     // `appareil_lave_vaisselle` ajoute le 08/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide.
-    'appareil_lave_vaisselle'
+    'appareil_lave_vaisselle',
+    // `appareil_micro_onde` ajoute le 08/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui
+    // decide, et lui seul.
+    'appareil_micro_onde'
   ]);
 
   const PRIX_PACK = 9;
@@ -9373,6 +9525,14 @@
     // seule surimpression ronde (la molette du bandeau, badge de phase) au
     // lieu de deux, vocabulaire lavage / rincage / chauffage.
     appareil_lave_vaisselle: 'lave-vaisselle',
+    // Pack Micro-onde (08/09/2026), derive des packs Lave-linge et
+    // Seche-linge : meme synoptique, memes statistiques, meme historique
+    // de consommation. Ce qui change : les visuels, le disque de phase
+    // pose dans la cavite plutot que dans un hublot, le vocabulaire
+    // (plateau / degel / cuisson) et surtout les seuils, dont celui du
+    // milieu se calcule autrement -- un micro-onde ne consomme pas comme
+    // un lave-linge.
+    appareil_micro_onde: 'micro-onde',
     appareil_raspberry: 'systeme',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
