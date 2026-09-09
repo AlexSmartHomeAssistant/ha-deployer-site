@@ -3721,7 +3721,7 @@
       { name: 'eau_compteur', desc: 'Suivi global consommation d\'eau' },
       { name: 'eau_detecteur_fuite', desc: 'Détecteur d\'inondation / fuite' },
       { name: 'eau_pool', desc: 'Gestion et température piscine' },
-      { name: 'eau_valve', desc: 'Vanne d\'arrêt automatique d\'eau' }
+      { name: 'eau_arrosage', desc: 'Arrosage par zones, programmateur et consommation' }
     ],
     interface: [
       { name: 'interface_dashboard_principal', desc: 'Personnalisation des tuiles et vues Lovelace' }
@@ -3778,7 +3778,7 @@
     eau_compteur: 'Compteur d\'Eau',
     eau_detecteur_fuite: 'Détecteur de Fuite',
     eau_pool: 'Piscine',
-    eau_valve: 'Vanne d\'Eau',
+    eau_arrosage: 'Arrosage',
     interface_dashboard_principal: 'Tableau de Bord',
     maintenance_instance: 'Maintenance'
   };
@@ -3831,7 +3831,7 @@
     eau_compteur: 'fa-droplet',
     eau_detecteur_fuite: 'fa-house-flood-water',
     eau_pool: 'fa-water-ladder',
-    eau_valve: 'fa-faucet',
+    eau_arrosage: 'fa-faucet',
     interface_dashboard_principal: 'fa-table-cells-large',
     maintenance_instance: 'fa-screwdriver-wrench'
   };
@@ -3891,6 +3891,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    eau_arrosage: {
+      resume: "Zones en cercle, minuteur par zone, programmateur et litres consommés.",
+      detail: `Pilotage complet d'un arrosage automatique depuis la <b>vanne connectée</b> qui l'alimente &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son interrupteur, son compteur de volume et son débit. Le premier onglet montre la vanne au centre et vos <b>zones disposées en cercle</b> autour d'elle : celle qui arrose s'anime, son minuteur s'écoule à la seconde et sa barre se remplit des litres consommés. Le deuxième règle la <b>durée de chaque zone</b> &mdash; l'anneau se remplit comme l'intensité d'une lampe &mdash; puis lance le programme, à la demande ou à l'heure choisie, jusqu'à trois programmes. Le troisième donne la météo, le récapitulatif des programmes et l'eau consommée sur le jour, la semaine, le mois et l'année. Trois alertes veillent : arrosage trop long (la vanne se ferme), bilan de fin d'arrosage par zone, et <b>pluie annoncée</b> &mdash; avec un bouton pour annuler.`
+    },
     appareil_imprimante: {
       resume: "Statut, impression d'un fichier en un clic, cartouches et usure.",
       detail: `Tout ce que votre imprimante sait dire, et de quoi <b>imprimer un document depuis Home Assistant</b>. Le premier onglet donne son <b>statut en clair</b> &mdash; « Prêt », « Impression… », « Bourrage papier », « Capot ouvert » &mdash; traduit du jargon que publie l'appareil, avec son icône et sa couleur. Dessous, une <b>zone de dépôt</b> : vous choisissez un PDF ou une image, et l'imprimante démarre dans la seconde. Rien ne transite par un serveur extérieur : le fichier va de votre navigateur à Home Assistant, qui le soumet directement à l'imprimante en IPP.<br><br>Le deuxième onglet suit les <b>consommables</b> : les quatre cartouches en barres verticales, et la <b>durée de vie</b> de la courroie, de l'unité de fusion et du tambour en anneaux, encadrés par vos compteurs de pages noir &amp; blanc et couleur. Dès qu'une cartouche ou une pièce passe sous son seuil, la carte s'anime et <b>une notification part sur vos mobiles</b> en nommant ce qui manque. Le troisième trace la consommation électrique de l'imprimante, par heure, par jour ou par mois.<br><br>Un seul nom à saisir : celui de votre <b>imprimante</b>. Le pack retrouve tout seul, dans votre installation, son statut, ses cartouches, ses pièces d'usure, ses compteurs de pages, la pièce où elle se trouve et la prise connectée qui l'alimente.`
@@ -4198,6 +4202,18 @@
        - le calendrier (pack Temps), qui ne change QUE le 3e onglet ;
        - la variante de capacités (pack Éclairage), qui change les trois. */
   const PACK_DETAILS = {
+    eau_arrosage: {
+      intro: `Trois onglets : indicateur, programmateur, suivi. Vous ne saisissez que le <b>nom de votre vanne connectée</b> &mdash; le pack retrouve seul son interrupteur, son compteur de volume et son débit, et devine vos zones si vous en avez déclaré. <b>C'est le nombre de zones qui fait la variante</b> : d'une à dix, disposées en cercle autour de la vanne. À une seule zone il n'y a pas de canon &mdash; la vanne reste seule au centre.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-droplet',
+          texte: `La vanne au centre, <b>vos zones en cercle</b> autour d'elle. Un appui sur la vanne ouvre ou ferme l'eau ; un appui sur une zone la désigne. La zone qui arrose passe au bleu et s'anime, son <b>minuteur s'écoule à la seconde</b>, et sa barre se remplit des litres consommés depuis son départ. Dès que l'eau coule, la bordure de la carte devient un serpentin animé et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Programmateur', icone: 'fa-clock',
+          texte: `La <b>durée de chaque zone</b>, réglée comme l'intensité d'une lampe : un appui ajoute cinq minutes, un appui long en retire cinq, et l'anneau du canon se remplit d'autant. Les minutes s'affichent sous l'icône. Le bouton central lance le programme &mdash; ou l'arrête. Sous le cercle, <b>trois programmes</b> à votre main : heure, fréquence (tous les jours, jours ouvrés, week-end, un jour sur deux, ou manuel) et marche/arrêt.` },
+        { titre: '3 — Suivi', icone: 'fa-chart-column',
+          texte: `Température, précipitations du jour et humidité &mdash; celle de votre capteur de sol si vous en avez un, celle de la météo sinon. En dessous, le <b>récapitulatif des trois programmes</b>, puis l'eau consommée sur le <b>jour, la semaine, le mois et l'année</b> en cours, en litres.` }
+      ]
+    },
     appareil_imprimante: {
       intro: `Trois onglets : impression, consommables, historique. Vous ne saisissez que le <b>nom de votre imprimante</b> &mdash; le pack retrouve seul son statut, ses cartouches, ses pièces d'usure, ses compteurs de pages, la pièce où elle est rangée et la prise qui l'alimente. La carte s'adapte à ce que votre matériel publie : une imprimante monochrome n'affiche qu'une cartouche, une imprimante sans pièce d'usure n'a pas de second sous-onglet.`,
       carte: () => 'defaut',
@@ -5063,6 +5079,39 @@
   ];
 
   const MODULE_PARAMS = {
+    eau_arrosage: [
+      { param: 'ARROSAGE_APPAREIL', label: 'Nom de la vanne', type: 'text', required: true,
+        groupe: '🚿 Installation',
+        placeholder: 'ex : chemin_valve_eau — le nom de l\'appareil dans Home Assistant' },
+      { param: 'ARROSAGE_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '🚿 Installation',
+        placeholder: 'vide : déduite de l\'appareil' },
+      // Une zone se donne par l'entity_id de son capteur, ou par un simple
+      // nom : les deux ont un sens, et un client qui n'a pas posé de capteur
+      // veut quand même nommer ses zones.
+      { param: 'ARROSAGE_CANONS', label: 'Zones, séparées par des virgules', type: 'text', required: false,
+        groupe: '🚿 Installation',
+        placeholder: 'ex : Jardin 1, Chemin 1, Devanture — vide : devinées dans la pièce' },
+      { param: 'ARROSAGE_ALERTE', label: 'Coupure de sécurité (min)', type: 'text', required: false,
+        groupe: '🚿 Installation',
+        placeholder: 'ex : 15 — au-delà, la vanne se ferme et vous êtes prévenu' },
+      { param: 'ARROSAGE_HUMIDITE', label: 'Capteur d\'humidité du sol', type: 'text', required: false,
+        groupe: '🌦️ Météo et capteurs',
+        placeholder: 'ex : sensor.jardin_humidite — vide : l\'humidité de la météo' },
+      { param: 'ARROSAGE_METEO', label: 'Entité météo', type: 'text', required: false,
+        groupe: '🌦️ Météo et capteurs',
+        placeholder: 'vide : celle de votre localisation' },
+      { param: 'ARROSAGE_VANNE', label: 'Interrupteur de la vanne', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      { param: 'ARROSAGE_VOLUME', label: 'Capteur de volume', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      { param: 'ARROSAGE_DEBIT', label: 'Capteur de débit', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      champThemeSite('ARROSAGE_THEME', 'urban-factory', '🎨 Apparence')
+    ],
     /* Pack Imprimante (09/09/2026), aux standards du pack Lave-linge.
        UN SEUL champ obligatoire : le nom de l'imprimante. Tout le reste se
        deduit -- l'appareil au registre, ses entites, la piece ou il est range,
@@ -5502,6 +5551,15 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    eau_arrosage:
+      'la vue et ses trois onglets, un minuteur et un compteur de litres par '
+      + 'zone, les trois programmes horaires, les quatre compteurs d\u2019eau '
+      + '(jour, semaine, mois, ann\u00e9e), les trois scripts et les six '
+      + 'automatisations \u2014 s\u00e9quencement des zones, comptage du '
+      + 'volume, coupure de s\u00e9curit\u00e9, bilan de fin d\u2019arrosage, '
+      + 'alerte de m\u00e9t\u00e9o d\u00e9favorable et son annulation \u2014, '
+      + 'ainsi que HACS et les cartes personnalis\u00e9es requises '
+      + '(button-card, swipe-card, stack-in-card, card-mod).',
     appareil_imprimante:
       'la vue et ses trois onglets, l\u2019intégration <b>IPP Print</b> installée '
       + 'et configurée si elle manque &mdash; c\u2019est elle qui permet '
@@ -5726,6 +5784,118 @@
   /* APERCUS-DEBUT */
   const APERCUS =
   {
+    "arrosage": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/arrosage/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/arrosage/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/arrosage/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/arrosage/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/arrosage/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/arrosage/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/arrosage/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/arrosage/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/mars-rouge-defaut-1.jpg",
+            "templates/apercus/arrosage/mars-rouge-defaut-2.jpg",
+            "templates/apercus/arrosage/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/neo-future-defaut-1.jpg",
+            "templates/apercus/arrosage/neo-future-defaut-2.jpg",
+            "templates/apercus/arrosage/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/arrosage/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/arrosage/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/arrosage/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/arrosage/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/arrosage/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/arrosage/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/arrosage/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/arrosage/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/arrosage/urban-factory-defaut-1.jpg",
+            "templates/apercus/arrosage/urban-factory-defaut-2.jpg",
+            "templates/apercus/arrosage/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/arrosage/urban-factory.gif"
+      }
+    },
     "bal": {
       "bleu-evasion": {
         "cadre": "#0C1E36",
@@ -8247,6 +8417,8 @@
     appareil_refrigerateur: 'refrigerateur',
     appareil_imprimante: 'imprimante',
     service_capteur: 'capteur'
+    ,
+    eau_arrosage: 'arrosage'
   };
 
   function themeSite(cle) {
@@ -8795,6 +8967,12 @@
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui
     // decide, et lui seul.
     'appareil_imprimante'
+    ,
+    // `eau_arrosage` ajoute le 09/09/2026, comme les precedents : phase de
+    // test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
+    // et lui seul.
+    'eau_arrosage'
   ]);
 
   const PRIX_PACK = 9;
@@ -9726,7 +9904,7 @@
     appareil_imprimante: 'imprimante',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
-    eau_valve: 'vanne-eau',
+    eau_arrosage: 'arrosage',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
