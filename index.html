@@ -3695,7 +3695,7 @@
       { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
       { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
-      { name: 'appareil_printer', desc: 'Imprimante et niveaux d\'encre' },
+      { name: 'appareil_imprimante', desc: 'Impression, cartouches et durée de vie' },
       { name: 'appareil_raspberry', desc: 'Surveillance système Raspberry Pi' },
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
@@ -3756,7 +3756,7 @@
     appareil_lave_linge: 'Lave-linge',
     appareil_micro_onde: 'Micro-ondes',
     appareil_panneau_solaire: 'Panneau Solaire',
-    appareil_printer: 'Imprimante',
+    appareil_imprimante: 'Imprimante',
     appareil_raspberry: 'Raspberry Pi',
     appareil_refrigerateur: 'Réfrigérateur',
     appareil_seche_linge: 'Sèche-linge',
@@ -3807,7 +3807,7 @@
     appareil_lave_linge: 'fa-soap',
     appareil_micro_onde: 'fa-kitchen-set',
     appareil_panneau_solaire: 'fa-solar-panel',
-    appareil_printer: 'fa-print',
+    appareil_imprimante: 'fa-print',
     appareil_raspberry: 'fa-microchip',
     appareil_refrigerateur: 'fa-snowflake',
     appareil_seche_linge: 'fa-wind',
@@ -3891,6 +3891,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_imprimante: {
+      resume: "Statut, impression d'un fichier en un clic, cartouches et usure.",
+      detail: `Tout ce que votre imprimante sait dire, et de quoi <b>imprimer un document depuis Home Assistant</b>. Le premier onglet donne son <b>statut en clair</b> &mdash; « Prêt », « Impression… », « Bourrage papier », « Capot ouvert » &mdash; traduit du jargon que publie l'appareil, avec son icône et sa couleur. Dessous, une <b>zone de dépôt</b> : vous choisissez un PDF ou une image, et l'imprimante démarre dans la seconde. Rien ne transite par un serveur extérieur : le fichier va de votre navigateur à Home Assistant, qui le soumet directement à l'imprimante en IPP.<br><br>Le deuxième onglet suit les <b>consommables</b> : les quatre cartouches en barres verticales, et la <b>durée de vie</b> de la courroie, de l'unité de fusion et du tambour en anneaux, encadrés par vos compteurs de pages noir &amp; blanc et couleur. Dès qu'une cartouche ou une pièce passe sous son seuil, la carte s'anime et <b>une notification part sur vos mobiles</b> en nommant ce qui manque. Le troisième trace la consommation électrique de l'imprimante, par heure, par jour ou par mois.<br><br>Un seul nom à saisir : celui de votre <b>imprimante</b>. Le pack retrouve tout seul, dans votre installation, son statut, ses cartouches, ses pièces d'usure, ses compteurs de pages, la pièce où elle se trouve et la prise connectée qui l'alimente.`
+    },
     appareil_micro_onde: {
       resume: "Phase de la cuisson en direct, temps restant, coût et consommation.",
       detail: `Suivi complet d'un four à micro-ondes depuis la <b>prise connectée</b> qui l'alimente &mdash; aucun capteur à poser sur l'appareil. Le premier onglet montre en direct ce qui s'y passe : le voyant du bandeau clignote et un disque tourne dans la cavité au rythme de la phase en cours (<b>plateau</b>, <b>dégel</b>, <b>cuisson</b>), la phase est nommée en clair dans l'écran de l'appareil, et le <b>temps restant</b> est estimé d'après vos cuissons précédentes. Le deuxième donne la <b>durée</b>, l'<b>énergie</b> et le <b>coût</b> de la dernière cuisson, compte les passages pour vous rappeler le <b>nettoyage de la cavité</b>, garde les cinq dernières cuissons et met la prise à portée d'un appui. Le troisième trace la consommation par heure, par jour ou par mois.<br><br>Les trois seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit. Un micro-ondes de 800 W et un de 1 800 W sont donc suivis aussi justement l'un que l'autre, sans rien à régler.`
@@ -4194,6 +4198,18 @@
        - le calendrier (pack Temps), qui ne change QUE le 3e onglet ;
        - la variante de capacités (pack Éclairage), qui change les trois. */
   const PACK_DETAILS = {
+    appareil_imprimante: {
+      intro: `Trois onglets : impression, consommables, historique. Vous ne saisissez que le <b>nom de votre imprimante</b> &mdash; le pack retrouve seul son statut, ses cartouches, ses pièces d'usure, ses compteurs de pages, la pièce où elle est rangée et la prise qui l'alimente. La carte s'adapte à ce que votre matériel publie : une imprimante monochrome n'affiche qu'une cartouche, une imprimante sans pièce d'usure n'a pas de second sous-onglet.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Impression', icone: 'fa-print',
+          texte: `Le <b>statut en clair</b> : le pack traduit ce que publie l'imprimante (« idle », « veille », « processing »…) en un mot français, avec son icône et sa couleur &mdash; vert quand elle imprime, corail quand elle est hors ligne ou en erreur, ambre quand elle réclame du papier ou une cartouche. Dessous, la <b>zone de dépôt</b> : un appui ouvre le sélecteur de fichier, et le document part à l'imprimante sans passer par aucun serveur extérieur. L'avancement s'affiche page par page, et un lien permet d'annuler le travail en cours. En bas, la <b>date et le nom</b> du dernier document imprimé. Dès qu'une impression démarre, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.` },
+        { titre: '2 — Consommables', icone: 'fa-droplet',
+          texte: `Deux vues, au choix d'un appui. <b>Cartouches</b> : les quatre niveaux en barres verticales, chacune à sa couleur. <b>Durée de vie</b> : la courroie, l'unité de fusion et le tambour en anneaux concentriques, encadrés par vos deux compteurs de pages &mdash; <b>noir &amp; blanc</b> à gauche, <b>couleur</b> à droite. Dès qu'une cartouche passe sous son seuil (20 % par défaut) ou qu'une pièce d'usure arrive en fin de vie (15 %), la bordure s'anime et <b>une notification part sur tous vos mobiles</b> en nommant précisément ce qui manque. Les deux seuils restent réglables sans redéploiement.` },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `La consommation électrique de l'imprimante, cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place. Sans prise connectée du tout, il n'apparaît pas &mdash; il n'y aurait rien à tracer.` }
+      ]
+    },
     /* ---- Les quatre packs « Configuration » (01/09/2026) ----
        Meme structure que les quatre packs a tableau de bord, a deux details
        pres qui decoulent de leur nature : pas de selecteur de theme (ils
@@ -5047,6 +5063,46 @@
   ];
 
   const MODULE_PARAMS = {
+    /* Pack Imprimante (09/09/2026), aux standards du pack Lave-linge.
+       UN SEUL champ obligatoire : le nom de l'imprimante. Tout le reste se
+       deduit -- l'appareil au registre, ses entites, la piece ou il est range,
+       et la prise connectee qui l'alimente. Les champs facultatifs ne servent
+       qu'a corriger une deduction, ou a regler un seuil d'alerte.
+       Les VARIANTES ne se choisissent pas, elles se deduisent de ce que
+       l'imprimante publie :
+         monochrome        -> une seule cartouche dans le 2e onglet
+         sans piece d'usure-> le sous-onglet « Duree de vie » disparait
+         sans prise        -> le 3e onglet disparait (rien a tracer) */
+    appareil_imprimante: [
+      { param: 'IMPRIMANTE_APPAREIL', label: 'Nom de l\u2019imprimante', type: 'text', required: true,
+        groupe: '🖨️ Imprimante',
+        placeholder: 'ex : HL-3170CDW — tel qu\u2019il apparaît dans Appareils et services' },
+      { param: 'IMPRIMANTE_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '🖨️ Imprimante',
+        placeholder: 'ex : Bureau — vide : la pièce où l\u2019imprimante est rangée' },
+      { param: 'IMPRIMANTE_STATUT', label: 'Capteur de statut', type: 'text', required: false,
+        groupe: '🖨️ Imprimante',
+        placeholder: 'ex : sensor.hl_3170cdw_statut — vide : déduit de l\u2019appareil' },
+      { param: 'IMPRIMANTE_HOTE', label: 'Adresse de l\u2019imprimante', type: 'text', required: false,
+        groupe: '🖨️ Imprimante',
+        placeholder: 'ex : 192.168.1.80 — vide : découverte automatique sur le réseau' },
+      { param: 'IMPRIMANTE_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: false,
+        groupe: '🔌 Prise connectée',
+        placeholder: 'ex : sensor.imprimante_mss305_power_w — vide : déduit' },
+      { param: 'IMPRIMANTE_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
+        groupe: '🔌 Prise connectée',
+        placeholder: 'ex : sensor.imprimante_mss305_energy_kwh — vide : déduit de la prise' },
+      { param: 'IMPRIMANTE_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
+        groupe: '🔌 Prise connectée',
+        placeholder: 'ex : switch.imprimante_mss305_main_channel — vide : déduit de la prise' },
+      { param: 'IMPRIMANTE_SEUIL_TONER', label: 'Alerte cartouche sous', type: 'text', required: false,
+        groupe: '🔔 Alertes',
+        placeholder: 'ex : 20 — vide : 20 %, réglable ensuite sans redéploiement' },
+      { param: 'IMPRIMANTE_SEUIL_USURE', label: 'Alerte pièce d\u2019usure sous', type: 'text', required: false,
+        groupe: '🔔 Alertes',
+        placeholder: 'ex : 15 — vide : 15 %, réglable ensuite sans redéploiement' },
+      champThemeSite('IMPRIMANTE_THEME', 'urban-factory')
+    ],
     /* Pack Dechets — LA VARIANTE EST LE NOMBRE DE POUBELLES.
        Une obligatoire, quatre facultatives ; chacune se decrit par le TYPE de
        dechet (qui donne le pictogramme), la COULEUR du bac (qui donne le
@@ -5446,6 +5502,16 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    appareil_imprimante:
+      'la vue et ses trois onglets, l\u2019intégration <b>IPP Print</b> installée '
+      + 'et configurée si elle manque &mdash; c\u2019est elle qui permet '
+      + 'd\u2019imprimer depuis la carte, Home Assistant ne sachant pas le faire '
+      + 'seul &mdash;, le capteur de statut lisible, le capteur d\u2019alerte des '
+      + 'consommables, les deux automatisations (fin d\u2019impression, cartouche '
+      + 'ou pièce en fin de vie) qui préviennent tous vos mobiles, le script '
+      + 'd\u2019impression d\u2019un fichier, les cinq helpers, les visuels, ainsi '
+      + 'que HACS et les cartes personnalisées requises (button-card, mushroom, '
+      + 'swipe-card, stack-in-card, bar-card, apexcharts-card, card-mod).',
     lumiere_lumiere:
       'la vue et ses trois onglets, le minuteur (scripts, automatisations et '
       + 'helpers), les capteurs de temps d\'allumage, ainsi que HACS et les cartes '
@@ -6150,6 +6216,118 @@
           ]
         },
         "gif": "templates/apercus/fuite/urban-factory.gif"
+      }
+    },
+    "imprimante": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/imprimante/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/imprimante/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/imprimante/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/imprimante/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/imprimante/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/imprimante/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/imprimante/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/imprimante/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/mars-rouge-defaut-1.jpg",
+            "templates/apercus/imprimante/mars-rouge-defaut-2.jpg",
+            "templates/apercus/imprimante/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/neo-future-defaut-1.jpg",
+            "templates/apercus/imprimante/neo-future-defaut-2.jpg",
+            "templates/apercus/imprimante/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/imprimante/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/imprimante/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/imprimante/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/imprimante/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/imprimante/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/imprimante/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/imprimante/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/imprimante/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/imprimante/urban-factory-defaut-1.jpg",
+            "templates/apercus/imprimante/urban-factory-defaut-2.jpg",
+            "templates/apercus/imprimante/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/imprimante/urban-factory.gif"
       }
     },
     "lave-linge": {
@@ -8067,6 +8245,7 @@
     appareil_lave_vaisselle: 'lave-vaisselle',
     appareil_micro_onde: 'micro-onde',
     appareil_refrigerateur: 'refrigerateur',
+    appareil_imprimante: 'imprimante',
     service_capteur: 'capteur'
   };
 
@@ -8610,7 +8789,12 @@
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui
     // decide, et lui seul.
-    'appareil_micro_onde'
+    'appareil_micro_onde',
+    // `appareil_imprimante` ajoute le 09/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui
+    // decide, et lui seul.
+    'appareil_imprimante'
   ]);
 
   const PRIX_PACK = 9;
@@ -9534,6 +9718,12 @@
     // un lave-linge.
     appareil_micro_onde: 'micro-onde',
     appareil_raspberry: 'systeme',
+    // Pack Imprimante (09/09/2026), aux standards du pack Lave-linge.
+    // Sa particularite : la decouverte, qui ne demande au client qu'un
+    // NOM D'APPAREIL, et l'impression, qui passe par l'integration HACS
+    // `ipp_print` -- l'integration `ipp` native de Home Assistant est en
+    // lecture seule et ne sait pas soumettre de travail.
+    appareil_imprimante: 'imprimante',
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
     eau_valve: 'vanne-eau',
