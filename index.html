@@ -3684,7 +3684,7 @@
       { name: 'chauffage_compteur_gaz', desc: 'Compteur de consommation gaz' }
     ],
     securite: [
-      { name: 'securite_alarme', desc: 'Centrale d\'alarme et statuts' },
+      { name: 'securite_alarme', desc: 'Centrale d\'alarme, caméras et capteurs de la maison' },
       { name: 'securite_camera', desc: 'Caméras : flux et détection.' }
     ],
     appareil: [
@@ -3891,6 +3891,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    securite_alarme: {
+      resume: "Armement, caméras en direct, capteurs de la maison et journal des alertes.",
+      detail: `Pilotage complet de votre <b>centrale d'alarme</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son panneau, sa sirène et ce qu'elle sait faire. Le premier onglet montre l'état au centre, dans une <b>animation qui change avec le mode</b> : éteinte au repos, tournante quand l'alarme veille, rapide et rouge quand elle se déclenche &mdash; la carte prend alors sa bordure animée et son fond s'allume. Trois boutons arment, désarment ou passent en mode nuit, et celui du mode en cours est le seul à s'animer. Une pastille dit si la porte est ouverte ; un bouton déclenche un test, avec confirmation. Le deuxième onglet affiche <b>de une à neuf caméras</b> : en plein écran avec les flèches d'orientation quand il n'y en a qu'une, en grille jusqu'au 3 × 3 au-delà. Le troisième réunit les <b>capteurs de la maison</b> et le <b>journal des cinq derniers événements</b>. À chaque changement de mode, tous vos mobiles sont prévenus.`
+    },
     eau_arrosage: {
       resume: "Zones en cercle, minuteur par zone, programmateur et litres consommés.",
       detail: `Pilotage complet d'un arrosage automatique depuis la <b>vanne connectée</b> qui l'alimente &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son interrupteur, son compteur de volume et son débit. Le premier onglet montre la vanne au centre et vos <b>zones disposées en cercle</b> autour d'elle : celle qui arrose s'anime, son minuteur s'écoule à la seconde et sa barre se remplit des litres consommés. Le deuxième règle la <b>durée de chaque zone</b> &mdash; l'anneau se remplit comme l'intensité d'une lampe &mdash; puis lance le programme, à la demande ou à l'heure choisie, jusqu'à trois programmes. Le troisième donne la météo, le récapitulatif des programmes et l'eau consommée sur le jour, la semaine, le mois et l'année. Trois alertes veillent : arrosage trop long (la vanne se ferme), bilan de fin d'arrosage par zone, et <b>pluie annoncée</b> &mdash; avec un bouton pour annuler.`
@@ -4202,6 +4206,18 @@
        - le calendrier (pack Temps), qui ne change QUE le 3e onglet ;
        - la variante de capacités (pack Éclairage), qui change les trois. */
   const PACK_DETAILS = {
+    securite_alarme: {
+      intro: `Trois onglets : contrôle, caméras, suivi. Vous ne saisissez que le <b>nom de votre centrale</b> &mdash; le pack retrouve seul son panneau et sa sirène, lit ce qu'elle sait faire (un bouton qu'elle ne saurait pas honorer est retiré plutôt que laissé inerte), et devine vos caméras et vos capteurs. <b>C'est le nombre de caméras qui fait la variante</b> : de zéro à neuf. À zéro, l'onglet Caméras disparaît et la carte n'a que deux onglets ; à une, elle passe en plein écran avec les flèches d'orientation.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Contrôle', icone: 'fa-shield-halved',
+          texte: `L'état de l'alarme au centre, dans une <b>animation qui lui est propre</b> : bouclier éteint et immobile quand elle n'est pas armée, halo tournant quand elle veille, lune en mode nuit, et <b>cloche rouge battant deux fois plus vite</b> quand elle se déclenche. Trois boutons &mdash; <b>Armée, Désarmée, Nuit</b> &mdash; dont seul celui du mode en cours s'anime. En haut, une pastille dit si la porte est ouverte, et un bouton déclenche un test de sirène, avec une confirmation : c'est le seul geste du pack qu'on ne puisse pas défaire.` },
+        { titre: '2 — Caméras', icone: 'fa-video',
+          texte: `De <b>une à neuf caméras</b>, disposées selon leur nombre : une seule occupe tout le cadre, en direct, avec les <b>quatre flèches d'orientation</b> posées dessus si la caméra est motorisée ; deux à quatre se rangent en deux colonnes, cinq à neuf en <b>trois colonnes jusqu'au 3 × 3</b>. Chaque vignette porte son nom. Si vous n'avez pas de caméra, cet onglet n'apparaît tout simplement pas.` },
+        { titre: '3 — Suivi', icone: 'fa-list-check',
+          texte: `La <b>grille des capteurs de la maison</b> &mdash; ouvertures, mouvements, fumée &mdash; jusqu'à huit, chacun passant à la couleur du module dès qu'il se déclenche. En dessous, le <b>journal des cinq derniers événements</b> de l'alarme, avec sa date et son mode.` }
+      ]
+    },
     eau_arrosage: {
       intro: `Trois onglets : indicateur, programmateur, suivi. Vous ne saisissez que le <b>nom de votre vanne connectée</b> &mdash; le pack retrouve seul son interrupteur, son compteur de volume et son débit, et devine vos zones si vous en avez déclaré. <b>C'est le nombre de zones qui fait la variante</b> : d'une à dix, disposées en cercle autour de la vanne. À une seule zone il n'y a pas de canon &mdash; la vanne reste seule au centre.`,
       carte: () => 'defaut',
@@ -5079,6 +5095,33 @@
   ];
 
   const MODULE_PARAMS = {
+    securite_alarme: [
+      { param: 'ALARME_APPAREIL', label: 'Nom de la centrale', type: 'text', required: true,
+        groupe: '🛡️ Centrale',
+        placeholder: 'ex : Somfy Home Alarm — le nom de l\'appareil dans Home Assistant' },
+      { param: 'ALARME_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '🛡️ Centrale',
+        placeholder: 'vide : déduite de l\'appareil' },
+      { param: 'ALARME_PORTE', label: 'Capteur de la porte d\'entrée', type: 'text', required: false,
+        groupe: '🛡️ Centrale',
+        placeholder: 'ex : binary_sensor.entree_porte — vide : deviné, sinon pastille masquée' },
+      // Une camera se donne par son entity_id. Le champ vide DECLENCHE la
+      // decouverte ; pour n'en afficher aucune, il faut un espace -- ce que
+      // le texte d'exemple dit, plutot que de laisser deviner.
+      { param: 'ALARME_CAMERAS', label: 'Caméras, séparées par des virgules', type: 'text', required: false,
+        groupe: '📹 Caméras et capteurs',
+        placeholder: 'ex : camera.entree, camera.jardin — vide : les vôtres, jusqu\'à neuf' },
+      { param: 'ALARME_CAPTEURS', label: 'Capteurs de la maison', type: 'text', required: false,
+        groupe: '📹 Caméras et capteurs',
+        placeholder: 'ex : binary_sensor.salon_fenetre — vide : vos ouvertures et mouvements' },
+      { param: 'ALARME_PANNEAU', label: 'Panneau d\'alarme', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      { param: 'ALARME_SIRENE', label: 'Interrupteur de sirène', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      champThemeSite('ALARME_THEME', 'urban-factory', '🎨 Apparence')
+    ],
     eau_arrosage: [
       { param: 'ARROSAGE_APPAREIL', label: 'Nom de la vanne', type: 'text', required: true,
         groupe: '🚿 Installation',
@@ -5551,6 +5594,14 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    securite_alarme:
+      'la vue et ses trois onglets, le journal des cinq derniers '
+      + '\u00e9v\u00e9nements, l\u2019automatisation qui le tient \u00e0 jour '
+      + 'et pr\u00e9vient tous vos mobiles \u00e0 chaque changement de mode '
+      + '(alarme d\u00e9clench\u00e9e, arm\u00e9e, mode nuit, '
+      + 'd\u00e9sarm\u00e9e), ainsi que HACS et les cartes '
+      + 'personnalis\u00e9es requises (button-card, swipe-card, '
+      + 'stack-in-card, card-mod).',
     eau_arrosage:
       'la vue et ses trois onglets, un minuteur et un compteur de litres par '
       + 'zone, les trois programmes horaires, les quatre compteurs d\u2019eau '
@@ -5784,6 +5835,118 @@
   /* APERCUS-DEBUT */
   const APERCUS =
   {
+    "alarme": {
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/bleu-evasion-defaut-1.jpg",
+            "templates/apercus/alarme/bleu-evasion-defaut-2.jpg",
+            "templates/apercus/alarme/bleu-evasion-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/bleu-evasion.gif"
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/carbon-pulse-defaut-1.jpg",
+            "templates/apercus/alarme/carbon-pulse-defaut-2.jpg",
+            "templates/apercus/alarme/carbon-pulse-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/carbon-pulse.gif"
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/creme-gourmande-defaut-1.jpg",
+            "templates/apercus/alarme/creme-gourmande-defaut-2.jpg",
+            "templates/apercus/alarme/creme-gourmande-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/creme-gourmande.gif"
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/elegance-ardoise-defaut-1.jpg",
+            "templates/apercus/alarme/elegance-ardoise-defaut-2.jpg",
+            "templates/apercus/alarme/elegance-ardoise-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/elegance-ardoise.gif"
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/mars-rouge-defaut-1.jpg",
+            "templates/apercus/alarme/mars-rouge-defaut-2.jpg",
+            "templates/apercus/alarme/mars-rouge-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/mars-rouge.gif"
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/neo-future-defaut-1.jpg",
+            "templates/apercus/alarme/neo-future-defaut-2.jpg",
+            "templates/apercus/alarme/neo-future-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/neo-future.gif"
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/nocturne-artistique-defaut-1.jpg",
+            "templates/apercus/alarme/nocturne-artistique-defaut-2.jpg",
+            "templates/apercus/alarme/nocturne-artistique-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/nocturne-artistique.gif"
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/pure-lumiere-defaut-1.jpg",
+            "templates/apercus/alarme/pure-lumiere-defaut-2.jpg",
+            "templates/apercus/alarme/pure-lumiere-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/pure-lumiere.gif"
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/sahara-elegance-defaut-1.jpg",
+            "templates/apercus/alarme/sahara-elegance-defaut-2.jpg",
+            "templates/apercus/alarme/sahara-elegance-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/sahara-elegance.gif"
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/terre-de-carmin-defaut-1.jpg",
+            "templates/apercus/alarme/terre-de-carmin-defaut-2.jpg",
+            "templates/apercus/alarme/terre-de-carmin-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/terre-de-carmin.gif"
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": [
+            "templates/apercus/alarme/urban-factory-defaut-1.jpg",
+            "templates/apercus/alarme/urban-factory-defaut-2.jpg",
+            "templates/apercus/alarme/urban-factory-defaut-3.jpg"
+          ]
+        },
+        "gif": "templates/apercus/alarme/urban-factory.gif"
+      }
+    },
     "arrosage": {
       "bleu-evasion": {
         "cartes": {
@@ -8419,6 +8582,8 @@
     service_capteur: 'capteur'
     ,
     eau_arrosage: 'arrosage'
+    ,
+    securite_alarme: 'alarme'
   };
 
   function themeSite(cle) {
@@ -8973,6 +9138,12 @@
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
     // et lui seul.
     'eau_arrosage'
+    ,
+    // `securite_alarme` ajoute le 09/09/2026, comme les precedents : phase de
+    // test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
+    // et lui seul.
+    'securite_alarme'
   ]);
 
   const PRIX_PACK = 9;
@@ -9905,6 +10076,7 @@
     appareil_soundbar: 'barre-son',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
+    securite_alarme: 'alarme',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
