@@ -1436,6 +1436,8 @@
     /* La fiche entiere est un lien (19/09/2026) : curseur, relief au survol,
        et un contour au clavier. */
     .pack-cliquable { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+    .pack-cliquable .pack-selecteur { cursor: default; }
+    .pack-cliquable .pack-selecteur select { cursor: pointer; }
     .pack-cliquable:hover, .pack-cliquable:focus-visible {
       transform: translateY(-2px);
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
@@ -2733,7 +2735,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 2;
+          grid-row: span 3;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -15385,16 +15387,23 @@
          decalerait toutes les suivantes, et le bouton « Ajouter » d'un pack se
          retrouverait a la hauteur du champ d'entite de son voisin. */
       /* FICHE SIMPLIFIEE (19/09/2026, demande du client) : le titre, son
-         icone et l'animation -- rien d'autre. Ni descriptif, ni selecteur,
-         ni bouton : c'est TOUTE la fiche qui ouvre la page de details, ou
-         se choisissent le theme et les options et ou se fait l'ajout au
-         panier. Deux rangees de grille au lieu de cinq (voir `subgrid`). */
+         icone, l'animation et le SELECTEUR DE THEME -- qui commande
+         l'animation et que le client a demande de conserver. Ni descriptif
+         ni bouton : c'est TOUTE la fiche qui ouvre la page de details, ou se
+         choisissent les options et ou se fait l'ajout au panier. Trois
+         rangees de grille au lieu de cinq (voir `subgrid`).
+         Le selecteur n'ouvre PAS les details : un clic ou une touche dans
+         `.pack-selecteur` reste au selecteur. */
+      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur'));
       item.className = 'module-item module-item-detailed pack-cliquable';
       item.setAttribute('role', 'link');
       item.setAttribute('tabindex', '0');
       item.setAttribute('title', `Voir le pack ${title}`);
-      item.addEventListener('click', () => ouvrirDetails(mod.name));
-      item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); } });
+      item.addEventListener('click', (e) => { if (!dansSelecteur(e)) ouvrirDetails(mod.name); });
+      item.addEventListener('keydown', (e) => {
+        if (dansSelecteur(e)) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); }
+      });
       item.innerHTML = `
         <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
@@ -15402,6 +15411,7 @@
         <div class="pack-media module-video" id="apercu-${mod.name}">
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
+        <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
       `;
 
       container.appendChild(item);
