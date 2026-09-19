@@ -1274,6 +1274,16 @@
     /* Bordure indicative : champ obligatoire (rouge) vs optionnel (or) */
     .field-required { border-color: var(--col-required) !important; }
     .field-optional { border-color: var(--col-optional) !important; }
+    .compte-motif {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--primary-blue) 10%, transparent);
+      border-left: 3px solid var(--primary-blue);
+      font-size: 0.83rem;
+      line-height: 1.5;
+    }
+    .compte-motif i { margin-right: 6px; color: var(--primary-blue); }
     /* Bloc « HA-Deploy pour les Nuls » de l'accueil : un encart qui tranche
        sur le descriptif, sans en changer la police. */
     .accueil-pour-les-nuls {
@@ -15723,6 +15733,7 @@
   function updateCartUI() {
     const count = cart.length;
     const total = cartTotal();
+    sauverPanier();
 
     document.getElementById('nav-cart-badge').innerText = count;
 
@@ -15981,10 +15992,63 @@
     `;
   }
 
+  /* UN COMPTE EST REQUIS POUR VALIDER LA SELECTION (19/09/2026, demande du
+     client : « j'ai besoin d'un suivi par client »). On peut remplir son
+     panier sans etre connecte ; au moment de valider, la fenetre de
+     connexion s'ouvre par-dessus le panier, et la validation REPREND toute
+     seule une fois la session ouverte -- par mot de passe, par inscription,
+     par lien magique ou par Google, qui passe par un rechargement de la page
+     (d'ou le panier et l'intention sauves dans localStorage). Le Worker
+     refuse de son cote toute tache sans compte : la porte est cote serveur,
+     l'ecran ne fait que l'annoncer avant. */
+  const CLE_REPRISE_PANIER = 'hadeployer-reprise-panier';
+  let reprisePanierApresConnexion = false;
+
   function goToCartCheckoutStep() {
     if (cart.length === 0) return;
+    if (!compteConnecte) {
+      reprisePanierApresConnexion = true;
+      try { localStorage.setItem(CLE_REPRISE_PANIER, '1'); } catch (e) { /* sans stockage, la reprise ne survit pas a un rechargement */ }
+      sauverPanier();
+      ouvrirCompteModal('', 'panier');
+      return;
+    }
     cartModalStep = 'checkout';
     renderCartModalBody();
+  }
+
+  /* Appelee des qu'une session vient de s'ouvrir : si le client validait son
+     panier, on l'y ramene, a l'etape suivante. */
+  function reprendrePanierSiAttendu() {
+    let attendu = reprisePanierApresConnexion;
+    try { attendu = attendu || localStorage.getItem(CLE_REPRISE_PANIER) === '1'; localStorage.removeItem(CLE_REPRISE_PANIER); } catch (e) { /* ignore */ }
+    reprisePanierApresConnexion = false;
+    if (!attendu || !compteConnecte || !cart.length) return false;
+    fermerCompteModal();
+    cartModalStep = 'checkout';
+    renderCartModalBody();
+    document.getElementById('cart-modal-overlay').classList.add('active');
+    return true;
+  }
+
+  /* Le panier survit a un rechargement de la page : c'est indispensable au
+     retour d'une connexion Google (une navigation complete), et confortable
+     le reste du temps. */
+  const CLE_PANIER = 'hadeployer-panier';
+  function sauverPanier() {
+    try { localStorage.setItem(CLE_PANIER, JSON.stringify(cart)); } catch (e) { /* ignore */ }
+  }
+  function restaurerPanier() {
+    try {
+      const brut = localStorage.getItem(CLE_PANIER);
+      if (!brut) return;
+      const lignes = JSON.parse(brut);
+      if (!Array.isArray(lignes)) return;
+      // Seules les lignes de packs encore connus sont reprises : un pack
+      // retire du catalogue ne doit pas revenir par le panier.
+      lignes.filter(l => l && l.key && moduleTitle(l.key)).forEach(l => cart.push(l));
+      if (cart.length) updateCartUI();
+    } catch (e) { /* ignore */ }
   }
 
   function backToCartListStep() {
@@ -16233,7 +16297,9 @@
     return fournisseurs;
   }
 
-  function ouvrirCompteModal(message) {
+  let motifCompteModal = '';   // 'panier' : ouverte pour valider une selection
+  function ouvrirCompteModal(message, motif) {
+    motifCompteModal = motif || '';
     document.getElementById('compte-modal-overlay').classList.add('active');
     renderCompteModal(message);
   }
@@ -16308,6 +16374,9 @@
   async function renderCompteModal(message) {
     const corps = document.getElementById('compte-modal-body');
 
+    // Session ouverte pendant qu'un panier attendait : on y retourne.
+    if (compteConnecte && reprendrePanierSiAttendu()) return;
+
     if (compteConnecte) {
       /* Plus d'apercu des derniers deploiements ici (18/09/2026, demande du
          client) : la fenetre ne fait que dire qui est connecte et ouvrir la
@@ -16325,7 +16394,12 @@
       return;
     }
 
-    const erreur = message ? `<p class="compte-erreur">${message}</p>` : '';
+    const erreur = (message ? `<p class="compte-erreur">${message}</p>` : '')
+      + (motifCompteModal === 'panier' || reprisePanierApresConnexion
+         ? `<p class="compte-motif"><i class="fa-solid fa-cart-shopping"></i>
+              <b>Connectez-vous ou créez un compte pour valider votre sélection.</b>
+              Chaque déploiement est rattaché à votre compte : vous y retrouvez son historique,
+              son journal et son résultat, et nous pouvons vous aider s'il échoue.</p>` : '');
 
     // Choix d'un nouveau mot de passe, depuis le lien reçu par e-mail.
     if (etatAuth.mode === 'reinit') {
@@ -17536,7 +17610,12 @@
     // Espace client : on releve d'abord un eventuel retour de lien de
     // connexion (#compte-...), qui pose la session, puis on interroge le
     // serveur pour savoir de qui il s'agit.
-    recupererSessionDepuisLien().then(rafraichirCompte);
+    restaurerPanier();
+    recupererSessionDepuisLien().then(rafraichirCompte).then(() => {
+      // Retour d'une connexion pendant qu'un panier attendait d'etre valide
+      // (Google recharge la page) : on rouvre le panier a l'etape suivante.
+      if (compteConnecte) reprendrePanierSiAttendu();
+    });
 
     // Etat initial de l'historique, et ouverture directe sur l'ancre demandee
     // (#packs, #test...) : sans cette premiere entree, le premier changement
