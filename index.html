@@ -1460,23 +1460,7 @@
     .pack-cliquable { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
     .pack-cliquable .pack-selecteur { cursor: default; }
     .pack-cliquable .pack-selecteur select { cursor: pointer; }
-    /* Les deux sous-blocs d'une fiche : meme cadre, le premier reagit au
-       survol (c'est lui le lien), le second est un reglage. */
-    .pack-bloc {
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 10px;
-      background: var(--hover-bg);
-    }
-    .pack-bloc-lien { display: flex; flex-direction: column; gap: 10px; transition: border-color .15s ease, background .15s ease; }
-    .pack-cliquable:hover .pack-bloc-lien, .pack-cliquable:focus-visible .pack-bloc-lien {
-      border-color: var(--primary-blue);
-      background: color-mix(in srgb, var(--primary-blue) 8%, var(--hover-bg));
-    }
-    /* SURTOUT PAS de `min-height: 0` sur ce sous-bloc : en piste de grille
-       `auto`, il ramenait la rangee a 33 px (mesure le 19/09/2026 : le
-       selecteur de 37 px sortait du cadre). */
-    .pack-bloc.pack-selecteur:empty { display: none; }
+
     .pack-cliquable:hover, .pack-cliquable:focus-visible {
       transform: translateY(-2px);
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
@@ -2774,7 +2758,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 2;
+          grid-row: span 3;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -15443,20 +15427,17 @@
         if (dansSelecteur(e)) return;
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); }
       });
-      /* DEUX SOUS-BLOCS (19/09/2026) : le premier, cliquable, porte le
-         titre, l'icone et l'animation ; le second, le selecteur de theme,
-         qui change l'animation. Deux cadres distincts dans la fiche : ce qui
-         ouvre les details et ce qui se regle se lisent d'un coup d'oeil. */
+      /* Trois rangees, sans cadre interieur (les deux sous-blocs essayes le
+         19/09/2026 ont ete retires le jour meme a la demande du client) :
+         en-tete, animation, selecteur de theme. */
       item.innerHTML = `
-        <div class="pack-bloc pack-bloc-lien">
-          <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
-            <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
-          </div>
-          <div class="pack-media module-video" id="apercu-${mod.name}">
-            <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
-          </div>
+        <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
+          <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
         </div>
-        <div class="pack-bloc pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
+        <div class="pack-media module-video" id="apercu-${mod.name}">
+          <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
+        </div>
+        <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
       `;
 
       container.appendChild(item);
