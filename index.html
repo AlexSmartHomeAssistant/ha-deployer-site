@@ -13,17 +13,15 @@
     /* ===== THÈME SOMBRE — gris anthracite (par défaut) ===== */
     :root {
       --bg-color: #24282e;
-      /* FOND DE PAGE INVERSE (19/09/2026, demande du client) : derriere les
-         blocs, la page est BLANCHE en theme sombre et NOIRE en theme clair.
-         Les blocs sont donc OPAQUES (`--card-bg` plein), et ce qui est pose
-         directement sur la page -- titres de section, sous-titres, onglets
-         de categorie, bouton de retour -- prend `--text-page`, la couleur
-         qui se lit sur CE fond-la, et non `--text-main`, qui est celle des
-         blocs. */
-      --page-bg: #f1f2f5;
-      --text-page: #14171c;
-      --text-page-muted: #4b535e;
-      --card-bg: #262a30;
+      /* Le fond de page inverse (page blanche en theme sombre, noire en
+         theme clair) a ete essaye le 19/09/2026 et RETIRE le jour meme a la
+         demande du client : le modele d'origine etait « beaucoup mieux ».
+         `--page-bg` / `--text-page` restent comme variables, alignees sur
+         le fond et le texte des blocs. */
+      --page-bg: var(--bg-color);
+      --text-page: var(--text-main);
+      --text-page-muted: var(--text-muted);
+      --card-bg: rgba(255, 255, 255, 0.06);
       --card-border: rgba(255, 255, 255, 0.13);
       --primary-blue: #6FBBEC;
       --accent-green: #5BC98A;
@@ -114,18 +112,15 @@
       --nav-edge: 215px;       /* garde-fou : largeur réelle de la marque "HA-Deploy" */
 
       /* Fond abstrait : même structure dans les 2 thèmes, seules les teintes changent */
-      --pattern: rgba(0, 0, 0, 0.05);
-      --glow-1: rgba(93, 173, 226, 0.16);
-      --glow-2: rgba(82, 190, 128, 0.12);
+      --pattern: rgba(255, 255, 255, 0.055);
+      --glow-1: rgba(93, 173, 226, 0.13);
+      --glow-2: rgba(82, 190, 128, 0.09);
     }
 
     /* ===== THÈME CLAIR ===== */
     html[data-theme="light"] {
       --bg-color: #eef1f6;
-      --page-bg: #0f1216;
-      --text-page: #f2f4f7;
-      --text-page-muted: #b3bac4;
-      --card-bg: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.72);
       --card-border: rgba(0, 0, 0, 0.12);
       --primary-blue: #1F6FA5;
       --accent-green: #2E8B57;
@@ -161,9 +156,9 @@
       --lang-active-bg: rgba(31, 111, 165, 0.13);
       --modal-bg: #ffffff;
 
-      --pattern: rgba(255, 255, 255, 0.06);
-      --glow-1: rgba(93, 173, 226, 0.14);
-      --glow-2: rgba(82, 190, 128, 0.10);
+      --pattern: rgba(0, 0, 0, 0.05);
+      --glow-1: rgba(31, 111, 165, 0.12);
+      --glow-2: rgba(46, 139, 87, 0.09);
     }
 
     * {
@@ -1131,7 +1126,8 @@
     /* Ces deux categories sont ecrites dans la couleur du texte des BLOCS ;
        posees sur la page, dont le fond est desormais inverse, elles y
        disparaissaient (19/09/2026). */
-    .subtab.configuration, .subtab.maintenance { color: var(--text-page); }
+    .subtab.configuration { color: var(--col-configuration); }
+    .subtab.maintenance { color: var(--col-maintenance); }
 
     /* Catégories multicolores (« Automatisme », « Service ») : le dégradé est
        appliqué au TEXTE via background-clip, ce qui impose
