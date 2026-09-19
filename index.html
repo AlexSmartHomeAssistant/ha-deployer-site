@@ -19,6 +19,9 @@
          `--page-bg` / `--text-page` restent comme variables, alignees sur
          le fond et le texte des blocs. */
       --page-bg: var(--bg-color);
+      /* Degrade de fond du theme sombre : bleu nuit / graphite -> gris-bleu */
+      --fond-debut: #171b24;
+      --fond-fin: #2c3340;
       --text-page: var(--text-main);
       --text-page-muted: var(--text-muted);
       --card-bg: rgba(255, 255, 255, 0.06);
@@ -120,6 +123,9 @@
     /* ===== THÈME CLAIR ===== */
     html[data-theme="light"] {
       --bg-color: #eef1f6;
+      /* Degrade de fond du theme clair : blanc -> gris-bleu tres pale */
+      --fond-debut: #ffffff;
+      --fond-fin: #e3e9f1;
       --card-bg: rgba(255, 255, 255, 0.72);
       --card-border: rgba(0, 0, 0, 0.12);
       --primary-blue: #1F6FA5;
@@ -172,12 +178,12 @@
 
     body {
       background-color: var(--page-bg);
-      /* Motif abstrait sobre : deux halos diffus + un treillis diagonal très léger */
-      background-image:
-        radial-gradient(1100px 620px at 8% -12%, var(--glow-1), transparent 62%),
-        radial-gradient(900px 540px at 104% 112%, var(--glow-2), transparent 60%),
-        repeating-linear-gradient(45deg, var(--pattern) 0 1px, transparent 1px 26px),
-        repeating-linear-gradient(-45deg, var(--pattern) 0 1px, transparent 1px 26px);
+      /* FOND EN DEGRADE DIAGONAL (19/09/2026, demande du client, remplace le
+         quadrillage) : du blanc vers un gris-bleu tres pale en theme clair,
+         d'un bleu nuit profond / graphite vers un gris-bleu en theme sombre.
+         Les deux bornes sont dans `--fond-debut` / `--fond-fin`, par theme ;
+         `fixed`, pour que la profondeur ne defile pas avec la page. */
+      background-image: linear-gradient(135deg, var(--fond-debut) 0%, var(--fond-fin) 100%);
       background-attachment: fixed;
       color: var(--text-main);
       min-height: 100%;
