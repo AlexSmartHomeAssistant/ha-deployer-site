@@ -13,7 +13,17 @@
     /* ===== THÈME SOMBRE — gris anthracite (par défaut) ===== */
     :root {
       --bg-color: #24282e;
-      --card-bg: rgba(255, 255, 255, 0.06);
+      /* FOND DE PAGE INVERSE (19/09/2026, demande du client) : derriere les
+         blocs, la page est BLANCHE en theme sombre et NOIRE en theme clair.
+         Les blocs sont donc OPAQUES (`--card-bg` plein), et ce qui est pose
+         directement sur la page -- titres de section, sous-titres, onglets
+         de categorie, bouton de retour -- prend `--text-page`, la couleur
+         qui se lit sur CE fond-la, et non `--text-main`, qui est celle des
+         blocs. */
+      --page-bg: #f1f2f5;
+      --text-page: #14171c;
+      --text-page-muted: #4b535e;
+      --card-bg: #262a30;
       --card-border: rgba(255, 255, 255, 0.13);
       --primary-blue: #6FBBEC;
       --accent-green: #5BC98A;
@@ -104,15 +114,18 @@
       --nav-edge: 215px;       /* garde-fou : largeur réelle de la marque "HA-Deploy" */
 
       /* Fond abstrait : même structure dans les 2 thèmes, seules les teintes changent */
-      --pattern: rgba(255, 255, 255, 0.055);
-      --glow-1: rgba(93, 173, 226, 0.13);
-      --glow-2: rgba(82, 190, 128, 0.09);
+      --pattern: rgba(0, 0, 0, 0.05);
+      --glow-1: rgba(93, 173, 226, 0.16);
+      --glow-2: rgba(82, 190, 128, 0.12);
     }
 
     /* ===== THÈME CLAIR ===== */
     html[data-theme="light"] {
       --bg-color: #eef1f6;
-      --card-bg: rgba(255, 255, 255, 0.72);
+      --page-bg: #0f1216;
+      --text-page: #f2f4f7;
+      --text-page-muted: #b3bac4;
+      --card-bg: #ffffff;
       --card-border: rgba(0, 0, 0, 0.12);
       --primary-blue: #1F6FA5;
       --accent-green: #2E8B57;
@@ -148,9 +161,9 @@
       --lang-active-bg: rgba(31, 111, 165, 0.13);
       --modal-bg: #ffffff;
 
-      --pattern: rgba(0, 0, 0, 0.05);
-      --glow-1: rgba(31, 111, 165, 0.12);
-      --glow-2: rgba(46, 139, 87, 0.09);
+      --pattern: rgba(255, 255, 255, 0.06);
+      --glow-1: rgba(93, 173, 226, 0.14);
+      --glow-2: rgba(82, 190, 128, 0.10);
     }
 
     * {
@@ -163,7 +176,7 @@
     html, body { height: 100%; }
 
     body {
-      background-color: var(--bg-color);
+      background-color: var(--page-bg);
       /* Motif abstrait sobre : deux halos diffus + un treillis diagonal très léger */
       background-image:
         radial-gradient(1100px 620px at 8% -12%, var(--glow-1), transparent 62%),
@@ -872,9 +885,10 @@
       padding: 6px 0;
     }
 
+    header, header .subtitle, .subtitle { color: var(--text-page-muted); }
     header h1 {
       font-size: 1.5rem;
-      color: var(--text-main);
+      color: var(--text-page);
       margin-bottom: 14px;
     }
 
@@ -1095,7 +1109,7 @@
       padding: 10px 14px;
       font-size: 0.85rem;
       font-weight: 700;
-      color: var(--text-muted);
+      color: var(--text-page-muted);
       cursor: pointer;
       white-space: nowrap;
       transition: color 0.2s, border-color 0.2s, background 0.2s;
@@ -1114,8 +1128,10 @@
        noir demandé à l'origine ne tenait que sur la pastille claire qui vient
        d'être retirée ; on garde donc le noir sur le thème clair, et son
        équivalent lisible sur le thème sombre (cf. --col-configuration). */
-    .subtab.configuration { color: var(--col-configuration); }
-    .subtab.maintenance { color: var(--col-maintenance); }
+    /* Ces deux categories sont ecrites dans la couleur du texte des BLOCS ;
+       posees sur la page, dont le fond est desormais inverse, elles y
+       disparaissaient (19/09/2026). */
+    .subtab.configuration, .subtab.maintenance { color: var(--text-page); }
 
     /* Catégories multicolores (« Automatisme », « Service ») : le dégradé est
        appliqué au TEXTE via background-clip, ce qui impose
@@ -1221,7 +1237,7 @@
     /* Catégorie encore vide : on le dit, plutôt que d'afficher une page blanche */
     .categorie-vide {
       text-align: center;
-      color: var(--text-muted);
+      color: var(--text-page-muted);
       font-size: 0.85rem;
       padding: 28px 16px;
       border: 1px dashed var(--card-border);
@@ -1448,6 +1464,23 @@
     .pack-cliquable { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
     .pack-cliquable .pack-selecteur { cursor: default; }
     .pack-cliquable .pack-selecteur select { cursor: pointer; }
+    /* Les deux sous-blocs d'une fiche : meme cadre, le premier reagit au
+       survol (c'est lui le lien), le second est un reglage. */
+    .pack-bloc {
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      background: var(--hover-bg);
+    }
+    .pack-bloc-lien { display: flex; flex-direction: column; gap: 10px; transition: border-color .15s ease, background .15s ease; }
+    .pack-cliquable:hover .pack-bloc-lien, .pack-cliquable:focus-visible .pack-bloc-lien {
+      border-color: var(--primary-blue);
+      background: color-mix(in srgb, var(--primary-blue) 8%, var(--hover-bg));
+    }
+    /* SURTOUT PAS de `min-height: 0` sur ce sous-bloc : en piste de grille
+       `auto`, il ramenait la rangee a 33 px (mesure le 19/09/2026 : le
+       selecteur de 37 px sortait du cadre). */
+    .pack-bloc.pack-selecteur:empty { display: none; }
     .pack-cliquable:hover, .pack-cliquable:focus-visible {
       transform: translateY(-2px);
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
@@ -1539,7 +1572,7 @@
       background: none;
       border: 1px solid var(--card-border);
       border-radius: 6px;
-      color: var(--text-muted);
+      color: var(--text-page-muted);
       font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
@@ -2745,7 +2778,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 3;
+          grid-row: span 2;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -3064,14 +3097,6 @@
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
             <b style="color: var(--col-gold);">HA-Deploy</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
           </p>
-          <!-- Positionnement (19/09/2026, demande du client) : « HA-Deploy pour
-               les Nuls », mis en evidence, et le public vise dit en clair. -->
-          <p class="accueil-pour-les-nuls">
-            <span class="accueil-pour-les-nuls-titre"><i class="fa-solid fa-graduation-cap"></i> HA-Deploy pour les Nuls</span>
-            Ce site a été conçu <b>pour tout le monde</b>, afin de <b>démocratiser la domotique sur Home Assistant</b> :
-            il s'adresse aussi bien aux <b>débutants</b>, qui n'ont jamais écrit une ligne de YAML, qu'aux <b>experts</b>,
-            qui veulent un tableau de bord soigné sans y passer leurs soirées.
-          </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
             Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
           </p>
@@ -3087,6 +3112,14 @@
             <i class="fa-solid fa-circle-check" style="color: var(--col-appareil);"></i>
             L'ensemble des packs a été <b>testé et validé sur les dernières versions</b> des composants
             Home Assistant (Core, Supervisor, HACS et cartes personnalisées).
+          </p>
+          <!-- Positionnement (19/09/2026, demande du client) : « HA-Deploy pour
+               les Nuls », mis en evidence, et le public vise dit en clair. -->
+          <p class="accueil-pour-les-nuls">
+            <span class="accueil-pour-les-nuls-titre"><i class="fa-solid fa-graduation-cap"></i> HA-Deploy pour les Nuls</span>
+            Ce site a été conçu <b>pour tout le monde</b>, afin de <b>démocratiser la domotique sur Home Assistant</b> :
+            il s'adresse aussi bien aux <b>débutants</b>, qui n'ont jamais écrit une ligne de YAML, qu'aux <b>experts</b>,
+            qui veulent un tableau de bord soigné sans y passer leurs soirées.
           </p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('fonctionnement')"><i class="fa-solid fa-circle-info"></i> Fonctionnement</button>
@@ -15414,14 +15447,20 @@
         if (dansSelecteur(e)) return;
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); }
       });
+      /* DEUX SOUS-BLOCS (19/09/2026) : le premier, cliquable, porte le
+         titre, l'icone et l'animation ; le second, le selecteur de theme,
+         qui change l'animation. Deux cadres distincts dans la fiche : ce qui
+         ouvre les details et ce qui se regle se lisent d'un coup d'oeil. */
       item.innerHTML = `
-        <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
-          <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
+        <div class="pack-bloc pack-bloc-lien">
+          <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
+            <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
+          </div>
+          <div class="pack-media module-video" id="apercu-${mod.name}">
+            <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
+          </div>
         </div>
-        <div class="pack-media module-video" id="apercu-${mod.name}">
-          <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
-        </div>
-        <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
+        <div class="pack-bloc pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
       `;
 
       container.appendChild(item);
