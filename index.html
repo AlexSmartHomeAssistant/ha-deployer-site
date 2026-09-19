@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HA-Deployer — Déploiement Domotique</title>
+  <title>HA-Deploy — Déploiement Domotique</title>
   <meta name="theme-color" content="#24282e">
   <!-- Favicon du site (SVG inline : aucune requête réseau, net sur tous les écrans) -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235DADE2'/%3E%3Cstop offset='1' stop-color='%2352BE80'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M32 14 L50 28 v22 H38 V38 H26 v12 H14 V28 Z' fill='%23fff'/%3E%3C/svg%3E">
@@ -101,7 +101,7 @@
       --content-max: 1200px;
       --content-pad: 24px;
       --content-half: 600px;   /* --content-max / 2 */
-      --nav-edge: 215px;       /* garde-fou : largeur réelle de la marque "HA-Deployer" */
+      --nav-edge: 215px;       /* garde-fou : largeur réelle de la marque "HA-Deploy" */
 
       /* Fond abstrait : même structure dans les 2 thèmes, seules les teintes changent */
       --pattern: rgba(255, 255, 255, 0.055);
@@ -378,6 +378,15 @@
        alerte. */
     .nav-compte.connecte { border-color: var(--col-valide); color: var(--col-valide); }
     .nav-compte.connecte i { color: var(--col-valide); }
+    /* Pastille d'etat verte sur le badge « Connecte » ; sur telephone, ou le
+       libelle est masque, c'est elle seule qui dit que la session est ouverte. */
+    .nav-compte.connecte::after {
+      content: '';
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--col-valide);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--col-valide) 30%, transparent);
+      flex-shrink: 0;
+    }
     @media (max-width: 700px) {
       .nav-compte .nav-compte-texte { display: none; }
       .nav-compte { padding: 8px 11px; }
@@ -1265,6 +1274,26 @@
     /* Bordure indicative : champ obligatoire (rouge) vs optionnel (or) */
     .field-required { border-color: var(--col-required) !important; }
     .field-optional { border-color: var(--col-optional) !important; }
+    /* Bloc « HA-Deploy pour les Nuls » de l'accueil : un encart qui tranche
+       sur le descriptif, sans en changer la police. */
+    .accueil-pour-les-nuls {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--col-gold) 14%, transparent);
+      border: 1px solid color-mix(in srgb, var(--col-gold) 55%, transparent);
+      font-size: 0.85rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+    .accueil-pour-les-nuls-titre {
+      display: block;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--col-gold);
+      margin-bottom: 4px;
+    }
+    .accueil-pour-les-nuls-titre i { margin-right: 6px; }
 
     .module-item button {
       background: var(--col-valide);
@@ -1404,6 +1433,15 @@
 
     .pack-action { display: flex; align-items: end; }
     .pack-action .btn-add-big { width: 100%; }
+    /* La fiche entiere est un lien (19/09/2026) : curseur, relief au survol,
+       et un contour au clavier. */
+    .pack-cliquable { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+    .pack-cliquable:hover, .pack-cliquable:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+      border-color: var(--primary-blue);
+      outline: none;
+    }
 
     .module-desc-text {
       font-size: 0.82rem;
@@ -2605,9 +2643,19 @@
          au hasard. `min(250px, 30vh)` cede donc la main a `30vh` des que la
          fenetre est trop basse pour les 250px. */
       #section-test .module-video {
-        max-width: min(250px, 30vh);
+        /* 200 px / 24vh depuis le 19/09/2026 (250 / 30vh auparavant) : sur
+           un portable a 125 % d'echelle la fenetre utile fait ~690 px de
+           haut, et le contenu (550 px) y depassait encore de 15 px -- une
+           barre de defilement pour rien (capture du client). Mesure apres
+           correction : le contenu tient dans les 536 px disponibles (et
+           dans 486 a 2 px pres). */
+        max-width: min(200px, 24vh);
         margin: 0 auto;
       }
+      /* Cartes et champs LEGEREMENT resserres sur cet onglet seulement. */
+      #section-test .card { padding: 12px 14px; }
+      #section-test .form-group { margin-bottom: 10px; }
+      #section-test .card h3 { margin-bottom: 8px; }
       /* La colonne d'action est courte : son bouton se cale en bas de carte
          plutot que de flotter au milieu d'un grand vide. */
       #section-test .test-action {
@@ -2685,7 +2733,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 5;
+          grid-row: span 2;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -2800,21 +2848,41 @@
       .nav-brand-mark { width: 32px; height: 32px; font-size: 0.9rem; }
       .nav-brand { gap: 8px; padding: 4px; margin-left: -4px; }
 
-      /* Une seule ligne : ☰ | marque | panier | langue | thème.
-         Les onglets se déplient en dessous, sur toute la largeur. */
+      /* Une seule ligne, ALLEGEE (19/09/2026, demande du client) :
+         marque | panier | compte | ☰ -- le burger tout a DROITE, la ou le
+         pouce l'attend. Langue et theme ne sont plus dans le bandeau : ils
+         vivent en bas du menu deplie, sous les onglets. */
       .nav-bar {
         flex-wrap: wrap;
         justify-content: flex-start;
-        padding: 10px 14px;
+        padding: 8px 12px;
         min-height: 0;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .nav-hamburger { display: flex; order: 1; }
-      .nav-brand { order: 2; flex: 1; min-width: 0; }
-      .nav-groupe-droite { order: 3; }
-      .nav-cart { padding: 7px 12px; font-size: 0.85rem; }
-      .nav-side { order: 4; }
+      .nav-brand { order: 1; flex: 1; min-width: 0; }
+      .nav-groupe-droite { order: 2; gap: 6px; }
+      .nav-hamburger { display: flex; order: 3; margin-right: -4px; }
+      .nav-cart { padding: 6px 9px; font-size: 0.85rem; }
+      /* Le total du panier et le libelle du compte ne tiennent pas sur un
+         petit ecran : le badge et l'icone suffisent. */
+      .nav-cart-total, .nav-compte-texte { display: none; }
+      .nav-compte { padding: 6px 9px; }
+      /* Langue et theme : en bas du menu deplie, sur une ligne, avec leur
+         intitule -- un drapeau et un soleil seuls, sortis du bandeau, ne se
+         reconnaitraient plus. */
+      .nav-side {
+        display: none;
+        order: 6;
+        flex-basis: 100%;
+        width: 100%;
+        justify-content: space-between;
+        gap: 14px;
+        border-top: 1px solid var(--card-border);
+        padding: 10px 4px 4px;
+      }
+      nav.mobile-open .nav-side { display: flex; }
+      .nav-side::before { content: 'Langue et thème'; font-size: 0.82rem; color: var(--text-muted); flex: 1; }
 
       /* Le conteneur "pilule" des onglets redevient une liste verticale dépliable */
       .nav-links {
@@ -2855,8 +2923,8 @@
       .nav-bar { gap: 7px; padding: 9px 10px; }
       .nav-cart { padding: 6px 10px; font-size: 0.78rem; gap: 6px; }
       .nav-cart-badge { min-width: 19px; height: 19px; font-size: 0.7rem; padding: 0 5px; }
-      .lang-current, .theme-toggle { width: 34px; height: 34px; }
-      .nav-hamburger { font-size: 1.2rem; padding: 5px 7px; }
+      .lang-current, .theme-toggle { width: 36px; height: 36px; }
+      .nav-hamburger { font-size: 1.25rem; padding: 5px 8px; }
       .hero-pitch { padding: 20px 16px; }
       /* Surtout PAS de hauteur fixe ici : elle ecraserait l'aspect-ratio
          et le cadre redeviendrait rectangulaire sur telephone, la ou il
@@ -2891,7 +2959,7 @@
     </button>
     <button type="button" class="nav-brand" onclick="switchTab('accueil')" title="Retour à l'accueil" aria-label="Retour à l'accueil">
       <span class="nav-brand-mark"><i class="fa-solid fa-house-signal"></i></span>
-      <span class="nav-brand-title">HA-Deployer</span>
+      <span class="nav-brand-title">HA-Deploy</span>
     </button>
     <div class="nav-links">
       <button onclick="switchTab('accueil')" id="nav-accueil" class="active"><i class="fa-solid fa-house"></i> Accueil</button>
@@ -2975,14 +3043,22 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-video"></i> Présentation Vidéo</h3>
         <div class="video-container">
-          <iframe src="https://www.youtube.com/embed/LokQyLFPUOA?list=PLHCmYWBoMir-iFsAeatdl_xY1kTKdGPV3" title="Présentation HA-Deployer" allowfullscreen></iframe>
+          <iframe src="https://www.youtube.com/embed/LokQyLFPUOA?list=PLHCmYWBoMir-iFsAeatdl_xY1kTKdGPV3" title="Présentation HA-Deploy" allowfullscreen></iframe>
         </div>
       </div>
 
       <div class="card">
           <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-circle-info"></i> Descriptif</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-            <b style="color: var(--col-gold);">HA-Deployer</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
+            <b style="color: var(--col-gold);">HA-Deploy</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
+          </p>
+          <!-- Positionnement (19/09/2026, demande du client) : « HA-Deploy pour
+               les Nuls », mis en evidence, et le public vise dit en clair. -->
+          <p class="accueil-pour-les-nuls">
+            <span class="accueil-pour-les-nuls-titre"><i class="fa-solid fa-graduation-cap"></i> HA-Deploy pour les Nuls</span>
+            Ce site a été conçu <b>pour tout le monde</b>, afin de <b>démocratiser la domotique sur Home Assistant</b> :
+            il s'adresse aussi bien aux <b>débutants</b>, qui n'ont jamais écrit une ligne de YAML, qu'aux <b>experts</b>,
+            qui veulent un tableau de bord soigné sans y passer leurs soirées.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
             Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
@@ -3019,7 +3095,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-diagram-project"></i> Le principe</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-          HA-Deployer se connecte à distance à votre instance pour y déployer les packs choisis, sans intervention de votre part. Un <b>pack</b> est un tableau de bord clé en main dédié à un usage précis (éclairage, météo, sécurité…), qui embarque aussi ses scripts, automatisations, capteurs et helpers, configurés à partir des informations que vous renseignez (parfois optionnelles).
+          HA-Deploy se connecte à distance à votre instance pour y déployer les packs choisis, sans intervention de votre part. Un <b>pack</b> est un tableau de bord clé en main dédié à un usage précis (éclairage, météo, sécurité…), qui embarque aussi ses scripts, automatisations, capteurs et helpers, configurés à partir des informations que vous renseignez (parfois optionnelles).
         </p>
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
           <b style="color: var(--col-gold);">Tout est inclus :</b> <b>HACS</b> s'il manque, les <b>cartes personnalisées</b> et les <b>intégrations</b> requises. Vous n'avez rien à installer.
@@ -3056,7 +3132,7 @@
           <ol>
             <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
             <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
-            <li>Saisissez le nom <code>HA-Deployer</code>.</li>
+            <li>Saisissez le nom <code>HA-Deploy</code>.</li>
           </ol>
           <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
         </div>
@@ -3079,8 +3155,8 @@
       <!-- Sous-onglets de catégorie, horizontaux -->
       <div class="subtabs" id="category-subtabs">
         <button class="subtab configuration" onclick="filterCategory('configuration', this)">Configuration</button>
-        <button class="subtab interface active" onclick="filterCategory('interface', this)">Interface</button>
-        <button class="subtab service multicolore" onclick="filterCategory('service', this)">Service</button>
+        <button class="subtab interface" onclick="filterCategory('interface', this)">Interface</button>
+        <button class="subtab service multicolore active" onclick="filterCategory('service', this)">Service</button>
         <button class="subtab ouverture" onclick="filterCategory('ouverture', this)">Ouverture</button>
         <button class="subtab lumiere" onclick="filterCategory('lumiere', this)">Éclairage</button>
         <button class="subtab chauffage" onclick="filterCategory('chauffage', this)">Chauffage</button>
@@ -3172,7 +3248,7 @@
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token', this)" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
+          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deploy) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
           <input type="password" id="test-ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
         </div>
       </div>
@@ -3218,7 +3294,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-seedling"></i> Le projet</h3>
         <div class="prose">
-          <p>HA-Deployer est né d'un constat simple : Home Assistant est extraordinairement puissant, mais construire un tableau de bord soigné demande des heures de YAML, de cartes personnalisées et de réglages.</p>
+          <p>HA-Deploy est né d'un constat simple : Home Assistant est extraordinairement puissant, mais construire un tableau de bord soigné demande des heures de YAML, de cartes personnalisées et de réglages.</p>
           <p>L'idée est de faire ce travail une fois, proprement, puis de le <strong>déployer automatiquement à distance</strong> sur l'instance de chacun — avec les bonnes entités, les bons scripts et les bonnes automatisations, adaptés à votre installation.</p>
           <p>La partie ingrate est comprise elle aussi : <strong>HACS</strong>, les <strong>cartes personnalisées</strong> et les <strong>intégrations</strong> nécessaires sont installées automatiquement. Aucune préparation technique n'est attendue de votre part.</p>
         </div>
@@ -3296,7 +3372,7 @@
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-key"></i> Comment révoquer l'accès après coup ?</h3>
-        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deployer</code>. Les packs déjà déployés restent en place.</p></div>
+        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deploy</code>. Les packs déjà déployés restent en place.</p></div>
       </div>
     </div>
   </div>
@@ -3328,7 +3404,7 @@
             <li>Dans Home Assistant, cliquez sur votre <strong>Profil</strong> (en bas à gauche).</li>
             <li>Ouvrez l'onglet <strong>Sécurité</strong>.</li>
             <li>Section <strong>Jetons d'accès longue durée</strong> → <strong>Créer un jeton</strong>.</li>
-            <li>Nommez-le <code>HA-Deployer</code> et copiez la valeur affichée : elle n'est montrée qu'une seule fois.</li>
+            <li>Nommez-le <code>HA-Deploy</code> et copiez la valeur affichée : elle n'est montrée qu'une seule fois.</li>
           </ul>
           <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
         </div>
@@ -3362,7 +3438,7 @@
           <strong><i class="fa-solid fa-scale-balanced"></i> Ce que vous payez exactement :</strong>
           le prix d'un pack rémunère <b>une prestation de service</b> — l'orchestration et l'exécution automatisée du déploiement sur votre instance : scripts d'installation, découverte de vos entités, configuration, helpers, automatisations, traduction et assistance.
           <b>Il ne s'agit en aucun cas de la vente d'un logiciel, ni de l'acquisition de droits de propriété intellectuelle sur les cartes communautaires open-source</b> (card-mod, mushroom, swipe-card, stack-in-card, apexcharts-card, plotly-graph, button-card…), ni sur <b>Home Assistant</b> ou <b>HACS</b>.
-          Ces composants restent la propriété de leurs auteurs respectifs, sont distribués gratuitement sous leurs propres licences libres, et vous demeurez libre de les installer vous-même sans passer par ce service. HA-Deployer n'est affilié ni à Home Assistant, ni à Nabu Casa, ni aux auteurs de ces cartes.
+          Ces composants restent la propriété de leurs auteurs respectifs, sont distribués gratuitement sous leurs propres licences libres, et vous demeurez libre de les installer vous-même sans passer par ce service. HA-Deploy n'est affilié ni à Home Assistant, ni à Nabu Casa, ni aux auteurs de ces cartes.
         </div>
       </div>
 
@@ -3455,7 +3531,7 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-id-card-clip"></i> Responsable du traitement</h3>
         <div class="prose">
-          <p>Le responsable du traitement des données collectées sur ce site est l'éditeur de <strong>HA-Deployer</strong>, joignable à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>.</p>
+          <p>Le responsable du traitement des données collectées sur ce site est l'éditeur de <strong>HA-Deploy</strong>, joignable à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>.</p>
           <p><strong>Délégué à la protection des données (DPO) :</strong> aucun DPO n'a été désigné, cette désignation n'étant pas obligatoire au regard de l'<strong>article 37 du RGPD</strong> (ni autorité publique, ni suivi systématique à grande échelle, ni traitement à grande échelle de données sensibles). Toutes les demandes relatives aux données personnelles sont donc traitées <strong>directement par le responsable du traitement</strong>, à l'adresse ci-dessus, sous un délai d'un mois.</p>
           <p><strong>Registre des activités de traitement :</strong> un registre est tenu conformément à l'<strong>article 30 du RGPD</strong>. Il recense les traitements décrits ci-dessous, leurs finalités, les catégories de données et de destinataires, les durées de conservation et les mesures de sécurité appliquées. Il est communiqué à l'autorité de contrôle sur sa demande, et son contenu vous est présenté sur demande dans la mesure où il vous concerne.</p>
         </div>
@@ -3510,7 +3586,7 @@
           <p>Vous disposez, sur les données vous concernant, des droits d'<strong>accès</strong>, de <strong>rectification</strong>, d'<strong>effacement</strong>, de <strong>limitation</strong> du traitement, d'<strong>opposition</strong> et de <strong>portabilité</strong> (articles 15 à 22 du RGPD), ainsi que du droit de définir des directives relatives au sort de vos données après votre décès.</p>
           <p>Ces droits s'exercent auprès du responsable du traitement, à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>. Une réponse vous est apportée dans un délai d'un mois.</p>
           <p><em>Une limite à signaler franchement :</em> l'empreinte de l'adresse de votre instance étant <strong>irréversible par construction</strong>, elle ne permet pas de vous ré-identifier. Nous ne pouvons donc pas retrouver la vôtre pour l'effacer sur simple demande, cas prévu par l'<strong>article 11 du RGPD</strong>. Vous pouvez toutefois nous communiquer l'adresse concernée : l'empreinte correspondante est alors recalculée puis supprimée.</p>
-          <p>Vous pouvez à tout moment <strong>révoquer l'accès</strong> accordé, depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>, en supprimant le jeton nommé <code>HA-Deployer</code>.</p>
+          <p>Vous pouvez à tout moment <strong>révoquer l'accès</strong> accordé, depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>, en supprimant le jeton nommé <code>HA-Deploy</code>.</p>
           <p>Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 — ou sur <strong>cnil.fr</strong>.</p>
         </div>
       </div>
@@ -3545,7 +3621,7 @@
         <button onclick="switchTab('cgv')" id="nav-cgv">CGV</button>
         <button onclick="switchTab('confidentialite')" id="nav-confidentialite">Confidentialité</button>
       </div>
-      <div class="footer-copyright">© 2026 HA-Deployer</div>
+      <div class="footer-copyright">© 2026 HA-Deploy</div>
       <div class="social-icons">
         <a href="mailto:smarthomeassistant.alex@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
         <a href="https://www.linkedin.com/in/alex-smarthome-77a9a4353/" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -15250,7 +15326,8 @@
      l'acheteur ne peut pas relire son thème ni sa pièce avant de valider. */
   /* Categorie affichee, retenue pour l'historique : revenir sur l'onglet
      Packs doit rendre la categorie qu'on y avait laissee, pas « Interface ». */
-  let categorieCourante = 'interface';
+  // « Service » a l'ouverture de l'onglet (19/09/2026, demande du client).
+  let categorieCourante = 'service';
 
   /* Les deux categories sans teinte propre : leur onglet porte deja la roue
      multicolore, les en-tetes de leurs fiches la reprennent. */
@@ -15307,25 +15384,23 @@
          faire correspondre d'une fiche a l'autre. Sauter une rangee absente
          decalerait toutes les suivantes, et le bouton « Ajouter » d'un pack se
          retrouverait a la hauteur du champ d'entite de son voisin. */
-      item.className = 'module-item module-item-detailed';
+      /* FICHE SIMPLIFIEE (19/09/2026, demande du client) : le titre, son
+         icone et l'animation -- rien d'autre. Ni descriptif, ni selecteur,
+         ni bouton : c'est TOUTE la fiche qui ouvre la page de details, ou
+         se choisissent le theme et les options et ou se fait l'ajout au
+         panier. Deux rangees de grille au lieu de cinq (voir `subgrid`). */
+      item.className = 'module-item module-item-detailed pack-cliquable';
+      item.setAttribute('role', 'link');
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('title', `Voir le pack ${title}`);
+      item.addEventListener('click', () => ouvrirDetails(mod.name));
+      item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); } });
       item.innerHTML = `
         <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
         </div>
         <div class="pack-media module-video" id="apercu-${mod.name}">
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
-        </div>
-        <div class="pack-selecteur">${champsParamsHtml(mod.name, 'theme')}</div>
-        <div class="pack-desc">
-          ${resume ? `<p class="module-desc-text">${resume}</p>` : ''}
-        </div>
-        <div class="pack-action">
-          <!-- L'icone « Détails » a disparu (03/09/2026) : « Ajouter » ouvre
-               desormais directement la page de details, ou se fait le
-               veritable ajout au panier (voir .detail-ajouter dans
-               majDetails / addModuleToCart). Un clic ici n'ajoute jamais
-               rien seul. -->
-          <button class="btn-add-big" onclick="ouvrirDetails('${mod.name}')"><i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(mod.name))})</button>
         </div>
       `;
 
@@ -15883,7 +15958,7 @@
       </div>
       <div class="form-group" style="margin-bottom: 0;">
         <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token', this)" title="Aide">?</button></label>
-        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deployer) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
+        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deploy) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
         <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
       </div>
       <div class="modal-footer">
@@ -16061,9 +16136,15 @@
     const b = document.getElementById('nav-compte');
     if (!b) return;
     b.classList.toggle('connecte', !!compteConnecte);
-    b.querySelector('.nav-compte-texte').textContent =
-      compteConnecte ? compteConnecte.email.split('@')[0] : 'Mon espace';
-    b.title = compteConnecte ? compteConnecte.email : 'Se connecter à votre espace client';
+    // Un BADGE d'etat, et non l'adresse (19/09/2026, demande du client) :
+    // « Connecte » avec une pastille verte, l'adresse complete restant dans
+    // l'infobulle au survol. L'ancien affichage montrait la partie locale de
+    // l'adresse -- ni discret, ni lisible.
+    b.querySelector('.nav-compte-texte').textContent = compteConnecte ? 'Connecté' : 'Mon espace';
+    b.title = compteConnecte
+      ? `Connecté en tant que ${compteConnecte.email} — ouvrir mon espace client`
+      : 'Se connecter à votre espace client';
+    b.setAttribute('aria-label', b.title);
   }
 
   async function rafraichirCompte() {
@@ -17437,7 +17518,7 @@
   window.onload = () => {
     initTheme();
     trierLangues();
-    filterCategory('interface');
+    filterCategory('service');   // categorie par defaut (19/09/2026)
     // Liste des prerequis (onglet Fonctionnement) et aide du champ « URL »
     // du Test Gratuit : les deux sont rendus depuis ACCES_DISTANT.
     remplirAccesDistant();
