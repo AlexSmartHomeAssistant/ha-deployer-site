@@ -575,6 +575,23 @@
       margin-top: 12px;
     }
 
+    /* FENETRE DE CONNEXION SANS ASCENSEUR (19/09/2026, demande du client).
+       Mesure avant : 630 px de contenu pour 552 disponibles (80vh d'une
+       fenetre de 690 px, un portable a 125 %). Les marges sont resserrees
+       -- rien n'est retire -- et la boite peut monter a 94vh : le contenu
+       tient alors en entier jusqu'a une fenetre de 560 px de haut. */
+    #compte-modal-overlay .modal-box { max-height: 94vh; padding: 18px 22px; }
+    #compte-modal-overlay .modal-header { margin-bottom: 12px; padding-bottom: 10px; }
+    #compte-modal-overlay .auth-bascule { margin-bottom: 10px; }
+    #compte-modal-overlay .compte-intro { margin-bottom: 10px; line-height: 1.45; }
+    #compte-modal-overlay .form-group { margin-bottom: 10px; gap: 5px; }
+    #compte-modal-overlay .auth-oubli { margin-top: 5px; }
+    #compte-modal-overlay .modal-footer { margin-top: 10px; padding-top: 10px; }
+    #compte-modal-overlay .auth-ou { margin: 12px 0 10px; }
+    #compte-modal-overlay .auth-social { gap: 8px; }
+    #compte-modal-overlay .auth-note { margin-top: 8px; }
+    #compte-modal-overlay .compte-motif { margin-bottom: 8px; padding: 8px 10px; }
+
     /* Note posee sur la texture d'un theme pas encore filme (17/09/2026) */
     .apercu-texture-note {
       position: absolute; left: 8px; right: 8px; bottom: 8px;
@@ -16413,9 +16430,8 @@
     const erreur = (message ? `<p class="compte-erreur">${message}</p>` : '')
       + (motifCompteModal === 'panier' || reprisePanierApresConnexion
          ? `<p class="compte-motif"><i class="fa-solid fa-cart-shopping"></i>
-              <b>Connectez-vous ou créez un compte pour valider votre sélection.</b>
-              Chaque déploiement est rattaché à votre compte : vous y retrouvez son historique,
-              son journal et son résultat, et nous pouvons vous aider s'il échoue.</p>` : '');
+              <b>Connectez-vous ou créez un compte pour valider votre sélection</b> :
+              chaque déploiement est rattaché à votre compte (historique, journal, résultat).</p>` : '');
 
     // Choix d'un nouveau mot de passe, depuis le lien reçu par e-mail.
     if (etatAuth.mode === 'reinit') {
