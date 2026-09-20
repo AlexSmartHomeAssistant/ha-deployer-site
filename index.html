@@ -3936,7 +3936,7 @@
     ],
     appareil: [
       { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
-      { name: 'appareil_box_internet', desc: 'Surveillance routeur et réseau' },
+      { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
       { name: 'appareil_compteur_electricite', desc: 'Compteur électrique principal' },
       { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
@@ -4138,6 +4138,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_box_internet: {
+      resume: "Internet et Wi-Fi d'un coup d'œil, débits, température, appareils connectés par pièce, six alertes sur vos mobiles.",
+      detail: `La surveillance complète de votre <b>box Internet</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul tout ce que la box publie : état d'Internet, interrupteur Wi-Fi, débits, température, disque, temps de fonctionnement, adresse IP publique, ventilateur, bouton de redémarrage, et même la prise connectée qui l'alimente. Le premier onglet montre la box <b>vivante</b> : son voyant respire en vert quand tout va bien, deux ondes montent des antennes tant que le Wi-Fi émet, et une « box » d'indicateurs affiche réception, émission, nombre d'appareils connectés et température, chacun avec son icône animée. Dès qu'Internet fonctionne et que le Wi-Fi est actif, la carte prend sa <b>bordure animée verte</b> et son fond s'allume ; que l'un des deux manque, bordure et fond passent au <b>rouge</b>. Le bouton vert d'alimentation devient un <b>bouton de redémarrage</b> à confirmation, dont le glyphe tourne tant qu'Internet est coupé. Le deuxième onglet détaille en quatre sous-onglets : système, une seule température &mdash; celle du processeur &mdash; en jauge, disque en anneau, et les <b>appareils Wi-Fi de votre maison, pièce par pièce</b>, lus sur votre instance et jamais écrits en dur. Le troisième trace le débit sur le jour, la semaine, le mois ou l'année, et l'énergie consommée si la box a sa prise. Six alertes préviennent tous vos mobiles : plus d'Internet, plus de Wi-Fi, température, disque ou débit au-dessus d'un seuil que vous réglez, et nouvel appareil sur le réseau.`
+    },
     securite_alarme: {
       resume: "Armement, caméras en direct, capteurs de la maison et journal des alertes.",
       detail: `Pilotage complet de votre <b>centrale d'alarme</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son panneau, sa sirène et ce qu'elle sait faire. Le premier onglet montre l'état au centre, dans une <b>animation qui change avec le mode</b> : éteinte au repos, tournante quand l'alarme veille, rapide et rouge quand elle se déclenche. Dès que l'alarme est armée ou en mode nuit, la carte prend sa <b>bordure animée violette</b> et son fond s'allume ; déclenchée, bordure et fond passent au <b>rouge</b>. Trois boutons arment, désarment ou passent en mode nuit, et celui du mode en cours est le seul à s'animer. Une pastille dit si la porte est ouverte ; un bouton de test <b>déclenche la sirène, puis l'arrête</b> au second appui, avec confirmation avant le déclenchement. Le deuxième onglet affiche <b>de une à neuf caméras</b>, plein cadre en 16:9 : en direct avec les flèches d'orientation quand il n'y en a qu'une, en grille jusqu'au 3 × 3 au-delà. Le troisième est l'<b>historique des dix derniers événements</b>, l'alarme en rouge ; le quatrième, le <b>suivi de vos détecteurs d'ouverture et de vibration</b>, chacun s'animant en violet dès qu'il s'ouvre. À chaque changement de mode, tous vos mobiles sont prévenus.`
@@ -4458,6 +4462,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    appareil_box_internet: [
+      { titre: 'Six alertes de la box', icone: 'fa-bell',
+        declencheur: `Plus d'Internet depuis deux minutes, Wi-Fi désactivé depuis une minute, température au-dessus du seuil pendant cinq minutes, disque rempli au-delà du seuil, débit (réception ou émission) au-dessus du seuil pendant une minute, ou un nouvel appareil qui apparaît sur le réseau.`,
+        action: `Notification sur tous vos mobiles qui <b>nomme la cause</b> et sa valeur (température, pourcentage du disque, débit converti en Mo/s, nom du nouvel appareil). Les trois seuils sont des entrées que vous réglez sans redéploiement ; une même cause remplace son avis précédent, deux causes distinctes se cumulent.` }
+    ],
     OK_service_meteo: [
       { titre: 'Alerte météo', icone: 'fa-triangle-exclamation',
         declencheur: `Franchissement d'un des cinq seuils : vent &gt; 30 km/h, température &gt; 30 °C ou &lt; 5 °C, précipitations &gt; 8 mm sur la journée, indice UV &gt; 5 (convertis dans les unités de votre instance).`,
@@ -4606,6 +4615,39 @@
   };
 
   const PACK_DETAILS = {
+    appareil_box_internet: {
+      intro: `Trois onglets : indicateur, détails, historique. Vous ne saisissez que le <b>nom de votre box</b> &mdash; le pack retrouve seul tout ce qu'elle publie, y compris quand plusieurs intégrations la voient (Freebox, UPnP, ping), et la prise connectée qui l'alimente. <b>C'est ce que la box publie qui fait la variante</b> : sans température ni disque, les sous-onglets correspondants disparaissent ; sans prise, le bouton de prise et le graphe d'énergie aussi. Sans capteur de connexion, le pack installe lui-même un test de joignabilité vers 1.1.1.1.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-router',
+          texte: `Deux capsules en haut : <b>Internet</b> (un globe qui tourne quand la connexion est établie, rouge et clignotant quand elle est coupée) et <b>Wi-Fi</b> (ondes qui respirent quand il émet ; un appui le coupe ou le rallume, avec confirmation avant la coupure). Au centre, le visuel de la box, <b>vivant</b> : son voyant prend la couleur de l'état, deux jeux d'ondes montent des antennes tant que le Wi-Fi est actif. À droite, la « box » des indicateurs indispensables : réception et émission (flèches qui défilent dès qu'il y a du trafic), appareils connectés (comptés sur votre instance), température (verte, ambre puis rouge selon vos seuils). En bas, le temps de fonctionnement, le <b>bouton de redémarrage</b> corail à confirmation &mdash; il tourne tant qu'Internet est coupé &mdash; et, si la box a sa prise connectée, un bouton de coupure (appui long : redémarrage électrique).`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
+            { nom: `Internet et Wi-Fi`, texte: `deux capsules d'état animées ; la capsule Wi-Fi bascule l'interrupteur de la box.` },
+            { nom: `Visuel de la box`, texte: `voyant vert qui respire ou rouge qui clignote, ondes des antennes tant que le Wi-Fi émet.` },
+            { nom: `Box d'indicateurs`, texte: `réception, émission, appareils connectés, température &mdash; chacun avec son icône animée.` },
+            { nom: `Temps de fonctionnement`, texte: `depuis le dernier redémarrage, en jours et heures.` },
+            { nom: `Redémarrage et prise`, texte: `bouton rond corail à confirmation ; bouton de prise vert quand la box est alimentée.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé quand Internet et le Wi-Fi fonctionnent ; rouge dès que l'un manque. Rien ne bouge de place.` }
+          ] },
+        { titre: '2 — Détails', icone: 'fa-sliders',
+          texte: `Quatre sous-onglets, choisis par les pastilles du bas. <b>Système</b> : temps de fonctionnement, adresse IP publique, ventilateur (dont l'icône tourne à la vitesse réelle). <b>Performance</b> : <b>une seule température</b>, la plus parlante &mdash; celle du processeur &mdash; en jauge à aiguille, verte, ambre puis rouge. <b>Disque</b> : l'espace utilisé en anneau, rouge au-delà du seuil. <b>Wi-Fi</b> : <b>les appareils de votre maison, pièce par pièce</b> &mdash; un sélecteur de pièce relevé sur votre instance, une liste lue à l'exécution (un appareil qui apparaît demain y est demain), les appareils connectés en vert avec leur icône qui respire, leur adresse IP à côté.`,
+          elements: [
+            { nom: `Système`, texte: `temps de fonctionnement, adresse IP publique, ventilateur animé.` },
+            { nom: `Performance`, texte: `la température du processeur en jauge, avec vos seuils.` },
+            { nom: `Disque`, texte: `l'espace utilisé en anneau, vert puis ambre puis rouge.` },
+            { nom: `Wi-Fi`, texte: `sélecteur de pièce et liste des appareils, jamais écrits en dur.` },
+            { nom: `Pastilles`, texte: `quatre boutons de sous-onglet ; celui du sous-onglet actif est en vert.` }
+          ] },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: `Le <b>débit</b> en réception et en émission, en Mo/s, sur le jour, la semaine, le mois ou l'année &mdash; et, si la box a sa prise connectée, l'<b>énergie consommée</b> en kWh sur les mêmes périodes, choisie par deux pastilles en bas.`,
+          elements: [
+            { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
+            { nom: `Graphe`, texte: `deux courbes de débit (réception en vert, émission en bleu), ou des barres d'énergie.` },
+            { nom: `Métrique`, texte: `Débit ou Énergie, quand la box a sa prise.` }
+          ] }
+      ]
+    },
     securite_alarme: {
       intro: `Quatre onglets : contrôle, caméra, historique, suivi. Vous ne saisissez que le <b>nom de votre centrale</b> &mdash; le pack retrouve seul son panneau et sa sirène, lit ce qu'elle sait faire (un bouton qu'elle ne saurait pas honorer est retiré plutôt que laissé inerte), et devine vos caméras et vos détecteurs. <b>C'est le nombre de caméras qui fait la variante</b> : de zéro à neuf. À zéro, l'onglet Caméra disparaît ; à une, elle passe en plein cadre avec les flèches d'orientation. Sans détecteur, l'onglet Suivi disparaît de même.`,
       carte: () => 'defaut',
@@ -6040,6 +6082,30 @@
   ];
 
   const MODULE_PARAMS = {
+    appareil_box_internet: [
+      { param: 'BOX_APPAREIL', label: 'Nom de la box', type: 'text', required: true,
+        groupe: '📡 Box',
+        placeholder: 'ex : Freebox v8 (r1) — le nom de l\'appareil dans Home Assistant' },
+      { param: 'BOX_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '📡 Box',
+        placeholder: 'vide : déduite de l\'appareil' },
+      { param: 'BOX_SEUILS', label: 'Seuils d\'alerte : température, disque, débit', type: 'text', required: false,
+        groupe: '📡 Box',
+        placeholder: 'ex : 70,90,50 — °C, % utilisé, Mo/s ; vide : ces valeurs' },
+      { param: 'BOX_INTERNET', label: 'Capteur de connexion Internet', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit, sinon un ping vers 1.1.1.1 est installé' },
+      { param: 'BOX_WIFI', label: 'Interrupteur Wi-Fi', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      { param: 'BOX_TEMPERATURE', label: 'Capteur de température', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : celle du processeur, sinon la première' },
+      { param: 'BOX_PRISE', label: 'Prise connectée (capteur de puissance)', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : la prise dont le nom cite la box, si elle existe' },
+      champThemeSite('BOX_THEME', 'urban-factory', '🎨 Apparence')
+    ],
     securite_alarme: [
       { param: 'ALARME_APPAREIL', label: 'Nom de la centrale', type: 'text', required: true,
         groupe: '🛡️ Centrale',
@@ -6542,6 +6608,15 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    appareil_box_internet:
+      'la vue et ses trois onglets, les s\u00e9lecteurs et les trois seuils '
+      + 'r\u00e9glables, l\u2019automatisation aux six alertes (Internet, '
+      + 'Wi-Fi, temp\u00e9rature, disque, d\u00e9bit, nouvel appareil) qui '
+      + 'pr\u00e9vient tous vos mobiles, les scripts de la prise connect\u00e9e '
+      + 'quand elle existe, un test de joignabilit\u00e9 (ping) si la box '
+      + 'n\u2019a pas de capteur d\u2019Internet, ainsi que HACS et les cartes '
+      + 'personnalis\u00e9es requises (button-card, apexcharts-card, '
+      + 'swipe-card, stack-in-card, card-mod).',
     securite_alarme:
       'la vue et ses quatre onglets, le journal des dix derniers '
       + '\u00e9v\u00e9nements, l\u2019automatisation qui le tient \u00e0 jour '
@@ -7973,6 +8048,398 @@
             "templates/apercus/bal/urban-factory-defaut-1.mp4",
             "templates/apercus/bal/urban-factory-defaut-2.mp4",
             "templates/apercus/bal/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "box-internet": {
+      "argile-craquele": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/argile-craquele.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/argile-craquele-defaut-1.mp4",
+            "templates/apercus/box-internet/argile-craquele-defaut-2.mp4",
+            "templates/apercus/box-internet/argile-craquele-defaut-3.mp4"
+          ]
+        }
+      },
+      "banquise-complice": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/banquise-complice.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/banquise-complice-defaut-1.mp4",
+            "templates/apercus/box-internet/banquise-complice-defaut-2.mp4",
+            "templates/apercus/box-internet/banquise-complice-defaut-3.mp4"
+          ]
+        }
+      },
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/bleu-evasion.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/bleu-evasion-defaut-1.mp4",
+            "templates/apercus/box-internet/bleu-evasion-defaut-2.mp4",
+            "templates/apercus/box-internet/bleu-evasion-defaut-3.mp4"
+          ]
+        }
+      },
+      "bois-magique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/bois-magique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/bois-magique-defaut-1.mp4",
+            "templates/apercus/box-internet/bois-magique-defaut-2.mp4",
+            "templates/apercus/box-internet/bois-magique-defaut-3.mp4"
+          ]
+        }
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/carbon-pulse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/carbon-pulse-defaut-1.mp4",
+            "templates/apercus/box-internet/carbon-pulse-defaut-2.mp4",
+            "templates/apercus/box-internet/carbon-pulse-defaut-3.mp4"
+          ]
+        }
+      },
+      "classe-coloree": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/classe-coloree.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/classe-coloree-defaut-1.mp4",
+            "templates/apercus/box-internet/classe-coloree-defaut-2.mp4",
+            "templates/apercus/box-internet/classe-coloree-defaut-3.mp4"
+          ]
+        }
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/creme-gourmande.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/creme-gourmande-defaut-1.mp4",
+            "templates/apercus/box-internet/creme-gourmande-defaut-2.mp4",
+            "templates/apercus/box-internet/creme-gourmande-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/cuir-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/cuir-blanc-defaut-1.mp4",
+            "templates/apercus/box-internet/cuir-blanc-defaut-2.mp4",
+            "templates/apercus/box-internet/cuir-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-chesterfield": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/cuir-chesterfield.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/cuir-chesterfield-defaut-1.mp4",
+            "templates/apercus/box-internet/cuir-chesterfield-defaut-2.mp4",
+            "templates/apercus/box-internet/cuir-chesterfield-defaut-3.mp4"
+          ]
+        }
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/elegance-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/elegance-ardoise-defaut-1.mp4",
+            "templates/apercus/box-internet/elegance-ardoise-defaut-2.mp4",
+            "templates/apercus/box-internet/elegance-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "foret-enchantee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/foret-enchantee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/foret-enchantee-defaut-1.mp4",
+            "templates/apercus/box-internet/foret-enchantee-defaut-2.mp4",
+            "templates/apercus/box-internet/foret-enchantee-defaut-3.mp4"
+          ]
+        }
+      },
+      "gatsby-epure": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/gatsby-epure.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/gatsby-epure-defaut-1.mp4",
+            "templates/apercus/box-internet/gatsby-epure-defaut-2.mp4",
+            "templates/apercus/box-internet/gatsby-epure-defaut-3.mp4"
+          ]
+        }
+      },
+      "jungle-joyeuse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/jungle-joyeuse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/jungle-joyeuse-defaut-1.mp4",
+            "templates/apercus/box-internet/jungle-joyeuse-defaut-2.mp4",
+            "templates/apercus/box-internet/jungle-joyeuse-defaut-3.mp4"
+          ]
+        }
+      },
+      "lin-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/lin-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/lin-blanc-defaut-1.mp4",
+            "templates/apercus/box-internet/lin-blanc-defaut-2.mp4",
+            "templates/apercus/box-internet/lin-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/mars-rouge.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/mars-rouge-defaut-1.mp4",
+            "templates/apercus/box-internet/mars-rouge-defaut-2.mp4",
+            "templates/apercus/box-internet/mars-rouge-defaut-3.mp4"
+          ]
+        }
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/neo-future.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/neo-future-defaut-1.mp4",
+            "templates/apercus/box-internet/neo-future-defaut-2.mp4",
+            "templates/apercus/box-internet/neo-future-defaut-3.mp4"
+          ]
+        }
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/nocturne-artistique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/nocturne-artistique-defaut-1.mp4",
+            "templates/apercus/box-internet/nocturne-artistique-defaut-2.mp4",
+            "templates/apercus/box-internet/nocturne-artistique-defaut-3.mp4"
+          ]
+        }
+      },
+      "onyx-chic": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/onyx-chic.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/onyx-chic-defaut-1.mp4",
+            "templates/apercus/box-internet/onyx-chic-defaut-2.mp4",
+            "templates/apercus/box-internet/onyx-chic-defaut-3.mp4"
+          ]
+        }
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/pure-lumiere.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/pure-lumiere-defaut-1.mp4",
+            "templates/apercus/box-internet/pure-lumiere-defaut-2.mp4",
+            "templates/apercus/box-internet/pure-lumiere-defaut-3.mp4"
+          ]
+        }
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/sahara-elegance.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/sahara-elegance-defaut-1.mp4",
+            "templates/apercus/box-internet/sahara-elegance-defaut-2.mp4",
+            "templates/apercus/box-internet/sahara-elegance-defaut-3.mp4"
+          ]
+        }
+      },
+      "sanctuaire-antique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/sanctuaire-antique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/sanctuaire-antique-defaut-1.mp4",
+            "templates/apercus/box-internet/sanctuaire-antique-defaut-2.mp4",
+            "templates/apercus/box-internet/sanctuaire-antique-defaut-3.mp4"
+          ]
+        }
+      },
+      "soie-blanche": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/soie-blanche.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/soie-blanche-defaut-1.mp4",
+            "templates/apercus/box-internet/soie-blanche-defaut-2.mp4",
+            "templates/apercus/box-internet/soie-blanche-defaut-3.mp4"
+          ]
+        }
+      },
+      "sombre-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/sombre-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/sombre-ardoise-defaut-1.mp4",
+            "templates/apercus/box-internet/sombre-ardoise-defaut-2.mp4",
+            "templates/apercus/box-internet/sombre-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "station-orbitale": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/station-orbitale.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/station-orbitale-defaut-1.mp4",
+            "templates/apercus/box-internet/station-orbitale-defaut-2.mp4",
+            "templates/apercus/box-internet/station-orbitale-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/terre-de-carmin.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/terre-de-carmin-defaut-1.mp4",
+            "templates/apercus/box-internet/terre-de-carmin-defaut-2.mp4",
+            "templates/apercus/box-internet/terre-de-carmin-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-gravee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/terre-gravee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/terre-gravee-defaut-1.mp4",
+            "templates/apercus/box-internet/terre-gravee-defaut-2.mp4",
+            "templates/apercus/box-internet/terre-gravee-defaut-3.mp4"
+          ]
+        }
+      },
+      "tresor-de-plage": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/tresor-de-plage.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/tresor-de-plage-defaut-1.mp4",
+            "templates/apercus/box-internet/tresor-de-plage-defaut-2.mp4",
+            "templates/apercus/box-internet/tresor-de-plage-defaut-3.mp4"
+          ]
+        }
+      },
+      "tressage-boheme": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/tressage-boheme.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/tressage-boheme-defaut-1.mp4",
+            "templates/apercus/box-internet/tressage-boheme-defaut-2.mp4",
+            "templates/apercus/box-internet/tressage-boheme-defaut-3.mp4"
+          ]
+        }
+      },
+      "trones-reunis": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/trones-reunis.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/trones-reunis-defaut-1.mp4",
+            "templates/apercus/box-internet/trones-reunis-defaut-2.mp4",
+            "templates/apercus/box-internet/trones-reunis-defaut-3.mp4"
+          ]
+        }
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/box-internet/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/box-internet/urban-factory-defaut-1.mp4",
+            "templates/apercus/box-internet/urban-factory-defaut-2.mp4",
+            "templates/apercus/box-internet/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -15186,6 +15653,8 @@
     eau_arrosage: 'arrosage'
     ,
     securite_alarme: 'alarme'
+    ,
+    appareil_box_internet: 'box-internet'
   };
 
   function themeSite(cle) {
@@ -15758,6 +16227,11 @@
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
     // et lui seul.
     'securite_alarme'
+    ,
+    // `appareil_box_internet` ajoute le 20/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide.
+    'appareil_box_internet'
   ]);
 
   const PRIX_PACK = 9;
@@ -16862,6 +17336,7 @@
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
+    appareil_box_internet: 'box-internet',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
