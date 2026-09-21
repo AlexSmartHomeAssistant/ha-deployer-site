@@ -3937,7 +3937,7 @@
     appareil: [
       { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
       { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
-      { name: 'appareil_compteur_electricite', desc: 'Compteur électrique principal' },
+      { name: 'appareil_compteur_electricite', desc: 'Distribution, consommation par appareil, répartition et coûts' },
       { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
       { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
@@ -4138,6 +4138,11 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_compteur_electricite: {
+      resume: `La distribution d'\u00e9nergie de votre maison, vivante : r\u00e9seau, solaire, batterie, maison, et des points qui circulent. Consommation et co\u00fbt par appareil, r\u00e9partition en anneau, alerte de consommation anormale.`,
+      detail: `Le tableau de bord \u00e9nergie de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur</b> (un Linky Zigbee, un Shelly EM, une pince amp\u00e8rem\u00e9trique), le pack retrouve seul ses index, sa puissance, et la d\u00e9rive de l'index quand le compteur n'en publie pas. Le premier onglet est un <b>synoptique vivant</b> : le r\u00e9seau \u00e0 gauche, la maison \u00e0 droite, vos panneaux en haut et votre batterie en bas si vous en avez, et des <b>points qui circulent</b> sur chaque liaison o\u00f9 passe de l'\u00e9nergie, \u00e0 la vitesse de la puissance. L'anneau de la maison se partage entre ses origines. D\u00e8s qu'un compteur, une batterie ou des panneaux fonctionnent, la carte prend sa <b>bordure anim\u00e9e verte</b> et son fond s'allume ; au-dessus du seuil, elle passe au <b>rouge</b>. Le deuxi\u00e8me onglet trace la <b>consommation par appareil</b> ou pour toute la maison, en kWh ou en euros, par heure, par jour ou par mois. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque prise connect\u00e9e, « Autre » pour ce qu'elles ne mesurent pas, et l'origine de l'\u00e9nergie (r\u00e9seau, solaire, batterie). Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur, vos panneaux, votre batterie et vos prises. Une alerte pr\u00e9vient vos mobiles quand la puissance ou la consommation du jour d\u00e9passe un seuil que le pack mesure et que vous r\u00e9glez.`,
+      apercu: {}
+    },
     appareil_television: {
       resume: `L'ecran de votre televiseur sur la carte : il montre la source qui passe. Telecommande, tuiles de source, et une alerte quand il reste allume.`,
       detail: `Le pilotage complet de votre <b>televiseur</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b> et vos <b>sources</b>, le pack retrouve seul tout le reste : le lecteur multimedia, la telecommande, et jusqu'a la prise connectee qui l'alimente. Le premier onglet montre le televiseur <b>vivant</b> : son ecran affiche le logo de ce qui passe (PlayStation, Netflix, YouTube...), une lueur verte respire autour du chassis quand il est allume, et une barre de volume se remplit sous lui. Deux boutons ronds : <b>couper le son</b> et <b>veille</b> &mdash; ce dernier sait allumer un televiseur qui ne repond plus sur le reseau, en passant par sa telecommande ou par sa prise. Le deuxieme onglet porte la <b>telecommande</b> (pave directionnel, retour, accueil, lecture, volume) et vos <b>tuiles de source</b>, celle qui passe mise en evidence. Le troisieme trace le temps d'allumage et, si le televiseur a sa prise, sa consommation.`,
@@ -4467,6 +4472,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    appareil_compteur_electricite: [
+      { titre: `Consommation anormale`, icone: 'fa-bolt',
+        declencheur: `La puissance soutir\u00e9e d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut 90 % de votre puissance souscrite), ou la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5).`,
+        action: `Notification sur tous vos mobiles, qui dit la puissance ou les kWh mesur\u00e9s et le seuil franchi. Les deux seuils sont des entr\u00e9es que vous r\u00e9glez depuis Home Assistant sans red\u00e9ploiement ; la carte passe au rouge au m\u00eame moment.` }
+    ],
     appareil_television: [
       { titre: `Televiseur allume trop longtemps`, icone: 'fa-hourglass-half',
         declencheur: `Le televiseur reste allume plus longtemps que le seuil que vous avez regle (4 heures par defaut). Le compte ne repart PAS a zero quand vous mettez en pause ou changez de chaine \u2014 seule une extinction le remet a zero.`,
@@ -4625,6 +4635,40 @@
   };
 
   const PACK_DETAILS = {
+    appareil_compteur_electricite: {
+      intro: `Trois onglets : distribution, consommation, r\u00e9partition. Vous ne saisissez que le <b>nom de votre compteur</b> ; panneaux solaires, batterie et prises connect\u00e9es sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans panneaux ni batterie, le synoptique n'a que le r\u00e9seau et la maison ; sans prise, pas de s\u00e9lecteur d'appareil. Les prises d\u00e9j\u00e0 d\u00e9clar\u00e9es dans votre tableau de bord \u00c9nergie sont reprises telles quelles, et ce que vous nommez y est ajout\u00e9.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 \u2014 Distribution', icone: 'fa-diagram-project',
+          texte: `Le <b>synoptique de la maison</b> : le r\u00e9seau \u00e0 gauche, la maison \u00e0 droite, le solaire en haut, la batterie en bas &mdash; chaque n\u0153ud avec sa puissance et son ic\u00f4ne anim\u00e9e tant que l'\u00e9nergie passe (le soleil tourne, la batterie se charge, le pyl\u00f4ne pulse, la maison respire). Sur chaque liaison, des <b>points circulent</b> d'autant plus vite que la puissance est grande : solaire vers maison, solaire vers r\u00e9seau (injection), solaire vers batterie, batterie vers maison, r\u00e9seau vers maison. L'anneau de la maison se partage en bleu (r\u00e9seau), ambre (solaire) et magenta (batterie) selon l'origine de ce qu'elle consomme ; celui de la batterie montre son \u00e9tat de charge. Sous le synoptique, le <b>bilan du jour</b> : kWh soutir\u00e9s et leur co\u00fbt.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pi\u00e8ce et du pack, l'onglet \u00e0 la ligne.` },
+            { nom: `N\u0153ud R\u00e9seau`, texte: `puissance soutir\u00e9e, ou inject\u00e9e (fl\u00e8che) ; bleu, pyl\u00f4ne qui pulse.` },
+            { nom: `N\u0153ud Solaire`, texte: `production ; ambre, soleil qui tourne. Absent sans panneaux.` },
+            { nom: `N\u0153ud Maison`, texte: `consommation ; vert, anneau partag\u00e9 entre ses origines.` },
+            { nom: `N\u0153ud Batterie`, texte: `charge ou d\u00e9charge, \u00e9tat de charge en anneau ; magenta. Absent sans batterie.` },
+            { nom: `Liaisons`, texte: `des points qui circulent sur chaque chemin o\u00f9 passe de l'\u00e9nergie, \u00e0 la vitesse de la puissance.` },
+            { nom: `Bilan du jour`, texte: `kWh soutir\u00e9s depuis minuit et leur co\u00fbt au tarif de votre tableau \u00c9nergie.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allum\u00e9 d\u00e8s que l'\u00e9nergie circule ; rouge au-dessus du seuil de consommation anormale.` }
+          ] },
+        { titre: '2 \u2014 Consommation', icone: 'fa-chart-column',
+          texte: `Un <b>s\u00e9lecteur</b> en haut : toute la maison, ou l'une de vos prises connect\u00e9es. Dessous, l'<b>histogramme</b> de sa consommation &mdash; par heure sur la journ\u00e9e, par jour sur la semaine et le mois, par mois sur l'ann\u00e9e &mdash; en <b>kWh</b> (vert) ou en <b>euros</b> (ambre), au choix des deux derni\u00e8res pastilles. Pour la maison, le co\u00fbt vient des capteurs de co\u00fbt de votre tableau \u00c9nergie quand ils existent (ils connaissent vos heures creuses et pleines), sinon des kWh au tarif r\u00e9glable. Les donn\u00e9es sont les statistiques long terme de Home Assistant : les vues mois et ann\u00e9e ne d\u00e9pendent pas de la r\u00e9tention de l'historique.`,
+          elements: [
+            { nom: `S\u00e9lecteur d'appareil`, texte: `la maison enti\u00e8re, ou chacune des prises connect\u00e9es (jusqu'\u00e0 quinze).` },
+            { nom: `Histogramme`, texte: `colonnes d\u00e9grad\u00e9es, une par heure, jour ou mois selon la p\u00e9riode.` },
+            { nom: `P\u00e9riodes`, texte: `jour, semaine, mois, ann\u00e9e.` },
+            { nom: `kWh ou Co\u00fbt`, texte: `deux pastilles pour passer de l'\u00e9nergie au prix.` }
+          ] },
+        { titre: '3 \u2014 R\u00e9partition', icone: 'fa-chart-pie',
+          texte: `Un <b>anneau</b> des parts de consommation sur la p\u00e9riode choisie, avec le total au centre et le pourcentage de chaque part dans la l\u00e9gende : <b>Prises</b> &mdash; chaque prise connect\u00e9e \u00e0 sa couleur, et « Autre » pour ce qu'elles ne mesurent pas (\u00e9clairage, plaques, veilles) ; <b>Origine</b>, si vous avez des panneaux ou une batterie &mdash; ce qui vient du r\u00e9seau, du solaire autoconsomm\u00e9 et de la batterie. Quinze couleurs d\u00e9riv\u00e9es de la palette du pack, jamais invent\u00e9es.`,
+          elements: [
+            { nom: `Anneau`, texte: `une part par prise, « Autre » en gris, le total en kWh au centre.` },
+            { nom: `L\u00e9gende`, texte: `le nom de chaque part et son pourcentage.` },
+            { nom: `Prises ou Origine`, texte: `deux pastilles ; Origine n'existe qu'avec des panneaux ou une batterie.` },
+            { nom: `P\u00e9riodes`, texte: `les m\u00eames quatre p\u00e9riodes que l'onglet Consommation.` }
+          ] }
+      ]
+    },
     appareil_television: {
       intro: `Trois onglets : indicateur, commande, historique. Vous ne saisissez que le <b>nom de votre televiseur</b> et vos <b>sources</b> &mdash; le pack retrouve seul tout ce que l'appareil publie, y compris quand plusieurs integrations le voient (Philips, Android TV, Chromecast), et la prise connectee qui l'alimente. <b>Ce sont vos sources qui font la variante</b> : sans source declaree, le sous-onglet correspondant disparait ; sans prise, le graphe de consommation aussi. Le pave directionnel n'apparait que si la telecommande est d'une marque dont le pack sait nommer les touches &mdash; des fleches qui ne font rien seraient pires que pas de fleches.`,
       carte: () => 'defaut',
@@ -6174,6 +6218,30 @@
   ];
 
   const MODULE_PARAMS = {
+    appareil_compteur_electricite: [
+      { param: 'COMPTEUR_APPAREIL', label: `Nom du compteur`, type: 'text',
+        required: true, groupe: `\u26a1 Compteur`,
+        placeholder: `ex : entree_linky \u2014 le nom de l'appareil dans Home Assistant` },
+      { param: 'COMPTEUR_PIECE', label: `Pi\u00e8ce`, type: 'text', required: false,
+        groupe: `\u26a1 Compteur`,
+        placeholder: `vide : d\u00e9duite de l'appareil` },
+      { param: 'COMPTEUR_TARIF', label: `Prix du kWh`, type: 'text', required: false,
+        groupe: `\u26a1 Compteur`,
+        placeholder: `vide : celui de votre tableau de bord \u00c9nergie, sinon 0,25` },
+      { param: 'COMPTEUR_SEUILS', label: `Seuils d'alerte : puissance (W), kWh par jour`,
+        type: 'text', required: false, groupe: `\u26a1 Compteur`,
+        placeholder: `vide : la puissance souscrite, et la moyenne des 7 derniers jours x 1,5` },
+      { param: 'COMPTEUR_SOLAIRE', label: `Panneaux solaires`, type: 'text', required: false,
+        groupe: `\u2600\ufe0f Solaire et batterie (facultatifs)`,
+        placeholder: `nom de l'appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Solaire` },
+      { param: 'COMPTEUR_BATTERIE', label: `Batterie`, type: 'text', required: false,
+        groupe: `\u2600\ufe0f Solaire et batterie (facultatifs)`,
+        placeholder: `nom de l'appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Batterie` },
+      { param: 'COMPTEUR_PRISES', label: `Prises connect\u00e9es (1 \u00e0 15, s\u00e9par\u00e9es par des virgules)`,
+        type: 'text', required: false, groupe: `\ud83d\udd0c Prises connect\u00e9es`,
+        placeholder: `ex : cuisine_refrigerateur, salon_television \u2014 vide : celles de votre tableau \u00c9nergie` },
+      champThemeSite('COMPTEUR_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
+    ],
     appareil_television: [
       { param: 'TV_APPAREIL', label: `Nom du televiseur`, type: 'text',
         required: true, groupe: `\ud83d\udcfa Televiseur`,
@@ -6729,6 +6797,15 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    appareil_compteur_electricite:
+      `la vue et ses trois onglets, les s\u00e9lecteurs d'appareil, de p\u00e9riode, `
+      + `de m\u00e9trique et de r\u00e9partition, le tarif et les deux seuils r\u00e9glables, `
+      + `le compteur du jour, la somme des index et la puissance d\u00e9riv\u00e9e quand `
+      + `le compteur ne la publie pas, l'automatisation de consommation anormale `
+      + `qui pr\u00e9vient tous vos mobiles, la configuration du tableau de bord `
+      + `\u00c9nergie natif (compteur, panneaux, batterie, prises), ainsi que HACS `
+      + `et les cartes personnalis\u00e9es requises (button-card, apexcharts-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     appareil_television:
       `la vue et ses trois onglets, les selecteurs de sous-onglet, de periode `
       + `et de metrique, le seuil d'alerte reglable, l'automatisation qui `
@@ -8972,6 +9049,398 @@
             "templates/apercus/capteur/urban-factory-defaut-1.mp4",
             "templates/apercus/capteur/urban-factory-defaut-2.mp4",
             "templates/apercus/capteur/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "compteur-electrique": {
+      "argile-craquele": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/argile-craquele.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/argile-craquele-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/argile-craquele-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/argile-craquele-defaut-3.mp4"
+          ]
+        }
+      },
+      "banquise-complice": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/banquise-complice.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/banquise-complice-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/banquise-complice-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/banquise-complice-defaut-3.mp4"
+          ]
+        }
+      },
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/bleu-evasion.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/bleu-evasion-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/bleu-evasion-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/bleu-evasion-defaut-3.mp4"
+          ]
+        }
+      },
+      "bois-magique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/bois-magique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/bois-magique-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/bois-magique-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/bois-magique-defaut-3.mp4"
+          ]
+        }
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/carbon-pulse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/carbon-pulse-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/carbon-pulse-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/carbon-pulse-defaut-3.mp4"
+          ]
+        }
+      },
+      "classe-coloree": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/classe-coloree.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/classe-coloree-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/classe-coloree-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/classe-coloree-defaut-3.mp4"
+          ]
+        }
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/creme-gourmande.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/creme-gourmande-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/creme-gourmande-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/creme-gourmande-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/cuir-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/cuir-blanc-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/cuir-blanc-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/cuir-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-chesterfield": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/cuir-chesterfield.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/cuir-chesterfield-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/cuir-chesterfield-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/cuir-chesterfield-defaut-3.mp4"
+          ]
+        }
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/elegance-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/elegance-ardoise-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/elegance-ardoise-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/elegance-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "foret-enchantee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/foret-enchantee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/foret-enchantee-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/foret-enchantee-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/foret-enchantee-defaut-3.mp4"
+          ]
+        }
+      },
+      "gatsby-epure": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/gatsby-epure.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/gatsby-epure-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/gatsby-epure-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/gatsby-epure-defaut-3.mp4"
+          ]
+        }
+      },
+      "jungle-joyeuse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/jungle-joyeuse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/jungle-joyeuse-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/jungle-joyeuse-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/jungle-joyeuse-defaut-3.mp4"
+          ]
+        }
+      },
+      "lin-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/lin-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/lin-blanc-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/lin-blanc-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/lin-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/mars-rouge.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/mars-rouge-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/mars-rouge-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/mars-rouge-defaut-3.mp4"
+          ]
+        }
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/neo-future.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/neo-future-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/neo-future-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/neo-future-defaut-3.mp4"
+          ]
+        }
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/nocturne-artistique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/nocturne-artistique-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/nocturne-artistique-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/nocturne-artistique-defaut-3.mp4"
+          ]
+        }
+      },
+      "onyx-chic": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/onyx-chic.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/onyx-chic-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/onyx-chic-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/onyx-chic-defaut-3.mp4"
+          ]
+        }
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/pure-lumiere.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/pure-lumiere-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/pure-lumiere-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/pure-lumiere-defaut-3.mp4"
+          ]
+        }
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/sahara-elegance.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/sahara-elegance-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/sahara-elegance-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/sahara-elegance-defaut-3.mp4"
+          ]
+        }
+      },
+      "sanctuaire-antique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/sanctuaire-antique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/sanctuaire-antique-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/sanctuaire-antique-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/sanctuaire-antique-defaut-3.mp4"
+          ]
+        }
+      },
+      "soie-blanche": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/soie-blanche.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/soie-blanche-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/soie-blanche-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/soie-blanche-defaut-3.mp4"
+          ]
+        }
+      },
+      "sombre-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/sombre-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/sombre-ardoise-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/sombre-ardoise-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/sombre-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "station-orbitale": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/station-orbitale.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/station-orbitale-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/station-orbitale-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/station-orbitale-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/terre-de-carmin.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/terre-de-carmin-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/terre-de-carmin-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/terre-de-carmin-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-gravee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/terre-gravee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/terre-gravee-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/terre-gravee-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/terre-gravee-defaut-3.mp4"
+          ]
+        }
+      },
+      "tresor-de-plage": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/tresor-de-plage.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/tresor-de-plage-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/tresor-de-plage-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/tresor-de-plage-defaut-3.mp4"
+          ]
+        }
+      },
+      "tressage-boheme": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/tressage-boheme.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/tressage-boheme-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/tressage-boheme-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/tressage-boheme-defaut-3.mp4"
+          ]
+        }
+      },
+      "trones-reunis": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/trones-reunis.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/trones-reunis-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/trones-reunis-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/trones-reunis-defaut-3.mp4"
+          ]
+        }
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-electrique/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-electrique/urban-factory-defaut-1.mp4",
+            "templates/apercus/compteur-electrique/urban-factory-defaut-2.mp4",
+            "templates/apercus/compteur-electrique/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -15798,7 +16267,8 @@
     securite_alarme: 'alarme'
     ,
     appareil_box_internet: 'box-internet',
-    appareil_television: 'televiseur'
+    appareil_television: 'televiseur',
+    appareil_compteur_electricite: 'compteur-electrique'
   };
 
   function themeSite(cle) {
@@ -16378,7 +16848,11 @@
     'appareil_box_internet',
     // `appareil_television` ajoute le 21/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
-    'appareil_television'
+    'appareil_television',
+    // `appareil_compteur_electricite` ajoute le 21/09/2026, comme les
+    // precedents : phase de test. Cette liste ne fait qu'ACCOMPAGNER
+    // celle du Worker.
+    'appareil_compteur_electricite'
   ]);
 
   const PRIX_PACK = 9;
@@ -17485,6 +17959,7 @@
     securite_alarme: 'alarme',
     appareil_box_internet: 'box-internet',
     appareil_television: 'televiseur',
+    appareil_compteur_electricite: 'compteur-electrique',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
