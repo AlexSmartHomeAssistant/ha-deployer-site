@@ -3950,7 +3950,7 @@
       { name: 'appareil_serpillere', desc: 'Robot serpillière' },
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
       { name: 'appareil_soundbar', desc: 'Barre de son' },
-      { name: 'appareil_television', desc: 'Téléviseur' },
+      { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot tondeuse' },
       { name: 'appareil_voiture', desc: 'Véhicule connecté / Recharge' },
       { name: 'appareil_zigbee', desc: 'Passerelle et réseau Zigbee' }
@@ -4138,6 +4138,11 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_television: {
+      resume: `L'ecran de votre televiseur sur la carte : il montre la source qui passe. Telecommande, tuiles de source, et une alerte quand il reste allume.`,
+      detail: `Le pilotage complet de votre <b>televiseur</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b> et vos <b>sources</b>, le pack retrouve seul tout le reste : le lecteur multimedia, la telecommande, et jusqu'a la prise connectee qui l'alimente. Le premier onglet montre le televiseur <b>vivant</b> : son ecran affiche le logo de ce qui passe (PlayStation, Netflix, YouTube...), une lueur verte respire autour du chassis quand il est allume, et une barre de volume se remplit sous lui. Deux boutons ronds : <b>couper le son</b> et <b>veille</b> &mdash; ce dernier sait allumer un televiseur qui ne repond plus sur le reseau, en passant par sa telecommande ou par sa prise. Le deuxieme onglet porte la <b>telecommande</b> (pave directionnel, retour, accueil, lecture, volume) et vos <b>tuiles de source</b>, celle qui passe mise en evidence. Le troisieme trace le temps d'allumage et, si le televiseur a sa prise, sa consommation.`,
+      apercu: {}
+    },
     appareil_box_internet: {
       resume: "Internet et Wi-Fi d'un coup d'œil, débits, température, appareils connectés par pièce, six alertes sur vos mobiles.",
       detail: `La surveillance complète de votre <b>box Internet</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul tout ce que la box publie : état d'Internet, interrupteur Wi-Fi, débits, température, disque, temps de fonctionnement, adresse IP publique, ventilateur, bouton de redémarrage, et même la prise connectée qui l'alimente. Le premier onglet montre la box <b>vivante</b> : son voyant respire en vert quand tout va bien, deux ondes montent des antennes tant que le Wi-Fi émet, et une « box » d'indicateurs affiche réception, émission, nombre d'appareils connectés et température, chacun avec son icône animée. Dès qu'Internet fonctionne et que le Wi-Fi est actif, la carte prend sa <b>bordure animée verte</b> et son fond s'allume ; que l'un des deux manque, bordure et fond passent au <b>rouge</b>. Le bouton vert d'alimentation devient un <b>bouton de redémarrage</b> à confirmation, dont le glyphe tourne tant qu'Internet est coupé. Le deuxième onglet détaille en quatre sous-onglets : système, une seule température &mdash; celle du processeur &mdash; en jauge, disque en anneau, et les <b>appareils Wi-Fi de votre maison, pièce par pièce</b>, lus sur votre instance et jamais écrits en dur. Le troisième trace le débit sur le jour, la semaine, le mois ou l'année, et l'énergie consommée si la box a sa prise. Six alertes préviennent tous vos mobiles : plus d'Internet, plus de Wi-Fi, température, disque ou débit au-dessus d'un seuil que vous réglez, et nouvel appareil sur le réseau.`
@@ -4462,6 +4467,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    appareil_television: [
+      { titre: `Televiseur allume trop longtemps`, icone: 'fa-hourglass-half',
+        declencheur: `Le televiseur reste allume plus longtemps que le seuil que vous avez regle (4 heures par defaut). Le compte ne repart PAS a zero quand vous mettez en pause ou changez de chaine \u2014 seule une extinction le remet a zero.`,
+        action: `Notification sur tous vos mobiles, qui dit depuis combien de temps il est allume et ce qui passe. Le seuil est une entree que vous reglez depuis Home Assistant, sans redeploiement ; un seul avis par periode d'allumage.` }
+    ],
     appareil_box_internet: [
       { titre: 'Six alertes de la box', icone: 'fa-bell',
         declencheur: `Plus d'Internet depuis deux minutes, Wi-Fi désactivé depuis une minute, température au-dessus du seuil pendant cinq minutes, disque rempli au-delà du seuil, débit (réception ou émission) au-dessus du seuil pendant une minute, ou un nouvel appareil qui apparaît sur le réseau.`,
@@ -4615,6 +4625,43 @@
   };
 
   const PACK_DETAILS = {
+    appareil_television: {
+      intro: `Trois onglets : indicateur, commande, historique. Vous ne saisissez que le <b>nom de votre televiseur</b> et vos <b>sources</b> &mdash; le pack retrouve seul tout ce que l'appareil publie, y compris quand plusieurs integrations le voient (Philips, Android TV, Chromecast), et la prise connectee qui l'alimente. <b>Ce sont vos sources qui font la variante</b> : sans source declaree, le sous-onglet correspondant disparait ; sans prise, le graphe de consommation aussi. Le pave directionnel n'apparait que si la telecommande est d'une marque dont le pack sait nommer les touches &mdash; des fleches qui ne font rien seraient pires que pas de fleches.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 \u2014 Indicateur', icone: 'fa-tv',
+          texte: `Deux capsules en haut : <b>Source</b> (l'icone de ce qui passe, qui bat quand le televiseur est allume) et <b>Son</b> (le niveau en pourcentage, corail et clignotant quand le son est coupe). Au centre, le televiseur, <b>vivant</b> : son ecran affiche le logo de la source en cours &mdash; PlayStation, Xbox, Netflix, Disney+, YouTube... &mdash; et une lueur verte respire autour du chassis, epousant sa silhouette. Sous lui, une barre de volume se remplit au niveau reel. En bas, les deux boutons demandes : <b>couper le son</b> a gauche, <b>veille</b> a droite, et entre eux le titre de ce qui passe.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la piece et du pack, l'onglet a la ligne.` },
+            { nom: `Capsule Source`, texte: `l'icone et le nom de ce qui passe ; elle bat tant que le televiseur est allume.` },
+            { nom: `Capsule Son`, texte: `le niveau sonore ; l'icone ondule, ou clignote en corail quand le son est coupe.` },
+            { nom: `Le televiseur`, texte: `son ECRAN montre la source en cours ; douze visuels qui se superposent au pixel, donc rien ne bouge quand la source change.` },
+            { nom: `Lueur de l'ecran`, texte: `un halo vert qui respire autour du chassis, allume seulement.` },
+            { nom: `Barre de volume`, texte: `elle se remplit au niveau reel, et passe au corail quand le son est coupe.` },
+            { nom: `Couper le son`, texte: `bouton rond ; il demande l'etat contraire de celui qu'il lit, jamais une bascule aveugle.` },
+            { nom: `Veille`, texte: `bouton rond vert qui respire quand le televiseur est allume ; il sait le reveiller par sa telecommande ou par sa prise quand le televiseur lui-meme ne le peut plus.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allume des que le televiseur fonctionne ; au repos un filet gris de meme epaisseur. Rien ne bouge de place.` }
+          ] },
+        { titre: '2 \u2014 Commande', icone: 'fa-gamepad',
+          texte: `Deux sous-onglets, que deux pastilles commandent. <b>Telecommande</b> : un pave directionnel circulaire &mdash; quatre fleches autour d'un bouton OK vert &mdash; puis deux rangees de touches : retour, piste precedente, lecture / pause, piste suivante, accueil ; volume moins, sourdine, volume plus. <b>Sources</b> : jusqu'a six tuiles, une par source que vous avez declaree, avec l'icone de la marque et son entree HDMI. Celle qui passe se reconnait a sa bordure verte et a son icone qui bat.`,
+          elements: [
+            { nom: `Pave directionnel`, texte: `haut, bas, gauche, droite autour d'un OK vert ; il parle a votre telecommande dans le langage de sa marque (Philips, Android TV, Samsung, LG, Apple TV, Roku, Sony, Vizio).` },
+            { nom: `Touches de lecture`, texte: `retour, piste precedente, lecture / pause, piste suivante, accueil &mdash; celles que votre televiseur n'annonce pas sont retirees.` },
+            { nom: `Touches de volume`, texte: `moins, sourdine, plus ; elles parlent au televiseur, donc elles fonctionnent meme sans telecommande.` },
+            { nom: `Tuiles de source`, texte: `l'icone de la marque, son nom et son entree HDMI ; un appui bascule dessus.` },
+            { nom: `Source en cours`, texte: `bordure et icone vertes, icone qui bat &mdash; reconnue par l'entree HDMI, par l'application du lecteur ou par le nom que le televiseur annonce.` },
+            { nom: `Pastilles`, texte: `Telecommande et Sources ; la seconde disparait si vous n'avez declare aucune source.` }
+          ] },
+        { titre: '3 \u2014 Historique', icone: 'fa-chart-column',
+          texte: `Le <b>temps d'allumage</b> par heure, par jour ou par mois selon la periode choisie &mdash; sans aucun capteur a installer, le pack le lit directement sur l'etat du televiseur. Si votre televiseur a une prise connectee, une seconde metrique trace sa <b>consommation</b> en kWh. Quatre periodes : jour, semaine, mois, annee.`,
+          elements: [
+            { nom: `Periodes`, texte: `jour, semaine, mois, annee ; la pastille active est verte.` },
+            { nom: `Temps d'allumage`, texte: `en minutes par heure sur la journee, en heures par jour ensuite.` },
+            { nom: `Consommation`, texte: `en kWh, si une prise connectee alimente le televiseur.` },
+            { nom: `Metriques`, texte: `Allumage et Energie ; la seconde n'apparait qu'avec une prise.` }
+          ] }
+      ]
+    },
     appareil_box_internet: {
       intro: `Trois onglets : indicateur, détails, historique. Vous ne saisissez que le <b>nom de votre box</b> &mdash; le pack retrouve seul tout ce qu'elle publie, y compris quand plusieurs intégrations la voient (Freebox, UPnP, ping), et la prise connectée qui l'alimente. <b>C'est ce que la box publie qui fait la variante</b> : sans température ni disque, les sous-onglets correspondants disparaissent ; sans prise, le bouton de prise et le graphe d'énergie aussi. Sans capteur de connexion, le pack installe lui-même un test de joignabilité vers 1.1.1.1.`,
       carte: () => 'defaut',
@@ -5832,6 +5879,51 @@
      de la fiche, et le thème sur lequel s'ouvre la page de détails. Les
      dissocier ferait changer de fond au clic sur « Détails », ce qui se lit
      comme un défaut d'affichage. */
+  /* Les seize sources du pack Televiseur. Cette liste doit rester d'accord
+     avec `CATALOGUE` de `deploy_pack_appareil_televiseur.py` : c'est lui qui
+     donne a chaque source son icone, son visuel et son identifiant
+     d'application. Un nom libre reste accepte par le module (il retombe sur
+     une icone generique), mais le selecteur evite au client de se demander
+     comment ecrire « PlayStation ». */
+  const TV_SOURCES_SITE = [
+    ['playstation', 'PlayStation'], ['xbox', 'Xbox'],
+    ['nintendo', 'Nintendo Switch'], ['netflix', 'Netflix'],
+    ['disney', 'Disney+'], ['prime', 'Prime Video'],
+    ['youtube', 'YouTube'], ['spotify', 'Spotify'], ['vlc', 'VLC'],
+    ['appletv', 'Apple TV'], ['chromecast', 'Chromecast'],
+    ['boxtv', 'Box TV / Decodeur'], ['tnt', 'TNT / Antenne'],
+    ['bluray', 'Lecteur Blu-ray'], ['pc', 'Ordinateur'],
+    ['homecinema', 'Home cinema']
+  ];
+
+  /* Les quatre entrees HDMI, plus « aucune » : une source SANS entree HDMI
+     est une application, que le pack lance autrement (sur la box branchee
+     dessus, ou par le nom que le televiseur annonce). Le libelle le dit,
+     pour qu'un champ laisse vide ne passe pas pour un oubli. */
+  const TV_HDMI_SITE = [
+    { value: '', label: '\u2014 application (pas de HDMI) \u2014' },
+    { value: 'HDMI 1', label: 'HDMI 1' }, { value: 'HDMI 2', label: 'HDMI 2' },
+    { value: 'HDMI 3', label: 'HDMI 3' }, { value: 'HDMI 4', label: 'HDMI 4' }
+  ];
+
+  function champSourceTv(rang) {
+    return { param: 'TV_SOURCE_' + rang,
+             label: 'Source',
+             groupe: '\ud83d\udcfa Source ' + rang,
+             type: 'select', required: false, defaut: '',
+             options: [{ value: '', label: '\u2014 aucune \u2014' }]
+               .concat(TV_SOURCES_SITE.map(function (s) {
+                 return { value: s[1], label: s[1] }; })) };
+  }
+
+  function champHdmiTv(rang) {
+    return { param: 'TV_HDMI_' + rang,
+             label: 'Entree',
+             groupe: '\ud83d\udcfa Source ' + rang,
+             type: 'select', required: false, defaut: '',
+             options: TV_HDMI_SITE };
+  }
+
   function champThemeSite(param, defaut, groupe) {
     return { param: param, label: 'Thème', type: 'select', required: true,
              groupe: groupe,
@@ -6082,6 +6174,35 @@
   ];
 
   const MODULE_PARAMS = {
+    appareil_television: [
+      { param: 'TV_APPAREIL', label: `Nom du televiseur`, type: 'text',
+        required: true, groupe: `\ud83d\udcfa Televiseur`,
+        placeholder: `ex : salon_television \u2014 le nom de l'appareil dans Home Assistant` },
+      { param: 'TV_PIECE', label: `Piece`, type: 'text', required: false,
+        groupe: `\ud83d\udcfa Televiseur`,
+        placeholder: `vide : deduite de l'appareil` },
+      { param: 'TV_ALERTE', label: `Alerte apres (heures)`, type: 'text',
+        required: false, groupe: `\ud83d\udcfa Televiseur`,
+        placeholder: `vide : 4 h \u2014 reglable ensuite sans redeploiement` },
+      champSourceTv(1), champHdmiTv(1),
+      champSourceTv(2), champHdmiTv(2),
+      champSourceTv(3), champHdmiTv(3),
+      champSourceTv(4), champHdmiTv(4),
+      champSourceTv(5), champHdmiTv(5),
+      champSourceTv(6), champHdmiTv(6),
+      { param: 'TV_LECTEUR', label: `Box branchee sur le televiseur`,
+        type: 'text', required: false,
+        groupe: `\ud83d\udd27 Corrections (rarement utiles)`,
+        placeholder: `vide : deduite \u2014 c'est elle qui lance les applications` },
+      { param: 'TV_TELECOMMANDE', label: `Telecommande`, type: 'text',
+        required: false, groupe: `\ud83d\udd27 Corrections (rarement utiles)`,
+        placeholder: `vide : deduite \u2014 elle commande le pave directionnel` },
+      { param: 'TV_PRISE', label: `Prise connectee (capteur de puissance)`,
+        type: 'text', required: false,
+        groupe: `\ud83d\udd27 Corrections (rarement utiles)`,
+        placeholder: `vide : la prise dont le nom cite le televiseur, si elle existe` },
+      champThemeSite('TV_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
+    ],
     appareil_box_internet: [
       { param: 'BOX_APPAREIL', label: 'Nom de la box', type: 'text', required: true,
         groupe: '📡 Box',
@@ -6608,6 +6729,13 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    appareil_television:
+      `la vue et ses trois onglets, les selecteurs de sous-onglet, de periode `
+      + `et de metrique, le seuil d'alerte reglable, l'automatisation qui `
+      + `previent tous vos mobiles quand le televiseur reste allume, les douze `
+      + `visuels d'ecran deposes sur votre instance, ainsi que HACS et les `
+      + `cartes personnalisees requises (button-card, apexcharts-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     appareil_box_internet:
       'la vue et ses trois onglets, les s\u00e9lecteurs et les trois seuils '
       + 'r\u00e9glables, l\u2019automatisation aux six alertes (Internet, '
@@ -15654,7 +15782,8 @@
     ,
     securite_alarme: 'alarme'
     ,
-    appareil_box_internet: 'box-internet'
+    appareil_box_internet: 'box-internet',
+    appareil_television: 'televiseur'
   };
 
   function themeSite(cle) {
@@ -16231,7 +16360,10 @@
     // `appareil_box_internet` ajoute le 20/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide.
-    'appareil_box_internet'
+    'appareil_box_internet',
+    // `appareil_television` ajoute le 21/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
+    'appareil_television'
   ]);
 
   const PRIX_PACK = 9;
@@ -17337,6 +17469,7 @@
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
     appareil_box_internet: 'box-internet',
+    appareil_television: 'televiseur',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
