@@ -3965,7 +3965,7 @@
       { name: 'service_transport', desc: 'Horaires transports en commun' }
     ],
     eau: [
-      { name: 'eau_compteur', desc: 'Suivi global consommation d\'eau' },
+      { name: 'eau_compteur', desc: 'Distribution de l\'eau, consommation par vanne, répartition, coûts et fuites' },
       { name: 'eau_detecteur_fuite', desc: 'Détecteur d\'inondation / fuite' },
       { name: 'eau_pool', desc: 'Gestion et température piscine' },
       { name: 'eau_arrosage', desc: 'Arrosage par zones, programmateur et consommation' }
@@ -4138,6 +4138,11 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    eau_compteur: {
+      resume: `La distribution de l'eau dans votre maison, vivante : le compteur, la maison, le jardin, le lave-linge, le lave-vaisselle, le ballon d'eau chaude, et des canalisations o\u00f9 l'eau circule. Consommation et co\u00fbt par vanne, r\u00e9partition en anneau, alerte de fuite et de consommation anormale.`,
+      detail: `Le tableau de bord de l'eau de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur d'eau</b> (un compteur t\u00e9l\u00e9relev\u00e9, un compteur \u00e0 impulsions, une vanne connect\u00e9e avec d\u00e9bitm\u00e8tre), le pack retrouve seul son index ou son d\u00e9bit et <b>d\u00e9rive l'un de l'autre</b>. Le premier onglet est un <b>synoptique vivant</b> : le compteur \u00e0 gauche avec son index, la maison au centre &mdash; une goutte qui perle tant que de l'eau coule &mdash;, et autour les vannes que vous savez mesurer : le jardin dont l'arroseur oscille, le lave-linge dont le tambour tourne, le lave-vaisselle dont le jet monte, le ballon dont la goutte tombe. Sur chaque <b>canalisation</b>, des pointill\u00e9s d\u00e9filent et des gouttes circulent \u00e0 la vitesse du d\u00e9bit. D\u00e8s que de l'eau coule, la carte prend sa <b>bordure anim\u00e9e bleue</b> et son fond s'allume ; au-dessus du seuil, elle passe au rouge. Le deuxi\u00e8me onglet trace la <b>consommation par vanne</b> ou pour toute la maison, en m\u00b3 (en litres sur la journ\u00e9e) ou en euros, par heure, par jour ou par mois. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque vanne \u00e0 sa couleur, et « Autre » pour ce qu'elles ne mesurent pas. Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur. Une alerte pr\u00e9vient vos mobiles quand le d\u00e9bit ou la consommation du jour d\u00e9passe un seuil que le pack mesure, et quand de l'eau coule <b>sans s'arr\u00eater</b> : une fuite, un robinet oubli\u00e9.`,
+      apercu: {}
+    },
     chauffage_compteur_gaz: {
       resume: `La distribution du gaz dans votre maison, vivante : le compteur, la maison, le chauffage, l'eau chaude, la cuisson, et des canalisations o\u00f9 le gaz circule. Consommation et co\u00fbt par usage, r\u00e9partition en anneau, alerte de consommation anormale.`,
       detail: `Le tableau de bord gaz de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur de gaz</b> (un Gazpar relev\u00e9 par GRDF, un compteur \u00e0 impulsions, un capteur de chaudi\u00e8re), le pack retrouve seul son index et <b>d\u00e9rive le d\u00e9bit</b> quand le compteur n'en publie pas. Le premier onglet est un <b>synoptique vivant</b> : le compteur \u00e0 gauche avec son index, la maison au centre &mdash; une flamme qui vacille tant que du gaz br\u00fble &mdash;, et \u00e0 droite les usages que vous savez mesurer : chauffage, eau chaude, cuisson. Sur chaque <b>canalisation</b>, des pointill\u00e9s d\u00e9filent et des bulles circulent \u00e0 la vitesse du d\u00e9bit. D\u00e8s que du gaz passe, la carte prend sa <b>bordure anim\u00e9e rouge</b> et son fond s'allume ; au-dessus du seuil, elle passe \u00e0 l'ambre. Le deuxi\u00e8me onglet trace la <b>consommation par usage</b> ou pour toute la maison, en kWh ou en euros, par heure, par jour ou par mois &mdash; un index en m\u00b3 est converti par le <b>coefficient de votre facture</b>, r\u00e9glable sans red\u00e9ploiement. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque usage \u00e0 sa couleur, et « Autre » pour ce qu'ils ne mesurent pas. Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur et vos usages. Une alerte pr\u00e9vient vos mobiles quand le d\u00e9bit ou la consommation du jour d\u00e9passe un seuil que le pack mesure et que vous r\u00e9glez.`,
@@ -4477,6 +4482,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    eau_compteur: [
+      { titre: `Consommation d'eau anormale et fuite`, icone: 'fa-droplet',
+        declencheur: `Le d\u00e9bit d'eau d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut six fois le d\u00e9bit moyen de votre plus fort jour), la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5), ou de l'eau coule <b>sans s'arr\u00eater</b> plus longtemps que le seuil de d\u00e9bit continu (par d\u00e9faut soixante minutes) \u2014 l'id\u00e9e que la communaut\u00e9 a le plus reprise pour d\u00e9tecter une fuite.`,
+        action: `Notification sur tous vos mobiles, qui dit le d\u00e9bit ou les litres mesur\u00e9s et le seuil franchi. Les trois seuils sont des entr\u00e9es que vous r\u00e9glez depuis Home Assistant sans red\u00e9ploiement ; la carte passe au rouge au m\u00eame moment.` }
+    ],
     chauffage_compteur_gaz: [
       { titre: `Consommation de gaz anormale`, icone: 'fa-fire',
         declencheur: `Le d\u00e9bit de gaz d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut trois fois la puissance moyenne de votre plus fort jour), ou la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5).`,
@@ -4645,6 +4655,38 @@
   };
 
   const PACK_DETAILS = {
+    eau_compteur: {
+      intro: `Trois onglets : distribution, consommation, r\u00e9partition. Vous ne saisissez que le <b>nom de votre compteur d'eau</b> ; le jardin, le lave-linge, le lave-vaisselle et le ballon d'eau chaude sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans vanne mesur\u00e9e, le synoptique n'a que le compteur et la maison, et l'onglet R\u00e9partition n'existe pas (il n'y aurait qu'une part). Le d\u00e9bit est d\u00e9riv\u00e9 de l'index quand le compteur n'en publie pas &mdash; un compteur relev\u00e9 une fois par jour affiche sa moyenne de la journ\u00e9e, un compteur \u00e0 impulsions suit presque en direct &mdash; et l'index est int\u00e9gr\u00e9 du d\u00e9bit quand une vanne ne publie qu'un d\u00e9bitm\u00e8tre.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 \u2014 Distribution', icone: 'fa-diagram-project',
+          texte: `Le <b>synoptique de l'eau</b> : le compteur \u00e0 gauche, la maison au centre, vos vannes en colonne ou en arc \u00e0 droite &mdash; chaque n\u0153ud avec son d\u00e9bit en L/min et son ic\u00f4ne anim\u00e9e tant que l'eau coule (le compteur pulse, la goutte de la maison perle, l'arroseur du jardin oscille, le tambour du lave-linge tourne, le jet du lave-vaisselle monte, la goutte du ballon tombe). Sur chaque canalisation, des <b>pointill\u00e9s d\u00e9filent et des gouttes circulent</b> d'autant plus vite que le d\u00e9bit est grand. L'anneau de la maison se partage entre ses vannes (vert jardin, magenta lave-linge, ambre lave-vaisselle, rouge eau chaude) et le gris de ce qu'elles ne mesurent pas. Sous le synoptique, le <b>bilan du jour</b> : litres et euros, sur une jauge qui se remplit vers le seuil journalier d'alerte.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pi\u00e8ce et du pack, l'onglet \u00e0 la ligne.` },
+            { nom: `N\u0153ud Compteur`, texte: `l'index du compteur, comme sur son cadran ; il pulse tant que de l'eau passe.` },
+            { nom: `N\u0153ud Maison`, texte: `le d\u00e9bit total en L/min ; bleu, goutte qui perle, anneau partag\u00e9 entre les vannes.` },
+            { nom: `N\u0153uds Jardin, Lave-linge, Lave-vaisselle, Eau chaude`, texte: `le d\u00e9bit de chaque vanne mesur\u00e9e ; absents sans capteur ; en arc autour de la maison \u00e0 quatre.` },
+            { nom: `Canalisations`, texte: `des pointill\u00e9s qui d\u00e9filent et des gouttes qui circulent \u00e0 la vitesse du d\u00e9bit.` },
+            { nom: `Bilan du jour`, texte: `litres (ou m\u00b3) et euros depuis minuit ; la carte se remplit vers le seuil journalier, rouge une fois franchi.` },
+            { nom: `Bordure et fond`, texte: `serpentin bleu et fond bleu allum\u00e9 d\u00e8s que de l'eau coule ; rouge au-dessus du seuil de consommation anormale.` }
+          ] },
+        { titre: '2 \u2014 Consommation', icone: 'fa-chart-column',
+          texte: `Un <b>s\u00e9lecteur</b> en haut : toute la maison, ou l'une de vos vannes. Dessous, l'<b>histogramme</b> de sa consommation &mdash; par heure sur la journ\u00e9e (en litres), par jour sur la semaine et le mois, par mois sur l'ann\u00e9e (en m\u00b3) &mdash; ou son <b>co\u00fbt en euros</b> (ambre), au choix des deux derni\u00e8res pastilles. Pour la maison, le co\u00fbt vient du capteur de co\u00fbt de votre tableau \u00c9nergie quand il existe, sinon des m\u00b3 au tarif r\u00e9glable. Les donn\u00e9es sont les statistiques long terme de Home Assistant : les vues mois et ann\u00e9e ne d\u00e9pendent pas de la r\u00e9tention de l'historique.`,
+          elements: [
+            { nom: `S\u00e9lecteur de vanne`, texte: `la maison enti\u00e8re, le jardin, le lave-linge, le lave-vaisselle ou l'eau chaude.` },
+            { nom: `Histogramme`, texte: `colonnes d\u00e9grad\u00e9es, une par heure, jour ou mois selon la p\u00e9riode.` },
+            { nom: `P\u00e9riodes`, texte: `jour, semaine, mois, ann\u00e9e.` },
+            { nom: `m\u00b3 ou Co\u00fbt`, texte: `deux pastilles pour passer du volume au prix.` }
+          ] },
+        { titre: '3 \u2014 R\u00e9partition', icone: 'fa-chart-pie',
+          texte: `Un <b>anneau</b> des parts de consommation sur la p\u00e9riode choisie, avec le total au centre (en litres sous un m\u00b3) et le pourcentage de chaque part dans la l\u00e9gende : chaque vanne mesur\u00e9e \u00e0 sa couleur, et « Autre » pour ce qu'elles ne mesurent pas (les douches, les robinets, les chasses d'eau). Cet onglet n'existe qu'avec au moins une vanne mesur\u00e9e.`,
+          elements: [
+            { nom: `Anneau`, texte: `une part par vanne, « Autre » en gris, le total au centre.` },
+            { nom: `L\u00e9gende`, texte: `le nom de chaque part et son pourcentage.` },
+            { nom: `P\u00e9riodes`, texte: `les m\u00eames quatre p\u00e9riodes que l'onglet Consommation.` }
+          ] }
+      ]
+    },
     chauffage_compteur_gaz: {
       intro: `Trois onglets : distribution, consommation, r\u00e9partition. Vous ne saisissez que le <b>nom de votre compteur de gaz</b> ; le chauffage, l'eau chaude et la cuisson sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans usage mesur\u00e9, le synoptique n'a que le compteur et la maison, et l'onglet R\u00e9partition n'existe pas (il n'y aurait qu'une part). Un index en m\u00b3 est converti en kWh par le coefficient de votre facture ; le d\u00e9bit est d\u00e9riv\u00e9 de l'index quand le compteur n'en publie pas &mdash; un Gazpar relev\u00e9 une fois par jour affiche sa moyenne de la journ\u00e9e, un compteur \u00e0 impulsions suit presque en direct.`,
       carte: () => 'defaut',
@@ -6260,6 +6302,33 @@
   ];
 
   const MODULE_PARAMS = {
+    eau_compteur: [
+      { param: 'EAU_APPAREIL', label: `Nom du compteur d'eau`, type: 'text',
+        required: true, groupe: `\ud83d\udca7 Compteur d'eau`,
+        placeholder: `ex : compteur eau, ou sensor.eau_index \u2014 le nom de l'appareil, ou l'entit\u00e9 de son index ou de son d\u00e9bitm\u00e8tre` },
+      { param: 'EAU_PIECE', label: `Pi\u00e8ce`, type: 'text', required: false,
+        groupe: `\ud83d\udca7 Compteur d'eau`,
+        placeholder: `vide : d\u00e9duite de l'appareil` },
+      { param: 'EAU_TARIF', label: `Prix du m\u00b3 d'eau`, type: 'text', required: false,
+        groupe: `\ud83d\udca7 Compteur d'eau`,
+        placeholder: `vide : celui de votre tableau de bord \u00c9nergie, sinon 4,00 (eau et assainissement)` },
+      { param: 'EAU_SEUILS', label: `Seuils d'alerte : d\u00e9bit (L/min), litres par jour, minutes de d\u00e9bit continu`,
+        type: 'text', required: false, groupe: `\ud83d\udca7 Compteur d'eau`,
+        placeholder: `vide : mesur\u00e9s sur vos sept derniers jours, et 60 minutes` },
+      { param: 'EAU_JARDIN', label: `Vanne du jardin`, type: 'text', required: false,
+        groupe: `\ud83d\udeb0 Vannes mesur\u00e9es (facultatives)`,
+        placeholder: `appareil ou entit\u00e9 (sous-compteur ou d\u00e9bitm\u00e8tre) \u2014 vide : pas de n\u0153ud Jardin` },
+      { param: 'EAU_LAVE_LINGE', label: `Vanne du lave-linge`, type: 'text', required: false,
+        groupe: `\ud83d\udeb0 Vannes mesur\u00e9es (facultatives)`,
+        placeholder: `appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Lave-linge` },
+      { param: 'EAU_LAVE_VAISSELLE', label: `Vanne du lave-vaisselle`, type: 'text', required: false,
+        groupe: `\ud83d\udeb0 Vannes mesur\u00e9es (facultatives)`,
+        placeholder: `appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Lave-vaisselle` },
+      { param: 'EAU_BALLON', label: `Vanne du ballon d'eau chaude`, type: 'text', required: false,
+        groupe: `\ud83d\udeb0 Vannes mesur\u00e9es (facultatives)`,
+        placeholder: `appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Eau chaude` },
+      champThemeSite('EAU_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
+    ],
     chauffage_compteur_gaz: [
       { param: 'GAZ_APPAREIL', label: `Nom du compteur de gaz`, type: 'text',
         required: true, groupe: `\ud83d\udd25 Compteur de gaz`,
@@ -6869,6 +6938,15 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    eau_compteur:
+      `la vue et ses trois onglets, les s\u00e9lecteurs de vanne, de p\u00e9riode `
+      + `et de m\u00e9trique, le tarif et les trois seuils r\u00e9glables, le compteur du `
+      + `jour, le d\u00e9bit d\u00e9riv\u00e9 de l'index (ou l'index int\u00e9gr\u00e9 du `
+      + `d\u00e9bit) quand le compteur ne publie que l'un des deux, l'automatisation `
+      + `de consommation anormale et de fuite qui pr\u00e9vient tous vos mobiles, la `
+      + `configuration du tableau de bord \u00c9nergie natif (source eau), ainsi que `
+      + `HACS et les cartes personnalis\u00e9es requises (button-card, apexcharts-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     chauffage_compteur_gaz:
       `la vue et ses trois onglets, les s\u00e9lecteurs d'usage, de p\u00e9riode `
       + `et de m\u00e9trique, le tarif, le coefficient de conversion et les deux seuils `
@@ -9130,6 +9208,398 @@
             "templates/apercus/capteur/urban-factory-defaut-1.mp4",
             "templates/apercus/capteur/urban-factory-defaut-2.mp4",
             "templates/apercus/capteur/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "compteur-eau": {
+      "argile-craquele": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/argile-craquele.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/argile-craquele-defaut-1.mp4",
+            "templates/apercus/compteur-eau/argile-craquele-defaut-2.mp4",
+            "templates/apercus/compteur-eau/argile-craquele-defaut-3.mp4"
+          ]
+        }
+      },
+      "banquise-complice": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/banquise-complice.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/banquise-complice-defaut-1.mp4",
+            "templates/apercus/compteur-eau/banquise-complice-defaut-2.mp4",
+            "templates/apercus/compteur-eau/banquise-complice-defaut-3.mp4"
+          ]
+        }
+      },
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/bleu-evasion.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/bleu-evasion-defaut-1.mp4",
+            "templates/apercus/compteur-eau/bleu-evasion-defaut-2.mp4",
+            "templates/apercus/compteur-eau/bleu-evasion-defaut-3.mp4"
+          ]
+        }
+      },
+      "bois-magique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/bois-magique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/bois-magique-defaut-1.mp4",
+            "templates/apercus/compteur-eau/bois-magique-defaut-2.mp4",
+            "templates/apercus/compteur-eau/bois-magique-defaut-3.mp4"
+          ]
+        }
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/carbon-pulse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/carbon-pulse-defaut-1.mp4",
+            "templates/apercus/compteur-eau/carbon-pulse-defaut-2.mp4",
+            "templates/apercus/compteur-eau/carbon-pulse-defaut-3.mp4"
+          ]
+        }
+      },
+      "classe-coloree": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/classe-coloree.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/classe-coloree-defaut-1.mp4",
+            "templates/apercus/compteur-eau/classe-coloree-defaut-2.mp4",
+            "templates/apercus/compteur-eau/classe-coloree-defaut-3.mp4"
+          ]
+        }
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/creme-gourmande.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/creme-gourmande-defaut-1.mp4",
+            "templates/apercus/compteur-eau/creme-gourmande-defaut-2.mp4",
+            "templates/apercus/compteur-eau/creme-gourmande-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/cuir-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/cuir-blanc-defaut-1.mp4",
+            "templates/apercus/compteur-eau/cuir-blanc-defaut-2.mp4",
+            "templates/apercus/compteur-eau/cuir-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-chesterfield": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/cuir-chesterfield.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/cuir-chesterfield-defaut-1.mp4",
+            "templates/apercus/compteur-eau/cuir-chesterfield-defaut-2.mp4",
+            "templates/apercus/compteur-eau/cuir-chesterfield-defaut-3.mp4"
+          ]
+        }
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/elegance-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/elegance-ardoise-defaut-1.mp4",
+            "templates/apercus/compteur-eau/elegance-ardoise-defaut-2.mp4",
+            "templates/apercus/compteur-eau/elegance-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "foret-enchantee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/foret-enchantee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/foret-enchantee-defaut-1.mp4",
+            "templates/apercus/compteur-eau/foret-enchantee-defaut-2.mp4",
+            "templates/apercus/compteur-eau/foret-enchantee-defaut-3.mp4"
+          ]
+        }
+      },
+      "gatsby-epure": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/gatsby-epure.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/gatsby-epure-defaut-1.mp4",
+            "templates/apercus/compteur-eau/gatsby-epure-defaut-2.mp4",
+            "templates/apercus/compteur-eau/gatsby-epure-defaut-3.mp4"
+          ]
+        }
+      },
+      "jungle-joyeuse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/jungle-joyeuse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/jungle-joyeuse-defaut-1.mp4",
+            "templates/apercus/compteur-eau/jungle-joyeuse-defaut-2.mp4",
+            "templates/apercus/compteur-eau/jungle-joyeuse-defaut-3.mp4"
+          ]
+        }
+      },
+      "lin-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/lin-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/lin-blanc-defaut-1.mp4",
+            "templates/apercus/compteur-eau/lin-blanc-defaut-2.mp4",
+            "templates/apercus/compteur-eau/lin-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/mars-rouge.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/mars-rouge-defaut-1.mp4",
+            "templates/apercus/compteur-eau/mars-rouge-defaut-2.mp4",
+            "templates/apercus/compteur-eau/mars-rouge-defaut-3.mp4"
+          ]
+        }
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/neo-future.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/neo-future-defaut-1.mp4",
+            "templates/apercus/compteur-eau/neo-future-defaut-2.mp4",
+            "templates/apercus/compteur-eau/neo-future-defaut-3.mp4"
+          ]
+        }
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/nocturne-artistique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/nocturne-artistique-defaut-1.mp4",
+            "templates/apercus/compteur-eau/nocturne-artistique-defaut-2.mp4",
+            "templates/apercus/compteur-eau/nocturne-artistique-defaut-3.mp4"
+          ]
+        }
+      },
+      "onyx-chic": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/onyx-chic.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/onyx-chic-defaut-1.mp4",
+            "templates/apercus/compteur-eau/onyx-chic-defaut-2.mp4",
+            "templates/apercus/compteur-eau/onyx-chic-defaut-3.mp4"
+          ]
+        }
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/pure-lumiere.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/pure-lumiere-defaut-1.mp4",
+            "templates/apercus/compteur-eau/pure-lumiere-defaut-2.mp4",
+            "templates/apercus/compteur-eau/pure-lumiere-defaut-3.mp4"
+          ]
+        }
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/sahara-elegance.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/sahara-elegance-defaut-1.mp4",
+            "templates/apercus/compteur-eau/sahara-elegance-defaut-2.mp4",
+            "templates/apercus/compteur-eau/sahara-elegance-defaut-3.mp4"
+          ]
+        }
+      },
+      "sanctuaire-antique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/sanctuaire-antique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/sanctuaire-antique-defaut-1.mp4",
+            "templates/apercus/compteur-eau/sanctuaire-antique-defaut-2.mp4",
+            "templates/apercus/compteur-eau/sanctuaire-antique-defaut-3.mp4"
+          ]
+        }
+      },
+      "soie-blanche": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/soie-blanche.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/soie-blanche-defaut-1.mp4",
+            "templates/apercus/compteur-eau/soie-blanche-defaut-2.mp4",
+            "templates/apercus/compteur-eau/soie-blanche-defaut-3.mp4"
+          ]
+        }
+      },
+      "sombre-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/sombre-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/sombre-ardoise-defaut-1.mp4",
+            "templates/apercus/compteur-eau/sombre-ardoise-defaut-2.mp4",
+            "templates/apercus/compteur-eau/sombre-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "station-orbitale": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/station-orbitale.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/station-orbitale-defaut-1.mp4",
+            "templates/apercus/compteur-eau/station-orbitale-defaut-2.mp4",
+            "templates/apercus/compteur-eau/station-orbitale-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/terre-de-carmin.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/terre-de-carmin-defaut-1.mp4",
+            "templates/apercus/compteur-eau/terre-de-carmin-defaut-2.mp4",
+            "templates/apercus/compteur-eau/terre-de-carmin-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-gravee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/terre-gravee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/terre-gravee-defaut-1.mp4",
+            "templates/apercus/compteur-eau/terre-gravee-defaut-2.mp4",
+            "templates/apercus/compteur-eau/terre-gravee-defaut-3.mp4"
+          ]
+        }
+      },
+      "tresor-de-plage": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/tresor-de-plage.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/tresor-de-plage-defaut-1.mp4",
+            "templates/apercus/compteur-eau/tresor-de-plage-defaut-2.mp4",
+            "templates/apercus/compteur-eau/tresor-de-plage-defaut-3.mp4"
+          ]
+        }
+      },
+      "tressage-boheme": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/tressage-boheme.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/tressage-boheme-defaut-1.mp4",
+            "templates/apercus/compteur-eau/tressage-boheme-defaut-2.mp4",
+            "templates/apercus/compteur-eau/tressage-boheme-defaut-3.mp4"
+          ]
+        }
+      },
+      "trones-reunis": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/trones-reunis.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/trones-reunis-defaut-1.mp4",
+            "templates/apercus/compteur-eau/trones-reunis-defaut-2.mp4",
+            "templates/apercus/compteur-eau/trones-reunis-defaut-3.mp4"
+          ]
+        }
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/compteur-eau/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/compteur-eau/urban-factory-defaut-1.mp4",
+            "templates/apercus/compteur-eau/urban-factory-defaut-2.mp4",
+            "templates/apercus/compteur-eau/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -16742,7 +17212,8 @@
     appareil_box_internet: 'box-internet',
     appareil_television: 'televiseur',
     appareil_compteur_electricite: 'compteur-electrique',
-    chauffage_compteur_gaz: 'compteur-gaz'
+    chauffage_compteur_gaz: 'compteur-gaz',
+    eau_compteur: 'compteur-eau'
   };
 
   function themeSite(cle) {
@@ -17329,7 +17800,10 @@
     'appareil_compteur_electricite',
     // `chauffage_compteur_gaz` ajoute le 21/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
-    'chauffage_compteur_gaz'
+    'chauffage_compteur_gaz',
+    // `eau_compteur` ajoute le 21/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
+    'eau_compteur'
   ]);
 
   const PRIX_PACK = 9;
@@ -18438,6 +18912,7 @@
     appareil_television: 'televiseur',
     appareil_compteur_electricite: 'compteur-electrique',
     chauffage_compteur_gaz: 'compteur-gaz',
+    eau_compteur: 'compteur-eau',
     // Reecrit le 02/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
