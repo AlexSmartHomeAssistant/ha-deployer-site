@@ -3932,7 +3932,7 @@
     ],
     securite: [
       { name: 'securite_alarme', desc: 'Centrale d\'alarme, caméras et capteurs de la maison' },
-      { name: 'securite_camera', desc: 'Caméras : flux et détection.' }
+      { name: 'securite_camera', desc: 'Caméra : direct, orientation, réglages et enregistrements' }
     ],
     appareil: [
       { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
@@ -4138,6 +4138,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    securite_camera: {
+      resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
+      detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
     eau_compteur: {
       resume: `La distribution de l'eau dans votre maison, vivante : le compteur, la maison, le jardin, le lave-linge, le lave-vaisselle, le ballon d'eau chaude, et des canalisations o\u00f9 l'eau circule. Consommation et co\u00fbt par vanne, r\u00e9partition en anneau, alerte de fuite et de consommation anormale.`,
       detail: `Le tableau de bord de l'eau de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur d'eau</b> (un compteur t\u00e9l\u00e9relev\u00e9, un compteur \u00e0 impulsions, une vanne connect\u00e9e avec d\u00e9bitm\u00e8tre), le pack retrouve seul son index ou son d\u00e9bit et <b>d\u00e9rive l'un de l'autre</b>. Le premier onglet est un <b>synoptique vivant</b> : le compteur \u00e0 gauche avec son index, la maison au centre &mdash; une goutte qui perle tant que de l'eau coule &mdash;, et autour les vannes que vous savez mesurer : le jardin dont l'arroseur oscille, le lave-linge dont le tambour tourne, le lave-vaisselle dont le jet monte, le ballon dont la goutte tombe. Sur chaque <b>canalisation</b>, des pointill\u00e9s d\u00e9filent et des gouttes circulent \u00e0 la vitesse du d\u00e9bit. D\u00e8s que de l'eau coule, la carte prend sa <b>bordure anim\u00e9e bleue</b> et son fond s'allume ; au-dessus du seuil, elle passe au rouge. Le deuxi\u00e8me onglet trace la <b>consommation par vanne</b> ou pour toute la maison, en m\u00b3 (en litres sur la journ\u00e9e) ou en euros, par heure, par jour ou par mois. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque vanne \u00e0 sa couleur, et « Autre » pour ce qu'elles ne mesurent pas. Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur. Une alerte pr\u00e9vient vos mobiles quand le d\u00e9bit ou la consommation du jour d\u00e9passe un seuil que le pack mesure, et quand de l'eau coule <b>sans s'arr\u00eater</b> : une fuite, un robinet oubli\u00e9.`,
@@ -4482,6 +4486,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    securite_camera: [
+      { titre: `Mouvement anormal devant la caméra`, icone: 'fa-person-running',
+        declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
+        action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
+    ],
     eau_compteur: [
       { titre: `Consommation d'eau anormale et fuite`, icone: 'fa-droplet',
         declencheur: `Le d\u00e9bit d'eau d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut six fois le d\u00e9bit moyen de votre plus fort jour), la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5), ou de l'eau coule <b>sans s'arr\u00eater</b> plus longtemps que le seuil de d\u00e9bit continu (par d\u00e9faut soixante minutes) \u2014 l'id\u00e9e que la communaut\u00e9 a le plus reprise pour d\u00e9tecter une fuite.`,
@@ -4655,6 +4664,18 @@
   };
 
   const PACK_DETAILS = {
+    securite_camera: {
+      intro: `Trois onglets : direct, réglages, enregistrements. Vous ne saisissez que le <b>nom de votre caméra</b> &mdash; le pack réunit tous les appareils de ce nom, classe leurs entités, et <b>teste laquelle rend une image</b> avant d'en faire le flux. <b>C'est ce que votre caméra expose qui fait la variante</b> : sans ses commandes d'orientation, les quatre flèches disparaissent ; sans tel interrupteur, sa pastille aussi ; sans caméra EZVIZ, l'onglet Enregistrements n'apparaît pas. Un bouton qui ne commanderait rien est retiré plutôt que laissé inerte.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Direct', icone: 'fa-video',
+          texte: `Le <b>flux en direct plein cadre</b>, en 16:9, dans un cadre à coins de viseur. Les <b>quatre flèches d'orientation</b> sont posées dessus et s'enfoncent au doigt ; un badge <b>« DIRECT »</b> au point rouge battant dit que la caméra filme, « VEILLE » quand elle dort, « HORS LIGNE » quand elle ne répond plus, et un badge <b>« MOUVEMENT » clignote</b> dès qu'elle détecte quelque chose. Tant qu'elle filme, la carte prend sa <b>bordure animée violette</b> et son fond s'allume. Dessous, trois boutons : <b>instantané</b> (la photo part sur tous vos mobiles), <b>plein écran</b>, et <b>veille</b> &mdash; violet et respirant quand la caméra dort.` },
+        { titre: '2 — Réglages', icone: 'fa-sliders',
+          texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
+        { titre: '3 — Enregistrements', icone: 'fa-film',
+          texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
     eau_compteur: {
       intro: `Trois onglets : distribution, consommation, r\u00e9partition. Vous ne saisissez que le <b>nom de votre compteur d'eau</b> ; le jardin, le lave-linge, le lave-vaisselle et le ballon d'eau chaude sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans vanne mesur\u00e9e, le synoptique n'a que le compteur et la maison, et l'onglet R\u00e9partition n'existe pas (il n'y aurait qu'une part). Le d\u00e9bit est d\u00e9riv\u00e9 de l'index quand le compteur n'en publie pas &mdash; un compteur relev\u00e9 une fois par jour affiche sa moyenne de la journ\u00e9e, un compteur \u00e0 impulsions suit presque en direct &mdash; et l'index est int\u00e9gr\u00e9 du d\u00e9bit quand une vanne ne publie qu'un d\u00e9bitm\u00e8tre.`,
       carte: () => 'defaut',
@@ -6302,6 +6323,24 @@
   ];
 
   const MODULE_PARAMS = {
+    securite_camera: [
+      { param: 'CAMERA_APPAREIL', label: 'Nom de la caméra', type: 'text', required: true,
+        groupe: '📹 Caméra',
+        placeholder: 'ex : salon_camera — le nom de l\'appareil dans Home Assistant' },
+      { param: 'CAMERA_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '📹 Caméra',
+        placeholder: 'vide : déduite de l\'appareil' },
+      { param: 'CAMERA_FLUX', label: 'Flux à afficher', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'ex : camera.salon — vide : celle qui rend une image, testée' },
+      { param: 'CAMERA_MOUVEMENT', label: 'Détecteur de mouvement', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduit de l\'appareil' },
+      { param: 'CAMERA_INSTANTANE', label: 'Caméra des instantanés', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
+      champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
+    ],
     eau_compteur: [
       { param: 'EAU_APPAREIL', label: `Nom du compteur d'eau`, type: 'text',
         required: true, groupe: `\ud83d\udca7 Compteur d'eau`,
@@ -6938,6 +6977,16 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    securite_camera:
+      `la vue et ses trois onglets, le s\u00e9lecteur d'enregistrement, `
+      + `le script d'instantan\u00e9 qui envoie la photo sur tous vos mobiles, `
+      + `le script de red\u00e9marrage (par le bouton de la cam\u00e9ra, par le `
+      + `nuage EZVIZ ou par un cycle de veille, selon ce qu'elle expose), `
+      + `l'automatisation de mouvement anormal, le rel\u00e8vement EZVIZ `
+      + `d\u00e9pos\u00e9 sur l'instance (signal, carte SD et derniers `
+      + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
+      + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     eau_compteur:
       `la vue et ses trois onglets, les s\u00e9lecteurs de vanne, de p\u00e9riode `
       + `et de m\u00e9trique, le tarif et les trois seuils r\u00e9glables, le compteur du `
@@ -8804,6 +8853,21 @@
             "templates/apercus/box-internet/urban-factory-defaut-1.mp4",
             "templates/apercus/box-internet/urban-factory-defaut-2.mp4",
             "templates/apercus/box-internet/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "camera": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/camera/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/camera/urban-factory-defaut-1.mp4",
+            "templates/apercus/camera/urban-factory-defaut-2.mp4",
+            "templates/apercus/camera/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -17188,6 +17252,7 @@
 
   // Clé du pack sur le site -> clé du pack dans le manifeste.
   const PACK_APERCU = {
+    securite_camera: 'camera',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     lumiere_lumiere: 'lumiere',
@@ -17743,6 +17808,11 @@
      ce sont les briques sans lesquelles les packs payants ne peuvent meme
      pas se deployer. */
   const PACKS_GRATUITS = new Set([
+    // `securite_camera` ajoute le 22/09/2026, comme les precedents : phase
+    // de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker
+    // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
+    // et lui seul.
+    'securite_camera',
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
@@ -18855,6 +18925,7 @@
      Un module absent de cette table n'est pas encore déployable
      automatiquement : il est signalé comme tel, jamais ignoré en silence. */
   const SERVER_MODULES = {
+    securite_camera: 'camera',
     configuration_file_editor: 'config-file-editor',
     configuration_terminal_ssh: 'config-terminal-ssh',
     configuration_hacs: 'config-hacs',
