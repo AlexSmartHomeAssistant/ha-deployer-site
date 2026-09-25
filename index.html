@@ -3003,7 +3003,13 @@
       .site-footer .social-icons { justify-self: center; }
       .footer-links { justify-content: center; }
     }
-  </style>
+  
+    /* Verification de l'antenne Zigbee avant paiement (25/09/2026) */
+    .verif-antenne { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px;
+      font-size: 0.85rem; line-height: 1.45; background: var(--bg-card-hover, rgba(127,127,127,0.12)); }
+    .verif-antenne.verif-echec { border: 1px solid #EC7063; color: var(--text-main); }
+    .verif-antenne.verif-echec i { color: #EC7063; }
+</style>
 </head>
 <body>
 
@@ -3916,7 +3922,8 @@
       { name: 'configuration_file_editor', desc: 'Editeur de fichiers Home Assistant' },
       { name: 'configuration_terminal_ssh', desc: 'Terminal et acces SSH' },
       { name: 'configuration_hacs', desc: 'Magasin communautaire HACS' },
-      { name: 'configuration_duckdns', desc: 'Nom de domaine et acces distant' }
+      { name: 'configuration_duckdns', desc: 'Nom de domaine et acces distant' },
+      { name: 'configuration_zigbee2mqtt', desc: 'Reseau Zigbee : Mosquitto et Zigbee2MQTT' }
     ],
     lumiere: [
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
@@ -3988,6 +3995,7 @@
     configuration_terminal_ssh: 'Terminal & SSH',
     configuration_hacs: 'HACS',
     configuration_duckdns: 'DuckDNS',
+    configuration_zigbee2mqtt: 'Zigbee2MQTT',
     lumiere_lumiere: 'Lumière',
     ouverture_garage_porte: 'Porte de Garage',
     ouverture_volet: 'Volets Roulants',
@@ -4039,6 +4047,7 @@
     configuration_terminal_ssh: 'fa-terminal',
     configuration_hacs: 'fa-store',
     configuration_duckdns: 'fa-globe',
+    configuration_zigbee2mqtt: 'fa-tower-broadcast',
     lumiere_lumiere: 'fa-lightbulb',
     ouverture_garage_porte: 'fa-warehouse',
     ouverture_volet: 'fa-window-maximize',
@@ -4227,6 +4236,11 @@
       resume: "Adresse fixe et https gratuit.",
       logo: 'templates/config/duckdns.gif',
       detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
+    },
+    configuration_zigbee2mqtt: {
+      resume: "Réseau Zigbee prêt à appairer.",
+      logo: 'templates/config/zigbee2mqtt.gif',
+      detail: `Installe toute la chaîne <b>Zigbee2MQTT</b> : le broker <b>Mosquitto</b>, l'intégration <b>MQTT</b>, puis Zigbee2MQTT lui-même, réglé sur <b>votre antenne Zigbee</b>, détectée automatiquement sur les ports USB. Zigbee2MQTT apparaît dans la barre latérale, prêt à appairer vos objets connectés. <br><br><span class="inclus"><b>Inclus :</b> détection de l'antenne (SONOFF, ConBee, Home Assistant Connect ZBT, CC2652…) et de son pilote, installation et configuration de Mosquitto et de Zigbee2MQTT avec les quatre réglages activés, et passage de l'assistant de premier démarrage à votre place. <b>Aucun appareil n'est appairé :</b> c'est vous qui choisissez quoi ajouter. <b>Prérequis :</b> une antenne Zigbee branchée en USB — elle est vérifiée <b>avant</b> la commande ; sans elle, rien n'est facturé ni installé.</span>`
     },
 
     service_gestion_dechets: {
@@ -5078,6 +5092,34 @@
             { nom: `Redirection de port`, texte: `le port 8123 à rediriger sur votre box : la seule étape que personne ne peut faire à votre place.` },
             { nom: `Notification`, texte: `un rappel persistant dans Home Assistant, qui survit à la fermeture de cette page.` },
             { nom: `Journal`, texte: `le même rappel dans le journal de déploiement.` }
+          ] }
+      ]
+    },
+
+    configuration_zigbee2mqtt: {
+      intro: 'Installe toute la chaîne <b>Zigbee2MQTT</b> sur votre instance : le broker Mosquitto, l\'intégration MQTT et Zigbee2MQTT, réglé sur l\'antenne Zigbee détectée sur vos ports USB. <b>Aucun appareil n\'est appairé</b> : Zigbee2MQTT vous attend dans la barre latérale.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Votre antenne', icone: 'fa-plug',
+          texte: 'Avant toute commande, le site interroge votre instance et cherche une <b>antenne Zigbee</b> sur les ports USB. Sans antenne, la commande est refusée : <b>rien n\'est facturé ni installé</b>. Le serveur refait la même vérification avant d\'installer quoi que ce soit.',
+          elements: [
+            { nom: `Détection USB`, texte: `SONOFF ZBDongle-E / -P, Dongle Plus V2, ConBee II / III, Home Assistant Connect ZBT, CC2531 / CC2652, ZiGate — reconnus par leur identifiant USB et leur nom.` },
+            { nom: `Pilote`, texte: `déduit du modèle : ember (Silicon Labs), zstack (Texas Instruments), deconz ou zigate.` },
+            { nom: `Chemin stable`, texte: `l'antenne est désignée par son chemin /dev/serial/by-id, qui ne change pas au redémarrage ni à l'ajout d'un autre périphérique USB.` },
+            { nom: `ZHA`, texte: `si l'intégration Zigbee native utilise déjà l'antenne, le pack s'arrête et vous le dit : une antenne ne sert qu'à un seul logiciel.` }
+          ] },
+        { titre: '2 — Mosquitto et MQTT', icone: 'fa-server',
+          texte: 'Le broker <b>Mosquitto</b> est installé et démarré, puis l\'intégration <b>MQTT</b> que Home Assistant découvre aussitôt est confirmée à votre place. C\'est par elle que vos appareils Zigbee apparaîtront dans Home Assistant.',
+          elements: [
+            { nom: `Mosquitto broker`, texte: `add-on officiel, lancement au démarrage, chien de garde et mise à jour automatique.` },
+            { nom: `Intégration MQTT`, texte: `confirmée automatiquement ; les identifiants du broker sont gérés par Home Assistant, rien à saisir.` }
+          ] },
+        { titre: '3 — Zigbee2MQTT', icone: 'fa-tower-broadcast',
+          texte: 'Le dépôt Zigbee2MQTT est ajouté, l\'add-on installé et réglé sur votre antenne, puis démarré. L\'assistant de premier démarrage est validé pour vous : Zigbee2MQTT s\'ouvre directement dans la <b>barre latérale</b>, réseau créé, prêt à appairer.',
+          elements: [
+            { nom: `Barre latérale`, texte: `Zigbee2MQTT s'ouvre depuis la barre latérale de Home Assistant.` },
+            { nom: `Appairage`, texte: `cliquez sur « Permit join » puis mettez votre appareil en mode appairage : aucun appareil n'est ajouté à votre place.` },
+            { nom: `Réglages conservés`, texte: `sur une instance déjà équipée, votre antenne, vos identifiants et vos appareils sont gardés tels quels.` }
           ] }
       ]
     },
@@ -17815,6 +17857,7 @@
     'securite_camera',
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
+    'configuration_zigbee2mqtt',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
     'ouverture_garage_porte',
@@ -18150,7 +18193,8 @@
         <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">
           ${cart.map(item => `<div>${item.name} : ${prixLisible(item.price)}</div>`).join('')}
         </div>
-        <button class="btn-pay" onclick="confirmPayment()"><i class="fa-solid fa-lightbulb"></i> Confirmer et payer</button>
+        <div id="checkout-verif"></div>
+        <button class="btn-pay" id="btn-confirmer-payer" onclick="confirmPayment()"><i class="fa-solid fa-lightbulb"></i> Confirmer et payer</button>
       </div>
     `;
   }
@@ -18303,6 +18347,29 @@
     // Conservés en mémoire pour l'étape de déploiement : le re-rendu de la
     // modale détruit les champs de saisie.
     checkoutCreds = { url: url, token: token };
+
+    const ligneZigbee = cart.find(item => item.key === 'configuration_zigbee2mqtt');
+    if (ligneZigbee) {
+      const zone = document.getElementById('checkout-verif');
+      const bouton = document.getElementById('btn-confirmer-payer');
+      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Recherche de votre antenne Zigbee sur les ports USB…</div>';
+      if (bouton) bouton.disabled = true;
+      verifierAntenneZigbee(url, token).then(res => {
+        if (bouton) bouton.disabled = false;
+        if (!res.ok) {
+          if (zone) zone.innerHTML = '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + res.message + '</div>';
+          return;
+        }
+        // L'antenne vue par le navigateur voyage jusqu'au runner, qui la
+        // reprend si elle est toujours branchee.
+        ligneZigbee.params = Object.assign({}, ligneZigbee.params || {},
+          { Z2M_PORT: res.antenne.port, Z2M_ADAPTER: res.antenne.adaptateur });
+        sauverPanier();
+        cartModalStep = 'payment';
+        renderCartModalBody();
+      });
+      return;
+    }
 
     cartModalStep = 'payment';
     renderCartModalBody();
@@ -18930,6 +18997,7 @@
     configuration_terminal_ssh: 'config-terminal-ssh',
     configuration_hacs: 'config-hacs',
     configuration_duckdns: 'config-duckdns',
+    configuration_zigbee2mqtt: 'config-zigbee2mqtt',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     /* Reecriture du 06/09/2026 : `poubelles`
@@ -19421,6 +19489,76 @@
     });
   }
 
+
+  /* ===== ZIGBEE2MQTT : L'ANTENNE EST VERIFIEE AVANT LA COMMANDE (25/09/2026) =====
+     Sans antenne Zigbee branchee, le pack ne peut rien faire d'utile : le
+     client doit le savoir AVANT de payer, et aucune installation ne doit
+     partir. Le navigateur interroge donc lui-meme l'instance (le WebSocket de
+     Home Assistant n'est pas soumis au CORS -- c'est ce qu'utilise deja le
+     Test Gratuit) et lit le materiel USB (`supervisor/api /hardware/info`).
+     Les tables ci-dessous sont ECRITES depuis zigbee_usb.py par
+     _patch_index_zigbee2mqtt.py : le runner refait la meme verification avant
+     d'installer quoi que ce soit, avec exactement les memes criteres. */
+  const ZIGBEE_ANTENNES = [["1a86:55d4", "ember", false], ["10c4:ea60", "zstack", true], ["1a86:7523", "zstack", true], ["0451:16a8", "zstack", false], ["0451:bef3", "zstack", false], ["1cf1:0030", "deconz", false], ["0403:6015", "deconz", true], ["303a:4001", "ember", false], ["303a:831a", "ember", false], ["067b:2303", "zigate", true]];
+  const ZIGBEE_MOTS = ["zigbee", "conbee", "skyconnect", "zbt 1", "zbt 2", "zbt1", "zbt2", "zbdongle", "zigstar", "slzb", "cc2531", "cc2652", "cc1352", "zigate", "efr32", "ember", "tube zb", "ezsp"];
+  const ZIGBEE_ADAPTATEUR_PAR_NOM = [["skyconnect", "ember"], ["zbt", "ember"], ["dongle e", "ember"], ["dongle plus v2", "ember"], ["dongle max", "ember"], ["efr32", "ember"], ["ezsp", "ember"], ["conbee", "deconz"], ["zigate", "zigate"], ["cc2652", "zstack"], ["cc1352", "zstack"], ["cc2531", "zstack"], ["dongle p", "zstack"]];
+
+  function zigbeeTexte(d) {
+    const a = d.attributes || {};
+    return [a.ID_MODEL, a.ID_VENDOR, a.ID_MODEL_FROM_DATABASE, d.by_id]
+      .map(x => String(x || '')).join(' ').toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+  }
+  function zigbeeContient(texte, mot) {
+    return (' ' + texte + ' ').indexOf(' ' + mot + ' ') >= 0;
+  }
+  function antennesZigbee(info) {
+    const trouvees = [];
+    ((info && info.devices) || []).forEach(d => {
+      if (d.subsystem !== 'tty') return;
+      const texte = zigbeeTexte(d);
+      const nomZigbee = ZIGBEE_MOTS.some(m => zigbeeContient(texte, m));
+      const a = d.attributes || {};
+      const ident = (a.ID_VENDOR_ID && a.ID_MODEL_ID)
+        ? (a.ID_VENDOR_ID + ':' + a.ID_MODEL_ID).toLowerCase() : '';
+      const connue = ZIGBEE_ANTENNES.find(e => e[0] === ident);
+      if (!connue && !nomZigbee) return;
+      if (connue && connue[2] && !nomZigbee) return;
+      const parNom = ZIGBEE_ADAPTATEUR_PAR_NOM.find(e => zigbeeContient(texte, e[0]));
+      trouvees.push({
+        port: d.by_id || d.dev_path,
+        adaptateur: parNom ? parNom[1] : (connue ? connue[1] : 'ember'),
+        modele: String(a.ID_MODEL || '').replace(/_/g, ' ').trim() || 'Antenne Zigbee'
+      });
+    });
+    trouvees.sort((x, y) => (x.port.indexOf('/dev/serial/by-id/') === 0 ? 0 : 1)
+                          - (y.port.indexOf('/dev/serial/by-id/') === 0 ? 0 : 1));
+    return trouvees;
+  }
+
+  /* { ok: true, antenne } ou { ok: false, message }. Une verification
+     IMPOSSIBLE (instance injoignable, jeton refuse, pas de Supervisor) bloque
+     aussi : on ne vend pas un pack dont on ne sait pas s'il pourra servir. */
+  async function verifierAntenneZigbee(url, token) {
+    const cible = checkInstanceUrlNavigateur(url);
+    if (cible.error) return { ok: false, message: cible.error };
+    let ha;
+    try { ha = await haConnect(cible.ws, token); }
+    catch (e) { return { ok: false, message: 'Vérification de l\'antenne impossible : ' + e.message }; }
+    try {
+      const rep = await ha.call({ type: 'supervisor/api', endpoint: '/hardware/info', method: 'get' });
+      if (!rep.success) {
+        return { ok: false, message: 'Impossible de lire le matériel de votre instance. Le pack Zigbee2MQTT exige Home Assistant OS (ou Supervised) et un jeton administrateur.' };
+      }
+      const antennes = antennesZigbee(rep.result);
+      if (!antennes.length) {
+        return { ok: false, message: '<b>Aucune antenne Zigbee détectée</b> sur les ports USB de votre instance. Branchez votre antenne (SONOFF ZBDongle, ConBee, Home Assistant Connect ZBT…) directement sur la machine Home Assistant, de préférence via une rallonge USB, puis réessayez. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
+      }
+      return { ok: true, antenne: antennes[0], nombre: antennes.length };
+    } catch (e) {
+      return { ok: false, message: 'Vérification de l\'antenne impossible : ' + e.message };
+    } finally { ha.close(); }
+  }
   /* ---------- Fond d'écran : présent ou non sur l'instance ----------
      Une balise <img> n'est pas soumise au CORS, contrairement à fetch() :
      c'est le seul moyen, depuis cette origine, de savoir si le fichier
