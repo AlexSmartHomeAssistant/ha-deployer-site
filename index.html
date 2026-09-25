@@ -3924,7 +3924,10 @@
       { name: 'configuration_hacs', desc: 'Magasin communautaire HACS' },
       { name: 'configuration_duckdns', desc: 'Nom de domaine et acces distant' },
       { name: 'configuration_zigbee2mqtt', desc: 'Reseau Zigbee : Mosquitto et Zigbee2MQTT' },
-      { name: 'configuration_backup', desc: 'Sauvegardes automatiques' }
+      { name: 'configuration_backup', desc: 'Sauvegardes automatiques' },
+      { name: 'configuration_esphome', desc: 'ESPHome : vos propres appareils' },
+      { name: 'configuration_matter', desc: 'Matter : serveur, Matter et Thread' },
+      { name: 'configuration_google_translate', desc: 'Synthese vocale Google Translate' }
     ],
     lumiere: [
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
@@ -3998,6 +4001,9 @@
     configuration_duckdns: 'DuckDNS',
     configuration_zigbee2mqtt: 'Zigbee2MQTT',
     configuration_backup: 'Backup',
+    configuration_esphome: 'ESPHome',
+    configuration_matter: 'Matter',
+    configuration_google_translate: 'Google Translate',
     lumiere_lumiere: 'Lumière',
     ouverture_garage_porte: 'Porte de Garage',
     ouverture_volet: 'Volets Roulants',
@@ -4051,6 +4057,9 @@
     configuration_duckdns: 'fa-globe',
     configuration_zigbee2mqtt: 'fa-tower-broadcast',
     configuration_backup: 'fa-box-archive',
+    configuration_esphome: 'fa-microchip',
+    configuration_matter: 'fa-circle-nodes',
+    configuration_google_translate: 'fa-language',
     lumiere_lumiere: 'fa-lightbulb',
     ouverture_garage_porte: 'fa-warehouse',
     ouverture_volet: 'fa-window-maximize',
@@ -4245,10 +4254,25 @@
       logo: 'templates/config/zigbee2mqtt.gif',
       detail: `Installe toute la chaîne <b>Zigbee2MQTT</b> : le broker <b>Mosquitto</b>, l'intégration <b>MQTT</b>, puis Zigbee2MQTT lui-même, réglé sur <b>votre antenne Zigbee</b>, détectée automatiquement sur les ports USB. Zigbee2MQTT apparaît dans la barre latérale, prêt à appairer vos objets connectés. <br><br><span class="inclus"><b>Inclus :</b> détection de l'antenne (SONOFF, ConBee, Home Assistant Connect ZBT, CC2652…) et de son pilote, installation et configuration de Mosquitto et de Zigbee2MQTT avec les quatre réglages activés, et passage de l'assistant de premier démarrage à votre place. <b>Aucun appareil n'est appairé :</b> c'est vous qui choisissez quoi ajouter. <b>Prérequis :</b> une antenne Zigbee branchée en USB — elle est vérifiée <b>avant</b> la commande ; sans elle, rien n'est facturé ni installé.</span>`
     },
+    configuration_google_translate: {
+      resume: "La voix de Google pour vos annonces, prête à parler.",
+      logo: 'templates/config/google-translate.gif',
+      detail: `Installe et configure la <b>synthèse vocale Google Translate</b> : la voix qui prononce vos annonces sur les enceintes de la maison (Google Nest, Sonos, Chromecast, barre de son…). La <b>langue</b> et l'<b>accent</b> sont déduits de votre Home Assistant, ou choisis ici. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'intégration, un <b>essai de synthèse réel</b> (sans aucun son) qui prouve que votre instance joint bien Google, un script <b>« Annonce vocale »</b> prêt à appeler depuis vos automatisations, et — si vous le souhaitez — la même voix pour votre <b>assistant vocal</b>. Nommez une enceinte et elle vous le dira de vive voix. <b>Déjà installé ?</b> Rien n'est réinstallé, votre assistant garde sa voix.</span>`
+    },
     configuration_backup: {
       resume: "Sauvegardes automatiques, chiffrées et surveillées.",
       logo: 'templates/config/backup.gif',
       detail: `Met en place les <b>sauvegardes automatiques</b> de Home Assistant, de bout en bout : un programme chaque nuit (ou chaque semaine), le nombre de copies à garder, le contenu complet — Home Assistant, sa base de données, <b>tous les add-ons</b>, vos dossiers <i>share</i> et <i>media</i> — et la <b>clé de chiffrement</b> sans laquelle une sauvegarde ne se restaure pas ailleurs. <br><br><span class="inclus"><b>Inclus :</b> configuration complète des sauvegardes natives, copie facultative sur votre <b>NAS</b> (partage SMB ou NFS monté pour vous), une première sauvegarde lancée tout de suite si vous n'en avez aucune, et une <b>alerte sur vos mobiles</b> si une sauvegarde échoue ou si aucune n'a réussi depuis deux jours. <b>Déjà configurées ?</b> Vos réglages sont conservés : seuls les champs que vous remplissez les remplacent.</span>`
+    },
+    configuration_esphome: {
+      resume: "ESPHome installé, prêt à créer vos appareils.",
+      logo: 'templates/config/esphome.gif',
+      detail: `Installe <b>ESPHome Device Builder</b>, l'outil qui transforme une petite carte <b>ESP32 / ESP8266</b> à quelques euros en capteur, relais ou éclairage connecté, <b>sans programmer</b>. Il apparaît dans la barre latérale, prêt à créer votre premier appareil. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on avec les quatre réglages activés (démarrage automatique, chien de garde, mise à jour automatique, barre latérale), l'intégration au tableau de bord qui fait apparaître les <b>mises à jour de micrologiciel</b> de chaque appareil dans Home Assistant, votre <b>Wi-Fi enregistré une fois pour toutes</b> (facultatif) pour que chaque nouvel appareil s'y connecte sans rien redemander, l'ajout des appareils ESPHome déjà découverts sur votre réseau, et une <b>alerte sur vos mobiles</b> quand un appareil est hors ligne ou qu'une mise à jour est disponible. <b>Prérequis :</b> une instance 64 bits (Home Assistant OS sur Raspberry Pi 4/5, mini-PC…) — elle est vérifiée <b>avant</b> la commande ; sinon, rien n'est facturé ni installé.</span>`
+    },
+    configuration_matter: {
+      resume: "Matter prêt à appairer, Wi-Fi et Thread.",
+      logo: 'templates/config/matter.gif',
+      detail: `Installe et configure <b>Matter</b> de bout en bout : le <b>serveur Matter</b>, l'intégration <b>Matter</b> qui le relie à Home Assistant, et l'intégration <b>Thread</b> qui fait passer les appareils Matter-sur-Thread par les routeurs de bordure déjà chez vous (HomePod, Apple TV, Nest Hub…). Il ne vous reste qu'à scanner le code QR de vos appareils depuis l'application Home Assistant. <br><br><span class="inclus"><b>Inclus :</b> vérification des prérequis <b>avant</b> toute installation (Home Assistant OS et IPv6 — sans IPv6, Matter ne fonctionne pas, et rien n'est installé), serveur Matter avec les quatre réglages activés, intégrations Matter et Thread confirmées pour vous, et une <b>notification</b> qui explique pas à pas l'appairage, y compris le partage d'un appareil déjà utilisé par Apple Maison, Google Home ou Alexa. <b>Aucun appareil n'est appairé :</b> c'est vous qui choisissez quoi ajouter. <b>Déjà installé ?</b> Rien n'est réinstallé, vos réglages sont conservés.</span>`
     },
 
     service_gestion_dechets: {
@@ -4508,6 +4532,16 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    configuration_esphome: [
+      { titre: `Appareil ESPHome hors ligne ou à mettre à jour`, icone: 'fa-microchip',
+        declencheur: `Un appareil ESPHome ne répond plus depuis <b>15 minutes</b>, ou un <b>nouveau micrologiciel</b> est disponible pour l'un d'eux.`,
+        action: `Notification sur tous vos mobiles, qui nomme l'appareil concerné.` }
+    ],
+    configuration_google_translate: [
+      { titre: `Annonce vocale`, icone: 'fa-bullhorn',
+        declencheur: `Vous appelez le script <b>« Annonce vocale »</b> depuis une automatisation, un bouton ou l'application mobile, avec un message et une ou plusieurs enceintes.`,
+        action: `Google Translate prononce le message sur les enceintes choisies, dans la langue et l'accent de votre maison ; plusieurs annonces se suivent sans s'interrompre.` }
+    ],
     configuration_backup: [
       { titre: `Sauvegarde en échec ou en retard`, icone: 'fa-box-archive',
         declencheur: `Une sauvegarde automatique <b>échoue</b>, ou, lors de la vérification de 9 h, aucune sauvegarde n'a réussi depuis <b>deux jours</b> (huit pour un programme hebdomadaire).`,
@@ -5109,6 +5143,61 @@
       ]
     },
 
+    configuration_google_translate: {
+      intro: 'Installe la <b>synthèse vocale Google Translate</b> et la prépare pour vos annonces : langue et accent de votre maison, essai réel, script prêt à l\'emploi. Gratuit, sans compte Google, sans clé d\'API.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Installation', icone: 'fa-language',
+          texte: 'L\'intégration native <b>Google Translate text-to-speech</b> est installée pour vous. Sa <b>langue</b> suit celle de votre Home Assistant et son <b>accent</b> le pays de votre maison (français de France, du Canada, de Belgique…), sauf si vous les choisissez ici.',
+          elements: [
+            { nom: `Langue`, texte: `celle de votre Home Assistant par défaut ; plus de 80 langues disponibles.` },
+            { nom: `Accent`, texte: `le domaine Google de votre pays (google.fr, google.ca, google.co.uk…) : c'est lui qui donne l'accent de la voix.` },
+            { nom: `Essai de synthèse`, texte: `une phrase est réellement synthétisée par Google, sans être jouée : la preuve que votre instance joint bien le service.` },
+            { nom: `Déjà installé`, texte: `une installation pour la même langue et le même accent est reprise telle quelle.` }
+          ] },
+        { titre: '2 — Annonces', icone: 'fa-bullhorn',
+          texte: 'Un script <b>« Annonce vocale »</b> est créé : un message, une ou plusieurs enceintes, et la maison parle. Appelez-le depuis une automatisation, un bouton du tableau de bord ou l\'application mobile.',
+          elements: [
+            { nom: `Script`, texte: `script.ha_deploy_annonce_vocale, champs « Message » et « Enceinte » ; les annonces se suivent sans s'interrompre.` },
+            { nom: `Annonce d'essai`, texte: `si vous nommez une enceinte, elle vous annonce que tout est prêt ; sinon rien n'est joué.` },
+            { nom: `Rangement`, texte: `le moteur et le script sont rangés sous l'étiquette « Service ».` }
+          ] },
+        { titre: '3 — Assistant vocal', icone: 'fa-microphone',
+          texte: 'Votre <b>assistant vocal</b> (Assist) peut répondre avec la même voix. S\'il n\'en a aucune, Google Translate devient la sienne ; s\'il en a déjà une (Home Assistant Cloud…), elle est <b>conservée</b>, sauf si vous choisissez de la remplacer.',
+          elements: [
+            { nom: `Automatique`, texte: `la voix n'est posée que si l'assistant n'en a pas.` },
+            { nom: `Oui / Non`, texte: `remplacer la voix actuelle, ou ne jamais y toucher.` }
+          ] }
+      ]
+    },
+
+    configuration_matter: {
+      intro: 'Installe et configure <b>Matter</b> sur votre instance : le serveur Matter, les intégrations Matter et Thread. Le pack ne vous demande rien : il vérifie les prérequis, installe, relie, puis vous explique l\'appairage depuis votre téléphone. <b>Aucun appareil n\'est appairé à votre place.</b>',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Prérequis', icone: 'fa-list-check',
+          texte: 'Avant d\'installer quoi que ce soit, le pack vérifie que votre instance peut faire tourner Matter. S\'il manque un prérequis, il <b>s\'arrête sans rien installer</b> et vous dit quoi faire.',
+          elements: [
+            { nom: `Home Assistant OS`, texte: `le serveur Matter est un add-on : il exige Home Assistant OS (ou Supervised) et un jeton administrateur.` },
+            { nom: `IPv6`, texte: `Matter repose sur IPv6 pour découvrir et joindre ses appareils. Désactivé, aucun appareil ne s'appaire : le pack vous indique où l'activer, sans toucher lui-même à votre réseau.` }
+          ] },
+        { titre: '2 — Serveur et intégrations', icone: 'fa-circle-nodes',
+          texte: 'Le <b>serveur Matter</b> est installé et démarré, puis l\'intégration <b>Matter</b> que Home Assistant découvre aussitôt est confirmée à votre place. L\'intégration <b>Thread</b> est ajoutée pour les appareils Matter-sur-Thread.',
+          elements: [
+            { nom: `Matter Server`, texte: `add-on officiel, lancement au démarrage, chien de garde, mise à jour automatique et accès depuis la barre latérale.` },
+            { nom: `Intégration Matter`, texte: `reliée au serveur, rien à saisir ; vos appareils Matter y apparaîtront.` },
+            { nom: `Intégration Thread`, texte: `utilise les routeurs de bordure Thread déjà présents chez vous (HomePod mini, Apple TV 4K, Nest Hub, box compatibles).` },
+            { nom: `Réglages conservés`, texte: `sur une instance déjà équipée, rien n'est réinstallé ni redémarré.` }
+          ] },
+        { titre: '3 — Appairage', icone: 'fa-qrcode',
+          texte: 'Un appareil Matter s\'ajoute depuis votre <b>téléphone</b> : Bluetooth activé, même Wi-Fi que Home Assistant. Une notification déposée dans Home Assistant rappelle la marche à suivre.',
+          elements: [
+            { nom: `Nouvel appareil`, texte: `application Home Assistant → Paramètres → Appareils et services → Ajouter un appareil → Matter, puis scannez le code QR.` },
+            { nom: `Appareil déjà utilisé`, texte: `dans Apple Maison, Google Home ou Alexa, activez le mode d'appairage de l'appareil, puis scannez le nouveau code : il reste aussi dans son application d'origine.` }
+          ] }
+      ]
+    },
+
     configuration_backup: {
       intro: 'Configure les <b>sauvegardes automatiques</b> natives de Home Assistant : programme, rétention, contenu complet, clé de chiffrement, copie facultative sur un NAS, et alerte en cas d\'échec. Une configuration déjà en place est <b>conservée</b> : le pack ne comble que ce qui manque.',
       carte: () => 'defaut',
@@ -5133,6 +5222,32 @@
           elements: [
             { nom: `Échec`, texte: `notification immédiate, avec la raison donnée par Home Assistant.` },
             { nom: `Retard`, texte: `vérification chaque matin à 9 h de la date de la dernière sauvegarde réussie.` }
+          ] }
+      ]
+    },
+
+    configuration_esphome: {
+      intro: 'Installe et configure <b>ESPHome Device Builder</b> : l\'add-on, son intégration à Home Assistant, votre Wi-Fi pour les futurs appareils, et une alerte quand un appareil ne répond plus. Une configuration déjà en place est <b>conservée</b> : le pack ne comble que ce qui manque.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — ESPHome Builder', icone: 'fa-microchip',
+          texte: 'L\'add-on <b>ESPHome Device Builder</b> est installé, mis à jour et démarré, et il apparaît dans la <b>barre latérale</b>. C\'est là que vous créez un appareil : « + New device », une carte ESP32 branchée en USB, et l\'assistant fait le reste.',
+          elements: [
+            { nom: `Quatre réglages`, texte: `démarrage automatique, chien de garde, mise à jour automatique et affichage dans la barre latérale.` },
+            { nom: `Mises à jour de micrologiciel`, texte: `chaque appareil ESPHome reçoit une entité « mise à jour » dans Home Assistant : un bouton suffit pour le mettre à niveau.` },
+            { nom: `Compatibilité`, texte: `ESPHome n'existe qu'en 64 bits ; votre instance est vérifiée avant la commande.` }
+          ] },
+        { titre: '2 — Wi-Fi et appareils', icone: 'fa-wifi',
+          texte: 'Indiquez votre <b>Wi-Fi</b> (facultatif) : il est enregistré dans les secrets d\'ESPHome, et chaque nouvel appareil s\'y connecte sans que l\'assistant vous le redemande. Le mot de passe n\'est <b>jamais</b> affiché ni transmis ailleurs. Les appareils ESPHome déjà présents sur votre réseau sont ajoutés à Home Assistant.',
+          elements: [
+            { nom: `Secrets`, texte: `réseau et mot de passe Wi-Fi rangés dans esphome/secrets.yaml ; vos autres secrets ne sont pas touchés.` },
+            { nom: `Appareils découverts`, texte: `ceux qui n'attendent qu'une confirmation sont ajoutés ; ceux qui exigent une clé de chiffrement vous sont signalés.` }
+          ] },
+        { titre: '3 — Surveillance', icone: 'fa-bell',
+          texte: 'Une automatisation prévient <b>tous vos mobiles</b> quand un appareil ESPHome ne répond plus depuis 15 minutes, et quand un nouveau micrologiciel est disponible. Elle suit aussi les appareils que vous créerez plus tard, sans nouveau déploiement.',
+          elements: [
+            { nom: `Hors ligne`, texte: `notification nommant l'appareil, au bout de 15 minutes sans réponse.` },
+            { nom: `Mise à jour`, texte: `notification dès qu'un micrologiciel plus récent est prêt dans ESPHome Builder.` }
           ] }
       ]
     },
@@ -6732,6 +6847,41 @@
           { value: 'netdaemon', label: 'NetDaemon' }
         ] }
     ],
+    configuration_google_translate: [
+      { param: 'GTRANSLATE_LANGUE', label: 'Langue', type: 'select', required: false, groupe: '🗣️ Voix',
+        options: [
+          { value: '', label: 'Automatique (celle de Home Assistant)' },
+          { value: 'fr', label: 'Français' }, { value: 'en', label: 'Anglais' },
+          { value: 'de', label: 'Allemand' }, { value: 'es', label: 'Espagnol' },
+          { value: 'it', label: 'Italien' }, { value: 'pt', label: 'Portugais' },
+          { value: 'nl', label: 'Néerlandais' }, { value: 'ar', label: 'Arabe' },
+          { value: 'tr', label: 'Turc' }, { value: 'pl', label: 'Polonais' },
+          { value: 'ru', label: 'Russe' }, { value: 'uk', label: 'Ukrainien' },
+          { value: 'sv', label: 'Suédois' }, { value: 'da', label: 'Danois' },
+          { value: 'no', label: 'Norvégien' }, { value: 'fi', label: 'Finnois' },
+          { value: 'el', label: 'Grec' }, { value: 'ro', label: 'Roumain' },
+          { value: 'ja', label: 'Japonais' }, { value: 'ko', label: 'Coréen' },
+          { value: 'zh-CN', label: 'Chinois' }, { value: 'hi', label: 'Hindi' }
+        ] },
+      { param: 'GTRANSLATE_ACCENT', label: 'Accent', type: 'select', required: false, groupe: '🗣️ Voix',
+        options: [
+          { value: '', label: 'Automatique (celui de votre pays)' },
+          { value: 'fr', label: 'France (google.fr)' }, { value: 'ca', label: 'Canada (google.ca)' },
+          { value: 'be', label: 'Belgique (google.be)' }, { value: 'ch', label: 'Suisse (google.ch)' },
+          { value: 'com', label: 'États-Unis (google.com)' }, { value: 'co.uk', label: 'Royaume-Uni (google.co.uk)' },
+          { value: 'com.au', label: 'Australie (google.com.au)' }, { value: 'co.in', label: 'Inde (google.co.in)' },
+          { value: 'es', label: 'Espagne (google.es)' }, { value: 'com.mx', label: 'Mexique (google.com.mx)' },
+          { value: 'pt', label: 'Portugal (google.pt)' }, { value: 'com.br', label: 'Brésil (google.com.br)' }
+        ] },
+      { param: 'GTRANSLATE_ASSISTANT', label: 'Voix de l\'assistant', type: 'select', required: false, groupe: '🎙️ Assistant et essai',
+        options: [
+          { value: '', label: 'Automatique (seulement s\'il n\'en a pas)' },
+          { value: 'oui', label: 'Oui, remplacer sa voix' },
+          { value: 'non', label: 'Non, ne pas y toucher' }
+        ] },
+      { param: 'GTRANSLATE_ENCEINTE', label: 'Enceinte d\'essai', type: 'text', required: false, groupe: '🎙️ Assistant et essai',
+        placeholder: 'ex : media_player.salon (vide : aucun son)' }
+    ],
     configuration_backup: [
       { param: 'BACKUP_FREQUENCE', label: 'Fréquence', type: 'select', required: false, groupe: '⏱️ Programme',
         options: [
@@ -6763,6 +6913,12 @@
         placeholder: 'SMB seulement' },
       { param: 'BACKUP_NAS_MOTDEPASSE', label: 'Mot de passe', type: 'password', required: false, groupe: '🗄️ NAS (facultatif)',
         placeholder: 'SMB seulement' }
+    ],
+    configuration_esphome: [
+      { param: 'ESPHOME_WIFI_SSID', label: 'Réseau Wi-Fi (SSID)', type: 'text', required: false, groupe: '📶 Wi-Fi des appareils (facultatif)',
+        placeholder: 'vide : demandé au premier appareil' },
+      { param: 'ESPHOME_WIFI_MOTDEPASSE', label: 'Mot de passe Wi-Fi', type: 'password', required: false, groupe: '📶 Wi-Fi des appareils (facultatif)',
+        placeholder: '8 à 63 caractères' }
     ],
     configuration_duckdns: [
       { param: 'DUCKDNS_DOMAINE', label: 'Domaine DuckDNS', type: 'text', required: true,
@@ -17932,6 +18088,9 @@
     'configuration_hacs', 'configuration_duckdns',
     'configuration_zigbee2mqtt',
     'configuration_backup',
+    'configuration_esphome',
+    'configuration_matter',
+    'configuration_google_translate',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
     'ouverture_garage_porte',
@@ -18423,6 +18582,25 @@
     // Conservés en mémoire pour l'étape de déploiement : le re-rendu de la
     // modale détruit les champs de saisie.
     checkoutCreds = { url: url, token: token };
+
+    const ligneEsphome = cart.find(item => item.key === 'configuration_esphome');
+    if (ligneEsphome && esphomeVerifiePour !== url + '|' + token) {
+      const zone = document.getElementById('checkout-verif');
+      const bouton = document.getElementById('btn-confirmer-payer');
+      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Vérification de la compatibilité de votre instance avec ESPHome…</div>';
+      if (bouton) bouton.disabled = true;
+      verifierEsphome(url, token).then(res => {
+        if (bouton) bouton.disabled = false;
+        if (!res.ok) {
+          if (zone) zone.innerHTML = '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + res.message + '</div>';
+          return;
+        }
+        esphomeVerifiePour = url + '|' + token;
+        if (zone) zone.innerHTML = '';
+        confirmPayment();
+      });
+      return;
+    }
 
     const ligneZigbee = cart.find(item => item.key === 'configuration_zigbee2mqtt');
     if (ligneZigbee) {
@@ -19075,6 +19253,9 @@
     configuration_duckdns: 'config-duckdns',
     configuration_zigbee2mqtt: 'config-zigbee2mqtt',
     configuration_backup: 'config-backup',
+    configuration_esphome: 'config-esphome',
+    configuration_matter: 'config-matter',
+    configuration_google_translate: 'config-google-translate',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     /* Reecriture du 06/09/2026 : `poubelles`
@@ -19634,6 +19815,31 @@
       return { ok: true, antenne: antennes[0], nombre: antennes.length };
     } catch (e) {
       return { ok: false, message: 'Vérification de l\'antenne impossible : ' + e.message };
+    } finally { ha.close(); }
+  }
+  /* ---------- ESPHome : l'instance doit etre en 64 bits ----------
+     L'add-on ESPHome Device Builder n'existe que pour amd64 et aarch64.
+     { ok: true, arch } ou { ok: false, message }. Une verification
+     IMPOSSIBLE bloque aussi : on ne vend pas un pack qui ne pourra pas servir. */
+  let esphomeVerifiePour = '';
+  async function verifierEsphome(url, token) {
+    const cible = checkInstanceUrlNavigateur(url);
+    if (cible.error) return { ok: false, message: cible.error };
+    let ha;
+    try { ha = await haConnect(cible.ws, token); }
+    catch (e) { return { ok: false, message: 'Vérification de votre instance impossible : ' + e.message }; }
+    try {
+      const rep = await ha.call({ type: 'supervisor/api', endpoint: '/info', method: 'get' });
+      if (!rep.success) {
+        return { ok: false, message: 'Impossible de joindre le Supervisor de votre instance. Le pack ESPHome exige Home Assistant OS (ou Supervised) et un jeton administrateur. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
+      }
+      const arch = (rep.result && rep.result.arch) || '?';
+      if (['amd64', 'aarch64'].indexOf(arch) < 0) {
+        return { ok: false, message: '<b>ESPHome ne peut pas fonctionner sur votre instance</b> (architecture ' + arch + ') : il n\'existe qu\'en 64 bits. Sur un Raspberry Pi, réinstallez Home Assistant OS en version 64 bits. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
+      }
+      return { ok: true, arch: arch };
+    } catch (e) {
+      return { ok: false, message: 'Vérification de votre instance impossible : ' + e.message };
     } finally { ha.close(); }
   }
   /* ---------- Fond d'écran : présent ou non sur l'instance ----------
