@@ -3955,7 +3955,7 @@
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
       { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
       { name: 'appareil_imprimante', desc: 'Impression, cartouches et durée de vie' },
-      { name: 'appareil_raspberry', desc: 'Surveillance système Raspberry Pi' },
+      { name: 'appareil_raspberry', desc: 'Charge, température, disque, Zigbee, Wi-Fi et Bluetooth de votre Raspberry' },
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
       { name: 'appareil_serpillere', desc: 'Robot serpillière' },
@@ -4159,6 +4159,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    appareil_raspberry: {
+      resume: "Le Raspberry qui fait tourner votre maison, vivant : charge, mémoire, température, disque, Zigbee, Wi-Fi, Bluetooth, consommation et alertes.",
+      detail: `La supervision complète du <b>Raspberry Pi</b> qui fait tourner votre Home Assistant &mdash; <b>rien à saisir</b> : le pack reconnaît seul le modèle (Pi 3, 4 ou 5) et sa mémoire, lit le System Monitor, l'alerte de sous-tension, le pont Zigbee2MQTT, l'adaptateur Bluetooth et la prise connectée qui l'alimente. Le premier onglet montre la <b>carte du Raspberry</b>, vivante : sur chaque composant une icône colorée selon son état &mdash; processeur qui pulse d'autant plus vite qu'il travaille, mémoire, température, disque, port Ethernet avec ses deux diodes de lien et d'activité, dongle Zigbee, puce Wi-Fi et Bluetooth &mdash; et les deux voyants de la carte, PWR rouge et ACT vert qui scintille. À côté, trois jauges verticales (processeur, mémoire, disque) dans lesquelles un reflet monte tant que la machine tourne. Quand le Raspberry fonctionne, la carte prend sa <b>bordure animée verte</b> et son fond s'allume ; un seuil franchi ou une sous-tension, et tout passe au <b>rouge</b>. Le deuxième onglet détaille en six sous-onglets : système (modèle, mise à jour disponible, dernier démarrage, réseau), performance, disque, et <b>Zigbee, Wi-Fi et Bluetooth au même dessin</b> &mdash; une capsule d'état puis la liste de vos appareils, lue sur votre instance. Le troisième trace la consommation électrique, la charge et la température sur le jour, la semaine, le mois ou l'année. Vos mobiles sont prévenus d'une coupure, d'un nouvel appareil appairé, d'un disque rempli à 75 %, d'un processeur ou d'une mémoire saturés.`
+    },
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
@@ -4532,6 +4536,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    appareil_raspberry: [
+      { titre: 'Huit alertes du Raspberry', icone: 'fa-bell',
+        declencheur: `Processeur ou mémoire au-dessus de leur seuil pendant dix minutes, disque rempli au-delà du seuil (75 % par défaut), température au-dessus du seuil pendant cinq minutes, sous-tension de l'alimentation, pont Zigbee2MQTT déconnecté depuis cinq minutes, <b>redémarrage de la machine</b> (une coupure de courant se détecte au retour) ou nouvel appareil appairé.`,
+        action: `Notification sur tous vos mobiles qui <b>nomme la cause</b> et sa valeur ; pour un nouvel appareil, son nom et son fabricant. Les quatre seuils sont des entrées que vous réglez sans redéploiement ; une même cause remplace son avis précédent.` }
+    ],
     configuration_esphome: [
       { titre: `Appareil ESPHome hors ligne ou à mettre à jour`, icone: 'fa-microchip',
         declencheur: `Un appareil ESPHome ne répond plus depuis <b>15 minutes</b>, ou un <b>nouveau micrologiciel</b> est disponible pour l'un d'eux.`,
@@ -4725,6 +4734,42 @@
   };
 
   const PACK_DETAILS = {
+    appareil_raspberry: {
+      intro: `Trois onglets : indicateur, détails, historique. <b>Rien à saisir</b> : le pack reconnaît le modèle de votre Raspberry (3, 4 ou 5) et sa mémoire, et retrouve seul le System Monitor, l'alerte de sous-tension, le pont Zigbee2MQTT, l'adaptateur Bluetooth et la prise connectée qui l'alimente. <b>C'est votre installation qui fait la variante</b> : la carte suit votre modèle, et sans Zigbee, sans Wi-Fi ou sans Bluetooth leur sous-onglet disparaît ; sans prise, la courbe de consommation aussi.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-microchip',
+          texte: `La <b>carte de votre Raspberry</b>, à son modèle, avec sur chaque composant une icône qui dit son état : processeur, mémoire, température, disque, alimentation, port Ethernet, dongle Zigbee, Wi-Fi, Bluetooth &mdash; vert quand tout va bien, ambre en charge, corail au-delà du seuil, gris quand la machine est arrêtée. Les voyants PWR et ACT sont reproduits comme sur la vraie carte. À droite, trois jauges verticales de charge ; en haut l'alimentation (les watts si une prise la mesure) et le temps de fonctionnement ; en bas l'adresse IP, la température et le bouton de redémarrage.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
+            { nom: `Alimentation`, texte: `éclair vert qui respire, rouge qui clignote en sous-tension ; la puissance tirée quand une prise la mesure.` },
+            { nom: `En marche depuis`, texte: `le temps écoulé depuis le dernier démarrage, horloge qui fait tic-tac.` },
+            { nom: `Carte du Raspberry`, texte: `les icônes posées sur les composants de votre modèle, colorées et animées selon leur état ; diodes de lien et d'activité sur le port Ethernet.` },
+            { nom: `Jauges CPU, RAM, DISK`, texte: `trois barres remplies au pourcentage, vertes, ambre puis corail, parcourues d'un reflet tant que la machine travaille.` },
+            { nom: `Adresse IP et température`, texte: `l'interface utilisée (Ethernet ou Wi-Fi) et la température du processeur.` },
+            { nom: `Redémarrage`, texte: `bouton rond corail, à confirmation. Pas de bouton de coupure de la prise : il éteindrait le tableau de bord sans moyen de le rallumer.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé quand le Raspberry fonctionne, rouge sur un seuil ou une sous-tension. Rien ne bouge de place.` }
+          ] },
+        { titre: '2 — Détails', icone: 'fa-sliders',
+          texte: `Six sous-onglets, choisis par les pastilles du bas. <b>Système</b> : modèle et mémoire, version de Home Assistant OS (en ambre quand une mise à jour attend), dernier démarrage, réseau. <b>Performance</b> : processeur et mémoire en deux anneaux concentriques, température en jauge à aiguille, charge moyenne sur 1, 5 et 15 minutes. <b>Disque</b> : l'espace utilisé en anneau, les volumes utilisé et libre, la mémoire d'échange. <b>Zigbee, Wi-Fi et Bluetooth, au même dessin</b> : une capsule d'état, puis la liste lue sur votre instance &mdash; appareils Zigbee avec leur qualité de liaison (un appui sur la capsule ouvre l'appairage), interfaces réseau avec adresse et débits, appareils Bluetooth avec leur signal.`,
+          elements: [
+            { nom: `Système`, texte: `modèle et mémoire, version du système et mise à jour, dernier démarrage, réseau.` },
+            { nom: `Performance`, texte: `anneaux CPU et RAM, jauge de température, charge 1 · 5 · 15 min.` },
+            { nom: `Disque`, texte: `anneau de l'espace utilisé, volumes utilisé et libre, échange.` },
+            { nom: `Zigbee`, texte: `état du pont (vert, rouge, magenta quand l'appairage est ouvert) et appareils en ligne avec leur LQI.` },
+            { nom: `Wi-Fi`, texte: `état de la puce Wi-Fi, adresses et débits des deux interfaces.` },
+            { nom: `Bluetooth`, texte: `adaptateur et appareils à portée avec leur signal.` },
+            { nom: `Pastilles`, texte: `six boutons de sous-onglet ; celui du sous-onglet actif est en vert.` }
+          ] },
+        { titre: '3 — Historique', icone: 'fa-chart-line',
+          texte: `La <b>consommation électrique</b> du Raspberry (sa prise connectée) en kWh, sa <b>charge</b> (processeur et mémoire) et sa <b>température</b>, sur le jour, la semaine, le mois ou l'année &mdash; lues dans les statistiques long terme, qui remontent bien au-delà des dix jours de l'historique brut.`,
+          elements: [
+            { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
+            { nom: `Graphe`, texte: `barres de consommation, courbes de charge ou de température.` },
+            { nom: `Métrique`, texte: `Énergie (avec une prise), Charge, Température.` }
+          ] }
+      ]
+    },
     securite_camera: {
       intro: `Trois onglets : direct, réglages, enregistrements. Vous ne saisissez que le <b>nom de votre caméra</b> &mdash; le pack réunit tous les appareils de ce nom, classe leurs entités, et <b>teste laquelle rend une image</b> avant d'en faire le flux. <b>C'est ce que votre caméra expose qui fait la variante</b> : sans ses commandes d'orientation, les quatre flèches disparaissent ; sans tel interrupteur, sa pastille aussi ; sans caméra EZVIZ, l'onglet Enregistrements n'apparaît pas. Un bouton qui ne commanderait rien est retiré plutôt que laissé inerte.`,
       carte: () => 'defaut',
@@ -6521,6 +6566,26 @@
   ];
 
   const MODULE_PARAMS = {
+    appareil_raspberry: [
+      { param: 'RPI_MODELE', label: 'Modèle', type: 'select', required: false,
+        groupe: '🍓 Raspberry',
+        options: [
+          { value: '', label: 'Détection automatique' },
+          { value: '5', label: 'Raspberry Pi 5' },
+          { value: '4', label: 'Raspberry Pi 4' },
+          { value: '3', label: 'Raspberry Pi 3' }
+        ] },
+      { param: 'RPI_PIECE', label: 'Pièce', type: 'text', required: false,
+        groupe: '🍓 Raspberry',
+        placeholder: 'vide : celle de sa prise connectée, sinon Maison' },
+      { param: 'RPI_SEUILS', label: 'Seuils : processeur, mémoire, disque, température', type: 'text', required: false,
+        groupe: '🍓 Raspberry',
+        placeholder: 'ex : 80,85,75,75 — %, %, %, °C ; vide : ces valeurs' },
+      { param: 'RPI_PRISE', label: 'Prise connectée (capteur de puissance)', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : la prise dont le nom cite le Raspberry, si elle existe' },
+      champThemeSite('RPI_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
+    ],
     securite_camera: [
       { param: 'CAMERA_APPAREIL', label: 'Nom de la caméra', type: 'text', required: true,
         groupe: '📹 Caméra',
@@ -7248,6 +7313,15 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    appareil_raspberry:
+      'la vue et ses trois onglets, les s\u00e9lecteurs et les quatre seuils '
+      + 'r\u00e9glables, l\u2019automatisation aux huit alertes (processeur, '
+      + 'm\u00e9moire, disque, temp\u00e9rature, sous-tension, Zigbee, '
+      + 'red\u00e9marrage, nouvel appareil) qui pr\u00e9vient tous vos mobiles, '
+      + 'le script de red\u00e9marrage, l\u2019installation du System Monitor '
+      + 's\u2019il manque et la r\u00e9activation de ses capteurs utiles, '
+      + 'ainsi que HACS et les cartes personnalis\u00e9es requises '
+      + '(button-card, apexcharts-card, swipe-card, stack-in-card, card-mod).',
     securite_camera:
       `la vue et ses trois onglets, le s\u00e9lecteur d'enregistrement, `
       + `le script d'instantan\u00e9 qui envoie la photo sur tous vos mobiles, `
@@ -14970,6 +15044,398 @@
         }
       }
     },
+    "raspberry": {
+      "argile-craquele": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/argile-craquele.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/argile-craquele-defaut-1.mp4",
+            "templates/apercus/raspberry/argile-craquele-defaut-2.mp4",
+            "templates/apercus/raspberry/argile-craquele-defaut-3.mp4"
+          ]
+        }
+      },
+      "banquise-complice": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/banquise-complice.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/banquise-complice-defaut-1.mp4",
+            "templates/apercus/raspberry/banquise-complice-defaut-2.mp4",
+            "templates/apercus/raspberry/banquise-complice-defaut-3.mp4"
+          ]
+        }
+      },
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/bleu-evasion.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/bleu-evasion-defaut-1.mp4",
+            "templates/apercus/raspberry/bleu-evasion-defaut-2.mp4",
+            "templates/apercus/raspberry/bleu-evasion-defaut-3.mp4"
+          ]
+        }
+      },
+      "bois-magique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/bois-magique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/bois-magique-defaut-1.mp4",
+            "templates/apercus/raspberry/bois-magique-defaut-2.mp4",
+            "templates/apercus/raspberry/bois-magique-defaut-3.mp4"
+          ]
+        }
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/carbon-pulse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/carbon-pulse-defaut-1.mp4",
+            "templates/apercus/raspberry/carbon-pulse-defaut-2.mp4",
+            "templates/apercus/raspberry/carbon-pulse-defaut-3.mp4"
+          ]
+        }
+      },
+      "classe-coloree": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/classe-coloree.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/classe-coloree-defaut-1.mp4",
+            "templates/apercus/raspberry/classe-coloree-defaut-2.mp4",
+            "templates/apercus/raspberry/classe-coloree-defaut-3.mp4"
+          ]
+        }
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/creme-gourmande.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/creme-gourmande-defaut-1.mp4",
+            "templates/apercus/raspberry/creme-gourmande-defaut-2.mp4",
+            "templates/apercus/raspberry/creme-gourmande-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/cuir-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/cuir-blanc-defaut-1.mp4",
+            "templates/apercus/raspberry/cuir-blanc-defaut-2.mp4",
+            "templates/apercus/raspberry/cuir-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-chesterfield": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/cuir-chesterfield.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/cuir-chesterfield-defaut-1.mp4",
+            "templates/apercus/raspberry/cuir-chesterfield-defaut-2.mp4",
+            "templates/apercus/raspberry/cuir-chesterfield-defaut-3.mp4"
+          ]
+        }
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/elegance-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/elegance-ardoise-defaut-1.mp4",
+            "templates/apercus/raspberry/elegance-ardoise-defaut-2.mp4",
+            "templates/apercus/raspberry/elegance-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "foret-enchantee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/foret-enchantee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/foret-enchantee-defaut-1.mp4",
+            "templates/apercus/raspberry/foret-enchantee-defaut-2.mp4",
+            "templates/apercus/raspberry/foret-enchantee-defaut-3.mp4"
+          ]
+        }
+      },
+      "gatsby-epure": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/gatsby-epure.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/gatsby-epure-defaut-1.mp4",
+            "templates/apercus/raspberry/gatsby-epure-defaut-2.mp4",
+            "templates/apercus/raspberry/gatsby-epure-defaut-3.mp4"
+          ]
+        }
+      },
+      "jungle-joyeuse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/jungle-joyeuse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/jungle-joyeuse-defaut-1.mp4",
+            "templates/apercus/raspberry/jungle-joyeuse-defaut-2.mp4",
+            "templates/apercus/raspberry/jungle-joyeuse-defaut-3.mp4"
+          ]
+        }
+      },
+      "lin-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/lin-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/lin-blanc-defaut-1.mp4",
+            "templates/apercus/raspberry/lin-blanc-defaut-2.mp4",
+            "templates/apercus/raspberry/lin-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/mars-rouge.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/mars-rouge-defaut-1.mp4",
+            "templates/apercus/raspberry/mars-rouge-defaut-2.mp4",
+            "templates/apercus/raspberry/mars-rouge-defaut-3.mp4"
+          ]
+        }
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/neo-future.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/neo-future-defaut-1.mp4",
+            "templates/apercus/raspberry/neo-future-defaut-2.mp4",
+            "templates/apercus/raspberry/neo-future-defaut-3.mp4"
+          ]
+        }
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/nocturne-artistique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/nocturne-artistique-defaut-1.mp4",
+            "templates/apercus/raspberry/nocturne-artistique-defaut-2.mp4",
+            "templates/apercus/raspberry/nocturne-artistique-defaut-3.mp4"
+          ]
+        }
+      },
+      "onyx-chic": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/onyx-chic.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/onyx-chic-defaut-1.mp4",
+            "templates/apercus/raspberry/onyx-chic-defaut-2.mp4",
+            "templates/apercus/raspberry/onyx-chic-defaut-3.mp4"
+          ]
+        }
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/pure-lumiere.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/pure-lumiere-defaut-1.mp4",
+            "templates/apercus/raspberry/pure-lumiere-defaut-2.mp4",
+            "templates/apercus/raspberry/pure-lumiere-defaut-3.mp4"
+          ]
+        }
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/sahara-elegance.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/sahara-elegance-defaut-1.mp4",
+            "templates/apercus/raspberry/sahara-elegance-defaut-2.mp4",
+            "templates/apercus/raspberry/sahara-elegance-defaut-3.mp4"
+          ]
+        }
+      },
+      "sanctuaire-antique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/sanctuaire-antique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/sanctuaire-antique-defaut-1.mp4",
+            "templates/apercus/raspberry/sanctuaire-antique-defaut-2.mp4",
+            "templates/apercus/raspberry/sanctuaire-antique-defaut-3.mp4"
+          ]
+        }
+      },
+      "soie-blanche": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/soie-blanche.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/soie-blanche-defaut-1.mp4",
+            "templates/apercus/raspberry/soie-blanche-defaut-2.mp4",
+            "templates/apercus/raspberry/soie-blanche-defaut-3.mp4"
+          ]
+        }
+      },
+      "sombre-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/sombre-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/sombre-ardoise-defaut-1.mp4",
+            "templates/apercus/raspberry/sombre-ardoise-defaut-2.mp4",
+            "templates/apercus/raspberry/sombre-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "station-orbitale": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/station-orbitale.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/station-orbitale-defaut-1.mp4",
+            "templates/apercus/raspberry/station-orbitale-defaut-2.mp4",
+            "templates/apercus/raspberry/station-orbitale-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/terre-de-carmin.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/terre-de-carmin-defaut-1.mp4",
+            "templates/apercus/raspberry/terre-de-carmin-defaut-2.mp4",
+            "templates/apercus/raspberry/terre-de-carmin-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-gravee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/terre-gravee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/terre-gravee-defaut-1.mp4",
+            "templates/apercus/raspberry/terre-gravee-defaut-2.mp4",
+            "templates/apercus/raspberry/terre-gravee-defaut-3.mp4"
+          ]
+        }
+      },
+      "tresor-de-plage": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/tresor-de-plage.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/tresor-de-plage-defaut-1.mp4",
+            "templates/apercus/raspberry/tresor-de-plage-defaut-2.mp4",
+            "templates/apercus/raspberry/tresor-de-plage-defaut-3.mp4"
+          ]
+        }
+      },
+      "tressage-boheme": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/tressage-boheme.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/tressage-boheme-defaut-1.mp4",
+            "templates/apercus/raspberry/tressage-boheme-defaut-2.mp4",
+            "templates/apercus/raspberry/tressage-boheme-defaut-3.mp4"
+          ]
+        }
+      },
+      "trones-reunis": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/trones-reunis.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/trones-reunis-defaut-1.mp4",
+            "templates/apercus/raspberry/trones-reunis-defaut-2.mp4",
+            "templates/apercus/raspberry/trones-reunis-defaut-3.mp4"
+          ]
+        }
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/raspberry/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/raspberry/urban-factory-defaut-1.mp4",
+            "templates/apercus/raspberry/urban-factory-defaut-2.mp4",
+            "templates/apercus/raspberry/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "refrigerateur": {
       "argile-craquele": {
         "cartes": {
@@ -17549,7 +18015,8 @@
     appareil_television: 'televiseur',
     appareil_compteur_electricite: 'compteur-electrique',
     chauffage_compteur_gaz: 'compteur-gaz',
-    eau_compteur: 'compteur-eau'
+    eau_compteur: 'compteur-eau',
+    appareil_raspberry: 'raspberry'
   };
 
   function themeSite(cle) {
@@ -18149,7 +18616,10 @@
     'chauffage_compteur_gaz',
     // `eau_compteur` ajoute le 21/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
-    'eau_compteur'
+    'eau_compteur',
+    // `appareil_raspberry` ajoute le 25/09/2026, comme les precedents :
+    // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
+    'appareil_raspberry'
   ]);
 
   const PRIX_PACK = 9;
@@ -19294,7 +19764,10 @@
     // milieu se calcule autrement -- un micro-onde ne consomme pas comme
     // un lave-linge.
     appareil_micro_onde: 'micro-onde',
-    appareil_raspberry: 'systeme',
+    // Pack Raspberry (25/09/2026), sur les bases du pack Box Internet :
+    // l'ancien `systeme` (deploy_pack_raspberry) reste sur le depot mais
+    // n'est plus expose.
+    appareil_raspberry: 'raspberry',
     // Pack Imprimante (09/09/2026), aux standards du pack Lave-linge.
     // Sa particularite : la decouverte, qui ne demande au client qu'un
     // NOM D'APPAREIL, et l'impression, qui passe par l'integration HACS
