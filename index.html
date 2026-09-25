@@ -3923,7 +3923,8 @@
       { name: 'configuration_terminal_ssh', desc: 'Terminal et acces SSH' },
       { name: 'configuration_hacs', desc: 'Magasin communautaire HACS' },
       { name: 'configuration_duckdns', desc: 'Nom de domaine et acces distant' },
-      { name: 'configuration_zigbee2mqtt', desc: 'Reseau Zigbee : Mosquitto et Zigbee2MQTT' }
+      { name: 'configuration_zigbee2mqtt', desc: 'Reseau Zigbee : Mosquitto et Zigbee2MQTT' },
+      { name: 'configuration_backup', desc: 'Sauvegardes automatiques' }
     ],
     lumiere: [
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
@@ -3996,6 +3997,7 @@
     configuration_hacs: 'HACS',
     configuration_duckdns: 'DuckDNS',
     configuration_zigbee2mqtt: 'Zigbee2MQTT',
+    configuration_backup: 'Backup',
     lumiere_lumiere: 'Lumière',
     ouverture_garage_porte: 'Porte de Garage',
     ouverture_volet: 'Volets Roulants',
@@ -4048,6 +4050,7 @@
     configuration_hacs: 'fa-store',
     configuration_duckdns: 'fa-globe',
     configuration_zigbee2mqtt: 'fa-tower-broadcast',
+    configuration_backup: 'fa-box-archive',
     lumiere_lumiere: 'fa-lightbulb',
     ouverture_garage_porte: 'fa-warehouse',
     ouverture_volet: 'fa-window-maximize',
@@ -4241,6 +4244,11 @@
       resume: "Réseau Zigbee prêt à appairer.",
       logo: 'templates/config/zigbee2mqtt.gif',
       detail: `Installe toute la chaîne <b>Zigbee2MQTT</b> : le broker <b>Mosquitto</b>, l'intégration <b>MQTT</b>, puis Zigbee2MQTT lui-même, réglé sur <b>votre antenne Zigbee</b>, détectée automatiquement sur les ports USB. Zigbee2MQTT apparaît dans la barre latérale, prêt à appairer vos objets connectés. <br><br><span class="inclus"><b>Inclus :</b> détection de l'antenne (SONOFF, ConBee, Home Assistant Connect ZBT, CC2652…) et de son pilote, installation et configuration de Mosquitto et de Zigbee2MQTT avec les quatre réglages activés, et passage de l'assistant de premier démarrage à votre place. <b>Aucun appareil n'est appairé :</b> c'est vous qui choisissez quoi ajouter. <b>Prérequis :</b> une antenne Zigbee branchée en USB — elle est vérifiée <b>avant</b> la commande ; sans elle, rien n'est facturé ni installé.</span>`
+    },
+    configuration_backup: {
+      resume: "Sauvegardes automatiques, chiffrées et surveillées.",
+      logo: 'templates/config/backup.gif',
+      detail: `Met en place les <b>sauvegardes automatiques</b> de Home Assistant, de bout en bout : un programme chaque nuit (ou chaque semaine), le nombre de copies à garder, le contenu complet — Home Assistant, sa base de données, <b>tous les add-ons</b>, vos dossiers <i>share</i> et <i>media</i> — et la <b>clé de chiffrement</b> sans laquelle une sauvegarde ne se restaure pas ailleurs. <br><br><span class="inclus"><b>Inclus :</b> configuration complète des sauvegardes natives, copie facultative sur votre <b>NAS</b> (partage SMB ou NFS monté pour vous), une première sauvegarde lancée tout de suite si vous n'en avez aucune, et une <b>alerte sur vos mobiles</b> si une sauvegarde échoue ou si aucune n'a réussi depuis deux jours. <b>Déjà configurées ?</b> Vos réglages sont conservés : seuls les champs que vous remplissez les remplacent.</span>`
     },
 
     service_gestion_dechets: {
@@ -4500,6 +4508,11 @@
      ecrits par le script de deploiement du pack (CLAUDE.md fait foi). Un
      pack absent d'ici n'a pas de bloc « Automatismes » — il n'en cree pas. */
   const PACK_AUTOMATISMES = {
+    configuration_backup: [
+      { titre: `Sauvegarde en échec ou en retard`, icone: 'fa-box-archive',
+        declencheur: `Une sauvegarde automatique <b>échoue</b>, ou, lors de la vérification de 9 h, aucune sauvegarde n'a réussi depuis <b>deux jours</b> (huit pour un programme hebdomadaire).`,
+        action: `Notification sur tous vos mobiles, avec la raison de l'échec ou la date de la dernière sauvegarde réussie.` }
+    ],
     securite_camera: [
       { titre: `Mouvement anormal devant la caméra`, icone: 'fa-person-running',
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
@@ -5092,6 +5105,34 @@
             { nom: `Redirection de port`, texte: `le port 8123 à rediriger sur votre box : la seule étape que personne ne peut faire à votre place.` },
             { nom: `Notification`, texte: `un rappel persistant dans Home Assistant, qui survit à la fermeture de cette page.` },
             { nom: `Journal`, texte: `le même rappel dans le journal de déploiement.` }
+          ] }
+      ]
+    },
+
+    configuration_backup: {
+      intro: 'Configure les <b>sauvegardes automatiques</b> natives de Home Assistant : programme, rétention, contenu complet, clé de chiffrement, copie facultative sur un NAS, et alerte en cas d\'échec. Une configuration déjà en place est <b>conservée</b> : le pack ne comble que ce qui manque.',
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Programme et contenu', icone: 'fa-clock-rotate-left',
+          texte: 'Une sauvegarde complète part <b>chaque nuit à 04:45</b> (ou chaque semaine, ou à l\'heure que vous choisissez), et les <b>7 dernières</b> sont gardées. Elle contient Home Assistant, sa base de données, tous vos add-ons et les dossiers <i>share</i> et <i>media</i>.',
+          elements: [
+            { nom: `Programme`, texte: `chaque jour ou chaque dimanche, à l'heure choisie ; 04:45 par défaut, quand l'instance est au calme.` },
+            { nom: `Rétention`, texte: `les copies les plus anciennes sont effacées d'elles-mêmes : 7 par défaut, de 3 à 30 au choix.` },
+            { nom: `Première sauvegarde`, texte: `si votre instance n'en a jamais réussi aucune, une première est lancée tout de suite.` },
+            { nom: `Réglages conservés`, texte: `des sauvegardes déjà configurées gardent leur programme, leur rétention et leurs destinations ; seul un champ rempli les remplace.` }
+          ] },
+        { titre: '2 — Chiffrement et NAS', icone: 'fa-lock',
+          texte: 'Home Assistant chiffre ses sauvegardes : sans <b>clé</b>, elles ne se restaurent pas sur une autre machine. Le pack en génère une si vous n\'en avez pas — elle n\'est jamais transmise ni affichée : une notification vous invite à télécharger votre <b>kit d\'urgence</b>. Une sauvegarde gardée sur la seule carte SD meurt avec elle : indiquez votre <b>NAS</b>, et une copie y part aussi.',
+          elements: [
+            { nom: `Clé de chiffrement`, texte: `générée si absente, gardée si présente ; à télécharger dans Paramètres → Système → Sauvegardes → Configurer.` },
+            { nom: `Partage réseau`, texte: `SMB (Windows, Synology, QNAP, Freebox…) ou NFS, monté par Home Assistant et ajouté comme destination de sauvegarde.` },
+            { nom: `Vos autres destinations`, texte: `Home Assistant Cloud ou toute autre destination déjà active est conservée.` }
+          ] },
+        { titre: '3 — Surveillance', icone: 'fa-bell',
+          texte: 'Une sauvegarde qui échoue en silence ne se découvre que le jour où on en a besoin. Une automatisation prévient <b>tous vos mobiles</b> dès qu\'une sauvegarde échoue, et chaque matin si aucune n\'a réussi depuis deux jours (huit pour un programme hebdomadaire).',
+          elements: [
+            { nom: `Échec`, texte: `notification immédiate, avec la raison donnée par Home Assistant.` },
+            { nom: `Retard`, texte: `vérification chaque matin à 9 h de la date de la dernière sauvegarde réussie.` }
           ] }
       ]
     },
@@ -6691,6 +6732,38 @@
           { value: 'netdaemon', label: 'NetDaemon' }
         ] }
     ],
+    configuration_backup: [
+      { param: 'BACKUP_FREQUENCE', label: 'Fréquence', type: 'select', required: false, groupe: '⏱️ Programme',
+        options: [
+          { value: '', label: 'Automatique (chaque jour, ou la vôtre)' },
+          { value: 'daily', label: 'Chaque jour' },
+          { value: 'weekly', label: 'Chaque semaine (dimanche)' }
+        ] },
+      { param: 'BACKUP_HEURE', label: 'Heure', type: 'text', required: false, groupe: '⏱️ Programme',
+        placeholder: 'vide : 04:45 (ou la vôtre)' },
+      { param: 'BACKUP_COPIES', label: 'Copies à garder', type: 'select', required: false, groupe: '⏱️ Programme',
+        options: [
+          { value: '', label: 'Automatique (7, ou la vôtre)' },
+          { value: '3', label: '3 copies' },
+          { value: '7', label: '7 copies' },
+          { value: '14', label: '14 copies' },
+          { value: '30', label: '30 copies' }
+        ] },
+      { param: 'BACKUP_NAS_TYPE', label: 'Copie sur un NAS', type: 'select', required: false, groupe: '🗄️ NAS (facultatif)',
+        options: [
+          { value: '', label: 'Aucun NAS' },
+          { value: 'cifs', label: 'Partage SMB (Windows, Synology…)' },
+          { value: 'nfs', label: 'Partage NFS' }
+        ] },
+      { param: 'BACKUP_NAS_SERVEUR', label: 'Serveur', type: 'text', required: false, groupe: '🗄️ NAS (facultatif)',
+        placeholder: 'ex : 192.168.1.20 ou nas.local' },
+      { param: 'BACKUP_NAS_PARTAGE', label: 'Partage', type: 'text', required: false, groupe: '🗄️ NAS (facultatif)',
+        placeholder: 'ex : sauvegardes' },
+      { param: 'BACKUP_NAS_UTILISATEUR', label: 'Utilisateur', type: 'text', required: false, groupe: '🗄️ NAS (facultatif)',
+        placeholder: 'SMB seulement' },
+      { param: 'BACKUP_NAS_MOTDEPASSE', label: 'Mot de passe', type: 'password', required: false, groupe: '🗄️ NAS (facultatif)',
+        placeholder: 'SMB seulement' }
+    ],
     configuration_duckdns: [
       { param: 'DUCKDNS_DOMAINE', label: 'Domaine DuckDNS', type: 'text', required: true,
         placeholder: 'ex : mon-nom  (ou mon-nom.duckdns.org)' },
@@ -7271,7 +7344,7 @@
                o.rectangle ? ` style="${rectangleCouleur(o.rectangle)}"`
                            : (o.couleur ? ` style="color:${o.couleur}"` : '')
              }>${o.label}</option>`).join('')}</select>`
-        : `<input type="${c.type === 'date' ? 'date' : 'text'}"
+        : `<input type="${c.type === 'date' ? 'date' : (c.type === 'password' ? 'password' : 'text')}" autocomplete="off"
                   class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
       // CHAQUE CHAMP EST ENVELOPPE dans son propre conteneur. Rendus en
@@ -17858,6 +17931,7 @@
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'configuration_zigbee2mqtt',
+    'configuration_backup',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
     'ouverture_garage_porte',
@@ -18071,7 +18145,9 @@
       const valeur = item.params ? item.params[c.param] : null;
       if (!valeur) return;
       let lisible = valeur;
-      if (c.type === 'select') {
+      if (c.type === 'password') {
+        lisible = '••••••••';
+      } else if (c.type === 'select') {
         lisible = ((c.options || []).find(o => o.value === valeur) || {}).label || valeur;
       } else if (c.type === 'checkboxes') {
         lisible = valeur.split(',')
@@ -18998,6 +19074,7 @@
     configuration_hacs: 'config-hacs',
     configuration_duckdns: 'config-duckdns',
     configuration_zigbee2mqtt: 'config-zigbee2mqtt',
+    configuration_backup: 'config-backup',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     /* Reecriture du 06/09/2026 : `poubelles`
