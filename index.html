@@ -3958,7 +3958,7 @@
       { name: 'appareil_raspberry', desc: 'Charge, température, disque, Zigbee, Wi-Fi et Bluetooth de votre Raspberry' },
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
-      { name: 'appareil_serpillere', desc: 'Robot serpillière' },
+      { name: 'appareil_serpillere', desc: 'Robot ou balai laveur, réservoirs, modes de lavage, auto-nettoyage et alertes' },
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot vivant sur sa pelouse, batterie, planning et modes, usure des lames et alertes' },
@@ -4022,7 +4022,7 @@
     appareil_raspberry: 'Raspberry Pi',
     appareil_refrigerateur: 'Réfrigérateur',
     appareil_seche_linge: 'Sèche-linge',
-    appareil_serpillere: 'Robot Serpillière',
+    appareil_serpillere: 'Serpillière',
     appareil_sonnette: 'Sonnette',
     appareil_soundbar: 'Barre de Son',
     appareil_television: 'Téléviseur',
@@ -4211,6 +4211,11 @@
     appareil_aspirateur: {
       resume: `Votre robot aspirateur vivant dans sa pièce, sa batterie, ses pièces, ses profils de nettoyage et l'usure de ses consommables.`,
       detail: `Le tableau de bord de votre robot aspirateur &mdash; Roborock, iRobot Roomba, Dreame, Xiaomi, Ecovacs&hellip; Vous ne saisissez que le <b>nom du robot</b> : le pack retrouve seul sa batterie, son statut, son capteur d'erreur, ses puissances d'aspiration, son mode serpillière, le sac de sa station, sa caméra frontale et ses consommables s'il en publie, et <b>n'affiche que ce qui existe</b>. Le premier onglet dessine un <b>sol en parquet</b> et sa station : le robot le balaie en serpentin et la poussière disparaît sur son passage, une trace d'eau le suit quand il lave, son ventilateur tourne d'autant plus vite que la puissance est forte, il rentre en bleu, recharge sous un éclair, s'immobilise en pause ou se secoue en rouge quand il est coincé. Un <b>sélecteur de pièces</b> choisit ce qu'il nettoie, un anneau circulaire donne la batterie, trois boutons lancent, mettent en pause ou renvoient le robot à sa station. Le deuxième onglet règle le <b>planning</b> (heure, jours, durée maximale) et les <b>profils</b> : manuel, automatique, approfondi (aspiration maximale), silencieux. Le troisième suit l'<b>usure</b> des brosses, du filtre, des patins et du sac de la station, avec remise à zéro d'un appui. Dès que le robot nettoie ou rentre, la carte prend sa <b>bordure animée verte</b> et son fond s'allume. Une alerte prévient vos mobiles si le robot est bloqué, si le sac est plein, si une erreur survient, si la batterie faiblit hors de la station ou si un consommable est usé.`,
+      apercu: {}
+    },
+    appareil_serpillere: {
+      resume: `Votre robot laveur ou votre balai laveur en action, ses réservoirs d'eau propre et d'eau sale, ses modes de lavage, l'auto-nettoyage et le séchage de ses patins.`,
+      detail: `Le tableau de bord de votre serpillière intelligente &mdash; <b>robot laveur</b> (Roborock, Dreame, Ecovacs, Narwal, iRobot Braava&hellip;), avec ou sans <b>station de lavage automatisée</b>, ou <b>balai laveur sans fil</b> (Tineco, Dreame H, Roborock Dyad). Vous ne saisissez que le <b>nom de l'appareil</b> : le pack retrouve seul sa batterie, son statut, son capteur d'erreur, son débit d'eau, le dosage du détergent, les niveaux de ses réservoirs d'eau propre et d'eau sale, le séchage à l'air chaud, l'auto-nettoyage des patins et ses consommables, et <b>n'affiche que ce qui existe</b>. Le premier onglet dessine un <b>sol</b> et une station : le robot le parcourt en serpentin (le balai y va et vient), les taches s'effacent sur son passage, un reflet de sol mouillé file et une trace d'eau le suit ; sur la station, <b>deux réservoirs</b> se remplissent à leur niveau et virent à l'ambre puis au corail ; des bulles montent pendant l'auto-nettoyage, des ondes de chaleur pendant le séchage. Le deuxième onglet règle les <b>modes de lavage</b> (standard, éco, humidité élevée, double passage), active ou suspend le <b>planning</b> et lance un lavage temporisé. Le troisième suit l'<b>usure des patins, du filtre, de la brosse latérale et le détergent</b>, et donne l'état des réservoirs, du séchage et de l'auto-nettoyage. Dès que l'appareil lave, la carte prend sa <b>bordure animée verte</b> et son fond s'allume. Une alerte prévient vos mobiles si l'eau sale est pleine, si l'eau propre est vide, si l'appareil est bloqué, quand l'auto-nettoyage des patins est terminé, si la batterie faiblit ou si un consommable est usé.`,
       apercu: {}
     },
     appareil_tondeuse: {
@@ -4747,6 +4752,26 @@
         declencheur: `Le profil Automatique, Approfondi ou Silencieux est choisi.`,
         action: `La puissance d'aspiration du robot est réglée sur la valeur standard, maximale ou minimale de sa propre liste.` }
     ],
+    appareil_serpillere: [
+      { titre: `Réservoir d'eau sale plein`, icone: 'fa-bucket',
+        declencheur: `Le réservoir d'eau sale atteint 90 % (ou son capteur passe à « plein ») pendant une minute.`,
+        action: `Notification sur tous vos mobiles : à vider avant le prochain lavage.` },
+      { titre: `Réservoir d'eau propre vide`, icone: 'fa-droplet-slash',
+        declencheur: `Le réservoir d'eau propre descend à 10 % (ou son capteur passe à « vide ») pendant une minute.`,
+        action: `Notification : à remplir avant le prochain lavage.` },
+      { titre: `Appareil bloqué ou en erreur`, icone: 'fa-triangle-exclamation',
+        declencheur: `Le robot passe en erreur, ou le capteur d'erreur signale un blocage, pendant trente secondes.`,
+        action: `Notification qui cite l'erreur publiée et dit clairement quand l'appareil est coincé.` },
+      { titre: `Auto-nettoyage terminé`, icone: 'fa-soap',
+        declencheur: `Le statut de l'appareil cesse d'annoncer l'auto-nettoyage des patins ou du rouleau.`,
+        action: `Notification ; elle rappelle de vider l'eau sale si le réservoir est plein.` },
+      { titre: `Batterie faible et consommable usé`, icone: 'fa-battery-quarter',
+        declencheur: `La batterie passe sous le seuil réglé hors de la station, ou le consommable le plus usé sous le sien.`,
+        action: `Notification avec le niveau mesuré, ou le nom de la pièce à remplacer.` },
+      { titre: `Programme et modes de lavage`, icone: 'fa-calendar-check',
+        declencheur: `L'heure de départ réglée, les jours choisis, planning activé — ou un mode de lavage choisi.`,
+        action: `Lavage de la pièce choisie (ou auto-nettoyage pour un balai), retour à la station au plus tard à la durée maximale ; débit et puissance réglés selon le mode.` }
+    ],
     appareil_tondeuse: [
       { titre: `Robot bloqué, en erreur, fil coupé`, icone: 'fa-triangle-exclamation',
         declencheur: `Le robot passe en erreur, ou son capteur d'erreur signale un blocage, pendant une minute.`,
@@ -5190,6 +5215,38 @@
             { nom: `Jauges`, texte: `vertes, ambre sous 30 %, corail et clignotantes sous le seuil d'alerte.` },
             { nom: `Station de vidage`, texte: `« Sac prêt » ou « Sac plein » — tuile absente sans station auto-videuse.` },
             { nom: `Dernière erreur`, texte: `le texte d'erreur publié par le robot, ou « Aucune ».` }
+          ] }
+      ]
+    },
+    appareil_serpillere: {
+      intro: `Trois onglets : indicateur, planification, maintenance. Vous ne saisissez qu'un <b>nom d'appareil</b>. <b>Obligatoire</b> : pour un <b>robot laveur</b>, une entité <code>vacuum.*</code> (démarrer, pause, retour à la station) ; pour un <b>balai laveur</b>, qui ne se pilote pas à distance, son capteur de statut. <b>Facultatifs, déduits de l'appareil</b> : la batterie, le statut, le capteur d'erreur, les puissances d'aspiration, le <b>débit d'eau</b> (ou la vitesse des rouleaux), le <b>dosage du détergent</b>, les niveaux des réservoirs d'<b>eau propre</b> et d'<b>eau sale</b> (en % ou en « vide / plein »), le <b>séchage à l'air chaud</b>, le bouton d'<b>auto-nettoyage</b> des patins, et les consommables (patins ou rouleau, filtre, brosse latérale, détergent) avec leurs boutons de remise à zéro &mdash; <b>ce sont eux qui font la variante</b> : un robot laveur sans station n'a ni réservoir d'eau sale ni séchage, un balai n'a ni pièces ni modes de lavage, un consommable non publié n'a pas de jauge. Les <b>pièces</b> d'un robot se saisissent (<code>Salon:16, Cuisine:17</code>).`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-broom',
+          texte: `Le <b>sol et sa station</b>, dessinés en icônes : le robot lave en serpentin (le balai va et vient), les taches s'effacent, un reflet de sol mouillé file ; sur la station, les <b>deux réservoirs</b> à leur niveau, des bulles pendant l'auto-nettoyage, des ondes de chaleur pendant le séchage. En haut l'activité, l'<b>anneau de batterie</b> et le débit d'eau ; au milieu le <b>sélecteur de pièces</b> (robot) ; en bas le prochain départ et les commandes.`,
+          elements: [
+            { nom: `Activité`, texte: `lavage, à la base, retour, en pause, auto-nettoyage, séchage, erreur — le statut détaillé de l'intégration en petit.` },
+            { nom: `Anneau de batterie`, texte: `vert, ambre ou corail selon le niveau ; bleu et tournant quand l'appareil recharge.` },
+            { nom: `Débit d'eau`, texte: `le réglage en cours ; un appui passe au suivant (si l'appareil en publie un).` },
+            { nom: `Réservoirs`, texte: `eau propre bleue (ambre sous 20 %, corail et clignotante sous 10 %), eau sale violette (ambre dès 70 %, corail et clignotante dès 90 %).` },
+            { nom: `Commandes du robot`, texte: `Démarrer (confirmé, pièce choisie, double passage), Pause, Retour à la station — le bouton de l'activité en cours est plein et pulse.` },
+            { nom: `Commandes du balai`, texte: `auto-nettoyage du rouleau (confirmé) et séchage, si le balai les publie.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que l'appareil lave ou qu'un lavage temporisé tourne.` }
+          ] },
+        { titre: '2 — Planification', icone: 'fa-calendar-days',
+          texte: `Les <b>modes de lavage</b> : Standard, Éco (débit et puissance au plus bas), Humidité élevée (débit maximal) et Double passage (le robot repasse une seconde fois) — chacun seulement si l'appareil a de quoi l'honorer. Le <b>planning</b> : un interrupteur pour l'activer ou le suspendre, l'heure de départ et les jours ; six durées d'un clic ; un bouton pour lancer un <b>lavage temporisé</b>, le mettre en pause ou le reprendre.`,
+          elements: [
+            { nom: `Quatre modes`, texte: `le mode actif est coloré et son icône animée ; il règle le débit d'eau et la puissance de l'appareil, avec les valeurs de SA propre liste.` },
+            { nom: `Planning, Départ, Jours`, texte: `un appui active ou suspend le planning, ouvre le réglage de l'heure, ou passe à la fréquence suivante.` },
+            { nom: `Six durées`, texte: `15 min, 30 min, 45 min, 1 h, 1 h 30, 2 h.` },
+            { nom: `Compte à rebours`, texte: `« Prêt » au repos ; à l'échéance le robot rentre à sa station.` }
+          ] },
+        { titre: '3 — Maintenance', icone: 'fa-screwdriver-wrench',
+          texte: `Une <b>jauge</b> par consommable publié — patins ou rouleau, filtre, brosse latérale, détergent — convertie en pourcentage même quand l'intégration publie un temps restant ; un appui (confirmé) remet le compteur à zéro. Dessous, six tuiles : <b>eau propre</b>, <b>eau sale</b>, dernière erreur, <b>dosage du détergent</b> (un appui change le dosage), <b>séchage</b> (un appui le lance ou l'arrête) et <b>auto-nettoyage</b> (un appui le lance).`,
+          elements: [
+            { nom: `Jauges`, texte: `vertes, ambre sous 30 %, corail et clignotantes sous le seuil d'alerte.` },
+            { nom: `Réservoirs`, texte: `niveau en %, ou « Vide » / « Plein » pour un capteur binaire.` },
+            { nom: `Tuiles de station`, texte: `absentes quand l'appareil ne publie pas le réglage correspondant.` }
           ] }
       ]
     },
@@ -7087,6 +7144,30 @@
         required: false, groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 10 %` },
       champThemeSite('ASPIRATEUR_THEME', 'urban-factory', `🎨 Apparence`)
     ],
+    appareil_serpillere: [
+      { param: 'SERPILLERE_APPAREIL', label: `Nom de l'appareil`, type: 'text',
+        required: true, groupe: `🧽 Serpillière`,
+        placeholder: `ex : Roborock Qrevo, Dreame X40, Tineco Floor One — tel qu'il apparaît dans Appareils et services` },
+      { param: 'SERPILLERE_TYPE', label: `Type d'appareil`, type: 'select', required: false,
+        groupe: `🧽 Serpillière`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `🔎 Détection automatique` },
+          { value: 'robot', label: `🤖 Robot laveur (avec ou sans station)` },
+          { value: 'balai', label: `🧹 Balai laveur sans fil (type Tineco)` }
+        ] },
+      { param: 'SERPILLERE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🧽 Serpillière`, placeholder: `vide : déduite de l'appareil (sinon « Maison »)` },
+      { param: 'SERPILLERE_PIECES', label: `Pièces à laver (nom:segment)`, type: 'text',
+        required: false, groupe: `🗺️ Lavage par pièce (robot)`,
+        placeholder: `ex : Salon:16, Cuisine:17 — vide : pas de sélecteur de pièces` },
+      { param: 'SERPILLERE_HEURE', label: `Heure de départ programmée`, type: 'text', required: false,
+        groupe: `📅 Planning`, placeholder: `ex : 10:00 — réglable ensuite depuis la carte` },
+      { param: 'SERPILLERE_SEUIL_BATTERIE', label: `Alerte batterie faible (%)`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 20 %` },
+      { param: 'SERPILLERE_SEUIL_CONSO', label: `Alerte consommable usé (%)`, type: 'text',
+        required: false, groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 10 %` },
+      champThemeSite('SERPILLERE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_tondeuse: [
       { param: 'TONDEUSE_APPAREIL', label: `Nom du robot tondeuse`, type: 'text',
         required: true, groupe: `🤖 Robot tondeuse`,
@@ -7723,6 +7804,18 @@
       + `erreur, ses puissances, sa serpillière, sa station, sa caméra frontale `
       + `et ses consommables, tous pilotables, ainsi que HACS et les cartes `
       + `personnalisées requises (button-card, swipe-card, stack-in-card, card-mod).`,
+    appareil_serpillere:
+      `la vue et ses trois onglets, l'appareil, son sol, sa station et ses deux `
+      + `réservoirs dessinés, les helpers du planning et des modes (mode de lavage, `
+      + `planning actif, heure de départ, jours, durée maximale, minuteur, pièce `
+      + `choisie), le capteur de synthèse des consommables, les capteurs « eau `
+      + `propre vide », « eau sale pleine » et « auto-nettoyage en cours », les `
+      + `seuils d'alerte, trois scripts (lavage de la pièce choisie avec double `
+      + `passage, lavage temporisé, bascule) et cinq automatismes (programme, fin, `
+      + `annulation, modes de lavage, alertes critiques), en mode fictif un robot `
+      + `ou un balai et selon la variante tout ce qu'il publierait, pilotable, `
+      + `ainsi que HACS et les cartes personnalisées requises (button-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     appareil_tondeuse:
       `la vue et ses trois onglets, le robot et sa pelouse dessinés selon le `
       + `guidage, les helpers du planning et des modes (mode, heure de départ, `
@@ -16942,6 +17035,21 @@
         }
       }
     },
+    "serpillere": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/serpillere/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/serpillere/urban-factory-defaut-1.mp4",
+            "templates/apercus/serpillere/urban-factory-defaut-2.mp4",
+            "templates/apercus/serpillere/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "televiseur": {
       "urban-factory": {
         "cartes": {
@@ -18758,7 +18866,8 @@
     appareil_enceinte: 'enceinte',
     chauffage_cheminee: 'cheminee',
     appareil_tondeuse: 'tondeuse',
-    appareil_aspirateur: 'aspirateur'
+    appareil_aspirateur: 'aspirateur',
+    appareil_serpillere: 'serpillere'
   };
 
   function themeSite(cle) {
@@ -19369,7 +19478,9 @@
     // `appareil_tondeuse` ajoute le 26/09/2026 : phase de test.
     'appareil_tondeuse',
     // `appareil_aspirateur` ajoute le 26/09/2026 : phase de test.
-    'appareil_aspirateur'
+    'appareil_aspirateur',
+    // `appareil_serpillere` ajoute le 26/09/2026 : phase de test.
+    'appareil_serpillere'
   ]);
 
   const PRIX_PACK = 9;
@@ -20527,6 +20638,7 @@
     appareil_enceinte: 'enceinte',
     appareil_tondeuse: 'tondeuse',
     appareil_aspirateur: 'aspirateur',
+    appareil_serpillere: 'serpillere',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
