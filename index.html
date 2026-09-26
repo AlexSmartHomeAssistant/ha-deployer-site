@@ -3961,7 +3961,7 @@
       { name: 'appareil_serpillere', desc: 'Robot serpillière' },
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
-      { name: 'appareil_tondeuse', desc: 'Robot tondeuse' },
+      { name: 'appareil_tondeuse', desc: 'Robot vivant sur sa pelouse, batterie, planning et modes, usure des lames et alertes' },
       { name: 'appareil_voiture', desc: 'Véhicule connecté / Recharge' },
       { name: 'appareil_zigbee', desc: 'Passerelle et réseau Zigbee' }
     ],
@@ -4207,6 +4207,11 @@
     eau_arrosage: {
       resume: "Zones en cercle, minuteur par zone, programmateur et litres consommés.",
       detail: `Pilotage complet d'un arrosage automatique depuis la <b>vanne connectée</b> qui l'alimente &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son interrupteur, son compteur de volume et son débit. Le premier onglet montre la vanne au centre et vos <b>zones disposées en cercle</b> autour d'elle : celle qui arrose s'anime, son minuteur s'écoule à la seconde et sa barre se remplit des litres consommés. Le deuxième règle la <b>durée de chaque zone</b> &mdash; l'anneau se remplit comme l'intensité d'une lampe &mdash; puis lance le programme, à la demande ou à l'heure choisie, jusqu'à trois programmes. Le troisième donne la météo, le récapitulatif des programmes et l'eau consommée sur le jour, la semaine, le mois et l'année. Trois alertes veillent : arrosage trop long (la vanne se ferme), bilan de fin d'arrosage par zone, et <b>pluie annoncée</b> &mdash; avec un bouton pour annuler.`
+    },
+    appareil_tondeuse: {
+      resume: `Votre robot tondeuse vivant sur sa pelouse, sa batterie, son planning, ses modes et l'usure de ses lames.`,
+      detail: `Le tableau de bord de votre robot tondeuse &mdash; Husqvarna Automower, Worx Landroid, Gardena, Segway Navimow, Mammotion&hellip; Vous ne saisissez que le <b>nom du robot</b> : le pack retrouve seul sa batterie, son capteur de pluie, son capteur d'erreur, son mode silencieux et ses satellites s'il en publie, et <b>n'affiche que ce qui existe</b>. Le premier onglet dessine une <b>pelouse rayée</b> et sa station de charge : le robot la parcourt en aller-retour quand il tond, rentre à la base en bleu, s'y recharge sous un éclair, s'immobilise en pause ou se secoue en rouge quand il est bloqué. Un robot sur <b>fil périphérique</b> a sa pelouse bordée d'un câble ; un robot <b>RTK sans fil</b> a sa limite virtuelle, son antenne et son satellite. Un anneau circulaire donne la batterie, trois boutons lancent la tonte, la mettent en pause ou renvoient le robot à sa base. Le deuxième onglet règle le <b>planning</b> (heure de départ, jours, durée de tonte) et les <b>modes</b> : manuel, automatique, retour forcé, silencieux. Le troisième suit la <b>maintenance</b> : usure des lames en heures de tonte, capteur de pluie, état du guidage, dernière erreur, et le temps de tonte par période. Dès que le robot tond, ou qu'une tonte temporisée tourne, la carte prend sa <b>bordure animée verte</b> et son fond s'allume. Une alerte prévient vos mobiles si le robot est bloqué, si sa batterie faiblit hors de la base, si la pluie l'arrête ou s'il faut changer ses lames.`,
+      apercu: {}
     },
     appareil_imprimante: {
       resume: "Statut, impression d'un fichier en un clic, cartouches et usure.",
@@ -4717,6 +4722,26 @@
         declencheur: `Le minuteur de désactivation se termine ou est annulé à la main.`,
         action: `Remet la prise dans l'état qu'elle avait avant — jamais un appareil laissé hors tension indéfiniment.` }
     ],
+    appareil_tondeuse: [
+      { titre: `Robot bloqué, en erreur, fil coupé`, icone: 'fa-triangle-exclamation',
+        declencheur: `Le robot passe en erreur, ou son capteur d'erreur signale un blocage, pendant une minute.`,
+        action: `Notification sur tous vos mobiles, qui cite l'erreur publiée par le robot et nomme explicitement le fil périphérique quand c'est lui qui est en cause.` },
+      { titre: `Batterie faible hors de la base`, icone: 'fa-battery-quarter',
+        declencheur: `La batterie passe sous le seuil réglé (20 % par défaut) pendant deux minutes, alors que le robot n'est pas à sa station.`,
+        action: `Notification avec le niveau mesuré et le seuil réglé.` },
+      { titre: `La pluie arrête la tonte`, icone: 'fa-cloud-rain',
+        declencheur: `Le capteur de pluie passe à « pluie » pendant que le robot tond.`,
+        action: `Le robot est renvoyé à sa base, et vos mobiles sont prévenus.` },
+      { titre: `Lames à changer`, icone: 'fa-scissors',
+        declencheur: `Le compteur d'heures de tonte dépasse le seuil réglé (150 h par défaut).`,
+        action: `Notification de maintenance ; un appui sur la tuile « Lames » remet le compteur à zéro une fois les lames changées.` },
+      { titre: `Programme de tonte`, icone: 'fa-calendar-check',
+        declencheur: `L'heure de départ réglée, les jours choisis, en mode Automatique ou Silencieux, s'il ne pleut pas.`,
+        action: `Tonte pendant la durée réglée, puis retour automatique à la base.` },
+      { titre: `Retour forcé`, icone: 'fa-house',
+        declencheur: `Le mode « Retour forcé » est choisi, ou le robot repart alors qu'il y est.`,
+        action: `Le compte à rebours s'arrête et le robot est renvoyé à sa base.` }
+    ],
     appareil_imprimante: [
       { titre: 'Impression terminée', icone: 'fa-print',
         declencheur: `L'imprimante repasse au repos après une impression (5 s de stabilité), qu'elle vienne de Home Assistant ou d'un ordinateur du foyer.`,
@@ -5108,6 +5133,38 @@
             { nom: `Météo`, texte: `température, précipitations du jour et humidité — celle de votre capteur de sol si vous en avez un.` },
             { nom: `Programmes`, texte: `le récapitulatif des trois programmes : heure et fréquence de chacun.` },
             { nom: `Compteurs d'eau`, texte: `les litres consommés sur le jour, la semaine, le mois et l'année en cours ; « — » tant que rien n'a coulé.` }
+          ] }
+      ]
+    },
+    appareil_tondeuse: {
+      intro: `Trois onglets : indicateur, planification, maintenance. Vous ne saisissez qu'un <b>nom de robot</b>. <b>Obligatoire</b> : une entité <code>lawn_mower.*</code> (ou <code>vacuum.*</code> pour les anciennes intégrations). <b>Facultatifs, déduits de l'appareil</b> : la batterie, le capteur de pluie, le capteur d'erreur, l'interrupteur de mode silencieux et le capteur de satellites &mdash; <b>ce sont eux qui font la variante</b> : un robot sans batterie publiée n'a pas d'anneau, un robot sans capteur de pluie n'a pas de tuile de pluie, un robot sans mode silencieux ne le propose pas. Le guidage (fil périphérique ou GPS / RTK) se détecte seul et change le dessin de la pelouse.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-robot',
+          texte: `La <b>pelouse et sa station</b>, dessinées en icônes : le robot tond en aller-retour en projetant des brins d'herbe, rentre en bleu, recharge sous un éclair, attend en pause (ambre) ou se secoue sous une alerte (corail). Pluie détectée : des gouttes tombent sur la scène. En haut, l'activité en clair et l'<b>anneau de batterie</b> ; en bas, le prochain départ programmé (ou « En tonte depuis ») et les trois commandes.`,
+          elements: [
+            { nom: `Activité`, texte: `tonte en cours, à la base, retour à la base, en pause, erreur — icône animée à la couleur de l'état.` },
+            { nom: `Anneau de batterie`, texte: `vert, ambre ou corail selon le niveau ; bleu et tournant quand le robot recharge à sa base (si le robot publie sa batterie).` },
+            { nom: `Pelouse`, texte: `bordée du fil périphérique (ambre, corail et clignotant s'il est coupé) ou d'une limite virtuelle RTK avec antenne et satellite.` },
+            { nom: `Prochain départ`, texte: `calculé depuis l'heure et les jours réglés, « Suspendu » en mode manuel ; « En tonte depuis » pendant la tonte.` },
+            { nom: `Démarrer, Pause, Base`, texte: `le bouton de l'activité en cours est plein et pulse ; démarrer demande une confirmation.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que le robot tond ou qu'une tonte temporisée tourne.` }
+          ] },
+        { titre: '2 — Planification', icone: 'fa-calendar-days',
+          texte: `Les <b>modes</b> : Manuel (programme suspendu), Automatique (programme suivi), Retour forcé (le robot rentre et y reste, même si son propre calendrier le relance) et Silencieux (programme suivi, mode silencieux du robot activé — seulement s'il en a un). Le <b>planning</b> : heure de départ, jours (7 j / 7, lundi-mercredi-vendredi, semaine, week-end) et durée de tonte ; six durées d'un clic ; un bouton pour lancer une <b>tonte temporisée</b>, la mettre en pause ou la reprendre, sous un compte à rebours.`,
+          elements: [
+            { nom: `Quatre modes`, texte: `le mode actif est coloré et son icône animée.` },
+            { nom: `Départ, Jours, Durée`, texte: `un appui sur l'heure ouvre le réglage, un appui sur les jours passe à la fréquence suivante.` },
+            { nom: `Six durées`, texte: `30 min, 1 h, 1 h 30, 2 h, 3 h, 4 h.` },
+            { nom: `Compte à rebours`, texte: `encadré de deux robots qui vibrent, « Prêt » au repos ; à la fin le robot rentre à sa base.` }
+          ] },
+        { titre: '3 — Maintenance', icone: 'fa-screwdriver-wrench',
+          texte: `L'<b>usure des lames</b>, comptée par le pack en heures de tonte depuis le dernier remplacement (un appui, confirmé, remet le compteur à zéro), le <b>capteur de pluie</b>, le <b>guidage</b> (état du fil périphérique ou satellites RTK) et la <b>dernière erreur</b>. Dessous, le <b>temps de tonte</b> par période.`,
+          elements: [
+            { nom: `Lames`, texte: `pourcentage d'usure et heures de tonte ; la lame tourne pendant la tonte, clignote au-delà du seuil.` },
+            { nom: `Pluie`, texte: `« Sec » ou « Pluie » — tuile absente sans capteur de pluie.` },
+            { nom: `Guidage`, texte: `« Câble OK » ou « Coupé » (déduit du texte d'erreur), ou le nombre de satellites RTK.` },
+            { nom: `Temps de tonte`, texte: `minutes par heure sur la journée, heures par jour sur la semaine, le mois et l'année.` }
           ] }
       ]
     },
@@ -6956,6 +7013,27 @@
          monochrome        -> une seule cartouche dans le 2e onglet
          sans piece d'usure-> le sous-onglet « Duree de vie » disparait
          sans prise        -> le 3e onglet disparait (rien a tracer) */
+    appareil_tondeuse: [
+      { param: 'TONDEUSE_APPAREIL', label: `Nom du robot tondeuse`, type: 'text',
+        required: true, groupe: `🤖 Robot tondeuse`,
+        placeholder: `ex : Automower 430X, Landroid, Navimow i105 — tel qu'il apparaît dans Appareils et services` },
+      { param: 'TONDEUSE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🤖 Robot tondeuse`, placeholder: `vide : déduite de l'appareil (sinon « Jardin »)` },
+      { param: 'TONDEUSE_GUIDAGE', label: `Guidage`, type: 'select', required: false,
+        groupe: `🤖 Robot tondeuse`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: 'Détection automatique' },
+          { value: 'cable', label: 'Fil périphérique (câble)' },
+          { value: 'rtk', label: 'GPS / RTK sans fil' }
+        ] },
+      { param: 'TONDEUSE_HEURE', label: `Heure de départ programmée`, type: 'text', required: false,
+        groupe: `📅 Planning`, placeholder: `ex : 10:00 — réglable ensuite depuis la carte` },
+      { param: 'TONDEUSE_SEUIL_BATTERIE', label: `Alerte batterie faible (%)`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 20 %` },
+      { param: 'TONDEUSE_SEUIL_LAMES', label: `Remplacement des lames (heures de tonte)`, type: 'text',
+        required: false, groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 150 h` },
+      champThemeSite('TONDEUSE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_imprimante: [
       { param: 'IMPRIMANTE_APPAREIL', label: 'Nom de l\u2019imprimante', type: 'text', required: true,
         groupe: '🖨️ Imprimante',
@@ -7560,6 +7638,17 @@
       + 'alerte de m\u00e9t\u00e9o d\u00e9favorable et son annulation \u2014, '
       + 'ainsi que HACS et les cartes personnalis\u00e9es requises '
       + '(button-card, swipe-card, stack-in-card, card-mod).',
+    appareil_tondeuse:
+      `la vue et ses trois onglets, le robot et sa pelouse dessinés selon le `
+      + `guidage, les helpers du planning et des modes (mode, heure de départ, `
+      + `jours, durée, minuteur), le compteur d'usure des lames et son bouton `
+      + `de remise à zéro, les seuils d'alerte, deux scripts (tonte temporisée, `
+      + `bascule) et cinq automatismes (programme, fin de tonte, annulation, `
+      + `modes, alertes critiques), en mode fictif un robot et selon la variante `
+      + `une batterie, un capteur de pluie, un capteur d'erreur, un mode `
+      + `silencieux et des satellites, tous pilotables, ainsi que HACS et les `
+      + `cartes personnalisées requises (button-card, apexcharts-card, `
+      + `swipe-card, stack-in-card, card-mod).`,
     appareil_imprimante:
       'la vue et ses trois onglets, l\u2019intégration <b>IPP Print</b> installée '
       + 'et configurée si elle manque &mdash; c\u2019est elle qui permet '
@@ -18102,6 +18191,21 @@
         }
       }
     },
+    "tondeuse": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/tondeuse/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/tondeuse/urban-factory-defaut-1.mp4",
+            "templates/apercus/tondeuse/urban-factory-defaut-2.mp4",
+            "templates/apercus/tondeuse/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "volet": {
       "argile-craquele": {
         "cartes": {
@@ -18552,7 +18656,8 @@
     eau_compteur: 'compteur-eau',
     appareil_raspberry: 'raspberry',
     appareil_enceinte: 'enceinte',
-    chauffage_cheminee: 'cheminee'
+    chauffage_cheminee: 'cheminee',
+    appareil_tondeuse: 'tondeuse'
   };
 
   function themeSite(cle) {
@@ -19159,7 +19264,9 @@
     // `appareil_enceinte` ajoute le 25/09/2026 : phase de test.
     'appareil_enceinte',
     // `chauffage_cheminee` ajoute le 26/09/2026 : phase de test.
-    'chauffage_cheminee'
+    'chauffage_cheminee',
+    // `appareil_tondeuse` ajoute le 26/09/2026 : phase de test.
+    'appareil_tondeuse'
   ]);
 
   const PRIX_PACK = 9;
@@ -20315,6 +20422,7 @@
     // lecture seule et ne sait pas soumettre de travail.
     appareil_imprimante: 'imprimante',
     appareil_enceinte: 'enceinte',
+    appareil_tondeuse: 'tondeuse',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
