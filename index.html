@@ -3977,7 +3977,7 @@
     eau: [
       { name: 'eau_compteur', desc: 'Distribution de l\'eau, consommation par vanne, répartition, coûts et fuites' },
       { name: 'eau_detecteur_fuite', desc: 'Détecteur d\'inondation / fuite' },
-      { name: 'eau_pool', desc: 'Gestion et température piscine' },
+      { name: 'eau_piscine', desc: 'Bassin dessiné, filtration dynamique, chimie, PAC, volet, éclairage et hivernage' },
       { name: 'eau_arrosage', desc: 'Arrosage par zones, programmateur et consommation' }
     ],
     interface: [
@@ -4039,7 +4039,7 @@
     service_transport: 'Transports',
     eau_compteur: 'Compteur d\'Eau',
     eau_detecteur_fuite: 'Détecteur de Fuite',
-    eau_pool: 'Piscine',
+    eau_piscine: 'Piscine Connectée',
     eau_arrosage: 'Arrosage',
     interface_dashboard_principal: 'Tableau de Bord',
     maintenance_instance: 'Maintenance'
@@ -4097,7 +4097,7 @@
     service_transport: 'fa-bus',
     eau_compteur: 'fa-droplet',
     eau_detecteur_fuite: 'fa-house-flood-water',
-    eau_pool: 'fa-water-ladder',
+    eau_piscine: 'fa-water-ladder',
     eau_arrosage: 'fa-faucet',
     interface_dashboard_principal: 'fa-table-cells-large',
     maintenance_instance: 'fa-screwdriver-wrench'
@@ -4165,6 +4165,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    eau_piscine: {
+      resume: `Votre piscine dessinée telle qu'elle est — forme, type, finition —, vivante : remous et bulles quand la filtration tourne, volet, éclairage de sa vraie couleur, robot nettoyeur. Filtration réglée sur la température, chimie de l'eau, pompe à chaleur, hivernage.`,
+      detail: `Le tableau de bord de votre piscine, sur une seule carte. Vous nommez vos <b>équipements</b> (le régulateur, la pompe, la pompe à chaleur, le projecteur…) : le pack retrouve seul la <b>température de l'eau</b>, la <b>commande de filtration</b>, et tout ce que votre installation mesure — pH, Redox, sel ou chlore, pression du filtre, débit, volet, éclairage, robot, cascade, niveau d'eau —, et <b>n'affiche que ce qui existe</b>. Le premier onglet <b>dessine votre bassin</b> tel que vous l'avez décrit — rectangulaire, rond, ovale, couloir de nage ou forme libre ; enterré, hors-sol ou semi-enterré ; liner bleu, gris anthracite, pierre balinaise ou blanc — et le fait vivre : reflets qui dansent, <b>remous et bulles</b> aux buses quand la filtration tourne, <b>volet</b> dont les lames couvrent le bassin à proportion de sa position, <b>lueur de l'éclairage</b> dans sa vraie couleur, <b>robot</b> qui parcourt le fond. Au-dessus, la température de l'eau et de l'air, l'état de la filtration ; en dessous, l'<b>équilibre de l'eau</b> (pH et Redox, ou sel) sur des jauges à bande optimale. Le deuxième onglet pilote la <b>filtration</b> (marche, arrêt, automatique ; vitesse ; manomètre du filtre), la <b>pompe à chaleur</b>, l'<b>éclairage</b> (intensité, couleurs, animations) et les <b>équipements</b> (volet avec confirmation, cascade, nage à contre-courant, robot). Le troisième suit la <b>chimie</b>, l'<b>entretien</b> (heures de pompe, préfiltre, contre-lavage), l'<b>historique</b> sur 7 ou 30 jours et le <b>mode hivernage</b>. Le temps de filtration se <b>calcule seul</b> chaque jour (température de l'eau divisée par deux) ; par grand froid, la pompe démarre d'elle-même. Dès que la filtration ou la pompe à chaleur tourne, la carte prend sa <b>bordure animée bleue</b> et son fond s'allume.`,
+      apercu: {}
     },
     eau_compteur: {
       resume: `La distribution de l'eau dans votre maison, vivante : le compteur, la maison, le jardin, le lave-linge, le lave-vaisselle, le ballon d'eau chaude, et des canalisations o\u00f9 l'eau circule. Consommation et co\u00fbt par vanne, r\u00e9partition en anneau, alerte de fuite et de consommation anormale.`,
@@ -4585,6 +4590,23 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    eau_piscine: [
+      { titre: `Temps de filtration dynamique`, icone: 'fa-rotate',
+        declencheur: `Toutes les cinq minutes, et à chaque changement de mode, d'heure pivot ou d'état de gel.`,
+        action: `En mode Automatique, la filtration tourne (température de l'eau ÷ 2) heures par jour, centrées sur l'heure pivot ; en Marche ou en Arrêt, le mode est suivi.` },
+      { titre: `Sécurité hors-gel`, icone: 'fa-snowflake',
+        declencheur: `Mode hivernage actif et température (sonde antigel, ou eau) sous le seuil de gel pendant deux minutes.`,
+        action: `Filtration démarrée à sa vitesse la plus basse, et alerte CRITIQUE sur tous vos mobiles.` },
+      { titre: `Déséquilibre chimique`, icone: 'fa-flask',
+        declencheur: `pH hors de sa plage (7,0 – 7,4 par défaut), Redox, sel ou chlore insuffisant, pendant quatre heures consécutives.`,
+        action: `Notification qui nomme chaque mesure hors plage et sa valeur.` },
+      { titre: `Protection volet & chauffage`, icone: 'fa-temperature-arrow-down',
+        declencheur: `Le volet est totalement fermé depuis trente minutes.`,
+        action: `La pompe à chaleur est coupée (économie d'énergie), et le journal le dit.` },
+      { titre: `Entretien`, icone: 'fa-wrench',
+        declencheur: `Niveau d'eau bas, skimmer saturé, contre-lavage conseillé, heures de pompe dépassées, préfiltre non nettoyé depuis 14 jours.`,
+        action: `Notification par cause, qui remplace la précédente plutôt que de s'empiler.` }
+    ],
     eau_compteur: [
       { titre: `Consommation d'eau anormale et fuite`, icone: 'fa-droplet',
         declencheur: `Le d\u00e9bit d'eau d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut six fois le d\u00e9bit moyen de votre plus fort jour), la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5), ou de l'eau coule <b>sans s'arr\u00eater</b> plus longtemps que le seuil de d\u00e9bit continu (par d\u00e9faut soixante minutes) \u2014 l'id\u00e9e que la communaut\u00e9 a le plus reprise pour d\u00e9tecter une fuite.`,
@@ -4874,6 +4896,38 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    eau_piscine: {
+      intro: `Trois onglets : piscine, contrôle, suivi. Vous nommez vos <b>équipements</b> ; le pack les classe et <b>n'affiche que ce qui existe</b> — ce sont eux qui font la variante, du bassin hors-sol à simple filtration jusqu'à la piscine enterrée tout équipée (pompe à chaleur, volet, électrolyseur au sel). La <b>forme</b>, le <b>type</b> et la <b>finition</b> choisis ci-dessous dessinent votre bassin.<table style=\"width:100%;border-collapse:collapse;margin:8px 0;font-size:0.92em\"><tr><th style=\"text-align:left;padding:4px;border-bottom:1px solid #5DADE2\">Entité</th><th style=\"padding:4px;border-bottom:1px solid #5DADE2\">Statut</th><th style=\"text-align:left;padding:4px;border-bottom:1px solid #5DADE2\">Sans elle</th></tr><tr><td style=\"padding:3px 4px\">Température de l'eau</td><td style=\"padding:3px 4px;text-align:center;color:#5DADE2;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">—</td></tr><tr><td style=\"padding:3px 4px\">Commande de filtration (switch ou pompe)</td><td style=\"padding:3px 4px;text-align:center;color:#5DADE2;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">—</td></tr><tr><td style=\"padding:3px 4px\">Sondes pH / Redox</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">jauge de filtration du jour à la place, pas d'alerte chimie</td></tr><tr><td style=\"padding:3px 4px\">Sel, chlore ou brome</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile et alerte correspondantes retirées</td></tr><tr><td style=\"padding:3px 4px\">Pompe à chaleur (climate)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">sous-onglet Chauffage retiré</td></tr><tr><td style=\"padding:3px 4px\">Volet / bâche motorisé</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">pas de lames dessinées ni de commande</td></tr><tr><td style=\"padding:3px 4px\">Éclairage RGB</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">sous-onglet Éclairage retiré</td></tr><tr><td style=\"padding:3px 4px\">Pression du filtre</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">ni manomètre ni alerte de contre-lavage</td></tr><tr><td style=\"padding:3px 4px\">Vitesse de pompe, débit</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">boutons Éco / Normale / Boost retirés</td></tr><tr><td style=\"padding:3px 4px\">Robot, cascade, nage à contre-courant</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile retirée</td></tr><tr><td style=\"padding:3px 4px\">Niveau d'eau, skimmer</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">badge d'alerte retiré</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Piscine', icone: 'fa-water-ladder',
+          texte: `Votre <b>bassin dessiné</b>, vivant, et les indicateurs clés : température de l'eau et de l'air, filtration, alertes, équilibre de l'eau.`,
+          elements: [
+            { nom: `Bassin`, texte: `la forme, le type (plage dallée, paroi en bois, muret de pierre) et la finition choisis ; reflets qui dansent, remous et bulles aux buses quand la filtration tourne.` },
+            { nom: `Volet et éclairage`, texte: `les lames couvrent le bassin à proportion de la position du volet ; la lueur des projecteurs prend leur vraie couleur, et change de teinte quand une animation joue.` },
+            { nom: `Robot, cascade, nage`, texte: `le robot parcourt le fond, la cascade coule, les vagues de la nage à contre-courant filent — quand ils sont en marche.` },
+            { nom: `Température`, texte: `l'eau en grand, l'air en petit (sonde, ou votre météo) ; l'icône respire quand la pompe à chaleur chauffe.` },
+            { nom: `Filtration`, texte: `mode (Manuel, Auto, Off) et débit ; la pompe tourne tant qu'elle filtre.` },
+            { nom: `Équilibre de l'eau`, texte: `pH et Redox (ou sel) sur une jauge à bande optimale ; rouge hors plage. Sans sonde : le temps filtré du jour.` },
+            { nom: `Bordure et fond`, texte: `serpentin bleu et fond allumé tant que la filtration ou la pompe à chaleur tourne.` }
+          ] },
+        { titre: '2 — Contrôle', icone: 'fa-sliders',
+          texte: `Quatre sous-onglets : <b>Filtration</b> (Marche, Auto, Arrêt ; vitesse Éco, Normale, Boost ; manomètre du filtre), <b>Chauffage</b> (consigne, modes Chaud, Froid, Éco, Silence, Arrêt ; COP et puissance), <b>Éclairage</b> (intensité, sept couleurs, animations) et <b>Équipements</b> (volet avec confirmation, cascade, nage à contre-courant, robot).`,
+          elements: [
+            { nom: `Filtration automatique`, texte: `durée conseillée = température de l'eau ÷ 2, centrée sur l'heure pivot (14 h) ; la plage du jour s'affiche.` },
+            { nom: `Manomètre`, texte: `aiguille sur 0 – 2,5 bar, zone ambre à l'approche du seuil, « Contre-lavage ! » au-delà.` },
+            { nom: `Pompe à chaleur`, texte: `anneau de consigne, température de l'eau, − / + au pas de la PAC ; les modes absents sont retirés.` },
+            { nom: `Volet`, texte: `Ouvrir et Fermer demandent confirmation — Fermer rappelle de vérifier que personne n'est dans l'eau.` }
+          ] },
+        { titre: '3 — Suivi', icone: 'fa-flask',
+          texte: `<b>Chimie</b> (pH, Redox, sel ou chlore, conductivité, électrolyseur, bidons), <b>Entretien</b> (heures de pompe, préfiltre, filtre, niveau d'eau, skimmer), <b>Historique</b> sur 7 ou 30 jours (température, pH, temps de filtration) et <b>Hivernage</b> (mode hors-gel, seuil, sonde).`,
+          elements: [
+            { nom: `Bidons`, texte: `ambre sous 25 %, corail et clignotants sous 10 %.` },
+            { nom: `Entretien`, texte: `un appui confirmé note le nettoyage du préfiltre ou l'entretien de la pompe.` },
+            { nom: `Hivernage`, texte: `sous le seuil de gel (2 °C par défaut), la filtration est forcée à basse vitesse.` }
+          ] }
       ]
     },
     eau_compteur: {
@@ -6861,6 +6915,44 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    eau_piscine: [
+      { param: 'PISCINE_APPAREILS', label: `Équipements de la piscine`, type: 'text',
+        required: true, groupe: `🏊 Équipements`,
+        placeholder: `ex : Régulateur piscine, Pompe à chaleur — noms d'appareils (ou entity_id), séparés par des virgules` },
+      { param: 'PISCINE_TEMPERATURE', label: `Sonde de température de l'eau`, type: 'text',
+        required: false, groupe: `🏊 Équipements`, placeholder: `vide : déduite des équipements` },
+      { param: 'PISCINE_FILTRATION', label: `Commande de filtration`, type: 'text',
+        required: false, groupe: `🏊 Équipements`, placeholder: `vide : déduite (switch ou pompe)` },
+      { param: 'PISCINE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🏊 Équipements`, placeholder: `vide : « Jardin »` },
+      { param: 'PISCINE_FORME', label: `Forme`, type: 'select', required: false,
+        groupe: `🎨 Votre bassin`, defaut: 'rectangulaire',
+        options: [
+          { value: 'rectangulaire', label: `▭ Rectangulaire` },
+          { value: 'ronde', label: `◯ Ronde` },
+          { value: 'ovale', label: `⬭ Ovale` },
+          { value: 'couloir', label: `🏊 Couloir de nage` },
+          { value: 'libre', label: `〰️ Forme libre` }
+        ] },
+      { param: 'PISCINE_TYPE', label: `Type`, type: 'select', required: false,
+        groupe: `🎨 Votre bassin`, defaut: 'enterree',
+        options: [
+          { value: 'enterree', label: `⬇️ Enterrée` },
+          { value: 'hors_sol', label: `🪵 Hors-sol` },
+          { value: 'semi_enterree', label: `🧱 Semi-enterrée` }
+        ] },
+      { param: 'PISCINE_FINITION', label: `Finition`, type: 'select', required: false,
+        groupe: `🎨 Votre bassin`, defaut: 'bleu',
+        options: [
+          { value: 'bleu', label: `🔵 Liner bleu` },
+          { value: 'anthracite', label: `⚫ Liner gris anthracite` },
+          { value: 'emeraude', label: `🟢 Pierre balinaise / vert émeraude` },
+          { value: 'blanc', label: `⚪ Blanc` }
+        ] },
+      { param: 'PISCINE_APERCU', label: '', type: 'note', groupe: `🎨 Votre bassin`,
+        texte: `<div class="apercu-piscine"></div>` },
+      champThemeSite('PISCINE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     eau_compteur: [
       { param: 'EAU_APPAREIL', label: `Nom du compteur d'eau`, type: 'text',
         required: true, groupe: `\ud83d\udca7 Compteur d'eau`,
@@ -7713,6 +7805,17 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    eau_piscine:
+      `la vue et ses trois onglets, le bassin dessiné selon sa forme, son type et `
+      + `sa finition, les helpers (mode de filtration, heure pivot, seuils de `
+      + `chimie, de gel et de pression, mode hivernage, date du préfiltre, `
+      + `compteur de pompe, sélecteurs), les capteurs de durée conseillée, de `
+      + `filtration du jour, d'heures de pompe, de gel, de déséquilibre chimique et `
+      + `de contre-lavage, un script d'entretien et jusqu'à cinq automatismes `
+      + `(filtration dynamique, hors-gel, chimie, volet et chauffage, entretien), `
+      + `en mode fictif toute une piscine pilotable, ainsi que HACS et les cartes `
+      + `personnalisées requises (button-card, swipe-card, stack-in-card, `
+      + `card-mod, apexcharts-card).`,
     eau_compteur:
       `la vue et ses trois onglets, les s\u00e9lecteurs de vanne, de p\u00e9riode `
       + `et de m\u00e9trique, le tarif et les trois seuils r\u00e9glables, le compteur du `
@@ -15468,6 +15571,21 @@
         }
       }
     },
+    "piscine": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/piscine/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/piscine/urban-factory-defaut-1.mp4",
+            "templates/apercus/piscine/urban-factory-defaut-2.mp4",
+            "templates/apercus/piscine/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "porte-garage": {
       "argile-craquele": {
         "cartes": {
@@ -18834,6 +18952,34 @@
   /* APERCUS-FIN */
 
   // Clé du pack sur le site -> clé du pack dans le manifeste.
+  /* ---------- APERCU DU BASSIN (pack Piscine, 26/09/2026) ----------
+     ECRIT PAR `_patch_index_piscine.py` depuis le gabarit JS de la
+     carte : la page dessine le bassin choisi avec le meme code. */
+  const CORPS_BASSIN = "\n  var FIN = {bleu: ['#1B5F95', '#3E9BD6', '#86CFF2'], anthracite: ['#1E3942', '#3A6674', '#76A2AD'], emeraude: ['#0D5E54', '#1E968A', '#6ACDB8'], blanc: ['#2E9CBB', '#6FD0E3', '#C4F3F9']};\n  var fs = states['switch.apercu_piscine_1_filtration'] ? states['switch.apercu_piscine_1_filtration'].state : 'unavailable';\n  var filtOn = (fs === 'on');\n  var P = states['climate.apercu_piscine_1_pac'];\n  var pa = P ? (P.attributes.hvac_action || '') : '';\n  var pm = P ? P.state : 'unavailable';\n  var pacActive = (pa === 'heating' || pa === 'cooling');\n  var tw = states['sensor.apercu_piscine_1_temperature'] ? parseFloat(states['sensor.apercu_piscine_1_temperature'].state) : NaN;\n  if (isNaN(tw)) tw = NaN;\n  var fr = function (v, d) { return isNaN(v) ? '\\u2014' : v.toFixed(d).replace('.', ','); };\n  var FO = '@@FORME@@', TY = '@@TYPE@@', FI = '@@FINITION@@';\n  var on = function (e) { return !!states[e] && states[e].state === 'on'; };\n  var DIM = {rectangulaire: [100, 37], ronde: [74, 37], ovale: [106, 38], couloir: [126, 22], libre: [102, 39]};\n  var a = (DIM[FO] || DIM.rectangulaire)[0], b = (DIM[FO] || DIM.rectangulaire)[1];\n  var mur = TY === 'hors_sol' ? 26 : (TY === 'semi_enterree' ? 13 : 0);\n  var pont = TY === 'enterree' ? 13 : 0;\n  var bord = TY === 'semi_enterree' ? 7 : 3;\n  var cx = 145, cy = Math.round(72 - mur / 2);\n  var trace = function (A, B, dy) {\n    var y = cy + dy, x0 = cx - A, x1 = cx + A, y0 = y - B, y1 = y + B;\n    if (FO === 'ronde' || FO === 'ovale')\n      return 'M' + x0 + ' ' + y + 'A' + A + ' ' + B + ' 0 1 0 ' + x1 + ' ' + y\n        + 'A' + A + ' ' + B + ' 0 1 0 ' + x0 + ' ' + y + 'Z';\n    if (FO === 'libre') {\n      var q = function (u, v) { return (cx + u * A).toFixed(1) + ' ' + (y + v * B).toFixed(1); };\n      return 'M' + q(-0.96, 0) + 'C' + q(-0.96, -1.08) + ' ' + q(-0.12, -1.12) + ' ' + q(0.08, -0.55)\n        + 'C' + q(0.28, -0.12) + ' ' + q(0.56, -1.16) + ' ' + q(0.9, -0.62)\n        + 'C' + q(1.18, -0.18) + ' ' + q(1.02, 1.02) + ' ' + q(0.3, 0.98)\n        + 'C' + q(-0.22, 0.95) + ' ' + q(-0.96, 1.12) + ' ' + q(-0.96, 0) + 'Z';\n    }\n    var rx = Math.min(A, B) * (FO === 'couloir' ? 0.5 : 0.32), ry = rx * 0.62;\n    return 'M' + (x0 + rx) + ' ' + y0 + 'H' + (x1 - rx) + 'A' + rx + ' ' + ry + ' 0 0 1 ' + x1 + ' ' + (y0 + ry)\n      + 'V' + (y1 - ry) + 'A' + rx + ' ' + ry + ' 0 0 1 ' + (x1 - rx) + ' ' + y1\n      + 'H' + (x0 + rx) + 'A' + rx + ' ' + ry + ' 0 0 1 ' + x0 + ' ' + (y1 - ry)\n      + 'V' + (y0 + ry) + 'A' + rx + ' ' + ry + ' 0 0 1 ' + (x0 + rx) + ' ' + y0 + 'Z';\n  };\n  var F = FIN[FI] || FIN.bleu;\n  var bois = TY === 'hors_sol';\n  var cmur = bois ? '#8E6A45' : '#8D9196', cbord = bois ? '#B9946A' : '#E3DDD2';\n  var L = states['light.apercu_piscine_1_projecteurs'];\n  var lOn = !!L && L.state === 'on';\n  var lc = '#FFE1A8';\n  if (L && L.attributes.rgb_color) { var c3 = L.attributes.rgb_color; lc = 'rgb(' + c3[0] + ',' + c3[1] + ',' + c3[2] + ')'; }\n  else if (L && L.attributes.color_temp_kelvin > 4500) lc = '#F4F8FF';\n  var bri = L && L.attributes.brightness != null ? L.attributes.brightness / 255 : 1;\n  var eff = L && L.attributes.effect && !/^(none|aucun|off|solid)$/i.test(L.attributes.effect);\n  var V = states['cover.apercu_piscine_1_volet'];\n  var pos = V ? (V.attributes.current_position != null ? V.attributes.current_position : (V.state === 'closed' ? 0 : 100)) : 100;\n  var o = [];\n  var U = Math.random().toString(36).slice(2, 8);\n  o.push('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"290\" height=\"139\" viewBox=\"0 0 290 139\" style=\"position:absolute;left:0;top:0;overflow:visible;\">');\n  o.push('<defs>'\n    + '<linearGradient id=\"eau' + U + '\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"' + F[0] + '\"/>'\n    + '<stop offset=\"0.55\" stop-color=\"' + F[1] + '\"/><stop offset=\"1\" stop-color=\"' + F[2] + '\"/></linearGradient>'\n    + '<pattern id=\"paroi' + U + '\" width=\"9\" height=\"80\" patternUnits=\"userSpaceOnUse\">'\n    + '<rect width=\"9\" height=\"80\" fill=\"' + cmur + '\"/>'\n    + '<rect width=\"' + (bois ? 1.4 : 9) + '\" height=\"' + (bois ? 80 : 0.8) + '\" y=\"' + (bois ? 0 : 6) + '\" fill=\"rgba(0,0,0,0.28)\"/></pattern>'\n    + '<pattern id=\"dalle' + U + '\" width=\"16\" height=\"9\" patternUnits=\"userSpaceOnUse\">'\n    + '<rect width=\"16\" height=\"9\" fill=\"#C9C1B2\"/><path d=\"M0 0H16M0 0V9\" stroke=\"#A99F8E\" stroke-width=\"0.8\"/></pattern>'\n    + '<pattern id=\"caus' + U + '\" width=\"34\" height=\"12\" patternUnits=\"userSpaceOnUse\">'\n    + '<path d=\"M0 6 Q8.5 1 17 6 T34 6\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1\" stroke-opacity=\"0.38\"/></pattern>'\n    + '<pattern id=\"lames' + U + '\" width=\"12\" height=\"5\" patternUnits=\"userSpaceOnUse\">'\n    + '<rect width=\"12\" height=\"5\" fill=\"#E6ECEF\"/><rect y=\"4\" width=\"12\" height=\"1\" fill=\"#9EAAB2\"/></pattern>'\n    + '<radialGradient id=\"lum' + U + '\"><stop offset=\"0\" stop-color=\"' + lc + '\" stop-opacity=\"0.95\">'\n    + (eff ? '<animate attributeName=\"stop-color\" values=\"#5DADE2;#BF71B2;#52BE80;#F8C471;#5DADE2\" dur=\"6s\" repeatCount=\"indefinite\"/>' : '')\n    + '</stop><stop offset=\"1\" stop-color=\"' + lc + '\" stop-opacity=\"0\"/></radialGradient>'\n    + '<clipPath id=\"cp' + U + '\"><path d=\"' + trace(a, b, 0) + '\"/></clipPath>'\n    + '</defs>');\n  if (pont) o.push('<path d=\"' + trace(a + pont, b + pont * 0.62, 0) + '\" fill=\"url(#dalle' + U + ')\" '\n    + 'stroke=\"rgba(0,0,0,0.25)\" stroke-width=\"1\"/>');\n  if (mur) o.push('<path d=\"' + trace(a + bord + 4, b + bord * 0.62 + 3, mur + 3) + '\" fill=\"rgba(0,0,0,0.35)\"/>');\n  for (var k = mur; k > 0; k -= 1) o.push('<path d=\"' + trace(a + bord, b + bord * 0.62, k) + '\" fill=\"url(#paroi' + U + ')\"'\n    + (k === mur ? ' stroke=\"rgba(0,0,0,0.45)\" stroke-width=\"1\"' : '') + '/>');\n  o.push('<path d=\"' + trace(a + bord, b + bord * 0.62, 0) + '\" fill=\"' + cbord + '\" '\n    + 'stroke=\"rgba(0,0,0,0.22)\" stroke-width=\"0.8\"/>');\n  o.push('<path d=\"' + trace(a, b, 0) + '\" fill=\"url(#eau' + U + ')\"/>');\n  var g = [];\n  var du = filtOn ? 2.4 : 9;\n  for (var r = 0; r < 2; r++) g.push('<rect x=\"' + (cx - a - 34) + '\" y=\"' + (cy - b + r * 6) + '\" '\n    + 'width=\"' + (2 * a + 68) + '\" height=\"' + (2 * b) + '\" fill=\"url(#caus' + U + ')\" opacity=\"' + (filtOn ? 0.95 : 0.5) + '\">'\n    + '<animate attributeName=\"x\" values=\"' + (r ? (cx - a) + ';' + (cx - a - 34) : (cx - a - 34) + ';' + (cx - a)) + '\" '\n    + 'dur=\"' + (du * (r ? 1.4 : 1)) + 's\" repeatCount=\"indefinite\"/></rect>');\n  if (lOn) g.push('<ellipse cx=\"' + cx + '\" cy=\"' + (cy + b * 0.15) + '\" rx=\"' + (a * 0.95) + '\" ry=\"' + (b * 0.95) + '\" '\n    + 'fill=\"url(#lum' + U + ')\" opacity=\"' + (0.35 + 0.6 * bri).toFixed(2) + '\">'\n    + '<animate attributeName=\"opacity\" values=\"' + (0.3 + 0.5 * bri).toFixed(2) + ';' + (0.4 + 0.6 * bri).toFixed(2) + ';'\n    + (0.3 + 0.5 * bri).toFixed(2) + '\" dur=\"4s\" repeatCount=\"indefinite\"/></ellipse>');\n  if (filtOn) {\n    var buses = [[cx - a * 0.78, cy + b * 0.25, 1], [cx + a * 0.78, cy - b * 0.2, -1]];\n    for (var i = 0; i < buses.length; i++) {\n      var bx = buses[i][0], by = buses[i][1], sens = buses[i][2];\n      for (var j = 0; j < 2; j++) g.push('<ellipse cx=\"' + bx + '\" cy=\"' + by + '\" fill=\"none\" '\n        + 'stroke=\"#FFFFFF\" stroke-width=\"1\" rx=\"1\" ry=\"0.6\" opacity=\"0\">'\n        + '<animate attributeName=\"rx\" values=\"1;14\" dur=\"1.8s\" begin=\"' + (j * 0.9) + 's\" repeatCount=\"indefinite\"/>'\n        + '<animate attributeName=\"ry\" values=\"0.6;7\" dur=\"1.8s\" begin=\"' + (j * 0.9) + 's\" repeatCount=\"indefinite\"/>'\n        + '<animate attributeName=\"opacity\" values=\"0.8;0\" dur=\"1.8s\" begin=\"' + (j * 0.9) + 's\" repeatCount=\"indefinite\"/></ellipse>');\n      for (var j = 0; j < 4; j++) g.push('<circle cx=\"' + bx + '\" cy=\"' + by + '\" r=\"' + (1.1 + (j % 2) * 0.6) + '\" '\n        + 'fill=\"#FFFFFF\" opacity=\"0\">'\n        + '<animate attributeName=\"cx\" values=\"' + bx + ';' + (bx + sens * (14 + j * 5)) + '\" dur=\"1.6s\" '\n        + 'begin=\"' + (j * 0.4) + 's\" repeatCount=\"indefinite\"/>'\n        + '<animate attributeName=\"cy\" values=\"' + by + ';' + (by - 3 + j * 2) + '\" dur=\"1.6s\" '\n        + 'begin=\"' + (j * 0.4) + 's\" repeatCount=\"indefinite\"/>'\n        + '<animate attributeName=\"opacity\" values=\"0.9;0\" dur=\"1.6s\" begin=\"' + (j * 0.4) + 's\" repeatCount=\"indefinite\"/></circle>');\n    }\n  }\n  if (on('switch.apercu_piscine_1_nage')) for (var n = 0; n < 3; n++) g.push('<path d=\"M' + (cx - a + 6) + ' ' + (cy - b * 0.5 + n * b * 0.5)\n    + ' q5 -3 10 0 t10 0\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.3\" opacity=\"0\">'\n    + '<animateTransform attributeName=\"transform\" type=\"translate\" values=\"0 0;' + (a * 1.3) + ' 0\" '\n    + 'dur=\"1.8s\" begin=\"' + (n * 0.5) + 's\" repeatCount=\"indefinite\"/>'\n    + '<animate attributeName=\"opacity\" values=\"0.9;0\" dur=\"1.8s\" begin=\"' + (n * 0.5) + 's\" repeatCount=\"indefinite\"/></path>');\n  if (on('switch.apercu_piscine_1_cascade')) for (var j = 0; j < 2; j++) g.push('<ellipse cx=\"' + (cx + a * 0.5) + '\" cy=\"' + (cy - b + 5) + '\" '\n    + 'fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1\" rx=\"2\" ry=\"1\" opacity=\"0\">'\n    + '<animate attributeName=\"rx\" values=\"2;16\" dur=\"1.4s\" begin=\"' + (j * 0.7) + 's\" repeatCount=\"indefinite\"/>'\n    + '<animate attributeName=\"ry\" values=\"1;6\" dur=\"1.4s\" begin=\"' + (j * 0.7) + 's\" repeatCount=\"indefinite\"/>'\n    + '<animate attributeName=\"opacity\" values=\"0.85;0\" dur=\"1.4s\" begin=\"' + (j * 0.7) + 's\" repeatCount=\"indefinite\"/></ellipse>');\n  if (on('binary_sensor.apercu_piscine_1_gel')) g.push('<rect x=\"' + (cx - a) + '\" y=\"' + (cy - b) + '\" width=\"' + (2 * a) + '\" '\n    + 'height=\"' + (2 * b) + '\" fill=\"#E8F6FF\" opacity=\"0.38\"/>');\n  if (V && pos < 100) {\n    var hv = (2 * b + 4) * (100 - pos) / 100;\n    g.push('<rect x=\"' + (cx - a - 2) + '\" y=\"' + (cy - b - 2) + '\" width=\"' + (2 * a + 4) + '\" height=\"' + hv + '\" '\n      + 'fill=\"url(#lames' + U + ')\"/><rect x=\"' + (cx - a - 2) + '\" y=\"' + (cy - b - 2 + hv - 1.5) + '\" '\n      + 'width=\"' + (2 * a + 4) + '\" height=\"2\" fill=\"rgba(0,0,0,0.35)\"/>');\n  }\n  o.push('<g clip-path=\"url(#cp' + U + ')\">' + g.join('') + '</g>');\n  if (V && TY !== 'hors_sol') o.push('<rect x=\"' + (cx - a - 4) + '\" y=\"' + (cy - b - bord * 0.62 - 5) + '\" '\n    + 'width=\"' + (2 * a + 8) + '\" height=\"5\" rx=\"2.5\" fill=\"#D9DEE2\" stroke=\"#8E9AA2\" stroke-width=\"0.8\"/>');\n  if (states['switch.apercu_piscine_1_cascade']) {\n    o.push('<rect x=\"' + (cx + a * 0.5 - 11) + '\" y=\"' + (cy - b - bord * 0.62 - 9) + '\" width=\"22\" height=\"7\" rx=\"1.5\" '\n      + 'fill=\"#B8B2A6\" stroke=\"rgba(0,0,0,0.3)\" stroke-width=\"0.8\"/>');\n    if (on('switch.apercu_piscine_1_cascade')) for (var j = 0; j < 4; j++) o.push('<path d=\"M' + (cx + a * 0.5 - 6 + j * 4) + ' ' + (cy - b - bord * 0.62 - 2)\n      + ' q1 5 0 ' + (bord * 0.62 + 7) + '\" fill=\"none\" stroke=\"#CFEFFF\" stroke-width=\"1.3\" '\n      + 'stroke-dasharray=\"3 3\"><animate attributeName=\"stroke-dashoffset\" values=\"12;0\" dur=\"0.6s\" '\n      + 'repeatCount=\"indefinite\"/></path>');\n  }\n  if (L) for (var j = -1; j <= 1; j += 2) o.push('<ellipse cx=\"' + (cx + j * a * 0.45) + '\" cy=\"' + (cy + b - 2) + '\" '\n    + 'rx=\"3.2\" ry=\"1.8\" fill=\"' + (lOn ? lc : '#4A4F55') + '\" stroke=\"rgba(0,0,0,0.35)\" stroke-width=\"0.6\"/>');\n  o.push('</svg>');\n  var R = states['switch.apercu_piscine_1_robot'], RA = states['binary_sensor.apercu_piscine_1_robot_actif_absent'];\n  if (R || RA) {\n    var ra = RA ? RA.state === 'on' : R.state === 'on';\n    o.push('<div style=\"position:absolute;left:' + (ra ? cx - 9 : cx + a * 0.62) + 'px;top:' + (ra ? cy - 8 : cy + b * 0.25) + 'px;'\n      + 'width:18px;height:18px;--ax:' + (a * 0.6).toFixed(0) + 'px;--ay:' + (b * 0.45).toFixed(0) + 'px;'\n      + (ra ? 'animation:robotnage 16s linear infinite;' : '') + '\">'\n      + '<ha-icon icon=\"mdi:robot-vacuum\" style=\"--mdc-icon-size:18px;color:' + (ra ? '#BF71B2' : '#9AA0A6') + ';'\n      + (ra ? 'animation:vibre 0.5s ease-in-out infinite;' : 'opacity:0.85;') + 'display:block;\"></ha-icon></div>');\n  }\n  var pastille = function (cote, icone, texte, col, anim) {\n    return '<div style=\"position:absolute;' + cote + ':2px;top:1px;display:flex;align-items:center;gap:3px;'\n      + 'padding:1px 7px 1px 5px;border-radius:9px;background:rgba(0,0,0,0.5);font-size:9px;font-weight:700;'\n      + 'color:' + col + ';white-space:nowrap;\"><ha-icon icon=\"' + icone + '\" style=\"--mdc-icon-size:12px;'\n      + 'color:' + col + ';display:flex;' + (anim ? 'animation:' + anim + ';' : '') + '\"></ha-icon>' + texte + '</div>';\n  };\n  if (V) o.push(pastille('left', 'mdi:window-shutter', pos >= 99 ? 'Volet ouvert' : (pos <= 1 ? 'Volet ferm\\u00e9' : 'Volet ' + Math.round(pos) + ' %'), pos >= 99 ? '#5DADE2' : (pos <= 1 ? '#CCCCCC' : '#F8C471'), ''));\n  if (P) {\n    var sp = parseFloat(P.attributes.temperature);\n    var ico = pa === 'cooling' ? 'mdi:snowflake' : (pa === 'heating' ? 'mdi:fire' : 'mdi:thermostat');\n    var pc = pa === 'cooling' ? '#5DADE2' : (pa === 'heating' ? '#F8C471' : '#CCCCCC');\n    o.push(pastille('right', ico, pm === 'off' ? 'PAC arr\\u00eat\\u00e9e' : 'PAC ' + fr(sp, 1) + ' \\u00b0C', pc,\n      pacActive ? 'respire 1.8s ease-in-out infinite' : ''));\n  }\n  if (on('binary_sensor.apercu_piscine_1_gel')) o.push('<ha-icon icon=\"mdi:snowflake\" style=\"position:absolute;left:' + (cx - 11) + 'px;'\n    + 'top:' + (cy - 11) + 'px;--mdc-icon-size:22px;color:#FFFFFF;animation:flocon 3s ease-in-out infinite;\"></ha-icon>');\n  return '<div style=\"position:relative;width:290px;height:139px;\">' + o.join('') + '</div>';\n";
+  function dessinerBassin(cible) {
+    const lire = (p, d) => { const e = document.getElementById('param-eau_piscine-' + p); return e ? e.value : d; };
+    const corps = CORPS_BASSIN.replace('@@FORME@@', lire('PISCINE_FORME', 'rectangulaire'))
+      .replace('@@TYPE@@', lire('PISCINE_TYPE', 'enterree')).replace('@@FINITION@@', lire('PISCINE_FINITION', 'bleu'));
+    const etats = new Proxy({}, { get: (t, id) => {
+      if (typeof id !== 'string' || /_(gel|niveau|skimmer|volet|pac|robot)/.test(id)) return undefined;
+      const d = id.split('.')[0];
+      return { entity_id: id, state: d === 'sensor' ? '27.5' : 'on',
+        attributes: { rgb_color: [93, 173, 226], brightness: 200, effect: 'none' } };
+    } });
+    try { cible.innerHTML = '<div style="position:relative;width:290px;height:139px;margin:4px auto;'
+      + 'border-radius:12px;background:rgba(0,0,0,0.35)">' + new Function('states', 'entity', 'hass', 'variables', corps)(etats, {}, {}, {}) + '</div>'; }
+    catch (e) { cible.textContent = ''; }
+    const l = cible.clientWidth; cible.style.zoom = l && l < 300 ? (l / 300).toFixed(3) : '1';
+  }
+  function majBassins() { document.querySelectorAll('.apercu-piscine').forEach(dessinerBassin); }
+  new MutationObserver(() => {
+    document.querySelectorAll('.apercu-piscine:not([data-dessine])').forEach(c => {
+      c.setAttribute('data-dessine', '1'); dessinerBassin(c); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('change', e => {
+    if (e.target && /^param-eau_piscine-PISCINE_(FORME|TYPE|FINITION)$/.test(e.target.id || '')) majBassins();
+  });
+  /* ---------- FIN APERCU DU BASSIN ---------- */
   const PACK_APERCU = {
     securite_camera: 'camera',
     OK_service_meteo: 'meteo',
@@ -18867,7 +19013,8 @@
     chauffage_cheminee: 'cheminee',
     appareil_tondeuse: 'tondeuse',
     appareil_aspirateur: 'aspirateur',
-    appareil_serpillere: 'serpillere'
+    appareil_serpillere: 'serpillere',
+    eau_piscine: 'piscine'
   };
 
   function themeSite(cle) {
@@ -19480,7 +19627,9 @@
     // `appareil_aspirateur` ajoute le 26/09/2026 : phase de test.
     'appareil_aspirateur',
     // `appareil_serpillere` ajoute le 26/09/2026 : phase de test.
-    'appareil_serpillere'
+    'appareil_serpillere',
+    // `eau_piscine` ajoute le 26/09/2026 : phase de test.
+    'eau_piscine'
   ]);
 
   const PRIX_PACK = 9;
@@ -20639,6 +20788,7 @@
     appareil_tondeuse: 'tondeuse',
     appareil_aspirateur: 'aspirateur',
     appareil_serpillere: 'serpillere',
+    eau_piscine: 'piscine',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
