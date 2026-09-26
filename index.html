@@ -3946,7 +3946,7 @@
       { name: 'securite_camera', desc: 'Caméra : direct, orientation, réglages et enregistrements' }
     ],
     appareil: [
-      { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
+      { name: 'appareil_aspirateur', desc: 'Robot vivant dans sa pièce, pièces, profils, consommables et alertes' },
       { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
       { name: 'appareil_compteur_electricite', desc: 'Distribution, consommation par appareil, répartition et coûts' },
       { name: 'appareil_enceinte', desc: 'Barre de son, enceinte connectée ou portable : radios, bibliothèque et ondes vivantes' },
@@ -4207,6 +4207,11 @@
     eau_arrosage: {
       resume: "Zones en cercle, minuteur par zone, programmateur et litres consommés.",
       detail: `Pilotage complet d'un arrosage automatique depuis la <b>vanne connectée</b> qui l'alimente &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son interrupteur, son compteur de volume et son débit. Le premier onglet montre la vanne au centre et vos <b>zones disposées en cercle</b> autour d'elle : celle qui arrose s'anime, son minuteur s'écoule à la seconde et sa barre se remplit des litres consommés. Le deuxième règle la <b>durée de chaque zone</b> &mdash; l'anneau se remplit comme l'intensité d'une lampe &mdash; puis lance le programme, à la demande ou à l'heure choisie, jusqu'à trois programmes. Le troisième donne la météo, le récapitulatif des programmes et l'eau consommée sur le jour, la semaine, le mois et l'année. Trois alertes veillent : arrosage trop long (la vanne se ferme), bilan de fin d'arrosage par zone, et <b>pluie annoncée</b> &mdash; avec un bouton pour annuler.`
+    },
+    appareil_aspirateur: {
+      resume: `Votre robot aspirateur vivant dans sa pièce, sa batterie, ses pièces, ses profils de nettoyage et l'usure de ses consommables.`,
+      detail: `Le tableau de bord de votre robot aspirateur &mdash; Roborock, iRobot Roomba, Dreame, Xiaomi, Ecovacs&hellip; Vous ne saisissez que le <b>nom du robot</b> : le pack retrouve seul sa batterie, son statut, son capteur d'erreur, ses puissances d'aspiration, son mode serpillière, le sac de sa station, sa caméra frontale et ses consommables s'il en publie, et <b>n'affiche que ce qui existe</b>. Le premier onglet dessine un <b>sol en parquet</b> et sa station : le robot le balaie en serpentin et la poussière disparaît sur son passage, une trace d'eau le suit quand il lave, son ventilateur tourne d'autant plus vite que la puissance est forte, il rentre en bleu, recharge sous un éclair, s'immobilise en pause ou se secoue en rouge quand il est coincé. Un <b>sélecteur de pièces</b> choisit ce qu'il nettoie, un anneau circulaire donne la batterie, trois boutons lancent, mettent en pause ou renvoient le robot à sa station. Le deuxième onglet règle le <b>planning</b> (heure, jours, durée maximale) et les <b>profils</b> : manuel, automatique, approfondi (aspiration maximale), silencieux. Le troisième suit l'<b>usure</b> des brosses, du filtre, des patins et du sac de la station, avec remise à zéro d'un appui. Dès que le robot nettoie ou rentre, la carte prend sa <b>bordure animée verte</b> et son fond s'allume. Une alerte prévient vos mobiles si le robot est bloqué, si le sac est plein, si une erreur survient, si la batterie faiblit hors de la station ou si un consommable est usé.`,
+      apercu: {}
     },
     appareil_tondeuse: {
       resume: `Votre robot tondeuse vivant sur sa pelouse, sa batterie, son planning, ses modes et l'usure de ses lames.`,
@@ -4722,6 +4727,26 @@
         declencheur: `Le minuteur de désactivation se termine ou est annulé à la main.`,
         action: `Remet la prise dans l'état qu'elle avait avant — jamais un appareil laissé hors tension indéfiniment.` }
     ],
+    appareil_aspirateur: [
+      { titre: `Robot bloqué ou en erreur`, icone: 'fa-triangle-exclamation',
+        declencheur: `Le robot passe en erreur, ou son capteur d'erreur signale un blocage, pendant trente secondes.`,
+        action: `Notification sur tous vos mobiles, qui cite l'erreur publiée et dit clairement quand le robot est coincé.` },
+      { titre: `Sac ou bac plein`, icone: 'fa-trash-can',
+        declencheur: `Le capteur de sac de la station (ou de bac du robot) passe à « plein » pendant une minute.`,
+        action: `Notification : à vider avant le prochain nettoyage.` },
+      { titre: `Batterie faible hors de la station`, icone: 'fa-battery-quarter',
+        declencheur: `La batterie passe sous le seuil réglé (20 % par défaut) pendant deux minutes, robot hors de sa station.`,
+        action: `Notification avec le niveau mesuré et le seuil réglé.` },
+      { titre: `Consommable usé`, icone: 'fa-screwdriver-wrench',
+        declencheur: `Le consommable le plus usé passe sous le seuil réglé (10 % par défaut).`,
+        action: `Notification qui nomme la pièce à remplacer ; un appui sur sa jauge remet le compteur à zéro.` },
+      { titre: `Programme de nettoyage`, icone: 'fa-calendar-check',
+        declencheur: `L'heure de départ réglée, les jours choisis, hors mode Manuel.`,
+        action: `Nettoyage de la pièce choisie avec la puissance du profil, puis retour à la station au plus tard à la durée maximale.` },
+      { titre: `Profils d'aspiration`, icone: 'fa-fan',
+        declencheur: `Le profil Automatique, Approfondi ou Silencieux est choisi.`,
+        action: `La puissance d'aspiration du robot est réglée sur la valeur standard, maximale ou minimale de sa propre liste.` }
+    ],
     appareil_tondeuse: [
       { titre: `Robot bloqué, en erreur, fil coupé`, icone: 'fa-triangle-exclamation',
         declencheur: `Le robot passe en erreur, ou son capteur d'erreur signale un blocage, pendant une minute.`,
@@ -5133,6 +5158,38 @@
             { nom: `Météo`, texte: `température, précipitations du jour et humidité — celle de votre capteur de sol si vous en avez un.` },
             { nom: `Programmes`, texte: `le récapitulatif des trois programmes : heure et fréquence de chacun.` },
             { nom: `Compteurs d'eau`, texte: `les litres consommés sur le jour, la semaine, le mois et l'année en cours ; « — » tant que rien n'a coulé.` }
+          ] }
+      ]
+    },
+    appareil_aspirateur: {
+      intro: `Trois onglets : indicateur, planification, maintenance. Vous ne saisissez qu'un <b>nom de robot</b>. <b>Obligatoire</b> : une entité <code>vacuum.*</code> (démarrer, pause, arrêt, retour à la station). <b>Facultatifs, déduits de l'appareil</b> : la batterie (capteur ou attribut du robot), le capteur de statut, le capteur d'erreur, la liste des puissances d'aspiration, le sélecteur de serpillière, le capteur de sac de station plein, le bouton de vidage, la caméra frontale, et les consommables (brosse principale, brosse latérale, filtre, patins, sac) en pourcentage ou en temps restant, avec leurs boutons de remise à zéro &mdash; <b>ce sont eux qui font la variante</b> : un robot basique n'a ni profils d'aspiration ni capsule de serpillière, un robot sans station n'a pas de tuile de station, un consommable non publié n'a pas de jauge. Les <b>pièces</b> se saisissent (<code>Salon:16, Cuisine:17</code>) ; le nettoyage par pièce parle la langue de la marque (Roborock, Xiaomi, Dreame, Ecovacs).`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-robot',
+          texte: `Le <b>sol et sa station</b>, dessinés en icônes : le robot balaie en serpentin et la poussière disparaît, une trace d'eau le suit en mode serpillière, il rentre en bleu, recharge sous un éclair, attend en pause (ambre) ou se secoue sous une alerte (corail). En haut, l'activité, l'<b>anneau de batterie</b> et le mode serpillière ; au milieu le <b>sélecteur de pièces</b> ; en bas le prochain départ et les trois commandes.`,
+          elements: [
+            { nom: `Activité`, texte: `nettoyage, à la base, retour, en pause, à l'arrêt, erreur — le statut détaillé de l'intégration en petit.` },
+            { nom: `Anneau de batterie`, texte: `vert, ambre ou corail selon le niveau ; bleu et tournant quand le robot recharge.` },
+            { nom: `Serpillière`, texte: `le mode de lavage en cours ; un appui passe au suivant (si le robot en a un).` },
+            { nom: `Pièces`, texte: `« Tout » ou une pièce ; la pastille choisie est verte et respire pendant le nettoyage.` },
+            { nom: `Station et caméra`, texte: `sac vert ou corail clignotant quand il est plein ; un appui sur la scène ouvre la caméra frontale (ou fait sonner le robot).` },
+            { nom: `Démarrer, Pause, Base`, texte: `le bouton de l'activité en cours est plein et pulse ; démarrer demande une confirmation.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que le robot nettoie, rentre, ou qu'un nettoyage temporisé tourne.` }
+          ] },
+        { titre: '2 — Planification', icone: 'fa-calendar-days',
+          texte: `Les <b>profils</b> : Manuel (programme suspendu), Automatique (puissance standard), Approfondi (puissance maximale) et Silencieux (puissance minimale) — ces deux derniers seulement si le robot publie ses puissances. Le <b>planning</b> : heure de départ, jours et durée maximale ; six durées d'un clic ; un bouton pour lancer un <b>nettoyage temporisé</b>, le mettre en pause ou le reprendre.`,
+          elements: [
+            { nom: `Quatre profils`, texte: `le profil actif est coloré et son icône animée ; il règle la puissance d'aspiration du robot.` },
+            { nom: `Départ, Jours, Durée max.`, texte: `un appui sur l'heure ouvre le réglage, un appui sur les jours passe à la fréquence suivante.` },
+            { nom: `Six durées`, texte: `15 min, 30 min, 45 min, 1 h, 1 h 30, 2 h.` },
+            { nom: `Compte à rebours`, texte: `encadré de deux robots qui vibrent, « Prêt » au repos ; à l'échéance le robot rentre à sa station.` }
+          ] },
+        { titre: '3 — Maintenance', icone: 'fa-screwdriver-wrench',
+          texte: `Une <b>jauge d'usure</b> par consommable publié — brosse principale, brosse latérale, filtre HEPA, patins de serpillière, sac de la station — convertie en pourcentage restant même quand l'intégration publie un temps. Un appui (confirmé) remet le compteur à zéro. Dessous, la <b>station de vidage</b> (un appui vide le robot) et la <b>dernière erreur</b>.`,
+          elements: [
+            { nom: `Jauges`, texte: `vertes, ambre sous 30 %, corail et clignotantes sous le seuil d'alerte.` },
+            { nom: `Station de vidage`, texte: `« Sac prêt » ou « Sac plein » — tuile absente sans station auto-videuse.` },
+            { nom: `Dernière erreur`, texte: `le texte d'erreur publié par le robot, ou « Aucune ».` }
           ] }
       ]
     },
@@ -7013,6 +7070,23 @@
          monochrome        -> une seule cartouche dans le 2e onglet
          sans piece d'usure-> le sous-onglet « Duree de vie » disparait
          sans prise        -> le 3e onglet disparait (rien a tracer) */
+    appareil_aspirateur: [
+      { param: 'ASPIRATEUR_APPAREIL', label: `Nom du robot aspirateur`, type: 'text',
+        required: true, groupe: `🤖 Robot aspirateur`,
+        placeholder: `ex : Roborock S8, Roomba i7, Dreame X40 — tel qu'il apparaît dans Appareils et services` },
+      { param: 'ASPIRATEUR_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🤖 Robot aspirateur`, placeholder: `vide : déduite de l'appareil (sinon « Maison »)` },
+      { param: 'ASPIRATEUR_PIECES', label: `Pièces à nettoyer (nom:segment)`, type: 'text',
+        required: false, groupe: `🗺️ Nettoyage par pièce`,
+        placeholder: `ex : Salon:16, Cuisine:17, Chambre:18 — vide : pas de sélecteur de pièces` },
+      { param: 'ASPIRATEUR_HEURE', label: `Heure de départ programmée`, type: 'text', required: false,
+        groupe: `📅 Planning`, placeholder: `ex : 09:30 — réglable ensuite depuis la carte` },
+      { param: 'ASPIRATEUR_SEUIL_BATTERIE', label: `Alerte batterie faible (%)`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 20 %` },
+      { param: 'ASPIRATEUR_SEUIL_CONSO', label: `Alerte consommable usé (%)`, type: 'text',
+        required: false, groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 10 %` },
+      champThemeSite('ASPIRATEUR_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_tondeuse: [
       { param: 'TONDEUSE_APPAREIL', label: `Nom du robot tondeuse`, type: 'text',
         required: true, groupe: `🤖 Robot tondeuse`,
@@ -7638,6 +7712,17 @@
       + 'alerte de m\u00e9t\u00e9o d\u00e9favorable et son annulation \u2014, '
       + 'ainsi que HACS et les cartes personnalis\u00e9es requises '
       + '(button-card, swipe-card, stack-in-card, card-mod).',
+    appareil_aspirateur:
+      `la vue et ses trois onglets, le robot, son sol et sa station dessinés, `
+      + `les helpers du planning et des profils (profil, heure de départ, jours, `
+      + `durée maximale, minuteur, pièce choisie), le capteur de synthèse des `
+      + `consommables, les seuils d'alerte, trois scripts (nettoyage de la pièce `
+      + `choisie, nettoyage temporisé, bascule) et cinq automatismes (programme, `
+      + `fin, annulation, profils d'aspiration, alertes critiques), en mode `
+      + `fictif un robot et selon la variante sa batterie, son statut, son `
+      + `erreur, ses puissances, sa serpillière, sa station, sa caméra frontale `
+      + `et ses consommables, tous pilotables, ainsi que HACS et les cartes `
+      + `personnalisées requises (button-card, swipe-card, stack-in-card, card-mod).`,
     appareil_tondeuse:
       `la vue et ses trois onglets, le robot et sa pelouse dessinés selon le `
       + `guidage, les helpers du planning et des modes (mode, heure de départ, `
@@ -8659,6 +8744,21 @@
             "templates/apercus/arrosage/urban-factory-defaut-1.mp4",
             "templates/apercus/arrosage/urban-factory-defaut-2.mp4",
             "templates/apercus/arrosage/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "aspirateur": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/aspirateur/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/aspirateur/urban-factory-defaut-1.mp4",
+            "templates/apercus/aspirateur/urban-factory-defaut-2.mp4",
+            "templates/apercus/aspirateur/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -18657,7 +18757,8 @@
     appareil_raspberry: 'raspberry',
     appareil_enceinte: 'enceinte',
     chauffage_cheminee: 'cheminee',
-    appareil_tondeuse: 'tondeuse'
+    appareil_tondeuse: 'tondeuse',
+    appareil_aspirateur: 'aspirateur'
   };
 
   function themeSite(cle) {
@@ -19266,7 +19367,9 @@
     // `chauffage_cheminee` ajoute le 26/09/2026 : phase de test.
     'chauffage_cheminee',
     // `appareil_tondeuse` ajoute le 26/09/2026 : phase de test.
-    'appareil_tondeuse'
+    'appareil_tondeuse',
+    // `appareil_aspirateur` ajoute le 26/09/2026 : phase de test.
+    'appareil_aspirateur'
   ]);
 
   const PRIX_PACK = 9;
@@ -20423,6 +20526,7 @@
     appareil_imprimante: 'imprimante',
     appareil_enceinte: 'enceinte',
     appareil_tondeuse: 'tondeuse',
+    appareil_aspirateur: 'aspirateur',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
