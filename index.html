@@ -3938,7 +3938,7 @@
     ],
     chauffage: [
       { name: 'chauffage_thermostat', desc: 'Thermostat principal de régulation' },
-      { name: 'chauffage_cheminee', desc: 'Suivi et capteur cheminée' },
+      { name: 'chauffage_cheminee', desc: 'Foyer animé selon le type, allumage temporisé à l\u2019intensité choisie, consommation et alerte' },
       { name: 'chauffage_compteur_gaz', desc: 'Distribution du gaz, consommation par usage, répartition et coûts' }
     ],
     securite: [
@@ -3949,7 +3949,7 @@
       { name: 'appareil_aspirateur', desc: 'Robot aspirateur' },
       { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
       { name: 'appareil_compteur_electricite', desc: 'Distribution, consommation par appareil, répartition et coûts' },
-      { name: 'appareil_enceinte', desc: 'Enceinte connectée / Multimédia' },
+      { name: 'appareil_enceinte', desc: 'Barre de son, enceinte connectée ou portable : radios, bibliothèque et ondes vivantes' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
       { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
@@ -3960,7 +3960,6 @@
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
       { name: 'appareil_serpillere', desc: 'Robot serpillière' },
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
-      { name: 'appareil_soundbar', desc: 'Barre de son' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot tondeuse' },
       { name: 'appareil_voiture', desc: 'Véhicule connecté / Recharge' },
@@ -4014,7 +4013,7 @@
     securite_camera: 'Caméra',
     appareil_aspirateur: 'Aspirateur',
     appareil_box_internet: 'Box Internet',
-    appareil_enceinte: 'Enceinte Connectée',
+    appareil_enceinte: 'Enceinte',
     appareil_lave_vaisselle: 'Lave-vaisselle',
     appareil_lave_linge: 'Lave-linge',
     appareil_micro_onde: 'Micro-ondes',
@@ -4172,6 +4171,11 @@
       detail: `Le tableau de bord de l'eau de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur d'eau</b> (un compteur t\u00e9l\u00e9relev\u00e9, un compteur \u00e0 impulsions, une vanne connect\u00e9e avec d\u00e9bitm\u00e8tre), le pack retrouve seul son index ou son d\u00e9bit et <b>d\u00e9rive l'un de l'autre</b>. Le premier onglet est un <b>synoptique vivant</b> : le compteur \u00e0 gauche avec son index, la maison au centre &mdash; une goutte qui perle tant que de l'eau coule &mdash;, et autour les vannes que vous savez mesurer : le jardin dont l'arroseur oscille, le lave-linge dont le tambour tourne, le lave-vaisselle dont le jet monte, le ballon dont la goutte tombe. Sur chaque <b>canalisation</b>, des pointill\u00e9s d\u00e9filent et des gouttes circulent \u00e0 la vitesse du d\u00e9bit. D\u00e8s que de l'eau coule, la carte prend sa <b>bordure anim\u00e9e bleue</b> et son fond s'allume ; au-dessus du seuil, elle passe au rouge. Le deuxi\u00e8me onglet trace la <b>consommation par vanne</b> ou pour toute la maison, en m\u00b3 (en litres sur la journ\u00e9e) ou en euros, par heure, par jour ou par mois. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque vanne \u00e0 sa couleur, et « Autre » pour ce qu'elles ne mesurent pas. Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur. Une alerte pr\u00e9vient vos mobiles quand le d\u00e9bit ou la consommation du jour d\u00e9passe un seuil que le pack mesure, et quand de l'eau coule <b>sans s'arr\u00eater</b> : une fuite, un robinet oubli\u00e9.`,
       apercu: {}
     },
+    chauffage_cheminee: {
+      resume: `Votre cheminée, votre insert à gaz, votre bioéthanol ou votre poêle, vivant : un foyer qui s'anime selon son type, une bordure et un fond qui s'allument en rouge dès qu'elle fonctionne, un allumage temporisé à l'intensité choisie, et sa consommation.`,
+      detail: `Le tableau de bord de votre appareil de chauffage au bois, au gaz ou à granulés &mdash; vous ne saisissez que le <b>nom de l'appareil</b> qui commande son allumage (un relais, une prise connectée), le pack retrouve seul son intensité de flamme, sa puissance et son énergie s'il en publie. Le premier onglet montre un <b>foyer vivant</b>, dessiné entièrement en icônes et en couleurs (aucune photo) : une flamme qui vacille, cernée d'un anneau qui se remplit à l'intensité réelle, et une matière propre au <b>type</b> choisi &mdash; fumée qui monte pour une cheminée traditionnelle ou un poêle à bois, veilleuse bleue toujours visible pour un insert à gaz, granulés qui tombent pour un poêle à granulés. Le deuxième onglet reprend le <b>Mode Manuel</b> du pack Thermostat : un allumage temporisé à l'intensité choisie, pour quinze minutes ou pour douze heures, avec un compte à rebours encadré de deux flammes. Le troisième trace la <b>consommation</b> par période, en kWh ou en euros quand une prise connectée mesure la puissance, sinon le temps de fonctionnement. Dès que la cheminée s'allume, ou qu'un allumage temporisé est en cours, la carte prend sa <b>bordure animée rouge</b> et son fond s'allume. Une alerte prévient vos mobiles en cas de consommation élevée ou d'allumage prolongé.`,
+      apercu: {}
+    },
     chauffage_compteur_gaz: {
       resume: `La distribution du gaz dans votre maison, vivante : le compteur, la maison, le chauffage, l'eau chaude, la cuisson, et des canalisations o\u00f9 le gaz circule. Consommation et co\u00fbt par usage, r\u00e9partition en anneau, alerte de consommation anormale.`,
       detail: `Le tableau de bord gaz de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur de gaz</b> (un Gazpar relev\u00e9 par GRDF, un compteur \u00e0 impulsions, un capteur de chaudi\u00e8re), le pack retrouve seul son index et <b>d\u00e9rive le d\u00e9bit</b> quand le compteur n'en publie pas. Le premier onglet est un <b>synoptique vivant</b> : le compteur \u00e0 gauche avec son index, la maison au centre &mdash; une flamme qui vacille tant que du gaz br\u00fble &mdash;, et \u00e0 droite les usages que vous savez mesurer : chauffage, eau chaude, cuisson. Sur chaque <b>canalisation</b>, des pointill\u00e9s d\u00e9filent et des bulles circulent \u00e0 la vitesse du d\u00e9bit. D\u00e8s que du gaz passe, la carte prend sa <b>bordure anim\u00e9e rouge</b> et son fond s'allume ; au-dessus du seuil, elle passe \u00e0 l'ambre. Le deuxi\u00e8me onglet trace la <b>consommation par usage</b> ou pour toute la maison, en kWh ou en euros, par heure, par jour ou par mois &mdash; un index en m\u00b3 est converti par le <b>coefficient de votre facture</b>, r\u00e9glable sans red\u00e9ploiement. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque usage \u00e0 sa couleur, et « Autre » pour ce qu'ils ne mesurent pas. Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur et vos usages. Une alerte pr\u00e9vient vos mobiles quand le d\u00e9bit ou la consommation du jour d\u00e9passe un seuil que le pack mesure et que vous r\u00e9glez.`,
@@ -4180,6 +4184,11 @@
     appareil_compteur_electricite: {
       resume: `La distribution d'\u00e9nergie de votre maison, vivante : r\u00e9seau, solaire, batterie, maison, et des points qui circulent. Consommation et co\u00fbt par appareil, r\u00e9partition en anneau, alerte de consommation anormale.`,
       detail: `Le tableau de bord \u00e9nergie de votre maison, sur une seule carte &mdash; vous ne saisissez que le <b>nom de votre compteur</b> (un Linky Zigbee, un Shelly EM, une pince amp\u00e8rem\u00e9trique), le pack retrouve seul ses index, sa puissance, et la d\u00e9rive de l'index quand le compteur n'en publie pas. Le premier onglet est un <b>synoptique vivant</b> : le r\u00e9seau \u00e0 gauche, la maison \u00e0 droite, vos panneaux en haut et votre batterie en bas si vous en avez, et des <b>points qui circulent</b> sur chaque liaison o\u00f9 passe de l'\u00e9nergie, \u00e0 la vitesse de la puissance. L'anneau de la maison se partage entre ses origines. D\u00e8s qu'un compteur, une batterie ou des panneaux fonctionnent, la carte prend sa <b>bordure anim\u00e9e verte</b> et son fond s'allume ; au-dessus du seuil, elle passe au <b>rouge</b>. Le deuxi\u00e8me onglet trace la <b>consommation par appareil</b> ou pour toute la maison, en kWh ou en euros, par heure, par jour ou par mois. Le troisi\u00e8me la <b>r\u00e9partit en anneau</b> : chaque prise connect\u00e9e, « Autre » pour ce qu'elles ne mesurent pas, et l'origine de l'\u00e9nergie (r\u00e9seau, solaire, batterie). Tout est lu sur les <b>statistiques long terme</b> de Home Assistant, celles du panneau \u00c9nergie natif &mdash; que le pack configure lui-m\u00eame avec votre compteur, vos panneaux, votre batterie et vos prises. Une alerte pr\u00e9vient vos mobiles quand la puissance ou la consommation du jour d\u00e9passe un seuil que le pack mesure et que vous r\u00e9glez.`,
+      apercu: {}
+    },
+    appareil_enceinte: {
+      resume: `Votre enceinte vivante : son afficheur montre ce qui joue, ses haut-parleurs battent. Quinze radios de votre pays, votre bibliothèque Music Assistant, et une alerte quand elle joue trop longtemps.`,
+      detail: `Le pilotage complet de votre <b>enceinte</b> &mdash; barre de son, enceinte connectée, haut-parleur ou enceinte portable. Vous ne saisissez que le <b>nom de l'appareil</b> : le pack reconnaît son type d'après le modèle, retrouve le lecteur Music Assistant qui lui correspond, sa batterie et la prise connectée qui l'alimente. Le premier onglet montre l'enceinte <b>vivante</b> : son afficheur montre ce qui joue &mdash; la pochette de l'album, la télévision, la radio, un livre audio &mdash;, ses haut-parleurs <b>battent</b> et des ondes vertes s'en échappent tant que la musique joue. Dessous, la pochette tourne comme un vinyle et un égaliseur aux cinq couleurs danse. Le deuxième onglet ouvre votre <b>bibliothèque</b> : les <b>quinze radios les plus écoutées de votre pays</b> (ou les vôtres), vos playlists, albums, artistes, titres, podcasts et livres audio, et une <b>recherche</b> &mdash; tout passe par Music Assistant. Le troisième trace le temps d'écoute et, avec une prise, la consommation.`,
       apercu: {}
     },
     appareil_television: {
@@ -4566,6 +4575,11 @@
         declencheur: `Le d\u00e9bit d'eau d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut six fois le d\u00e9bit moyen de votre plus fort jour), la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5), ou de l'eau coule <b>sans s'arr\u00eater</b> plus longtemps que le seuil de d\u00e9bit continu (par d\u00e9faut soixante minutes) \u2014 l'id\u00e9e que la communaut\u00e9 a le plus reprise pour d\u00e9tecter une fuite.`,
         action: `Notification sur tous vos mobiles, qui dit le d\u00e9bit ou les litres mesur\u00e9s et le seuil franchi. Les trois seuils sont des entr\u00e9es que vous r\u00e9glez depuis Home Assistant sans red\u00e9ploiement ; la carte passe au rouge au m\u00eame moment.` }
     ],
+    chauffage_cheminee: [
+      { titre: `Consommation élevée ou allumage prolongé`, icone: 'fa-fire',
+        declencheur: `La puissance mesurée dépasse le seuil réglé (par défaut 2000 W) pendant dix minutes, ou la cheminée reste allumée plus longtemps que le seuil réglé (par défaut 4 heures) — un déclencheur en template, pas en état, pour ne pas être remis à zéro par un simple changement d'intensité.`,
+        action: `Notification sur tous vos mobiles, qui nomme la cause et donne la valeur mesurée et le seuil réglé. Les deux seuils sont des entrées que vous réglez depuis Home Assistant sans redéploiement.` }
+    ],
     chauffage_compteur_gaz: [
       { titre: `Consommation de gaz anormale`, icone: 'fa-fire',
         declencheur: `Le d\u00e9bit de gaz d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut trois fois la puissance moyenne de votre plus fort jour), ou la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5).`,
@@ -4575,6 +4589,11 @@
       { titre: `Consommation anormale`, icone: 'fa-bolt',
         declencheur: `La puissance soutir\u00e9e d\u00e9passe le seuil pendant dix minutes (par d\u00e9faut 90 % de votre puissance souscrite), ou la consommation du jour d\u00e9passe le seuil journalier (par d\u00e9faut la moyenne de vos sept derniers jours, fois 1,5).`,
         action: `Notification sur tous vos mobiles, qui dit la puissance ou les kWh mesur\u00e9s et le seuil franchi. Les deux seuils sont des entr\u00e9es que vous r\u00e9glez depuis Home Assistant sans red\u00e9ploiement ; la carte passe au rouge au m\u00eame moment.` }
+    ],
+    appareil_enceinte: [
+      { titre: `Enceinte qui joue trop longtemps`, icone: 'fa-hourglass-half',
+        declencheur: `L'enceinte joue sans s'arrêter plus longtemps que le seuil que vous avez réglé (4 heures par défaut). Changer de morceau ne remet pas le compte à zéro ; seul un arrêt ou une pause le fait.`,
+        action: `Notification sur tous vos mobiles, qui dit depuis combien de temps elle joue et ce qui passe. Le seuil est une entrée que vous réglez depuis Home Assistant, sans redéploiement.` }
     ],
     appareil_television: [
       { titre: `Televiseur allume trop longtemps`, icone: 'fa-hourglass-half',
@@ -4814,6 +4833,37 @@
           ] }
       ]
     },
+    chauffage_cheminee: {
+      intro: `Trois onglets : indicateur, minuteur, historique. Vous ne saisissez qu'un <b>nom d'appareil</b> et un <b>type</b> (cheminée traditionnelle, insert à gaz, bioéthanol, poêle à bois ou à granulés) ; l'intensité de flamme, le niveau de combustible et la consommation sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans intensité mesurée, la carte n'a qu'un relais tout-ou-rien.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-fire',
+          texte: `Le <b>foyer</b>, au centre : une flamme qui vacille, cernée d'un anneau d'intensité, et la matière du type choisi. Une capsule d'état à gauche, la température ou le niveau de combustible à droite quand ils existent. En bas, « Allumée depuis » et le bouton d'allumage (confirmation avant d'allumer). Dès que la cheminée fonctionne, ou qu'un minuteur tourne, la bordure passe au serpentin rouge et le fond s'allume.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
+            { nom: `Capsules`, texte: `état (allumée, éteinte), et température ou niveau de combustible selon ce qui est mesuré.` },
+            { nom: `Foyer`, texte: `flamme animée, anneau d'intensité, matière du type (fumée, veilleuse, granulés).` },
+            { nom: `Allumée depuis`, texte: `le temps écoulé depuis le dernier allumage.` },
+            { nom: `Bouton d'allumage`, texte: `bascule marche/arrêt, confirmation à l'allumage.` },
+            { nom: `Bordure et fond`, texte: `serpentin rouge et fond allumé dès que la cheminée fonctionne ou qu'un minuteur tourne.` }
+          ] },
+        { titre: '2 — Minuteur', icone: 'fa-clock',
+          texte: `Le <b>Mode Manuel</b> : un curseur d'intensité (quand l'appareil en a un), six durées de quinze minutes à douze heures, et un bouton de veille qui bascule le minuteur (inactif, en marche, en pause). Le compte à rebours est encadré de deux flammes qui vacillent. À la fin, l'appareil retrouve l'état qu'il avait avant l'allumage temporisé.`,
+          elements: [
+            { nom: `Curseur d'intensité`, texte: `règle l'intensité à appliquer, si l'appareil sait la régler.` },
+            { nom: `Six durées`, texte: `15 min, 30 min, 1 h, 2 h, 4 h, 12 h.` },
+            { nom: `Compte à rebours`, texte: `encadré de deux flammes, « Prêt » au repos.` },
+            { nom: `Bouton de veille`, texte: `lance, met en pause ou reprend l'allumage temporisé.` }
+          ] },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `Quatre périodes (jour, semaine, mois, année). Avec une prise connectée qui mesure l'énergie : deux métriques, kWh ou coût en euros, en histogramme. Sans elle : le <b>temps de fonctionnement</b> de la cheminée, sans aucun capteur créé.`,
+          elements: [
+            { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
+            { nom: `kWh ou Coût`, texte: `deux pastilles, visibles seulement avec un capteur d'énergie.` },
+            { nom: `Histogramme`, texte: `consommation ou temps de fonctionnement, par période.` }
+          ] }
+      ]
+    },
     chauffage_compteur_gaz: {
       intro: `Trois onglets : distribution, consommation, r\u00e9partition. Vous ne saisissez que le <b>nom de votre compteur de gaz</b> ; le chauffage, l'eau chaude et la cuisson sont facultatifs, et <b>ce sont eux qui font la variante</b> : sans usage mesur\u00e9, le synoptique n'a que le compteur et la maison, et l'onglet R\u00e9partition n'existe pas (il n'y aurait qu'une part). Un index en m\u00b3 est converti en kWh par le coefficient de votre facture ; le d\u00e9bit est d\u00e9riv\u00e9 de l'index quand le compteur n'en publie pas &mdash; un Gazpar relev\u00e9 une fois par jour affiche sa moyenne de la journ\u00e9e, un compteur \u00e0 impulsions suit presque en direct.`,
       carte: () => 'defaut',
@@ -4877,6 +4927,42 @@
             { nom: `L\u00e9gende`, texte: `le nom de chaque part et son pourcentage.` },
             { nom: `Prises ou Origine`, texte: `deux pastilles ; Origine n'existe qu'avec des panneaux ou une batterie.` },
             { nom: `P\u00e9riodes`, texte: `les m\u00eames quatre p\u00e9riodes que l'onglet Consommation.` }
+          ] }
+      ]
+    },
+    appareil_enceinte: {
+      intro: `Trois onglets : indicateur, bibliothèque, historique. Vous ne saisissez que le <b>nom de votre enceinte</b> &mdash; le pack reconnaît son <b>type</b> (barre de son, enceinte connectée, haut-parleur, enceinte portable) d'après son modèle, et c'est lui qui décide de son image et de la place de ses ondes. <b>Music Assistant fait la bibliothèque</b> : s'il est installé, les sept onglets de musique apparaissent ; sinon il reste les quinze radios, et le déploiement vous le dit. Sans prise connectée, le graphe de consommation disparaît ; sans batterie, son badge aussi.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Indicateur', icone: 'fa-volume-high',
+          texte: `Deux capsules en haut : <b>Source</b> (musique, radio, télévision, podcast, livre audio &mdash; sa couleur change avec elle et sa note danse) et <b>Son</b> (le niveau, corail et clignotant quand le son est coupé). Au centre, votre enceinte <b>vivante</b> : son afficheur montre ce qui joue, ses haut-parleurs battent et des ondes vertes s'en échappent. Dessous, la <b>pochette tourne comme un vinyle</b>, le titre et l'artiste défilent, et un <b>égaliseur aux cinq couleurs</b> danse. En bas : veille, volume, pistes, lecture et sourdine.`,
+          elements: [
+            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
+            { nom: `Capsule Source`, texte: `ce qui joue, à sa couleur : vert pour la musique, ambre pour la radio, bleu pour la télévision, violet pour les podcasts.` },
+            { nom: `Capsule Son`, texte: `le niveau sonore ; son icône suit le volume, et clignote en corail quand le son est coupé.` },
+            { nom: `L'enceinte`, texte: `l'image de votre type d'enceinte ; son AFFICHEUR montre la pochette de l'album, ou le pictogramme de la source (télévision, radio, livre audio, veille).` },
+            { nom: `Haut-parleurs qui battent`, texte: `un cône vert pulse sur chaque haut-parleur, et trois anneaux s'en échappent ; sur une enceinte connectée, ce sont des arcs qui partent de ses flancs et son anneau lumineux s'allume aux cinq couleurs.` },
+            { nom: `Batterie`, texte: `sur une enceinte portable, un badge avec son niveau, corail sous 20 %.` },
+            { nom: `Pochette vinyle`, texte: `elle tourne tant que la musique joue et s'arrête à la pause.` },
+            { nom: `Égaliseur`, texte: `cinq barres aux couleurs de la palette, qui dansent à contretemps.` },
+            { nom: `Commandes`, texte: `veille, volume moins, piste précédente, lecture / pause (verte, au centre), piste suivante, volume plus, sourdine ; celles que votre enceinte ne sait pas faire sont retirées.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que l'enceinte joue ; au repos un filet gris de même épaisseur. Rien ne bouge de place.` }
+          ] },
+        { titre: '2 — Bibliothèque', icone: 'fa-compact-disc',
+          texte: `Huit pastilles, une couleur chacune. <b>Radios</b> : les quinze stations les plus écoutées de votre pays, relevées sur Radio Browser au déploiement &mdash; ou celles que vous avez nommées &mdash;, leur logo dans une pastille ronde ; celle qui joue est cerclée de vert et pulse. <b>Playlists, Albums, Artistes, Titres, Podcasts, Livres audio</b> : votre bibliothèque Music Assistant, six tuiles avec leur pochette. <b>Recherche</b> : tapez un titre ou un artiste, les résultats s'affichent en tuiles. Un appui lance la lecture sur l'enceinte.`,
+          elements: [
+            { nom: `Pastilles`, texte: `huit onglets à icône, chacun à sa couleur ; la pastille active prend la sienne.` },
+            { nom: `Radios`, texte: `quinze pastilles rondes avec le logo de la station, déposé sur votre instance ; la radio qui joue est cerclée de vert et pulse.` },
+            { nom: `Tuiles de bibliothèque`, texte: `la pochette, le nom et l'artiste ; ce qui joue est bordé de vert et sa pochette tourne.` },
+            { nom: `Recherche`, texte: `un appui sur la barre ouvre la saisie ; les six premiers résultats de Music Assistant s'affichent.` },
+            { nom: `Sans Music Assistant`, texte: `seules les radios restent, et le déploiement le dit.` }
+          ] },
+        { titre: '3 — Historique', icone: 'fa-chart-column',
+          texte: `Le <b>temps d'écoute</b> par heure, par jour ou par mois &mdash; sans aucun capteur à installer, le pack le lit directement sur l'état de l'enceinte (la pause ne compte pas). Avec une prise connectée, une seconde métrique trace la <b>consommation</b> en kWh.`,
+          elements: [
+            { nom: `Périodes`, texte: `jour, semaine, mois, année ; la pastille active est verte.` },
+            { nom: `Temps d'écoute`, texte: `en minutes par heure sur la journée, en heures par jour ensuite.` },
+            { nom: `Consommation`, texte: `en kWh, si une prise connectée alimente l'enceinte.` }
           ] }
       ]
     },
@@ -6631,6 +6717,33 @@
         placeholder: `appareil ou entit\u00e9 \u2014 vide : pas de n\u0153ud Eau chaude` },
       champThemeSite('EAU_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
     ],
+    chauffage_cheminee: [
+      { param: 'CHEMINEE_APPAREIL', label: `Nom de l'appareil`, type: 'text',
+        required: true, groupe: `🔥 Cheminée`,
+        placeholder: `ex : salon cheminee — le nom de l'appareil qui commande l'allumage (relais, prise connectée) ; vide : cheminée FICTIVE pilotable` },
+      { param: 'CHEMINEE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🔥 Cheminée`, placeholder: `vide : déduite de l'appareil` },
+      { param: 'CHEMINEE_TYPE', label: `Type d'appareil`, type: 'select', required: false,
+        groupe: `🔥 Cheminée`, defaut: 'traditionnelle',
+        options: [
+          { value: 'traditionnelle', label: 'Cheminée traditionnelle' },
+          { value: 'gaz', label: 'Insert à gaz' },
+          { value: 'bioethanol', label: 'Cheminée à bioéthanol' },
+          { value: 'poele_bois', label: 'Poêle à bois' },
+          { value: 'poele_granule', label: 'Poêle à granulés' }
+        ] },
+      { param: 'CHEMINEE_TEMPERATURE', label: `Capteur de température`, type: 'text', required: false,
+        groupe: `🔥 Cheminée`, placeholder: `capteur de température ambiante — facultatif` },
+      { param: 'CHEMINEE_NIVEAU', label: `Capteur de niveau de combustible`, type: 'text', required: false,
+        groupe: `🔥 Cheminée`, placeholder: `capteur en % — facultatif (surtout utile pour un poêle à granulés)` },
+      { param: 'CHEMINEE_SEUIL_PUISSANCE', label: `Seuil d'alerte de consommation (W)`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 2000 W` },
+      { param: 'CHEMINEE_SEUIL_HEURES', label: `Seuil d'alerte d'allumage prolongé (h)`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `vide : 4 heures` },
+      { param: 'CHEMINEE_TARIF', label: `Prix du kWh`, type: 'text', required: false,
+        groupe: `⚠️ Seuils d'alerte`, placeholder: `en euros — vide : 0,25 €` },
+      champThemeSite('CHEMINEE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     chauffage_compteur_gaz: [
       { param: 'GAZ_APPAREIL', label: `Nom du compteur de gaz`, type: 'text',
         required: true, groupe: `\ud83d\udd25 Compteur de gaz`,
@@ -6684,6 +6797,41 @@
         type: 'text', required: false, groupe: `\ud83d\udd0c Prises connect\u00e9es`,
         placeholder: `ex : cuisine_refrigerateur, salon_television \u2014 vide : celles de votre tableau \u00c9nergie` },
       champThemeSite('COMPTEUR_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
+    ],
+    appareil_enceinte: [
+      { param: 'ENCEINTE_APPAREIL', label: `Nom de l'enceinte`, type: 'text',
+        required: true, groupe: `🔊 Enceinte`,
+        placeholder: `ex : salon_barre_son — le nom de l'appareil dans Home Assistant` },
+      { param: 'ENCEINTE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🔊 Enceinte`, placeholder: `vide : déduite de l'appareil` },
+      { param: 'ENCEINTE_TYPE', label: `Type d'enceinte`, type: 'select',
+        required: false, groupe: `🔊 Enceinte`, defaut: '',
+        options: [
+          { value: '', label: `Automatique (d'après le modèle)` },
+          { value: 'barre_de_son', label: `Barre de son` },
+          { value: 'enceinte_connectee', label: `Enceinte connectée` },
+          { value: 'haut_parleur', label: `Haut-parleur` },
+          { value: 'enceinte_portable', label: `Enceinte portable` }
+        ] },
+      { param: 'ENCEINTE_ALERTE', label: `Alerte après (heures d'écoute)`, type: 'text',
+        required: false, groupe: `🔊 Enceinte`,
+        placeholder: `vide : 4 h — réglable ensuite sans redéploiement` },
+      { param: 'ENCEINTE_PAYS', label: `Pays des radios`, type: 'text',
+        required: false, groupe: `📻 Radios`,
+        placeholder: `vide : celui de votre Home Assistant (ex : FR, BE, CH)` },
+      { param: 'ENCEINTE_RADIOS', label: `Vos radios favorites`, type: 'text',
+        required: false, groupe: `📻 Radios`,
+        placeholder: `vide : les 15 plus écoutées du pays — ou : FIP, RTL, Nova…` },
+      { param: 'ENCEINTE_MA', label: `Lecteur Music Assistant`, type: 'text',
+        required: false, groupe: `🔧 Corrections (rarement utiles)`,
+        placeholder: `vide : déduit — celui qui porte le nom de l'enceinte` },
+      { param: 'ENCEINTE_PRISE', label: `Prise connectée (capteur de puissance)`,
+        type: 'text', required: false, groupe: `🔧 Corrections (rarement utiles)`,
+        placeholder: `vide : la prise dont le nom cite l'enceinte, si elle existe` },
+      { param: 'ENCEINTE_BATTERIE', label: `Batterie`, type: 'text', required: false,
+        groupe: `🔧 Corrections (rarement utiles)`,
+        placeholder: `vide : déduite de l'appareil (enceintes portables)` },
+      champThemeSite('ENCEINTE_THEME', 'urban-factory', `🎨 Apparence`)
     ],
     appareil_television: [
       { param: 'TV_APPAREIL', label: `Nom du televiseur`, type: 'text',
@@ -7341,6 +7489,18 @@
       + `configuration du tableau de bord \u00c9nergie natif (source eau), ainsi que `
       + `HACS et les cartes personnalis\u00e9es requises (button-card, apexcharts-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    chauffage_cheminee:
+      `la vue et ses trois onglets, le foyer animé selon le type choisi, `
+      + `les helpers de l'allumage temporisé (intensité, durée, minuteur, `
+      + `drapeau de restauration, empreinte de contexte, sélecteurs de `
+      + `période et de métrique, seuils et tarif), les cinq automatismes `
+      + `(restauration, annulation, consigne pendant la dérogation, alerte) `
+      + `et les deux scripts (gestion du minuteur, allumage temporisé), en `
+      + `mode fictif un relais et selon la richesse choisie un réglage `
+      + `d'intensité, des capteurs de température, de niveau, de puissance `
+      + `et d'énergie, tous pilotables, ainsi que HACS et les cartes `
+      + `personnalisées requises (button-card, apexcharts-card, swipe-card, `
+      + `stack-in-card, card-mod).`,
     chauffage_compteur_gaz:
       `la vue et ses trois onglets, les s\u00e9lecteurs d'usage, de p\u00e9riode `
       + `et de m\u00e9trique, le tarif, le coefficient de conversion et les deux seuils `
@@ -7359,6 +7519,14 @@
       + `\u00c9nergie natif (compteur, panneaux, batterie, prises), ainsi que HACS `
       + `et les cartes personnalis\u00e9es requises (button-card, apexcharts-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    appareil_enceinte:
+      `la vue et ses trois onglets, le capteur de lecture, les sélecteurs `
+      + `d'onglet, de période et de métrique, la recherche, le seuil d'alerte `
+      + `réglable, l'automatisation qui prévient vos mobiles, les quinze radios `
+      + `de votre pays et leurs logos, l'image de votre enceinte, l'intégration `
+      + `Radio Browser, la bibliothèque Music Assistant si elle est installée, `
+      + `ainsi que HACS et les cartes personnalisées requises (button-card, `
+      + `apexcharts-card, swipe-card, stack-in-card, card-mod).`,
     appareil_television:
       `la vue et ses trois onglets, les selecteurs de sous-onglet, de periode `
       + `et de metrique, le seuil d'alerte reglable, l'automatisation qui `
@@ -11185,6 +11353,372 @@
             "templates/apercus/dechets/urban-factory-defaut-1.mp4",
             "templates/apercus/dechets/urban-factory-defaut-2.mp4",
             "templates/apercus/dechets/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "enceinte": {
+      "argile-craquele": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/argile-craquele.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/argile-craquele-defaut-1.mp4",
+            "templates/apercus/enceinte/argile-craquele-defaut-2.mp4",
+            "templates/apercus/enceinte/argile-craquele-defaut-3.mp4"
+          ]
+        }
+      },
+      "banquise-complice": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/banquise-complice.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/banquise-complice-defaut-1.mp4",
+            "templates/apercus/enceinte/banquise-complice-defaut-2.mp4",
+            "templates/apercus/enceinte/banquise-complice-defaut-3.mp4"
+          ]
+        }
+      },
+      "bleu-evasion": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/bleu-evasion.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/bleu-evasion-defaut-1.mp4",
+            "templates/apercus/enceinte/bleu-evasion-defaut-2.mp4",
+            "templates/apercus/enceinte/bleu-evasion-defaut-3.mp4"
+          ]
+        }
+      },
+      "carbon-pulse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/carbon-pulse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/carbon-pulse-defaut-1.mp4",
+            "templates/apercus/enceinte/carbon-pulse-defaut-2.mp4",
+            "templates/apercus/enceinte/carbon-pulse-defaut-3.mp4"
+          ]
+        }
+      },
+      "classe-coloree": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/classe-coloree.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/classe-coloree-defaut-1.mp4",
+            "templates/apercus/enceinte/classe-coloree-defaut-2.mp4",
+            "templates/apercus/enceinte/classe-coloree-defaut-3.mp4"
+          ]
+        }
+      },
+      "creme-gourmande": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/creme-gourmande.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/creme-gourmande-defaut-1.mp4",
+            "templates/apercus/enceinte/creme-gourmande-defaut-2.mp4",
+            "templates/apercus/enceinte/creme-gourmande-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/cuir-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/cuir-blanc-defaut-1.mp4",
+            "templates/apercus/enceinte/cuir-blanc-defaut-2.mp4",
+            "templates/apercus/enceinte/cuir-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "cuir-chesterfield": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/cuir-chesterfield.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/cuir-chesterfield-defaut-1.mp4",
+            "templates/apercus/enceinte/cuir-chesterfield-defaut-2.mp4",
+            "templates/apercus/enceinte/cuir-chesterfield-defaut-3.mp4"
+          ]
+        }
+      },
+      "elegance-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/elegance-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/elegance-ardoise-defaut-1.mp4",
+            "templates/apercus/enceinte/elegance-ardoise-defaut-2.mp4",
+            "templates/apercus/enceinte/elegance-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "foret-enchantee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/foret-enchantee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/foret-enchantee-defaut-1.mp4",
+            "templates/apercus/enceinte/foret-enchantee-defaut-2.mp4",
+            "templates/apercus/enceinte/foret-enchantee-defaut-3.mp4"
+          ]
+        }
+      },
+      "gatsby-epure": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/gatsby-epure.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/gatsby-epure-defaut-1.mp4",
+            "templates/apercus/enceinte/gatsby-epure-defaut-2.mp4",
+            "templates/apercus/enceinte/gatsby-epure-defaut-3.mp4"
+          ]
+        }
+      },
+      "jungle-joyeuse": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/jungle-joyeuse.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/jungle-joyeuse-defaut-1.mp4",
+            "templates/apercus/enceinte/jungle-joyeuse-defaut-2.mp4",
+            "templates/apercus/enceinte/jungle-joyeuse-defaut-3.mp4"
+          ]
+        }
+      },
+      "lin-blanc": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/lin-blanc.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/lin-blanc-defaut-1.mp4",
+            "templates/apercus/enceinte/lin-blanc-defaut-2.mp4",
+            "templates/apercus/enceinte/lin-blanc-defaut-3.mp4"
+          ]
+        }
+      },
+      "mars-rouge": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/mars-rouge.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/mars-rouge-defaut-1.mp4",
+            "templates/apercus/enceinte/mars-rouge-defaut-2.mp4",
+            "templates/apercus/enceinte/mars-rouge-defaut-3.mp4"
+          ]
+        }
+      },
+      "neo-future": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/neo-future.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/neo-future-defaut-1.mp4",
+            "templates/apercus/enceinte/neo-future-defaut-2.mp4",
+            "templates/apercus/enceinte/neo-future-defaut-3.mp4"
+          ]
+        }
+      },
+      "nocturne-artistique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/nocturne-artistique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/nocturne-artistique-defaut-1.mp4",
+            "templates/apercus/enceinte/nocturne-artistique-defaut-2.mp4",
+            "templates/apercus/enceinte/nocturne-artistique-defaut-3.mp4"
+          ]
+        }
+      },
+      "onyx-chic": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/onyx-chic.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/onyx-chic-defaut-1.mp4",
+            "templates/apercus/enceinte/onyx-chic-defaut-2.mp4",
+            "templates/apercus/enceinte/onyx-chic-defaut-3.mp4"
+          ]
+        }
+      },
+      "pure-lumiere": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/pure-lumiere.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/pure-lumiere-defaut-1.mp4",
+            "templates/apercus/enceinte/pure-lumiere-defaut-2.mp4",
+            "templates/apercus/enceinte/pure-lumiere-defaut-3.mp4"
+          ]
+        }
+      },
+      "sahara-elegance": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/sahara-elegance.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/sahara-elegance-defaut-1.mp4",
+            "templates/apercus/enceinte/sahara-elegance-defaut-2.mp4",
+            "templates/apercus/enceinte/sahara-elegance-defaut-3.mp4"
+          ]
+        }
+      },
+      "sanctuaire-antique": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/sanctuaire-antique.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/sanctuaire-antique-defaut-1.mp4",
+            "templates/apercus/enceinte/sanctuaire-antique-defaut-2.mp4",
+            "templates/apercus/enceinte/sanctuaire-antique-defaut-3.mp4"
+          ]
+        }
+      },
+      "soie-blanche": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/soie-blanche.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/soie-blanche-defaut-1.mp4",
+            "templates/apercus/enceinte/soie-blanche-defaut-2.mp4",
+            "templates/apercus/enceinte/soie-blanche-defaut-3.mp4"
+          ]
+        }
+      },
+      "sombre-ardoise": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/sombre-ardoise.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/sombre-ardoise-defaut-1.mp4",
+            "templates/apercus/enceinte/sombre-ardoise-defaut-2.mp4",
+            "templates/apercus/enceinte/sombre-ardoise-defaut-3.mp4"
+          ]
+        }
+      },
+      "station-orbitale": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/station-orbitale.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/station-orbitale-defaut-1.mp4",
+            "templates/apercus/enceinte/station-orbitale-defaut-2.mp4",
+            "templates/apercus/enceinte/station-orbitale-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-de-carmin": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/terre-de-carmin.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/terre-de-carmin-defaut-1.mp4",
+            "templates/apercus/enceinte/terre-de-carmin-defaut-2.mp4",
+            "templates/apercus/enceinte/terre-de-carmin-defaut-3.mp4"
+          ]
+        }
+      },
+      "terre-gravee": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/terre-gravee.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/terre-gravee-defaut-1.mp4",
+            "templates/apercus/enceinte/terre-gravee-defaut-2.mp4",
+            "templates/apercus/enceinte/terre-gravee-defaut-3.mp4"
+          ]
+        }
+      },
+      "tressage-boheme": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/tressage-boheme.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/tressage-boheme-defaut-1.mp4",
+            "templates/apercus/enceinte/tressage-boheme-defaut-2.mp4",
+            "templates/apercus/enceinte/tressage-boheme-defaut-3.mp4"
+          ]
+        }
+      },
+      "trones-reunis": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/trones-reunis.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/trones-reunis-defaut-1.mp4",
+            "templates/apercus/enceinte/trones-reunis-defaut-2.mp4",
+            "templates/apercus/enceinte/trones-reunis-defaut-3.mp4"
+          ]
+        }
+      },
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/enceinte/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/enceinte/urban-factory-defaut-1.mp4",
+            "templates/apercus/enceinte/urban-factory-defaut-2.mp4",
+            "templates/apercus/enceinte/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -18016,7 +18550,9 @@
     appareil_compteur_electricite: 'compteur-electrique',
     chauffage_compteur_gaz: 'compteur-gaz',
     eau_compteur: 'compteur-eau',
-    appareil_raspberry: 'raspberry'
+    appareil_raspberry: 'raspberry',
+    appareil_enceinte: 'enceinte',
+    chauffage_cheminee: 'cheminee'
   };
 
   function themeSite(cle) {
@@ -18619,7 +19155,11 @@
     'eau_compteur',
     // `appareil_raspberry` ajoute le 25/09/2026, comme les precedents :
     // phase de test. Cette liste ne fait qu'ACCOMPAGNER celle du Worker.
-    'appareil_raspberry'
+    'appareil_raspberry',
+    // `appareil_enceinte` ajoute le 25/09/2026 : phase de test.
+    'appareil_enceinte',
+    // `chauffage_cheminee` ajoute le 26/09/2026 : phase de test.
+    'chauffage_cheminee'
   ]);
 
   const PRIX_PACK = 9;
@@ -19774,7 +20314,7 @@
     // `ipp_print` -- l'integration `ipp` native de Home Assistant est en
     // lecture seule et ne sait pas soumettre de travail.
     appareil_imprimante: 'imprimante',
-    appareil_soundbar: 'barre-son',
+    appareil_enceinte: 'enceinte',
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
@@ -19787,6 +20327,7 @@
     // `radiateurs` (deploy_pack_heating) reste sur le depot mais n'est
     // plus expose : il ciblait une piece codee en dur.
     chauffage_thermostat: 'thermostat',
+    chauffage_cheminee: 'cheminee',
     lumiere_lumiere: 'lumiere',
     // Reecrit le 06/09/2026 sur le gabarit du pack Lumiere. L'ancien
     // `porte-garage` (deploy_pack_garagedoor) reste sur le depot mais
