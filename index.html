@@ -3978,7 +3978,7 @@
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot vivant sur sa pelouse, batterie, planning et modes, usure des lames et alertes' },
-      { name: 'appareil_voiture', desc: 'Véhicule connecté / Recharge' },
+      { name: 'appareil_voiture', desc: 'Véhicule dessiné en 360°, recharge, climatisation, sécurité, pneus et mises à jour' },
       { name: 'appareil_zigbee', desc: 'Passerelle et réseau Zigbee' }
     ],
     service: [
@@ -4043,7 +4043,7 @@
     appareil_soundbar: 'Barre de Son',
     appareil_television: 'Téléviseur',
     appareil_tondeuse: 'Robot Tondeuse',
-    appareil_voiture: 'Véhicule',
+    appareil_voiture: 'Véhicule Électrique',
     appareil_zigbee: 'Passerelle Zigbee',
     OK_service_meteo: 'Météo',
     OK_service_temps: 'Temps',
@@ -4181,6 +4181,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    appareil_voiture: {
+      resume: `Votre véhicule électrique dessiné à sa carrosserie et sa couleur, en rotation 360° : recharge, climatisation, sécurité, pneus et mises à jour.`,
+      detail: `Le tableau de bord de votre <b>voiture électrique</b>, sur une seule carte. Vous ne nommez que l'<b>appareil</b> du véhicule (Tesla, Kia, Hyundai, Renault, Peugeot, BYD, GAC Aion…) : le pack retrouve seul sa batterie, son état de charge, son verrouillage, et tout ce que son intégration publie — portières, coffre, frunk, trappe de recharge, vitres, climatisation, sièges chauffants, mode sentinelle, pression des pneus, état de santé de la batterie, 12 V, entretien, mise à jour logicielle —, et <b>n'affiche que ce qui existe</b>. Le premier onglet <b>dessine votre véhicule</b> dans sa carrosserie (citadine, compacte, berline ou SUV) et sa couleur, en <b>rotation 360°</b> ou sous la vue de votre choix (profil, avant, arrière, dessus) : une portière ouverte clignote en rouge, une vitre baissée se teinte de bleu, la trappe s'ouvre et le <b>câble de recharge</b> s'anime pendant la charge. Au-dessus, la batterie en bandeau (vert, ambre sous 20 %, rouge sous 10 %) avec l'autonomie ; en dessous, l'état de la recharge (kW, ampères, temps restant), les pneus et le <b>verrouillage</b> d'un appui. Le deuxième onglet pilote la <b>recharge</b> (démarrer, arrêter, limite, ampérage, libérer le câble, heures creuses), la <b>climatisation</b> (consigne, dégivrage, sièges, volant) et les <b>actions rapides</b> (sentinelle, klaxon, appel de phares, coffre et frunk avec confirmation). Le troisième suit la <b>santé</b> de la batterie, l'<b>entretien</b> et les <b>mises à jour</b>. Dès que le véhicule charge ou prépare l'habitacle, la carte prend sa <b>bordure animée verte</b> et son fond s'allume.`,
+      apercu: {}
     },
     service_personne: {
       resume: `Chaque membre du foyer en avatar cartoon : présence, batteries, brossage, pas, trajet, agenda et santé.`,
@@ -4611,6 +4616,20 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    appareil_voiture: [
+      { titre: `Oubli de branchement`, icone: 'fa-plug-circle-exclamation',
+        declencheur: `Chaque soir à 21 h, si le véhicule est à la maison, débranché, et sous 50 % de batterie (heure et seuil réglables).`,
+        action: `Notification qui rappelle de brancher, avec le niveau de batterie.` },
+      { titre: `Ouvrant resté ouvert`, icone: 'fa-door-open',
+        declencheur: `Le véhicule quitte la maison, ou se verrouille, alors qu'une portière, le coffre, le frunk ou une vitre est resté ouvert.`,
+        action: `Alerte CRITIQUE sur tous vos mobiles (même en silencieux), qui nomme chaque ouvrant.` },
+      { titre: `Fin de recharge`, icone: 'fa-battery-full',
+        declencheur: `La charge s'arrête à 100 % ou à la limite choisie.`,
+        action: `Notification avec les kWh ajoutés, la durée de la charge et l'autonomie.` },
+      { titre: `Charge aux heures creuses`, icone: 'fa-moon',
+        declencheur: `Charge intelligente activée : branchement, début ou fin de la plage d'heures creuses.`,
+        action: `La charge démarre dans la plage et s'arrête en dehors — « Charge différée » en attendant.` }
+    ],
     service_personne: [
       { titre: `Rappel brossage du soir`, icone: 'fa-tooth',
         declencheur: `À 21 h 30, si aucun brossage n'a été compté depuis 18 h (brosse connectée).`,
@@ -4934,6 +4953,36 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    appareil_voiture: {
+      intro: `Trois onglets : véhicule, contrôle, suivi. Vous nommez l'<b>appareil</b> du véhicule ; le pack classe ses entités et <b>n'affiche que ce qui existe</b> — ce sont elles qui font la variante, de la citadine qui ne publie que sa batterie et son verrou jusqu'à la voiture tout équipée (pneus, sentinelle, frunk, climatisation, mises à jour). La <b>carrosserie</b> et la <b>couleur</b> choisies ci-dessous dessinent votre véhicule.<table style=\"width:100%;border-collapse:collapse;margin:8px 0;font-size:0.92em\"><tr><th style=\"text-align:left;padding:4px;border-bottom:1px solid #52BE80\">Entité</th><th style=\"padding:4px;border-bottom:1px solid #52BE80\">Statut</th><th style=\"text-align:left;padding:4px;border-bottom:1px solid #52BE80\">Sans elle</th></tr><tr><td style=\"padding:3px 4px\">Niveau de batterie (%)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">—</td></tr><tr><td style=\"padding:3px 4px\">État de charge (en charge / branché)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">déduit de la puissance de charge, sinon « Débranché »</td></tr><tr><td style=\"padding:3px 4px\">Verrouillage (lock ou capteur)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">bouton de verrouillage retiré, pas d'alerte au verrouillage</td></tr><tr><td style=\"padding:3px 4px\">Autonomie, kilométrage</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">valeur retirée de la barre du véhicule</td></tr><tr><td style=\"padding:3px 4px\">Puissance, courant, temps restant</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile de recharge réduite à l'état</td></tr><tr><td style=\"padding:3px 4px\">Pression des pneus (TPMS)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">schéma des pneus retiré, la rangée se recentre</td></tr><tr><td style=\"padding:3px 4px\">Climatisation (climate ou bouton)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">sous-onglet Climatisation retiré</td></tr><tr><td style=\"padding:3px 4px\">Mode sentinelle</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile retirée</td></tr><tr><td style=\"padding:3px 4px\">Frunk, coffre, trappe, portières, vitres</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">l'ouvrant n'est ni dessiné ouvert ni commandé</td></tr><tr><td style=\"padding:3px 4px\">Limite de charge, ampérage</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">curseur retiré</td></tr><tr><td style=\"padding:3px 4px\">Santé de la batterie (SOH), 12 V</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile de santé retirée</td></tr><tr><td style=\"padding:3px 4px\">Entretien, mise à jour logicielle</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile retirée</td></tr><tr><td style=\"padding:3px 4px\">Localisation</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">ni rappel de branchement ni alerte au départ</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Véhicule', icone: 'fa-car-side',
+          texte: `Votre <b>véhicule dessiné</b>, en rotation 360° ou sous la vue de votre choix, entre la batterie et les indicateurs clés.`,
+          elements: [
+            { nom: `Bandeau de batterie`, texte: `niveau en pourcentage et autonomie ; vert, ambre sous 20 %, rouge et clignotant sous 10 %, avec la limite de charge marquée.` },
+            { nom: `Visualiseur 360°`, texte: `la carrosserie et la couleur choisies, en rotation ; les flèches passent au profil, à l'avant, à l'arrière et à la vue de dessus.` },
+            { nom: `Ouvrants`, texte: `une portière ou le coffre ouverts clignotent en rouge, une vitre baissée se teinte de bleu ; une pastille les nomme.` },
+            { nom: `Recharge`, texte: `trappe ouverte, câble animé ; puissance en kW, ampères et temps restant, « Charge différée » ambre aux heures creuses.` },
+            { nom: `Pneus`, texte: `un schéma des quatre pneus ; ambre ou rouge sous la pression nominale.` },
+            { nom: `Verrouillage`, texte: `un appui verrouille ; déverrouiller demande confirmation.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé pendant la charge ou la préparation de l'habitacle.` }
+          ] },
+        { titre: '2 — Contrôle', icone: 'fa-sliders',
+          texte: `Trois sous-onglets : <b>Recharge</b> (démarrer ou arrêter, limite, ampérage, libérer le câble, trappe, heures creuses), <b>Climatisation</b> (consigne, dégivrage, sièges et volant chauffants, températures intérieure et extérieure) et <b>Sécurité</b> (sentinelle, klaxon, appel de phares, coffre et frunk).`,
+          elements: [
+            { nom: `Charge intelligente`, texte: `aux heures creuses, un branchement hors de la plage met la charge en attente ; elle démarre à l'heure dite.` },
+            { nom: `Climatisation`, texte: `cadran de consigne, − / + au pas du véhicule ; « Arrêt » quand elle est coupée.` },
+            { nom: `Confirmation`, texte: `klaxon, ouverture du coffre et du frunk, déverrouillage : un appui ne suffit pas.` }
+          ] },
+        { titre: '3 — Suivi', icone: 'fa-stethoscope',
+          texte: `<b>Santé</b> (état de santé de la batterie, tension 12 V, pneus en détail), <b>Entretien</b> (prochaine révision en km et en jours, liquides) et <b>Logiciel</b> (version installée, mise à jour disponible et installation confirmée).`,
+          elements: [
+            { nom: `Pneus`, texte: `les quatre pressions et l'écart à la pression nominale.` },
+            { nom: `Mise à jour`, texte: `l'icône respire quand une version attend ; « Installer » demande confirmation.` }
+          ] }
       ]
     },
     service_personne: {
@@ -6986,6 +7035,41 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    appareil_voiture: [
+      { param: 'VOITURE_APPAREIL', label: `Véhicule`, type: 'text', required: true,
+        groupe: `🚗 Véhicule`,
+        placeholder: `ex : Model Y — nom de l'appareil du véhicule dans Home Assistant (ou entity_id de sa batterie)` },
+      { param: 'VOITURE_NOM', label: `Nom affiché`, type: 'text', required: false,
+        groupe: `🚗 Véhicule`, placeholder: `vide : le nom de l'appareil` },
+      { param: 'VOITURE_CAPACITE', label: `Capacité de la batterie (kWh)`, type: 'text',
+        required: false, groupe: `🚗 Véhicule`, placeholder: `vide : 50 à 75 kWh selon la carrosserie` },
+      { param: 'VOITURE_PRESSION', label: `Pression des pneus (bar)`, type: 'text',
+        required: false, groupe: `🚗 Véhicule`, placeholder: `vide : 2,5 à 2,9 bar selon la carrosserie` },
+      { param: 'VOITURE_CARROSSERIE', label: `Carrosserie`, type: 'select', required: false,
+        groupe: `🎨 Votre véhicule`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Automatique (d'après le modèle)` },
+          { value: 'citadine', label: `🚗 Citadine` },
+          { value: 'compacte', label: `🚙 Compacte` },
+          { value: 'berline', label: `🏎️ Berline` },
+          { value: 'suv', label: `🚙 SUV` }
+        ] },
+      { param: 'VOITURE_COULEUR', label: `Couleur`, type: 'select', required: false,
+        groupe: `🎨 Votre véhicule`, defaut: 'blanc',
+        options: [
+          { value: 'blanc', label: `Blanc`, rectangle: '#E8E9EA' },
+          { value: 'noir', label: `Noir`, rectangle: '#222529' },
+          { value: 'gris', label: `Gris`, rectangle: '#6B7078' },
+          { value: 'argent', label: `Argent`, rectangle: '#C3C7CC' },
+          { value: 'bleu', label: `Bleu`, rectangle: '#2E5CA6' },
+          { value: 'rouge', label: `Rouge`, rectangle: '#B1202B' },
+          { value: 'vert', label: `Vert`, rectangle: '#2E6A4E' },
+          { value: 'sable', label: `Sable`, rectangle: '#CDBA93' }
+        ] },
+      { param: 'VOITURE_APERCU', label: '', type: 'note', groupe: `🎨 Votre véhicule`,
+        texte: `<div class="apercu-voiture"></div>` },
+      champThemeSite('VOITURE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     service_personne: [
       { param: 'PERSONNE_ENTITE', label: `Personne suivie`, type: 'text', required: true,
         groupe: `👤 Personne`,
@@ -7909,6 +7993,16 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    appareil_voiture:
+      `la vue et ses trois onglets, le véhicule dessiné selon sa carrosserie et `
+      + `sa couleur, les helpers (vue, sous-onglets, limite, heures creuses, heure `
+      + `et seuil du rappel), les capteurs normalisés (recharge, branchement, `
+      + `charge différée, préconditionnement, ouvrants, présence au domicile, `
+      + `session de charge), deux scripts (recharge, climatisation) et quatre `
+      + `automatismes (oubli de branchement, ouvrant resté ouvert, fin de `
+      + `recharge, heures creuses), en mode fictif tout un véhicule pilotable, `
+      + `ainsi que HACS et les cartes personnalisées requises (button-card, `
+      + `swipe-card, stack-in-card, card-mod, mushroom).`,
     service_personne:
       `la vue et ses trois onglets, l'avatar cartoon détouré depuis la photo `
       + `téléversée, les capteurs du pack (brossages du jour et quadrants, frise de `
@@ -18676,6 +18770,21 @@
         }
       }
     },
+    "voiture": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/voiture/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/voiture/urban-factory-defaut-1.mp4",
+            "templates/apercus/voiture/urban-factory-defaut-2.mp4",
+            "templates/apercus/voiture/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "volet": {
       "argile-craquele": {
         "cartes": {
@@ -19124,6 +19233,542 @@
     if (e.target && /^param-eau_piscine-PISCINE_(FORME|TYPE|FINITION)$/.test(e.target.id || '')) majBassins();
   });
   /* ---------- FIN APERCU DU BASSIN ---------- */
+  /* ---------- APERCU DU VEHICULE (pack Vehicule Electrique, 27/09/2026) ----------
+     ECRIT PAR `_patch_index_voiture.py` depuis `templates/appareil_voiture/
+     dessin_voiture.js` : la page dessine le vehicule choisi avec le meme
+     code que la carte. */
+  const dessinerVoitures = (function () {
+/* Dessin du vehicule -- pack Appareil / Vehicule Electrique.
+ *
+ * SOURCE UNIQUE, lue par `_generer_gabarit_voiture.py` (carte : visualiseur
+ * 360 degres du 1er onglet) ET par `_patch_index_voiture.py` (apercu de la
+ * page de details du site). Deux copies du dessin auraient diverge au premier
+ * ajustement. NE DECLARE QUE DES FONCTIONS : le gabarit button-card qui
+ * l'embarque les appelle ensuite.
+ *
+ * AUCUNE RESSOURCE CLIENT : `template/mobilite_voiture/`, cite par la
+ * demande, n'existait pas. Le vehicule est DESSINE : quatre carrosseries
+ * (citadine, compacte, berline, SUV) a leurs proportions reelles (une meme
+ * echelle, 46 px par metre : la citadine est plus courte que le SUV), huit
+ * teintes, cinq vues (profil gauche, avant, profil droit, arriere, dessus).
+ *
+ * LA SORTIE DOIT ETRE STABLE : button-card ne remplace le DOM d'un champ que
+ * si la chaine rendue CHANGE (directive unsafeHTML de lit). Un identifiant
+ * aleatoire ferait tout redessiner a chaque mise a jour d'une entite, et la
+ * rotation 360 degres repartirait de zero toutes les dix secondes. Les
+ * identifiants SVG derivent donc du slug de la carte et de la vue.
+ */
+
+var VOITURE_TEINTES = {
+  blanc: ['#FFFFFF', '#E8E9EA', '#AEB1B5', '#6E7278'],
+  noir: ['#5A5F67', '#222529', '#0C0D0F', '#8A909A'],
+  gris: ['#A7ACB3', '#6B7078', '#3F4348', '#B9BEC4'],
+  argent: ['#F1F2F4', '#C3C7CC', '#868B91', '#6B7076'],
+  bleu: ['#6D9CE0', '#2E5CA6', '#172F5C', '#8FB2E6'],
+  rouge: ['#EE6770', '#B1202B', '#5E0D13', '#F08A91'],
+  vert: ['#6DB38C', '#2E6A4E', '#173726', '#86C29F'],
+  sable: ['#F2E7D2', '#CDBA93', '#8F7B55', '#8A7650']
+};
+
+/* Les quatre carrosseries, profil GAUCHE (avant a gauche), sol a y = 94.
+ * x0 / xR : pare-chocs avant / arriere ; r : rayon de roue ; wf / wr :
+ * centres des roues ; sill : bas de caisse ; yN : bord avant du capot ;
+ * ws : base du pare-brise ; a : haut du montant A ; c : sommet du toit ;
+ * e : fin du toit ; sp : becquet (bas de la lunette) ; yT : feu arriere ;
+ * bf / br : ligne de ceinture avant / arriere ; bp : montant B ;
+ * qp : montant C (vitre de custode, 0 = aucune) ; fd / rd : bords avant et
+ * arriere des portes ; cp : charge (trappe) ; W / H : largeur, hauteur ;
+ * rear : 'fast' (lunette fuyante) ou 'hayon' (hayon vertical). */
+var VOITURE_STYLES = {
+  suv: {x0: 10, xR: 230, r: 18.5, wf: 54, wr: 187, sill: 82, yN: 54, ws: [72, 45], a: [112, 20],
+        c: [142, 17.5], e: [199, 26], sp: [222, 44], yT: 52, bf: 46, br: 43, bp: 139,
+        qp: 196, fd: 78, rd: 199, cp: [212, 55], W: 90, H: 76, rear: 'fast', bar: true,
+        clad: true},
+  berline: {x0: 11, xR: 229, r: 16, wf: 50, wr: 183, sill: 87, yN: 60, ws: [74, 51], a: [114, 29],
+            c: [138, 27], e: [168, 30], sp: [212, 49], yT: 55, bf: 52, br: 50, bp: 136,
+            qp: 176, fd: 76, rd: 190, cp: [206, 58], W: 86, H: 68, rear: 'fast', bar: true,
+            clad: false},
+  compacte: {x0: 21, xR: 218, r: 16, wf: 55, wr: 183, sill: 86, yN: 57, ws: [67, 50], a: [102, 26],
+             c: [128, 23.5], e: [180, 27], sp: [210, 45], yT: 51, bf: 51, br: 47, bp: 131,
+             qp: 0, fd: 75, rd: 195, cp: [200, 55], W: 83, H: 71, rear: 'hayon', bar: false,
+             clad: false},
+  citadine: {x0: 29, xR: 210, r: 15, wf: 62, wr: 180, sill: 86, yN: 57, ws: [70, 50], a: [98, 27],
+             c: [124, 24.5], e: [183, 26], sp: [205, 44], yT: 51, bf: 51, br: 47, bp: 126,
+             qp: 0, fd: 80, rd: 190, cp: [196, 55], W: 80, H: 69, rear: 'hayon', bar: false,
+             clad: false}
+};
+
+function vN(x) { return Math.round(x * 10) / 10; }
+function vP(x, y) { return vN(x) + ' ' + vN(y); }
+
+/* Le contour du profil gauche : UN chemin, avant a gauche. */
+function voitureContour(g) {
+  var s = g.sill, x0 = g.x0, xR = g.xR, yN = g.yN, ws = g.ws, a = g.a, c = g.c, e = g.e, sp = g.sp;
+  var cy = 94 - g.r, R = g.r + 2.4, dy = s - cy;
+  var dx = Math.sqrt(Math.max(1, R * R - dy * dy));
+  var p = 'M' + vP(x0 + 6, s)
+    + 'C' + vP(x0 + 1.5, s - 1) + ' ' + vP(x0 - 1, yN + 14) + ' ' + vP(x0, yN + 6)
+    + 'C' + vP(x0 + 0.3, yN + 2) + ' ' + vP(x0 + 2.5, yN) + ' ' + vP(x0 + 8, yN - 1)
+    + 'C' + vP(x0 + (ws[0] - x0) * 0.45, yN - 3) + ' ' + vP(ws[0] - (ws[0] - x0) * 0.22, ws[1] + 1.2) + ' ' + vP(ws[0], ws[1])
+    + 'C' + vP(ws[0] + (a[0] - ws[0]) * 0.45, ws[1] - (ws[1] - a[1]) * 0.55) + ' ' + vP(a[0] - (a[0] - ws[0]) * 0.14, a[1] + 1.6) + ' ' + vP(a[0], a[1])
+    + 'C' + vP(a[0] + (c[0] - a[0]) * 0.45, a[1] - (a[1] - c[1]) * 0.9) + ' ' + vP(c[0] - (c[0] - a[0]) * 0.3, c[1]) + ' ' + vP(c[0], c[1])
+    + 'C' + vP(c[0] + (e[0] - c[0]) * 0.4, c[1]) + ' ' + vP(e[0] - (e[0] - c[0]) * 0.25, e[1] - (e[1] - c[1]) * 0.5) + ' ' + vP(e[0], e[1]);
+  if (g.rear === 'fast') {
+    p += 'C' + vP(e[0] + (sp[0] - e[0]) * 0.45, e[1] + (sp[1] - e[1]) * 0.3) + ' ' + vP(sp[0] - (sp[0] - e[0]) * 0.18, sp[1] - 1) + ' ' + vP(sp[0], sp[1])
+      + 'C' + vP(sp[0] + (xR - sp[0]) * 0.7, sp[1] - 0.6) + ' ' + vP(xR, sp[1] + 1.5) + ' ' + vP(xR, g.yT);
+  } else {
+    p += 'C' + vP(e[0] + 7, e[1] + 1.5) + ' ' + vP(sp[0] - 1.5, sp[1] - (sp[1] - e[1]) * 0.45) + ' ' + vP(sp[0], sp[1])
+      + 'C' + vP(sp[0] + 1.5, sp[1] + 2) + ' ' + vP(xR - 0.5, sp[1] + 3) + ' ' + vP(xR, g.yT);
+  }
+  p += 'C' + vP(xR + 1.2, g.yT + 10) + ' ' + vP(xR + 1.2, s - 12) + ' ' + vP(xR - 1, s - 5)
+    + 'C' + vP(xR - 2, s - 1) + ' ' + vP(xR - 4, s) + ' ' + vP(xR - 7, s)
+    + 'L' + vP(g.wr + dx, s) + 'A' + R + ' ' + R + ' 0 1 0 ' + vP(g.wr - dx, s)
+    + 'L' + vP(g.wf + dx, s) + 'A' + R + ' ' + R + ' 0 1 0 ' + vP(g.wf - dx, s) + 'Z';
+  return p;
+}
+
+/* La ceinture (bas des vitres) a l'abscisse x. */
+function voitureCeinture(g, x) {
+  var x1 = g.ws[0] + 10, x2 = g.qp || (g.e[0] + 4);
+  var t = Math.max(0, Math.min(1, (x - x1) / (x2 - x1)));
+  return g.bf + (g.br - g.bf) * t;
+}
+
+/* Les vitres laterales (DLO) : sous le toit, entre le pare-brise et la
+ * lunette, au-dessus de la ceinture. */
+function voitureVitres(g) {
+  var a = g.a, c = g.c, e = g.e, ws = g.ws;
+  var x1 = ws[0] + 11, y1 = g.bf;
+  var xe = g.rear === 'fast' ? (g.qp ? g.qp + 9 : e[0] + 12) : e[0] + 1;
+  var ye = g.rear === 'fast' ? voitureCeinture(g, xe) - 1 : e[1] + 5;
+  var p = 'M' + vP(x1, y1)
+    + 'C' + vP(x1 + (a[0] - x1) * 0.5, y1 - (y1 - a[1]) * 0.55) + ' ' + vP(a[0] - 3, a[1] + 5) + ' ' + vP(a[0] + 1.5, a[1] + 3.6)
+    + 'C' + vP(a[0] + (c[0] - a[0]) * 0.5, c[1] + 3) + ' ' + vP(c[0] - 8, c[1] + 3.3) + ' ' + vP(c[0], c[1] + 3.4)
+    + 'C' + vP(c[0] + (e[0] - c[0]) * 0.4, c[1] + 3.4) + ' ' + vP(e[0] - (e[0] - c[0]) * 0.3, e[1] + 1) + ' ' + vP(e[0] - 3, e[1] + 3.5);
+  if (g.rear === 'fast') {
+    p += 'C' + vP(e[0] + 4, e[1] + 6) + ' ' + vP(xe - 3, ye - 5) + ' ' + vP(xe, ye);
+  } else {
+    p += 'C' + vP(e[0], e[1] + 4.5) + ' ' + vP(e[0] + 0.5, e[1] + 5) + ' ' + vP(xe, ye)
+      + 'L' + vP(xe + 1.5, voitureCeinture(g, xe) - 1);
+  }
+  p += 'L' + vP(x1, y1) + 'Z';
+  return p;
+}
+
+function voitureRoue(cx, cy, r, id, sombre) {
+  var j = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#111214"/>'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + vN(r - 1.2) + '" fill="none" stroke="#2B2E33" stroke-width="1.4"/>'
+    + '<circle cx="' + cx + '" cy="' + cy + '" r="' + vN(r * 0.66) + '" fill="url(#jante' + id + ')"/>';
+  for (var k = 0; k < 5; k++) {
+    j += '<path d="M' + vP(cx, cy - r * 0.2) + 'L' + vP(cx - r * 0.2, cy - r * 0.58) + 'L' + vP(cx + r * 0.2, cy - r * 0.58) + 'Z" '
+      + 'fill="' + (sombre ? '#101113' : '#3B3F45') + '" transform="rotate(' + (k * 72 + 18) + ' ' + cx + ' ' + cy + ')"/>';
+  }
+  return j + '<circle cx="' + cx + '" cy="' + cy + '" r="' + vN(r * 0.16) + '" fill="#8C9197" stroke="#2B2E33" stroke-width="0.6"/>';
+}
+
+/* L'eclair de recharge, centre en (x, y), de hauteur h. */
+function voitureEclair(x, y, h, coul, anime) {
+  var k = h / 10;
+  return '<path d="M' + vP(x + 1 * k, y - 5 * k) + 'L' + vP(x - 3 * k, y + 0.8 * k) + 'L' + vP(x - 0.2 * k, y + 0.8 * k)
+    + 'L' + vP(x - 1 * k, y + 5 * k) + 'L' + vP(x + 3 * k, y - 0.8 * k) + 'L' + vP(x + 0.2 * k, y - 0.8 * k) + 'Z" fill="' + coul + '"'
+    + ' stroke="#0B0C0E" stroke-width="0.4">' + (anime ? '<animate attributeName="opacity" values="1;0.25;1" dur="1.2s" repeatCount="indefinite"/>' : '') + '</path>';
+}
+
+/* Le cable de recharge, depuis la trappe (px, py) jusqu'au sol, hors du
+ * vehicule ; des pointilles verts y circulent pendant la charge. */
+function voitureCable(px, py, xFin, etat) {
+  var d = 'M' + vP(px, py) + 'C' + vP(px + 9, py + 3) + ' ' + vP(px + 12, 88) + ' ' + vP(px + 22, 92)
+    + 'L' + vP(xFin, 92);
+  var o = '<path d="' + d + '" fill="none" stroke="#1B1D21" stroke-width="2.6" stroke-linecap="round"/>'
+    + '<path d="' + d + '" fill="none" stroke="#3E434A" stroke-width="1" stroke-linecap="round"/>';
+  if (etat.charge) {
+    o += '<path d="' + d + '" fill="none" stroke="#52BE80" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round">'
+      + '<animate attributeName="stroke-dashoffset" values="16;0" dur="0.8s" repeatCount="indefinite"/></path>';
+  }
+  return o;
+}
+
+function voitureCouleurPort(etat) {
+  return etat.charge ? '#52BE80' : (etat.differee ? '#F8C471' : (etat.cable ? '#FFFFFF' : '#52BE80'));
+}
+
+/* PROFIL GAUCHE (miroir = profil droit). `cote` : 'g' ou 'd' -- chaque cote
+ * montre SES portes et SES vitres ; la trappe de recharge est a l'arriere
+ * gauche (convention Tesla, Stellantis, Kia). */
+function voitureProfil(g, t, id, etat, cote) {
+  var s = g.sill, cy = 94 - g.r, sombre = (t[1] === VOITURE_TEINTES.noir[1]);
+  var corps = voitureContour(g), vitres = voitureVitres(g);
+  var o = '<defs>'
+    + '<linearGradient id="carr' + id + '" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0" stop-color="' + t[0] + '"/><stop offset="0.42" stop-color="' + t[1] + '"/>'
+    + '<stop offset="0.62" stop-color="' + t[1] + '"/><stop offset="1" stop-color="' + t[2] + '"/></linearGradient>'
+    + '<linearGradient id="vit' + id + '" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#46525E"/>'
+    + '<stop offset="0.55" stop-color="#1A2027"/><stop offset="1" stop-color="#0C0F13"/></linearGradient>'
+    + '<radialGradient id="jante' + id + '"><stop offset="0" stop-color="#E4E7EA"/><stop offset="1" stop-color="#8F959C"/></radialGradient>'
+    + '<radialGradient id="ombre' + id + '"><stop offset="0" stop-color="#000" stop-opacity="0.55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'
+    + '<clipPath id="cc' + id + '"><path d="' + corps + '"/></clipPath>'
+    + '<clipPath id="cv' + id + '"><path d="' + vitres + '"/></clipPath>'
+    + '</defs>';
+  o += '<ellipse cx="' + vN((g.x0 + g.xR) / 2) + '" cy="93.5" rx="' + vN((g.xR - g.x0) / 2 + 8) + '" ry="4.5" fill="url(#ombre' + id + ')"/>';
+  var ferme = '';
+  // -- coffre / hayon et capot ouverts : l'ouverture, sombre, sous l'ouvrant
+  var hauteCoffre = g.rear === 'fast' ? 'M' + vP(g.e[0], g.e[1]) + 'L' + vP(g.sp[0], g.sp[1]) + 'L' + vP(g.xR, g.yT) + 'L' + vP(g.xR - 2, g.yT + 7) + 'L' + vP(g.e[0] + 4, g.e[1] + 6) + 'Z'
+    : 'M' + vP(g.e[0] - 1, g.e[1]) + 'L' + vP(g.sp[0], g.sp[1]) + 'L' + vP(g.xR, g.yT) + 'L' + vP(g.xR - 0.5, g.yT + 8) + 'L' + vP(g.e[0] + 3, g.e[1] + 7) + 'Z';
+  var hautCapot = 'M' + vP(g.x0 + 7, g.yN - 0.5) + 'L' + vP(g.ws[0], g.ws[1]) + 'L' + vP(g.ws[0] - 3, g.ws[1] + 5) + 'L' + vP(g.x0 + 5, g.yN + 5) + 'Z';
+  o += '<path d="' + corps + '" fill="url(#carr' + id + ')" stroke="' + (sombre ? '#7C828C' : 'rgba(0,0,0,0.55)') + '" stroke-width="0.8"/>';
+  // habillage de passage de roue (SUV)
+  if (g.clad) {
+    var R = g.r + 2.4;
+    o += '<g clip-path="url(#cc' + id + ')" fill="none" stroke="#17181B" stroke-width="5">'
+      + '<circle cx="' + g.wf + '" cy="' + cy + '" r="' + vN(R + 1.6) + '"/><circle cx="' + g.wr + '" cy="' + cy + '" r="' + vN(R + 1.6) + '"/>'
+      + '<path d="M' + vP(g.x0, s - 0.8) + 'L' + vP(g.xR, s - 0.8) + '"/></g>';
+  }
+  // reflet d'epaule, lignes de portes, poignees
+  o += '<path d="M' + vP(g.x0 + 10, g.yN + 4) + 'C' + vP(g.ws[0], g.bf + 5) + ' ' + vP(g.bp, voitureCeinture(g, g.bp) + 4) + ' ' + vP(g.xR - 4, g.yT + 1)
+    + '" fill="none" stroke="' + (sombre ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.4)') + '" stroke-width="0.8"/>';
+  o += '<path d="M' + vP(g.x0 + 14, s - 6) + 'L' + vP(g.xR - 10, s - 7) + '" stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/>';
+  var ligne = 'rgba(0,0,0,' + (sombre ? '0.75' : '0.4') + ')';
+  o += '<g clip-path="url(#cc' + id + ')" stroke="' + ligne + '" stroke-width="0.7" fill="none">'
+    + '<path d="M' + vP(g.fd, voitureCeinture(g, g.fd)) + 'L' + vP(g.fd - 1.5, s - 3) + '"/>'
+    + '<path d="M' + vP(g.bp + 2.5, voitureCeinture(g, g.bp)) + 'L' + vP(g.bp + 2, s - 3) + '"/>'
+    + '<path d="M' + vP(g.rd, voitureCeinture(g, g.rd)) + 'L' + vP(g.rd - 2, cy - 7) + 'Q' + vP(g.rd - 6, cy - g.r - 4) + ' ' + vP(g.wr - g.r * 0.2, cy - g.r - 2.5) + '"/>'
+    + '<path d="M' + vP(g.x0 + 8, g.yN + 1) + 'Q' + vP((g.x0 + g.ws[0]) / 2, g.yN + 1) + ' ' + vP(g.ws[0] - 2, g.ws[1] + 2.5) + '"/>'
+    + '</g>';
+  o += '<rect x="' + vN(g.fd + (g.bp - g.fd) * 0.55) + '" y="' + vN(voitureCeinture(g, g.bp) + 6) + '" width="9" height="1.8" rx="0.9" fill="' + ligne + '"/>'
+    + '<rect x="' + vN(g.bp + (g.rd - g.bp) * 0.5) + '" y="' + vN(voitureCeinture(g, g.rd) + 6) + '" width="9" height="1.8" rx="0.9" fill="' + ligne + '"/>';
+  // vitres, montant B, custode
+  o += '<path d="' + vitres + '" fill="url(#vit' + id + ')" stroke="#0A0C0F" stroke-width="0.7"/>';
+  var ybp = voitureCeinture(g, g.bp);
+  o += '<g clip-path="url(#cv' + id + ')"><rect x="' + vN(g.bp) + '" y="0" width="5" height="' + vN(ybp + 1) + '" fill="#0B0D10"/>';
+  if (g.qp) o += '<rect x="' + vN(g.qp) + '" y="0" width="3.2" height="94" fill="#0B0D10" transform="rotate(-8 ' + vN(g.qp) + ' ' + vN(voitureCeinture(g, g.qp)) + ')"/>';
+  o += '<path d="M' + vP(g.a[0] + 8, g.a[1] + 5) + 'L' + vP(g.a[0] + 24, g.a[1] + 5) + 'L' + vP(g.a[0] + 4, voitureCeinture(g, g.a[0]) - 1) + 'L' + vP(g.a[0] - 12, voitureCeinture(g, g.a[0]) - 1) + 'Z" fill="#FFFFFF" opacity="0.1"/>';
+  // pre-conditionnement : l'habitacle prend la teinte de la clim
+  if (etat.precond) {
+    var tc = etat.precond === 'chaud' ? '#F8C471' : '#5DADE2';
+    o += '<rect x="0" y="0" width="240" height="94" fill="' + tc + '" opacity="0.3"><animate attributeName="opacity" values="0.15;0.45;0.15" dur="3s" repeatCount="indefinite"/></rect>';
+  }
+  o += '</g>';
+  // retroviseur
+  o += '<path d="M' + vP(g.ws[0] + 9, g.bf - 1) + 'L' + vP(g.ws[0] + 19, g.bf - 3.2) + 'L' + vP(g.ws[0] + 20, g.bf + 1) + 'L' + vP(g.ws[0] + 11, g.bf + 2) + 'Z" fill="' + t[1] + '" stroke="rgba(0,0,0,0.6)" stroke-width="0.6"/>';
+  // feux
+  o += '<path d="M' + vP(g.x0 + 2.5, g.yN + 2.2) + 'Q' + vP(g.x0 + 9, g.yN - 0.4) + ' ' + vP(g.x0 + 19, g.yN - 1.6) + '" fill="none" stroke="#EAF6FF" stroke-width="2.2" stroke-linecap="round"/>'
+    + '<path d="M' + vP(g.xR - 11, g.yT - 1.2) + 'L' + vP(g.xR + 0.4, g.yT + 0.6) + '" fill="none" stroke="#D7323D" stroke-width="2.4" stroke-linecap="round"/>';
+  // sentinelle : l'oeil de la camera laterale, rouge, qui bat
+  if (etat.sentinelle) {
+    o += '<circle cx="' + vN(g.fd + 5) + '" cy="' + vN(g.yN + 3) + '" r="1.6" fill="#EC7063"><animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/></circle>';
+  }
+  // roues
+  o += voitureRoue(g.wf, cy, g.r, id, sombre) + voitureRoue(g.wr, cy, g.r, id, sombre);
+  // -- CALQUES D'ETAT ------------------------------------------------------
+  var portes = cote === 'g' ? [etat.portes.avg, etat.portes.arg] : [etat.portes.avd, etat.portes.ard];
+  var vitresOuv = cote === 'g' ? [etat.vitres.avg, etat.vitres.arg] : [etat.vitres.avd, etat.vitres.ard];
+  var cols = [[g.fd - 1, g.bp + 2.5], [g.bp + 2.5, g.rd]];
+  for (var k = 0; k < 2; k++) {
+    if (vitresOuv[k]) {
+      o += '<g clip-path="url(#cv' + id + ')"><rect x="' + vN(cols[k][0]) + '" y="0" width="' + vN(cols[k][1] - cols[k][0]) + '" height="94" fill="#07090B"/>'
+        + '<rect x="' + vN(cols[k][0]) + '" y="' + vN(voitureCeinture(g, cols[k][0]) - 5) + '" width="' + vN(cols[k][1] - cols[k][0]) + '" height="6" fill="#5DADE2" opacity="0.7"/></g>';
+    }
+    if (portes[k]) {
+      o += '<g clip-path="url(#cc' + id + ')"><rect x="' + vN(cols[k][0]) + '" y="0" width="' + vN(cols[k][1] - cols[k][0]) + '" height="' + s + '" fill="#EC7063" opacity="0.55">'
+        + '<animate attributeName="opacity" values="0.65;0.25;0.65" dur="1.2s" repeatCount="indefinite"/></rect></g>'
+        + '<path d="M' + vP(cols[k][0], voitureCeinture(g, cols[k][0]) - 10) + 'L' + vP(cols[k][0] - 6, s - 2) + '" stroke="#EC7063" stroke-width="1.4" stroke-dasharray="2 2"/>';
+    }
+  }
+  if (etat.coffre) {
+    var pivotC = g.rear === 'fast' ? g.e : [g.e[0] - 1, g.e[1]];
+    o += '<path d="' + hauteCoffre + '" fill="#07090B"/>'
+      + '<g transform="rotate(' + (g.rear === 'fast' ? -40 : -72) + ' ' + vP(pivotC[0], pivotC[1]).replace(' ', ' ') + ')">'
+      + '<path d="' + hauteCoffre + '" fill="' + t[1] + '" stroke="#EC7063" stroke-width="1.4"><animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></path></g>';
+  }
+  if (etat.frunk) {
+    o += '<path d="' + hautCapot + '" fill="#07090B"/>'
+      + '<g transform="rotate(26 ' + vP(g.ws[0], g.ws[1]) + ')"><path d="' + hautCapot + '" fill="' + t[1] + '" stroke="#EC7063" stroke-width="1.4">'
+      + '<animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></path></g>';
+  }
+  // trappe et cable : cote gauche seulement
+  if (cote === 'g' && (etat.trappe || etat.cable)) {
+    var px = g.cp[0], py = g.cp[1], cp = voitureCouleurPort(etat);
+    if (etat.cable) o += voitureCable(px + 2, py + 2, 239, etat);
+    o += '<rect x="' + vN(px - 3.5) + '" y="' + vN(py - 2.5) + '" width="7" height="5" rx="1.4" fill="#0B0D10" stroke="' + cp + '" stroke-width="1.2"/>'
+      + '<circle cx="' + vN(px) + '" cy="' + vN(py) + '" r="1.2" fill="' + cp + '"/>';
+    if (etat.charge) o += voitureEclair(px, py - 10, 9, '#52BE80', true);
+  }
+  return o;
+}
+
+/* Silhouette de FACE (avant ou arriere) : largeur W, hauteur H. */
+function voitureFace(g, t, id, etat, arriere) {
+  var cx = 120, W = g.W, s = g.sill, yR = 94 - g.H, yB = arriere ? g.br : g.bf, yN = g.yN;
+  var sombre = (t[1] === VOITURE_TEINTES.noir[1]);
+  var hw = W / 2, toit = W * (g.rear === 'fast' && arriere ? 0.29 : 0.31);
+  var corps = 'M' + vP(cx - hw + 3, s) + 'L' + vP(cx - hw, yN + 8) + 'Q' + vP(cx - hw - 0.5, yB + 2) + ' ' + vP(cx - hw + 3, yB)
+    + 'L' + vP(cx - toit - 3, yR + 3) + 'Q' + vP(cx - toit, yR) + ' ' + vP(cx - toit + 5, yR)
+    + 'L' + vP(cx + toit - 5, yR) + 'Q' + vP(cx + toit, yR) + ' ' + vP(cx + toit + 3, yR + 3)
+    + 'L' + vP(cx + hw - 3, yB) + 'Q' + vP(cx + hw + 0.5, yB + 2) + ' ' + vP(cx + hw, yN + 8)
+    + 'L' + vP(cx + hw - 3, s) + 'Z';
+  var verre = 'M' + vP(cx - hw * 0.84, yB - 0.5) + 'L' + vP(cx - toit + 1.5, yR + 3.5) + 'L' + vP(cx + toit - 1.5, yR + 3.5)
+    + 'L' + vP(cx + hw * 0.84, yB - 0.5) + 'Z';
+  if (arriere) verre = 'M' + vP(cx - hw * 0.66, yB - 2) + 'L' + vP(cx - toit + 3, yR + 4.5) + 'L' + vP(cx + toit - 3, yR + 4.5)
+    + 'L' + vP(cx + hw * 0.66, yB - 2) + 'Z';
+  var o = '<defs><linearGradient id="carr' + id + '" x1="0" y1="0" x2="1" y2="0">'
+    + '<stop offset="0" stop-color="' + t[2] + '"/><stop offset="0.25" stop-color="' + t[1] + '"/><stop offset="0.5" stop-color="' + t[0] + '"/>'
+    + '<stop offset="0.75" stop-color="' + t[1] + '"/><stop offset="1" stop-color="' + t[2] + '"/></linearGradient>'
+    + '<linearGradient id="vit' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A5663"/><stop offset="1" stop-color="#0E1216"/></linearGradient>'
+    + '<radialGradient id="ombre' + id + '"><stop offset="0" stop-color="#000" stop-opacity="0.55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'
+    + '</defs>'
+    + '<ellipse cx="120" cy="93.5" rx="' + vN(hw + 10) + '" ry="4.5" fill="url(#ombre' + id + ')"/>';
+  // pneus
+  o += '<rect x="' + vN(cx - hw + 0.5) + '" y="' + vN(94 - g.r * 1.15) + '" width="11" height="' + vN(g.r * 1.15) + '" rx="3" fill="#111214"/>'
+    + '<rect x="' + vN(cx + hw - 11.5) + '" y="' + vN(94 - g.r * 1.15) + '" width="11" height="' + vN(g.r * 1.15) + '" rx="3" fill="#111214"/>';
+  // retroviseurs
+  o += '<path d="M' + vP(cx - hw * 0.82, yB - 3) + 'L' + vP(cx - hw - 7, yB - 5) + 'L' + vP(cx - hw - 7, yB) + 'L' + vP(cx - hw * 0.84, yB + 1) + 'Z" fill="' + t[1] + '" stroke="rgba(0,0,0,0.6)" stroke-width="0.6"/>'
+    + '<path d="M' + vP(cx + hw * 0.82, yB - 3) + 'L' + vP(cx + hw + 7, yB - 5) + 'L' + vP(cx + hw + 7, yB) + 'L' + vP(cx + hw * 0.84, yB + 1) + 'Z" fill="' + t[1] + '" stroke="rgba(0,0,0,0.6)" stroke-width="0.6"/>';
+  o += '<path d="' + corps + '" fill="url(#carr' + id + ')" stroke="' + (sombre ? '#7C828C' : 'rgba(0,0,0,0.55)') + '" stroke-width="0.8"/>';
+  o += '<path d="' + verre + '" fill="url(#vit' + id + ')" stroke="#0A0C0F" stroke-width="0.7"/>';
+  if (etat.precond) {
+    var tc = etat.precond === 'chaud' ? '#F8C471' : '#5DADE2';
+    o += '<path d="' + verre + '" fill="' + tc + '" opacity="0.3"><animate attributeName="opacity" values="0.15;0.45;0.15" dur="3s" repeatCount="indefinite"/></path>';
+  }
+  o += '<path d="M' + vP(cx - toit + 6, yR + 5) + 'L' + vP(cx - toit + 16, yR + 5) + 'L' + vP(cx - hw * 0.5, yB - 1) + 'L' + vP(cx - hw * 0.7, yB - 1) + 'Z" fill="#FFFFFF" opacity="0.1"/>';
+  if (!arriere) {
+    // capot, phares, entree d'air, plaque
+    o += '<path d="M' + vP(cx - hw * 0.84, yB + 0.5) + 'Q' + vP(cx, yB + 2.5) + ' ' + vP(cx + hw * 0.84, yB + 0.5) + '" fill="none" stroke="rgba(255,255,255,' + (sombre ? '0.25' : '0.6') + ')" stroke-width="1"/>'
+      + '<path d="M' + vP(cx - hw + 3, yN + 3) + 'Q' + vP(cx - hw + 10, yN + 5.5) + ' ' + vP(cx - hw + 19, yN + 4) + '" fill="none" stroke="#EAF6FF" stroke-width="2.4" stroke-linecap="round"/>'
+      + '<path d="M' + vP(cx + hw - 3, yN + 3) + 'Q' + vP(cx + hw - 10, yN + 5.5) + ' ' + vP(cx + hw - 19, yN + 4) + '" fill="none" stroke="#EAF6FF" stroke-width="2.4" stroke-linecap="round"/>';
+    if (g.bar) o += '<path d="M' + vP(cx - hw + 19, yN + 4) + 'L' + vP(cx + hw - 19, yN + 4) + '" stroke="#EAF6FF" stroke-width="0.8" opacity="0.8"/>';
+    o += '<rect x="' + vN(cx - hw * 0.46) + '" y="' + vN(s - 11) + '" width="' + vN(hw * 0.92) + '" height="6" rx="3" fill="#16181B"/>'
+      + '<rect x="' + vN(cx - 10) + '" y="' + vN(s - 18) + '" width="20" height="5" rx="1" fill="#F2F4F6" stroke="#1B1D21" stroke-width="0.5"/>';
+    if (etat.sentinelle) o += '<circle cx="' + vN(cx) + '" cy="' + vN(yR + 6) + '" r="1.6" fill="#EC7063"><animate attributeName="opacity" values="1;0.2;1" dur="1.4s" repeatCount="indefinite"/></circle>';
+    if (etat.frunk) {
+      o += '<path d="M' + vP(cx - hw * 0.84, yB) + 'L' + vP(cx - hw * 0.72, yB - 17) + 'L' + vP(cx + hw * 0.72, yB - 17) + 'L' + vP(cx + hw * 0.84, yB) + 'Z" fill="' + t[1] + '" stroke="#EC7063" stroke-width="1.4">'
+        + '<animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></path>';
+    }
+  } else {
+    // feux arriere (bandeau sur les SUV et berlines), plaque, diffuseur
+    var yF = yB + 4;
+    if (g.bar) {
+      o += '<path d="M' + vP(cx - hw + 2, yF) + 'L' + vP(cx + hw - 2, yF) + '" stroke="#D7323D" stroke-width="2.2" stroke-linecap="round"/>'
+        + '<path d="M' + vP(cx - hw + 2, yF) + 'L' + vP(cx - hw + 13, yF) + 'M' + vP(cx + hw - 13, yF) + 'L' + vP(cx + hw - 2, yF) + '" stroke="#FF5A63" stroke-width="3.4" stroke-linecap="round"/>';
+    } else {
+      o += '<rect x="' + vN(cx - hw + 2) + '" y="' + vN(yF - 3) + '" width="13" height="6" rx="2" fill="#D7323D"/>'
+        + '<rect x="' + vN(cx + hw - 15) + '" y="' + vN(yF - 3) + '" width="13" height="6" rx="2" fill="#D7323D"/>';
+    }
+    o += '<rect x="' + vN(cx - 10) + '" y="' + vN(yF + 7) + '" width="20" height="5" rx="1" fill="#F2F4F6" stroke="#1B1D21" stroke-width="0.5"/>'
+      + '<rect x="' + vN(cx - hw * 0.6) + '" y="' + vN(s - 7) + '" width="' + vN(hw * 1.2) + '" height="4" rx="2" fill="#16181B"/>';
+    if (etat.trappe || etat.cable) {
+      var px = cx + hw - 4, py = yB + 7, cp = voitureCouleurPort(etat);
+      if (etat.cable) {
+        var d = 'M' + vP(px, py) + 'C' + vP(px + 8, py + 4) + ' ' + vP(px + 10, 90) + ' ' + vP(px + 20, 92) + 'L239 92';
+        o += '<path d="' + d + '" fill="none" stroke="#1B1D21" stroke-width="2.6" stroke-linecap="round"/>';
+        if (etat.charge) o += '<path d="' + d + '" fill="none" stroke="#52BE80" stroke-width="1.6" stroke-dasharray="3 5"><animate attributeName="stroke-dashoffset" values="16;0" dur="0.8s" repeatCount="indefinite"/></path>';
+      }
+      o += '<rect x="' + vN(px - 3) + '" y="' + vN(py - 2.5) + '" width="6" height="5" rx="1.4" fill="#0B0D10" stroke="' + cp + '" stroke-width="1.2"/>';
+    }
+    if (etat.coffre) {
+      o += '<path d="' + verre + '" fill="#07090B"/>'
+        + '<path d="M' + vP(cx - toit - 1, yR + 2) + 'L' + vP(cx - toit - 3, yR - 16) + 'L' + vP(cx + toit + 3, yR - 16) + 'L' + vP(cx + toit + 1, yR + 2) + 'Z" fill="' + t[1] + '" stroke="#EC7063" stroke-width="1.4">'
+        + '<animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></path>';
+    }
+  }
+  return o;
+}
+
+/* VUE DE DESSUS, avant a gauche. Le cote GAUCHE du vehicule est en BAS de
+ * l'image (un vehicule tourne vers la gauche a son flanc gauche au sud).
+ * `tpms` : {avg, avd, arg, ard} -> [texte, couleur] a ecrire pres des roues. */
+function voitureDessus(g, t, id, etat, tpms) {
+  var cy = 50, hw = g.W / 2, x0 = g.x0, xR = g.xR, sombre = (t[1] === VOITURE_TEINTES.noir[1]);
+  var o = '<defs><linearGradient id="carr' + id + '" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0" stop-color="' + t[2] + '"/><stop offset="0.3" stop-color="' + t[1] + '"/><stop offset="0.5" stop-color="' + t[0] + '"/>'
+    + '<stop offset="0.7" stop-color="' + t[1] + '"/><stop offset="1" stop-color="' + t[2] + '"/></linearGradient>'
+    + '<linearGradient id="vit' + id + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3F4A55"/><stop offset="1" stop-color="#11161B"/></linearGradient></defs>';
+  // pneus, debordant du flanc
+  var pneus = [[g.wf, cy + hw - 1.5, 'avg'], [g.wf, cy - hw + 1.5, 'avd'], [g.wr, cy + hw - 1.5, 'arg'], [g.wr, cy - hw + 1.5, 'ard']];
+  for (var k = 0; k < 4; k++) {
+    var p = pneus[k], alerte = tpms && tpms[p[2]] && tpms[p[2]][1] === '#EC7063';
+    o += '<rect x="' + vN(p[0] - g.r * 1.05) + '" y="' + vN(p[1] - 4.5) + '" width="' + vN(g.r * 2.1) + '" height="9" rx="3" fill="' + (alerte ? '#EC7063' : '#111214') + '">'
+      + (alerte ? '<animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite"/>' : '') + '</rect>';
+  }
+  var n = x0, r2 = xR, hs = hw - 2;
+  // Le flanc est le plus large aux roues ; le nez et la poupe se resserrent.
+  var corps = 'M' + vP(n, cy)
+    + 'C' + vP(n, cy - hs * 0.55) + ' ' + vP(n + 5, cy - hs * 0.9) + ' ' + vP(n + 18, cy - hs * 0.97)
+    + 'C' + vP(g.wf, cy - hs * 1.02) + ' ' + vP(g.wr, cy - hs * 1.02) + ' ' + vP(r2 - 16, cy - hs * 0.98)
+    + 'C' + vP(r2 - 3, cy - hs * 0.94) + ' ' + vP(r2 + 0.5, cy - hs * 0.7) + ' ' + vP(r2 + 0.5, cy)
+    + 'C' + vP(r2 + 0.5, cy + hs * 0.7) + ' ' + vP(r2 - 3, cy + hs * 0.94) + ' ' + vP(r2 - 16, cy + hs * 0.98)
+    + 'C' + vP(g.wr, cy + hs * 1.02) + ' ' + vP(g.wf, cy + hs * 1.02) + ' ' + vP(n + 18, cy + hs * 0.97)
+    + 'C' + vP(n + 5, cy + hs * 0.9) + ' ' + vP(n, cy + hs * 0.55) + ' ' + vP(n, cy) + 'Z';
+  // retroviseurs
+  o += '<path d="M' + vP(g.ws[0] + 12, cy - hs) + 'L' + vP(g.ws[0] + 16, cy - hs - 6) + 'L' + vP(g.ws[0] + 21, cy - hs - 6) + 'L' + vP(g.ws[0] + 20, cy - hs) + 'Z" fill="' + t[1] + '" stroke="rgba(0,0,0,0.6)" stroke-width="0.6"/>'
+    + '<path d="M' + vP(g.ws[0] + 12, cy + hs) + 'L' + vP(g.ws[0] + 16, cy + hs + 6) + 'L' + vP(g.ws[0] + 21, cy + hs + 6) + 'L' + vP(g.ws[0] + 20, cy + hs) + 'Z" fill="' + t[1] + '" stroke="rgba(0,0,0,0.6)" stroke-width="0.6"/>';
+  o += '<path d="' + corps + '" fill="url(#carr' + id + ')" stroke="' + (sombre ? '#7C828C' : 'rgba(0,0,0,0.55)') + '" stroke-width="0.8"/>';
+  // l'habitacle vu d'en haut : pare-brise, toit (vitre panoramique), lunette
+  var xa = g.ws[0] + 1, xt = g.a[0] - 2, xe = g.e[0], xb = g.rear === 'fast' ? g.sp[0] - 3 : g.sp[0] - 5;
+  var vw = hw * 0.78, vt = hw * 0.7;
+  var verre = 'M' + vP(xa, cy - vw * 0.86) + 'Q' + vP((xa + xt) / 2, cy - vw) + ' ' + vP(xt, cy - vt)
+    + 'L' + vP(xe, cy - vt * 0.98) + 'Q' + vP(xb - 4, cy - vt * 0.94) + ' ' + vP(xb, cy - vt * 0.72)
+    + 'Q' + vP(xb + 2, cy) + ' ' + vP(xb, cy + vt * 0.72)
+    + 'Q' + vP(xb - 4, cy + vt * 0.94) + ' ' + vP(xe, cy + vt * 0.98)
+    + 'L' + vP(xt, cy + vt) + 'Q' + vP((xa + xt) / 2, cy + vw) + ' ' + vP(xa, cy + vw * 0.86)
+    + 'Q' + vP(xa - 3, cy) + ' ' + vP(xa, cy - vw * 0.86) + 'Z';
+  o += '<path d="' + verre + '" fill="url(#vit' + id + ')" stroke="#0A0C0F" stroke-width="0.7"/>';
+  // pare-brise et lunette plus clairs que le toit, separes par les traverses
+  o += '<path d="M' + vP(xa, cy - vw * 0.86) + 'Q' + vP((xa + xt) / 2, cy - vw) + ' ' + vP(xt, cy - vt)
+    + 'L' + vP(xt, cy + vt) + 'Q' + vP((xa + xt) / 2, cy + vw) + ' ' + vP(xa, cy + vw * 0.86)
+    + 'Q' + vP(xa - 3, cy) + ' ' + vP(xa, cy - vw * 0.86) + 'Z" fill="#6C7B89" opacity="0.55"/>'
+    + '<path d="M' + vP(xe, cy - vt * 0.98) + 'Q' + vP(xb - 4, cy - vt * 0.94) + ' ' + vP(xb, cy - vt * 0.72)
+    + 'Q' + vP(xb + 2, cy) + ' ' + vP(xb, cy + vt * 0.72) + 'Q' + vP(xb - 4, cy + vt * 0.94) + ' ' + vP(xe, cy + vt * 0.98) + 'Z" fill="#6C7B89" opacity="0.4"/>'
+    + '<path d="M' + vP(xt, cy - vt) + 'L' + vP(xt, cy + vt) + 'M' + vP(xe, cy - vt) + 'L' + vP(xe, cy + vt) + '" stroke="' + t[1] + '" stroke-width="2.2"/>'
+    + '<path d="M' + vP(xt, cy - vt + 1) + 'L' + vP(xe, cy - vt + 1) + 'M' + vP(xt, cy + vt - 1) + 'L' + vP(xe, cy + vt - 1) + '" stroke="' + t[1] + '" stroke-width="1.6"/>';
+  if (etat.precond) {
+    var tc = etat.precond === 'chaud' ? '#F8C471' : '#5DADE2';
+    o += '<path d="' + verre + '" fill="' + tc + '" opacity="0.3"><animate attributeName="opacity" values="0.15;0.45;0.15" dur="3s" repeatCount="indefinite"/></path>';
+  }
+  o += '<path d="M' + vP(xa + 30, cy - vw + 3) + 'L' + vP(xb - 20, cy - vw + 3) + '" stroke="#FFFFFF" stroke-width="1.4" opacity="0.12"/>';
+  // lignes : capot, portes, coffre
+  var ligne = 'rgba(0,0,0,' + (sombre ? '0.75' : '0.4') + ')';
+  o += '<g stroke="' + ligne + '" stroke-width="0.7" fill="none">'
+    + '<path d="M' + vP(n + 16, cy) + 'L' + vP(g.ws[0] - 4, cy) + '"/>'
+    + '<path d="M' + vP(g.fd, cy - hs) + 'l0 7M' + vP(g.bp + 2, cy - hs) + 'l0 7M' + vP(g.rd, cy - hs) + 'l0 7"/>'
+    + '<path d="M' + vP(g.fd, cy + hs) + 'l0 -7M' + vP(g.bp + 2, cy + hs) + 'l0 -7M' + vP(g.rd, cy + hs) + 'l0 -7"/></g>';
+  // feux
+  o += '<path d="M' + vP(n + 3, cy - hs + 9) + 'L' + vP(n + 7, cy - hs + 3) + 'M' + vP(n + 3, cy + hs - 9) + 'L' + vP(n + 7, cy + hs - 3) + '" stroke="#EAF6FF" stroke-width="2" stroke-linecap="round"/>'
+    + '<path d="M' + vP(r2 - 1, cy - hs + 8) + 'L' + vP(r2 - 5, cy - hs + 2) + 'M' + vP(r2 - 1, cy + hs - 8) + 'L' + vP(r2 - 5, cy + hs - 2) + '" stroke="#D7323D" stroke-width="2.2" stroke-linecap="round"/>';
+  // CALQUES : portes (pivot a l'avant, ouvertes vers l'exterieur), vitres,
+  // coffre et frunk
+  var portes = [['avg', g.fd, g.bp + 2, 1], ['arg', g.bp + 2, g.rd, 1], ['avd', g.fd, g.bp + 2, -1], ['ard', g.bp + 2, g.rd, -1]];
+  for (var k = 0; k < 4; k++) {
+    var q = portes[k], yb = cy + q[3] * hs;
+    if (etat.vitres[q[0]]) o += '<rect x="' + vN(q[1] + 3) + '" y="' + vN(yb - (q[3] > 0 ? 5 : 0)) + '" width="' + vN(q[2] - q[1] - 6) + '" height="5" fill="#5DADE2" opacity="0.8"/>';
+    if (etat.portes[q[0]]) {
+      o += '<rect x="' + vN(q[1]) + '" y="' + vN(yb - (q[3] > 0 ? 3 : 0)) + '" width="' + vN(q[2] - q[1]) + '" height="3" fill="#07090B"/>'
+        + '<g transform="rotate(' + (q[3] * 38) + ' ' + vP(q[1], yb) + ')"><rect x="' + vN(q[1]) + '" y="' + vN(yb - 1.5) + '" width="' + vN(q[2] - q[1]) + '" height="3.2" rx="1.2" fill="' + t[1] + '" stroke="#EC7063" stroke-width="1.3">'
+        + '<animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite"/></rect></g>';
+    }
+  }
+  if (etat.frunk) {
+    o += '<path d="M' + vP(n + 3, cy - hs + 10) + 'L' + vP(g.ws[0] - 2, cy - hs + 5) + 'L' + vP(g.ws[0] - 2, cy + hs - 5) + 'L' + vP(n + 3, cy + hs - 10) + 'Z" fill="#EC7063" opacity="0.5">'
+      + '<animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.2s" repeatCount="indefinite"/></path>';
+  }
+  if (etat.coffre) {
+    o += '<path d="M' + vP(xb + 1, cy - hs + 5) + 'L' + vP(r2 - 3, cy - hs + 10) + 'L' + vP(r2 - 3, cy + hs - 10) + 'L' + vP(xb + 1, cy + hs - 5) + 'Z" fill="#EC7063" opacity="0.5">'
+      + '<animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.2s" repeatCount="indefinite"/></path>';
+  }
+  if (etat.trappe || etat.cable) {
+    var px = g.wr + g.r + 7, py = cy + hs, cp = voitureCouleurPort(etat);
+    if (etat.cable) {
+      var d = 'M' + vP(px, py) + 'C' + vP(px + 4, py + 8) + ' ' + vP(px + 14, py + 10) + ' ' + vP(239, py + 11);
+      o += '<path d="' + d + '" fill="none" stroke="#1B1D21" stroke-width="2.6" stroke-linecap="round"/>';
+      if (etat.charge) o += '<path d="' + d + '" fill="none" stroke="#52BE80" stroke-width="1.6" stroke-dasharray="3 5"><animate attributeName="stroke-dashoffset" values="16;0" dur="0.8s" repeatCount="indefinite"/></path>';
+    }
+    o += '<circle cx="' + vN(px) + '" cy="' + vN(py - 2) + '" r="2.4" fill="' + cp + '" stroke="#0B0D10" stroke-width="0.8"/>';
+  }
+  if (tpms) {
+    var lab = [['avd', g.wf, cy - hw - 7], ['ard', g.wr, cy - hw - 7], ['avg', g.wf, cy + hw + 13], ['arg', g.wr, cy + hw + 13]];
+    for (var k = 0; k < 4; k++) {
+      var v = tpms[lab[k][0]];
+      if (v) o += '<text x="' + vN(lab[k][1]) + '" y="' + vN(lab[k][2]) + '" text-anchor="middle" font-size="10" font-weight="800" fill="' + v[1] + '">' + v[0] + '</text>';
+    }
+  }
+  return o;
+}
+
+/* L'ASSEMBLAGE : quatre vues en rotation (360 degres) ou une vue choisie.
+ * o = {style, teinte, vue, id, etat, tpms, largeur, hauteur}
+ * vue : '360', 'g', 'av', 'd', 'ar', 'h'. */
+function dessinVoiture(o) {
+  var g = VOITURE_STYLES[o.style] || VOITURE_STYLES.suv;
+  var t = VOITURE_TEINTES[o.teinte] || VOITURE_TEINTES.blanc;
+  var L = o.largeur || 288, H = o.hauteur || 120;
+  var etat = o.etat || {};
+  etat.portes = etat.portes || {};
+  etat.vitres = etat.vitres || {};
+  var svg = function (cle, contenu, vb) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + L + '" height="' + H + '" viewBox="' + (vb || '0 0 240 100')
+      + '" preserveAspectRatio="xMidYMid meet" style="display:block;overflow:visible">' + contenu + '</svg>';
+  };
+  var vue = function (cle) {
+    var id = o.id + cle;
+    if (cle === 'g') return svg(cle, voitureProfil(g, t, id, etat, 'g'));
+    if (cle === 'd') return svg(cle, '<g transform="translate(240 0) scale(-1 1)">' + voitureProfil(g, t, id, etat, 'd') + '</g>');
+    if (cle === 'av') return svg(cle, voitureFace(g, t, id, etat, false));
+    if (cle === 'ar') return svg(cle, voitureFace(g, t, id, etat, true));
+    return svg(cle, voitureDessus(g, t, id, etat, o.tpms), '0 -14 240 128');
+  };
+  var boite = 'position:absolute;left:0;top:0;width:' + L + 'px;height:' + H + 'px;';
+  if (o.vue === '360') {
+    var ordre = ['g', 'av', 'd', 'ar'], sortie = '';
+    for (var k = 0; k < 4; k++) {
+      sortie += '<div style="' + boite + 'backface-visibility:hidden;opacity:0;animation:voiture-tour 16s linear infinite;'
+        + 'animation-delay:' + (-((16 - 4 * k) % 16)) + 's;">' + vue(ordre[k]) + '</div>';
+    }
+    return '<div style="position:relative;width:' + L + 'px;height:' + H + 'px;perspective:520px;">' + sortie + '</div>';
+  }
+  return '<div style="position:relative;width:' + L + 'px;height:' + H + 'px;perspective:520px;">'
+    + '<div style="' + boite + 'animation:voiture-entre 0.55s ease-out both;">' + vue(o.vue) + '</div></div>';
+}
+
+/* Les keyframes des deux animations, a recopier DANS la racine d'ombre de la
+ * carte qui dessine (un nom de @keyframes n'est pas resolu d'une racine a
+ * l'autre -- lecon du module Temps). */
+var VOITURE_KEYFRAMES = '@keyframes voiture-tour {'
+  + ' 0% { transform: rotateY(-90deg); opacity: 1; }'
+  + ' 5% { transform: rotateY(0deg); opacity: 1; }'
+  + ' 20% { transform: rotateY(0deg); opacity: 1; }'
+  + ' 25% { transform: rotateY(90deg); opacity: 1; }'
+  + ' 25.01%, 100% { transform: rotateY(90deg); opacity: 0; } }'
+  + ' @keyframes voiture-entre { 0% { transform: rotateY(-70deg); opacity: 0; } 100% { transform: rotateY(0deg); opacity: 1; } }';
+
+    const MODELES = {"suv": ["model y", "model x", "aion v", "aion y", "id.4", "id.5", "id4", "id5", "enyaq", "ix3", "ix1", "ix", "eqa", "eqb", "eqc", "q4", "q8", "e-tron", "kona", "niro", "ev9", "ev5", "ev3", "ioniq 5", "zs", "atto 3", "e-2008", "e-3008", "e-5008", "scenic", "mach-e", "xc40", "ex30", "ex90", "c40", "bz4x", "solterra", "ariya", "macan", "elroq", "tang", "sealion", "jaecoo", "smart #1", "smart #3", "dolphin surf"], "berline": ["model 3", "model s", "i4", "i5", "i7", "ioniq 6", "eqe", "eqs", "seal", "taycan", "polestar 2", "han", "e-tron gt", "ev6", "aion s", "ami"], "compacte": ["id.3", "id3", "megane", "mégane", "leaf", "mg4", "e-308", "born", "cupra", "ioniq", "e-golf", "astra", "e-c4", "ë-c4", "dolphin", "focus", "zafira", "i3s"], "citadine": ["zoe", "zoé", "r5", "renault 5", "e-208", "twingo", "spring", "500e", "500 e", "fiat 500", "mini", "corsa", "e-c3", "ë-c3", "honda e", "i3", "up!", "e-up", "citigo", "leapmotor t03", "inster", "r4", "renault 4", "ami", "e-mehari"]};
+    const sansAccent = s => (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    function deduire(nom) {
+      const m = ' ' + sansAccent(nom) + ' ';
+      for (const c of ['citadine', 'berline', 'suv', 'compacte'])
+        for (const mot of MODELES[c]) {
+          const e = sansAccent(mot).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          if (new RegExp('(^|[^a-z0-9])' + e + '([^a-z0-9]|$)').test(m)) return c;
+        }
+      return 'compacte';
+    }
+    const NOMS = { citadine: 'Citadine', compacte: 'Compacte', berline: 'Berline', suv: 'SUV' };
+    const VUES = [['360', '360°'], ['g', 'Gauche'], ['av', 'Avant'], ['d', 'Droite'], ['ar', 'Arrière'], ['h', 'Dessus']];
+    function lire(p, d) { const e = document.getElementById('param-appareil_voiture-' + p); return e && e.value ? e.value : d; }
+    function dessiner(cible) {
+      if (!document.getElementById('voiture-keyframes')) {
+        const s = document.createElement('style'); s.id = 'voiture-keyframes';
+        s.textContent = VOITURE_KEYFRAMES; document.head.appendChild(s);
+      }
+      let style = lire('VOITURE_CARROSSERIE', 'auto');
+      const auto = style === 'auto';
+      if (auto) style = deduire(lire('VOITURE_NOM', '') + ' ' + lire('VOITURE_APPAREIL', ''));
+      const teinte = lire('VOITURE_COULEUR', 'blanc');
+      const vue = cible.dataset.vue || '360';
+      const etat = { trappe: true, cable: true, charge: true };
+      let html;
+      try { html = dessinVoiture({ style: style, teinte: teinte, vue: vue, id: 'apercu', etat: etat, largeur: 288, hauteur: 120 }); }
+      catch (e) { cible.textContent = ''; return; }
+      const boutons = VUES.map(v => '<button type="button" data-vue="' + v[0] + '" style="font:inherit;font-size:11px;'
+        + 'padding:3px 8px;border-radius:12px;cursor:pointer;border:1px solid ' + (v[0] === vue ? '#52BE80' : 'rgba(128,128,128,0.45)')
+        + ';background:' + (v[0] === vue ? 'rgba(82,190,128,0.18)' : 'transparent') + ';color:inherit">' + v[1] + '</button>').join('');
+      cible.innerHTML = '<div style="text-align:center;font-size:12px;opacity:0.8;margin:6px 0 2px">'
+        + NOMS[style] + (auto ? ' (déduite du modèle)' : '') + ' · ' + (teinte.charAt(0).toUpperCase() + teinte.slice(1)) + ' · en charge</div>'
+        + '<div style="width:300px;margin:4px auto;padding:6px;border-radius:12px;background:rgba(0,0,0,0.35)">'
+        + '<div style="width:288px;height:120px;margin:0 auto">' + html + '</div></div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:6px 0">' + boutons + '</div>';
+      cible.querySelectorAll('button[data-vue]').forEach(b => b.addEventListener('click', () => {
+        cible.dataset.vue = b.dataset.vue; dessiner(cible); }));
+      const l = cible.clientWidth; cible.style.zoom = l && l < 310 ? (l / 310).toFixed(3) : '1';
+    }
+    return function (racine) { (racine || document).querySelectorAll('.apercu-voiture').forEach(dessiner); };
+  })();
+  new MutationObserver(() => {
+    document.querySelectorAll('.apercu-voiture:not([data-dessine])').forEach(c => {
+      c.setAttribute('data-dessine', '1'); dessinerVoitures(c.parentNode); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  ['change', 'input'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target && /^param-appareil_voiture-VOITURE_(CARROSSERIE|COULEUR|NOM|APPAREIL)$/.test(e.target.id || '')) dessinerVoitures();
+  }));
+  /* ---------- FIN APERCU DU VEHICULE ---------- */
   const PACK_APERCU = {
     securite_camera: 'camera',
     OK_service_meteo: 'meteo',
@@ -19159,7 +19804,8 @@
     appareil_aspirateur: 'aspirateur',
     appareil_serpillere: 'serpillere',
     eau_piscine: 'piscine',
-    service_personne: 'personne'
+    service_personne: 'personne',
+    appareil_voiture: 'voiture'
   };
 
   function themeSite(cle) {
@@ -19776,7 +20422,9 @@
     // `eau_piscine` ajoute le 26/09/2026 : phase de test.
     'eau_piscine',
     // `service_personne` ajoute le 27/09/2026 : phase de test.
-    'service_personne'
+    'service_personne',
+    // `appareil_voiture` ajoute le 27/09/2026 : phase de test.
+    'appareil_voiture'
   ]);
 
   const PRIX_PACK = 9;
@@ -20914,6 +21562,7 @@
     // et tendance barometrique.
     service_capteur: 'capteur',
     service_personne: 'personne',
+    appareil_voiture: 'voiture',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
