@@ -3969,7 +3969,7 @@
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
       { name: 'appareil_lave_linge', desc: 'Suivi cycle lave-linge' },
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
-      { name: 'appareil_panneau_solaire', desc: 'Production photovoltaïque' },
+      { name: 'appareil_panneau_solaire', desc: 'Installation dessinée, flux d’énergie en direct, batterie, routage du surplus et prévisions' },
       { name: 'appareil_imprimante', desc: 'Impression, cartouches et durée de vie' },
       { name: 'appareil_raspberry', desc: 'Charge, température, disque, Zigbee, Wi-Fi et Bluetooth de votre Raspberry' },
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
@@ -4181,6 +4181,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    appareil_panneau_solaire: {
+      resume: `Votre installation solaire dessinée et vivante, le flux d'énergie en direct, le pilotage des panneaux, de la batterie, du réseau et du routage du surplus, les prévisions et l'historique.`,
+      detail: `Le tableau de bord de vos <b>panneaux solaires</b>, sur une seule carte. Vous nommez l'<b>onduleur</b> ou la <b>passerelle</b> (OpenDTU, Enphase Envoy, Huawei, SolarEdge, Fronius, SMA…) : le pack retrouve seul la production, le relevé <b>par panneau ou par string</b>, la tension du réseau, la température, l'état de l'onduleur et de sa passerelle, et — s'ils existent — la batterie et le compteur. Il <b>n'affiche que ce qui existe</b>. Le premier onglet <b>dessine votre installation</b> — kit balcon, toit plat de garage, toiture ou ombrière — avec son soleil et ses rayons modulés par la production, le reflet qui balaie les panneaux, le voyant de l'onduleur et la jauge de la batterie ; dessous, le <b>flux d'énergie en direct</b> entre le soleil, la maison, le réseau et la batterie, et aux quatre coins l'autoconsommation, l'autonomie, la production et les économies du jour. Le deuxième onglet détaille les <b>panneaux</b> (un panneau ombragé ou encrassé passe à l'ambre), la <b>batterie</b> (réserve, mode, charge aux heures creuses), le <b>réseau</b> (compteur, bilan du jour, rentabilité) et le <b>routage du surplus</b> vers le chauffe-eau, la borne ou la climatisation. Le troisième donne les <b>prévisions</b> (Forecast.Solar ou Solcast) avec les heures conseillées pour lancer les machines, l'<b>historique</b> et le CO₂ évité, et l'<b>entretien</b>. Dès que la production couvre le foyer ou que vous injectez, la carte prend sa <b>bordure animée verte</b> et son fond s'allume.`,
+      apercu: {}
     },
     appareil_voiture: {
       resume: `Votre véhicule électrique dessiné à sa carrosserie et sa couleur, en rotation 360° : recharge, climatisation, sécurité, pneus et mises à jour.`,
@@ -4616,6 +4621,23 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    appareil_panneau_solaire: [
+      { titre: `Routage du surplus`, icone: 'fa-code-branch',
+        declencheur: `Le surplus réinjecté dépasse le palier (1200 W par défaut) pendant 5 minutes ; ou le foyer soutire plus de 200 W pendant 5 minutes.`,
+        action: `Enclenche la charge pilotable suivante (chauffe-eau, prise, borne, climatisation), une de plus toutes les 5 minutes tant que le surplus dure ; les coupe dans l'ordre inverse quand le foyer soutire.` },
+      { titre: `Décrochage de l'onduleur`, icone: 'fa-bolt',
+        declencheur: `Tension du réseau au-dessus de 250 V pendant 30 s, ou onduleur en défaut en plein soleil pendant 2 minutes.`,
+        action: `Alerte CRITIQUE sur tous vos mobiles (même en silencieux), qui en donne la cause.` },
+      { titre: `Heures solaires du jour`, icone: 'fa-sun',
+        declencheur: `Chaque matin à 8 h 30.`,
+        action: `Notification avec la production prévue, l'heure du pic et la plage conseillée pour lancer lave-linge et lave-vaisselle.` },
+      { titre: `Protection de la batterie en hiver`, icone: 'fa-snowflake',
+        declencheur: `Entre novembre et février, batterie sous 10 % et temps couvert prévu aujourd'hui et demain.`,
+        action: `Charge d'entretien depuis le réseau jusqu'à 25 %, puis retour à l'autoconsommation.` },
+      { titre: `Mode de la batterie`, icone: 'fa-battery-half',
+        declencheur: `Changement du mode sur la carte, début ou fin des heures creuses ou de la plage de décharge.`,
+        action: `Applique le mode à la batterie par son sélecteur de mode ou son interrupteur de charge forcée.` }
+    ],
     appareil_voiture: [
       { titre: `Oubli de branchement`, icone: 'fa-plug-circle-exclamation',
         declencheur: `Chaque soir à 21 h, si le véhicule est à la maison, débranché, et sous 50 % de batterie (heure et seuil réglables).`,
@@ -4953,6 +4975,37 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    appareil_panneau_solaire: {
+      intro: `Trois onglets : production, contrôle, suivi. Vous nommez l'<b>onduleur</b> ou la <b>passerelle</b> ; le pack classe leurs entités et <b>n'affiche que ce qui existe</b> — ce sont elles qui font la variante, du kit balcon de deux panneaux sans compteur jusqu'à la toiture avec batterie, compteur et routage. Le <b>kit</b>, l'<b>onduleur</b> et la <b>batterie</b> choisis ci-dessous dessinent votre installation ; l'<b>orientation</b>, l'<b>inclinaison</b> et la <b>puissance crête</b> calibrent les prévisions.<table style="width:100%;border-collapse:collapse;margin:8px 0;font-size:0.92em"><tr><th style="text-align:left;padding:4px;border-bottom:1px solid #52BE80">Entité</th><th style="padding:4px;border-bottom:1px solid #52BE80">Statut</th><th style="text-align:left;padding:4px;border-bottom:1px solid #52BE80">Sans elle</th></tr><tr><td style="padding:3px 4px">Puissance instantanée produite (W)</td><td style="padding:3px 4px;text-align:center;color:#52BE80;font-weight:700">Obligatoire</td><td style="padding:3px 4px;opacity:0.8">—</td></tr><tr><td style="padding:3px 4px">Énergie produite du jour (kWh)</td><td style="padding:3px 4px;text-align:center;color:#52BE80;font-weight:700">Obligatoire</td><td style="padding:3px 4px;opacity:0.8">comptée par le pack depuis la puissance</td></tr><tr><td style="padding:3px 4px">Compteur du foyer (Linky, Shelly EM)</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">flux réduit au soleil et à la batterie ; ni autoconsommation ni routage</td></tr><tr><td style="padding:3px 4px">Batterie : état de charge (SoC)</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">sous-onglet Batterie retiré</td></tr><tr><td style="padding:3px 4px">Batterie : mode, réserve, charge forcée</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">modes retirés (réserve conservée par le pack)</td></tr><tr><td style="padding:3px 4px">Puissance par panneau / micro-onduleur</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">trois grandeurs globales à la place des tuiles</td></tr><tr><td style="padding:3px 4px">Tension AC, température de l'onduleur</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">capsule et tuile d'entretien retirées</td></tr><tr><td style="padding:3px 4px">Passerelle (DTU, Envoy) et signal Wi-Fi</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">tuile d'entretien retirée</td></tr><tr><td style="padding:3px 4px">Thermostat / interrupteur du chauffe-eau</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">sous-onglet Routage retiré</td></tr><tr><td style="padding:3px 4px">Prévisions Solcast</td><td style="padding:3px 4px;text-align:center;color:#F8C471;font-weight:700">Optionnelle</td><td style="padding:3px 4px;opacity:0.8">Forecast.Solar est installé par le pack</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Production', icone: 'fa-solar-panel',
+          texte: `Votre <b>installation dessinée</b> et le <b>flux d'énergie en direct</b>, entre quatre indicateurs clés.`,
+          elements: [
+            { nom: `Installation`, texte: `le kit choisi (balcon, toit plat, toiture, ombrière) et ses panneaux ; le soleil et ses rayons suivent la production, un reflet balaie les panneaux, la lune remplace le soleil la nuit.` },
+            { nom: `Onduleur`, texte: `un voyant vert en service, gris en veille, rouge et clignotant en défaut.` },
+            { nom: `Batterie`, texte: `sa jauge monte en bleu pendant la charge et descend en violet pendant la décharge.` },
+            { nom: `Flux d'énergie`, texte: `le soleil au centre, la maison, le réseau et la batterie autour ; des points circulent sur chaque liaison à la vitesse de la puissance. Le réseau passe au violet quand vous injectez, au rouge quand vous soutirez fort.` },
+            { nom: `Quatre coins`, texte: `autoconsommation, autonomie, production du jour et économies du jour.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que la production couvre le foyer ou que vous injectez.` }
+          ] },
+        { titre: '2 — Contrôle', icone: 'fa-sliders',
+          texte: `Quatre sous-onglets : <b>Panneaux</b>, <b>Batterie</b>, <b>Réseau</b> et <b>Routage</b> — ceux que votre installation n'a pas sont retirés.`,
+          elements: [
+            { nom: `Panneaux`, texte: `une tuile par panneau ou par string : puissance, tension, courant, température. Un panneau sous 70 % de ses voisins passe à l'ambre (ombre, salissure), à zéro il passe au rouge.` },
+            { nom: `Batterie`, texte: `état de charge en anneau, énergie stockée, réserve de sécurité, et le mode : autoconsommation, charge aux heures creuses, décharge programmée.` },
+            { nom: `Réseau`, texte: `le compteur (puissance apparente, index de soutirage et d'injection), le bilan du jour (produit, autoconsommé, réinjecté) et la rentabilité — économies du jour, revente, cumul et part amortie.` },
+            { nom: `Routage`, texte: `le surplus en direct face au palier, l'activation automatique et l'état de chaque charge pilotable (chauffe-eau et sa température, borne, climatisation).` }
+          ] },
+        { titre: '3 — Suivi', icone: 'fa-chart-line',
+          texte: `<b>Prévisions</b> (courbe sur 48 h face à la production réelle, pic prévu, heures conseillées pour les machines), <b>Historique</b> (semaine, mois, année ; CO₂ évité et arbres équivalents) et <b>Entretien</b> (passerelle et signal, tension du réseau, heures de fonctionnement, écart à la courbe théorique).`,
+          elements: [
+            { nom: `Prévisions`, texte: `Forecast.Solar, installé et calibré par le pack avec votre orientation, votre inclinaison et votre puissance crête — ou Solcast s'il est déjà là.` },
+            { nom: `Encrassement`, texte: `une production durablement sous 65 % de la courbe théorique par beau temps signale un nettoyage à prévoir.` },
+            { nom: `Tension AC`, texte: `verte jusqu'à 245 V, ambre ensuite, rouge à 250 V : un onduleur décroche à 253 V.` }
+          ] }
       ]
     },
     appareil_voiture: {
@@ -7035,6 +7088,81 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    appareil_panneau_solaire: [
+      { param: 'SOLAIRE_APPAREILS', label: `Onduleur ou passerelle`, type: 'text', required: true,
+        groupe: `☀️ Installation`,
+        placeholder: `ex : OpenDTU, Envoy — nom de l'onduleur, de la passerelle ou des micro-onduleurs dans Home Assistant (séparés par des virgules)` },
+      { param: 'SOLAIRE_KIT', label: `Type de kit`, type: 'select', required: false,
+        groupe: `🏠 Votre installation`, defaut: 'toiture',
+        options: [
+          { value: 'toiture', label: `🏠 Toiture résidentielle (surimposition / intégration)` },
+          { value: 'balcon', label: `🪴 Kit Plug & Play (balcon, terrasse)` },
+          { value: 'toit_plat', label: `🏢 Toit plat / garage` },
+          { value: 'carport', label: `🚗 Ombrière / carport solaire` }
+        ] },
+      { param: 'SOLAIRE_ONDULEUR', label: `Onduleur`, type: 'select', required: false,
+        groupe: `🏠 Votre installation`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Détecter automatiquement` },
+          { value: 'micro-hoymiles', label: `🔹 Micro-onduleurs Hoymiles` },
+          { value: 'micro-enphase', label: `🔹 Micro-onduleurs Enphase` },
+          { value: 'micro-apsystems', label: `🔹 Micro-onduleurs APSystems` },
+          { value: 'central-fronius', label: `🔶 Onduleur central Fronius` },
+          { value: 'central-huawei', label: `🔶 Onduleur hybride Huawei` },
+          { value: 'central-solaredge', label: `🔶 Onduleur central SolarEdge` },
+          { value: 'central-sma', label: `🔶 Onduleur central SMA` }
+        ] },
+      { param: 'SOLAIRE_BATTERIE', label: `Batterie de stockage`, type: 'select', required: false,
+        groupe: `🏠 Votre installation`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Détecter automatiquement` },
+          { value: 'sans', label: `🚫 Sans batterie (injection directe)` },
+          { value: 'zendure', label: `🔋 Zendure SolarFlow` },
+          { value: 'enphase', label: `🔋 Enphase IQ Battery` },
+          { value: 'powerwall', label: `🔋 Tesla Powerwall` },
+          { value: 'luna', label: `🔋 Huawei LUNA` }
+        ] },
+      { param: 'SOLAIRE_PUISSANCE', label: `Puissance crête (kWc)`, type: 'text', required: false,
+        groupe: `🏠 Votre installation`, placeholder: `vide : 0,8 à 9 kWc selon le kit` },
+      { param: 'SOLAIRE_PANNEAUX', label: `Nombre de panneaux`, type: 'text', required: false,
+        groupe: `🏠 Votre installation`, placeholder: `vide : 2 à 20 selon le kit` },
+      { param: 'SOLAIRE_ORIENTATION', label: `Orientation`, type: 'select', required: false,
+        groupe: `🧭 Orientation (prévisions)`, defaut: 'sud',
+        options: [
+          { value: 'sud', label: `⬇️ Plein sud` },
+          { value: 'sud-est', label: `↘️ Sud-est` },
+          { value: 'sud-ouest', label: `↙️ Sud-ouest` },
+          { value: 'est', label: `➡️ Est` },
+          { value: 'ouest', label: `⬅️ Ouest` }
+        ] },
+      { param: 'SOLAIRE_INCLINAISON', label: `Inclinaison (degrés)`, type: 'text', required: false,
+        groupe: `🧭 Orientation (prévisions)`, placeholder: `vide : 10 à 70° selon le kit` },
+      { param: 'SOLAIRE_APERCU', label: '', type: 'note', groupe: `🧭 Orientation (prévisions)`,
+        texte: `<div class="apercu-solaire"></div>` },
+      { param: 'SOLAIRE_COMPTEUR', label: `Compteur du foyer`, type: 'text', required: false,
+        groupe: `⚡ Réseau et revente`,
+        placeholder: `ex : Linky, Shelly EM — vide : cherché dans l'onduleur` },
+      { param: 'SOLAIRE_BATTERIE_APPAREIL', label: `Appareil de la batterie`, type: 'text', required: false,
+        groupe: `⚡ Réseau et revente`, placeholder: `vide : cherchée dans l'onduleur` },
+      { param: 'SOLAIRE_REVENTE', label: `Contrat de revente`, type: 'select', required: false,
+        groupe: `⚡ Réseau et revente`, defaut: 'surplus',
+        options: [
+          { value: 'surplus', label: `💶 Revente du surplus` },
+          { value: 'aucune', label: `🚫 Aucun contrat (injection gratuite)` }
+        ] },
+      { param: 'SOLAIRE_TARIF', label: `Prix du kWh acheté (€)`, type: 'text', required: false,
+        groupe: `⚡ Réseau et revente`, placeholder: `vide : celui du tableau Énergie, sinon 0,25` },
+      { param: 'SOLAIRE_TARIF_REVENTE', label: `Prix du kWh revendu (€)`, type: 'text', required: false,
+        groupe: `⚡ Réseau et revente`, placeholder: `vide : 0,04` },
+      { param: 'SOLAIRE_INVESTISSEMENT', label: `Coût de l'installation (€)`, type: 'text', required: false,
+        groupe: `⚡ Réseau et revente`, placeholder: `vide : pas de suivi d'amortissement` },
+      { param: 'SOLAIRE_CHARGES', label: `Charges pilotables`, type: 'text', required: false,
+        groupe: `🔀 Routage du surplus`,
+        placeholder: `ex : switch.chauffe_eau, switch.borne_ve — une à trois, dans l'ordre` },
+      { param: 'SOLAIRE_PALIER', label: `Palier de routage (W)`, type: 'text', required: false,
+        groupe: `🔀 Routage du surplus`, placeholder: `vide : 1200 W` },
+      champThemeSite('SOLAIRE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_voiture: [
       { param: 'VOITURE_APPAREIL', label: `Véhicule`, type: 'text', required: true,
         groupe: `🚗 Véhicule`,
@@ -7993,6 +8121,19 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    appareil_panneau_solaire:
+      `la vue et ses trois onglets, l'installation dessinée selon le kit, les `
+      + `capteurs normalisés (production, réseau, consommation, batterie, `
+      + `surplus, couverture, défaut de l'onduleur, prévision, rendement, `
+      + `encrassement, compteurs du jour, gains et heures de fonctionnement), `
+      + `l'intégration Forecast.Solar calibrée sur votre installation, le `
+      + `tableau de bord Énergie complété, les helpers (sous-onglets, tarifs, `
+      + `palier, réserve, mode et plages de la batterie), un script de mode `
+      + `de batterie et cinq automatismes (routage, décrochage, heures `
+      + `solaires, protection hivernale, mode de batterie), en mode fictif `
+      + `toute une installation pilotable, ainsi que HACS et les cartes `
+      + `personnalisées requises (button-card, swipe-card, stack-in-card, `
+      + `card-mod, apexcharts-card, mushroom).`,
     appareil_voiture:
       `la vue et ses trois onglets, le véhicule dessiné selon sa carrosserie et `
       + `sa couleur, les helpers (vue, sous-onglets, limite, heures creuses, heure `
@@ -17406,6 +17547,21 @@
         }
       }
     },
+    "solaire": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/solaire/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/solaire/urban-factory-defaut-1.mp4",
+            "templates/apercus/solaire/urban-factory-defaut-2.mp4",
+            "templates/apercus/solaire/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "televiseur": {
       "urban-factory": {
         "cartes": {
@@ -19769,6 +19925,358 @@ var VOITURE_KEYFRAMES = '@keyframes voiture-tour {'
     if (e.target && /^param-appareil_voiture-VOITURE_(CARROSSERIE|COULEUR|NOM|APPAREIL)$/.test(e.target.id || '')) dessinerVoitures();
   }));
   /* ---------- FIN APERCU DU VEHICULE ---------- */
+  /* ---------- APERCU DE L'INSTALLATION (pack Panneau Solaire, 27/09/2026) ----------
+     ECRIT PAR `_patch_index_solaire.py` depuis `templates/appareil_solaire/
+     dessin_solaire.js` : la page dessine l'installation choisie avec le
+     meme code que la carte. */
+  const dessinerSolaire = (function () {
+/* Dessin de l'installation -- pack Appareil / Panneau Solaire.
+ *
+ * SOURCE UNIQUE, lue par `_generer_gabarit_solaire.py` (carte : visualiseur
+ * du 1er onglet) ET par `_patch_index_solaire.py` (apercu de la page de
+ * details du site). Deux copies du dessin auraient diverge au premier
+ * ajustement (lecon du pack Vehicule). NE DECLARE QUE DES FONCTIONS ET DES
+ * CONSTANTES : le gabarit button-card qui l'embarque les appelle ensuite.
+ *
+ * AUCUNE RESSOURCE CLIENT : `template/energie_solaire/`, cite par la demande,
+ * n'existait pas. L'installation est DESSINEE : quatre kits -- balcon (kit
+ * Plug & Play accroche au garde-corps), toit plat de garage (panneaux
+ * inclines sur supports), toiture de maison (tuiles, panneaux en surimposition)
+ * et ombriere / carport (toit de panneaux au-dessus d'un vehicule). Les
+ * panneaux sont poses par INTERPOLATION BILINEAIRE sur le plan qui les porte :
+ * un trapeze de toiture les deforme correctement, quel que soit leur nombre.
+ *
+ * ANIMATIONS SMIL (`<animate>`), jamais de @keyframes : elles vivent DANS le
+ * SVG, donc fonctionnent a l'identique dans la racine d'ombre de la carte et
+ * sur la page du site, sans feuille de style a recopier.
+ *
+ * LA SORTIE DOIT ETRE STABLE : button-card ne remplace le DOM d'un champ que
+ * si la chaine rendue CHANGE. Le niveau de production est donc QUANTIFIE (cinq
+ * paliers), l'etat de charge par pas de 5 %, et les identifiants SVG derivent
+ * du slug de la carte -- jamais d'un nombre aleatoire (le reflet des panneaux
+ * repartirait de zero a chaque releve de puissance).
+ */
+
+var SOLAIRE_KITS = {
+  // n : [min, max] de panneaux dessines ; plan : ce qui porte les panneaux.
+  balcon: {min: 1, max: 4},
+  toit_plat: {min: 2, max: 12},
+  toiture: {min: 4, max: 24},
+  carport: {min: 4, max: 24}
+};
+
+function _sol_f(x) { return Math.round(x * 10) / 10; }
+
+function _sol_pt(q, u, v) {
+  /* Interpolation bilineaire sur le quadrilatere q = [BG, BD, HD, HG]
+   * (bas-gauche, bas-droit, haut-droit, haut-gauche) : u de gauche a droite,
+   * v du bas vers le haut. */
+  var x = (1 - u) * (1 - v) * q[0][0] + u * (1 - v) * q[1][0] + u * v * q[2][0] + (1 - u) * v * q[3][0];
+  var y = (1 - u) * (1 - v) * q[0][1] + u * (1 - v) * q[1][1] + u * v * q[2][1] + (1 - u) * v * q[3][1];
+  return _sol_f(x) + ',' + _sol_f(y);
+}
+
+function _sol_quad(q, u0, v0, u1, v1) {
+  return 'M' + _sol_pt(q, u0, v0) + ' L' + _sol_pt(q, u1, v0) + ' L' + _sol_pt(q, u1, v1)
+    + ' L' + _sol_pt(q, u0, v1) + ' Z';
+}
+
+function _sol_grille(n, kit) {
+  /* Colonnes et rangees de n panneaux pour un kit donne. */
+  if (kit === 'balcon') return [n, 1];
+  if (kit === 'toit_plat') return n <= 6 ? [n, 1] : [Math.ceil(n / 2), 2];
+  if (kit === 'carport') return n <= 8 ? [n, 1] : [Math.ceil(n / 2), 2];
+  var rangs = n <= 6 ? 2 : (n <= 15 ? 3 : 4);
+  if (n <= 3) rangs = 1;
+  return [Math.ceil(n / rangs), rangs];
+}
+
+function _sol_panneaux(o, q, n, marge, suffixe, grille1) {
+  /* Les panneaux d'un plan : cellules sombres, liseré, et UN REFLET qui les
+   * balaie quand ils produisent (niveau >= 1). */
+  var g = grille1 ? [n, 1] : _sol_grille(n, o.kit), cols = g[0], rangs = g[1];
+  var cid = o.id + 'cl' + (suffixe || '');
+  var m = marge || 0.04, gap = 0.025;
+  var lu = (1 - 2 * m - (cols - 1) * gap) / cols;
+  var lv = (1 - 2 * m - (rangs - 1) * gap * 1.6) / rangs;
+  var chemins = '', grille = '', k = 0;
+  for (var r = 0; r < rangs; r++) {
+    for (var c = 0; c < cols; c++) {
+      if (k >= n) break;
+      var u0 = m + c * (lu + gap), v0 = m + r * (lv + gap * 1.6);
+      var d = _sol_quad(q, u0, v0, u0 + lu, v0 + lv);
+      chemins += '<path d="' + d + '" fill="url(#' + o.id + 'pv)" stroke="#9FB7CE" stroke-width="0.7"/>';
+      // Deux traits de cellule : c'est ce qui fait un panneau, pas une vitre.
+      grille += '<path d="M' + _sol_pt(q, u0 + lu / 2, v0) + ' L' + _sol_pt(q, u0 + lu / 2, v0 + lv)
+        + ' M' + _sol_pt(q, u0, v0 + lv / 2) + ' L' + _sol_pt(q, u0 + lu, v0 + lv / 2)
+        + '" stroke="#6F8FB0" stroke-width="0.35" opacity="0.8"/>';
+      k++;
+    }
+  }
+  var clip = '<clipPath id="' + cid + '"><path d="' + _sol_quad(q, 0, 0, 1, 1) + '"/></clipPath>';
+  var reflet = '';
+  if (o.niveau >= 1 && !o.nuit) {
+    var dur = (7 - o.niveau).toFixed(1);
+    reflet = '<g clip-path="url(#' + cid + ')"><rect x="-40" y="0" width="22" height="130" fill="url(#'
+      + o.id + 'rf)" transform="skewX(-22)">'
+      + '<animate attributeName="x" values="-40;230" dur="' + dur + 's" repeatCount="indefinite"/></rect></g>';
+  }
+  return clip + chemins + grille + reflet;
+}
+
+function _sol_soleil(o) {
+  var cx = 20, cy = 16;
+  if (o.nuit) {
+    return '<circle cx="' + cx + '" cy="' + cy + '" r="7.5" fill="#D6DCE4" opacity="0.85"/>'
+      + '<circle cx="' + (cx + 3.6) + '" cy="' + (cy - 2.4) + '" r="6.5" fill="#1E2630" opacity="0.92"/>';
+  }
+  var n = o.niveau;
+  var rayons = '';
+  for (var i = 0; i < 8; i++) {
+    var a = i * Math.PI / 4;
+    var r0 = 10.5, r1 = 13 + 1.6 * n;
+    rayons += '<line x1="' + _sol_f(cx + r0 * Math.cos(a)) + '" y1="' + _sol_f(cy + r0 * Math.sin(a))
+      + '" x2="' + _sol_f(cx + r1 * Math.cos(a)) + '" y2="' + _sol_f(cy + r1 * Math.sin(a))
+      + '" stroke="#F8C471" stroke-width="1.6" stroke-linecap="round"/>';
+  }
+  var op = n === 0 ? 0.35 : 0.55 + 0.11 * n;
+  return '<g opacity="' + op.toFixed(2) + '">'
+    + (n >= 1 ? '<circle cx="' + cx + '" cy="' + cy + '" r="' + (14 + 3 * n) + '" fill="url(#' + o.id + 'ha)"/>' : '')
+    + '<g>' + rayons + (n >= 1 ? '<animateTransform attributeName="transform" type="rotate" from="0 '
+      + cx + ' ' + cy + '" to="360 ' + cx + ' ' + cy + '" dur="' + (26 - 3 * n) + 's" repeatCount="indefinite"/>' : '')
+    + '</g><circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#F8C471"/></g>';
+}
+
+function _sol_rayons(o, cible) {
+  /* Les RAYONS vers les panneaux : trois traits pointilles qui descendent du
+   * soleil vers le centre du plan, d'autant plus nombreux et opaques que la
+   * production est forte. */
+  if (o.nuit || o.niveau < 1) return '';
+  var s = '';
+  for (var i = 0; i < Math.min(3, o.niveau); i++) {
+    var dx = (i - 1) * 16;
+    s += '<line x1="27" y1="22" x2="' + _sol_f(cible[0] + dx) + '" y2="' + _sol_f(cible[1]) + '" stroke="#F8C471"'
+      + ' stroke-width="1" stroke-dasharray="2 5" opacity="' + (0.25 + 0.12 * o.niveau).toFixed(2) + '">'
+      + '<animate attributeName="stroke-dashoffset" values="14;0" dur="1.2s" repeatCount="indefinite"/></line>';
+  }
+  return s;
+}
+
+function _sol_onduleur(o, x, y) {
+  /* Le boitier de l'onduleur (ou de la passerelle des micro-onduleurs) et
+   * son VOYANT : vert = operationnel, gris = en veille, rouge clignotant =
+   * defaut ou deconnecte. */
+  var etat = o.onduleur || 'veille';
+  var col = etat === 'defaut' ? '#EC7063' : (etat === 'ok' ? '#52BE80' : '#8A8F96');
+  var anim = etat === 'defaut'
+    ? '<animate attributeName="opacity" values="1;0.2;1" dur="0.9s" repeatCount="indefinite"/>'
+    : (etat === 'ok' ? '<animate attributeName="opacity" values="1;0.55;1" dur="2.4s" repeatCount="indefinite"/>' : '');
+  return '<g><rect x="' + x + '" y="' + y + '" width="13" height="16" rx="1.6" fill="#DADDE1" stroke="#7A7F86" stroke-width="0.6"/>'
+    + '<rect x="' + (x + 2) + '" y="' + (y + 2.5) + '" width="9" height="4" rx="0.6" fill="#3D4450"/>'
+    + '<circle cx="' + (x + 6.5) + '" cy="' + (y + 11) + '" r="2" fill="' + col + '">' + anim + '</circle>'
+    + (etat === 'ok' ? '<circle cx="' + (x + 6.5) + '" cy="' + (y + 11) + '" r="3.6" fill="none" stroke="' + col + '" stroke-width="0.7" opacity="0.6">'
+      + '<animate attributeName="r" values="2;5" dur="2.4s" repeatCount="indefinite"/>'
+      + '<animate attributeName="opacity" values="0.7;0" dur="2.4s" repeatCount="indefinite"/></circle>' : '')
+    + '</g>';
+}
+
+function _sol_batterie(o, x, y, h) {
+  /* La batterie de stockage, posee au sol : une jauge qui se remplit a
+   * l'etat de charge ; bleue et parcourue de bulles montantes en charge,
+   * violette et descendante en decharge, grise au repos. */
+  var b = o.batterie;
+  if (!b) return '';
+  var soc = Math.max(0, Math.min(100, b.soc || 0));
+  var l = 15, hi = h - 6, rempli = _sol_f(hi * soc / 100);
+  var col = b.flux === 'charge' ? '#5DADE2' : (b.flux === 'decharge' ? '#BF71B2' : '#9AA0A6');
+  var bulles = '';
+  if (b.flux === 'charge' || b.flux === 'decharge') {
+    var de = b.flux === 'charge' ? (y + h - 4) : (y + 5), a = b.flux === 'charge' ? (y + h - 3 - rempli) : (y + h - 4);
+    for (var i = 0; i < 2; i++) {
+      bulles += '<circle cx="' + (x + 4.5 + 6 * i) + '" r="1.1" fill="#FFFFFF" opacity="0.8">'
+        + '<animate attributeName="cy" values="' + de + ';' + a + '" dur="1.6s" begin="' + (0.8 * i) + 's" repeatCount="indefinite"/>'
+        + '<animate attributeName="opacity" values="0;0.9;0" dur="1.6s" begin="' + (0.8 * i) + 's" repeatCount="indefinite"/></circle>';
+    }
+  }
+  return '<g><rect x="' + (x + 4.5) + '" y="' + (y - 2) + '" width="6" height="2.5" rx="0.6" fill="#7A7F86"/>'
+    + '<rect x="' + x + '" y="' + y + '" width="' + l + '" height="' + h + '" rx="2.4" fill="#2A2F36" stroke="' + col + '" stroke-width="1.1"/>'
+    + '<rect x="' + (x + 2.5) + '" y="' + _sol_f(y + h - 3 - rempli) + '" width="' + (l - 5) + '" height="' + rempli + '" rx="1" fill="' + col + '" opacity="0.9"/>'
+    + bulles
+    + '<text x="' + (x + l / 2) + '" y="' + (y + h + 7.5) + '" text-anchor="middle" font-size="6.5" font-weight="700" fill="' + col + '"'
+    + ' font-family="sans-serif">' + Math.round(soc) + '%</text></g>';
+}
+
+function _sol_defs(o) {
+  var n = o.nuit ? 0 : o.niveau;
+  var haut = n === 0 ? '#1B2A3D' : (n <= 2 ? '#24476D' : '#2C5A8A');
+  var bas = n === 0 ? '#0E1621' : '#15314F';
+  return '<defs>'
+    + '<linearGradient id="' + o.id + 'pv" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0" stop-color="' + haut + '"/><stop offset="1" stop-color="' + bas + '"/></linearGradient>'
+    + '<linearGradient id="' + o.id + 'rf" x1="0" y1="0" x2="1" y2="0">'
+    + '<stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="0.5" stop-color="#FFFFFF" stop-opacity="'
+    + (0.12 + 0.07 * n).toFixed(2) + '"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'
+    + '<radialGradient id="' + o.id + 'ha"><stop offset="0" stop-color="#F8C471" stop-opacity="0.55"/>'
+    + '<stop offset="1" stop-color="#F8C471" stop-opacity="0"/></radialGradient>'
+    + '<radialGradient id="' + o.id + 'lu"><stop offset="0" stop-color="#F8C471" stop-opacity="' + (0.07 * n).toFixed(2) + '"/>'
+    + '<stop offset="1" stop-color="#F8C471" stop-opacity="0"/></radialGradient>'
+    + '<pattern id="' + o.id + 'tu" width="7" height="5" patternUnits="userSpaceOnUse">'
+    + '<rect width="7" height="5" fill="#B5553F"/><path d="M0 4.5 Q3.5 1.5 7 4.5" fill="none" stroke="#8C3D2C" stroke-width="0.8"/></pattern>'
+    + '</defs>';
+}
+
+function _sol_halo(o, cx, cy, rx, ry) {
+  /* Le HALO lumineux au-dessus des panneaux, module par la puissance. */
+  if (o.nuit || o.niveau < 1) return '';
+  return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="url(#' + o.id + 'lu)">'
+    + '<animate attributeName="opacity" values="0.75;1;0.75" dur="3.2s" repeatCount="indefinite"/></ellipse>';
+}
+
+function _sol_toiture(o, n) {
+  var q = [[30, 66], [150, 66], [134, 32], [46, 32]];
+  return _sol_halo(o, 90, 44, 70, 30) + _sol_rayons(o, [90, 46])
+    // murs
+    + '<rect x="36" y="66" width="108" height="46" fill="#E7E1D5" stroke="#9A948A" stroke-width="0.7"/>'
+    + '<rect x="144" y="70" width="22" height="42" fill="#CFC8BB" stroke="#9A948A" stroke-width="0.7"/>'
+    + '<path d="M144 70 L166 70 L158 58 Z" fill="#9C4633"/>'
+    + '<rect x="54" y="80" width="18" height="16" fill="#8FB3D1" stroke="#7A7468" stroke-width="0.8"/>'
+    + '<path d="M63 80 L63 96 M54 88 L72 88" stroke="#7A7468" stroke-width="0.6"/>'
+    + '<rect x="98" y="84" width="16" height="28" rx="1" fill="#6E4F3A"/>'
+    // toiture de tuiles
+    + '<path d="M26 67 L154 67 L136 30 L44 30 Z" fill="url(#' + o.id + 'tu)" stroke="#7E3526" stroke-width="0.9"/>'
+    + _sol_panneaux(o, q, n, 0.07)
+    + '<path d="M26 67 L154 67" stroke="#6E2E21" stroke-width="1.6"/>'
+    + _sol_onduleur(o, 120, 82)
+    + _sol_batterie(o, 172, 82, 22)
+    + '<line x1="0" y1="112.5" x2="200" y2="112.5" stroke="#6B7078" stroke-width="1"/>';
+}
+
+function _sol_toit_plat(o, n) {
+  /* Garage a toit plat : les panneaux, INCLINES sur leurs supports, en une
+   * ou deux rangees (la seconde plus haute, derriere). */
+  var g = _sol_grille(n, 'toit_plat'), rangs = g[1];
+  var s = _sol_halo(o, 102, 50, 74, 26) + _sol_rayons(o, [102, 52])
+    + '<rect x="30" y="70" width="140" height="42" fill="#D9D4CB" stroke="#958F85" stroke-width="0.7"/>'
+    + '<path d="M24 71 L176 71 L186 57 L34 57 Z" fill="#8E949B" stroke="#6F757C" stroke-width="0.7"/>'
+    + '<rect x="46" y="80" width="62" height="32" fill="#BFC4CA" stroke="#8E949B" stroke-width="0.8"/>';
+  for (var i = 1; i < 8; i++) s += '<line x1="46" y1="' + (80 + 4 * i) + '" x2="108" y2="' + (80 + 4 * i) + '" stroke="#9EA4AB" stroke-width="0.5"/>';
+  s += '<rect x="128" y="82" width="14" height="16" fill="#8FB3D1" stroke="#7A7468" stroke-width="0.7"/>';
+  var avant = Math.ceil(n / rangs), arriere = n - avant;
+  var rangees = rangs === 2 ? [[arriere, 59, 12, 40, 172], [avant, 70, 13, 30, 166]] : [[n, 68, 20, 32, 166]];
+  rangees.forEach(function (R, r) {
+    var k = R[0], base = R[1], dy = R[2], x0 = R[3], x1 = R[4];
+    if (k < 1) return;
+    var q = [[x0, base], [x1, base], [x1 + 8, base - dy], [x0 + 8, base - dy]];
+    for (var j = 0; j <= k; j++) {
+      var xs = x0 + (x1 - x0) * j / k;
+      s += '<path d="M' + _sol_f(xs + 8) + ' ' + (base - dy + 1) + ' L' + _sol_f(xs + 9) + ' ' + base + '" stroke="#7E848B" stroke-width="0.9"/>';
+    }
+    s += _sol_panneaux(o, q, k, 0.03, 'r' + r, true);
+  });
+  return s + _sol_onduleur(o, 150, 84) + _sol_batterie(o, 178, 86, 20)
+    + '<line x1="0" y1="112.5" x2="200" y2="112.5" stroke="#6B7078" stroke-width="1"/>';
+}
+
+function _sol_balcon(o, n) {
+  /* Kit Plug & Play accroche au garde-corps : la facade, la dalle du balcon,
+   * les barreaux, les panneaux legerement inclines vers le ciel, et la
+   * prise murale ou se branche le kit. */
+  var s = _sol_halo(o, 110, 70, 70, 26) + _sol_rayons(o, [110, 72])
+    + '<rect x="18" y="34" width="44" height="78" fill="#E3DDD2" stroke="#9A948A" stroke-width="0.7"/>'
+    + '<rect x="26" y="42" width="26" height="30" fill="#8FB3D1" stroke="#7A7468" stroke-width="0.8"/>'
+    + '<path d="M39 42 L39 72" stroke="#7A7468" stroke-width="0.6"/>'
+    + '<rect x="62" y="92" width="124" height="5" fill="#B9B3A8" stroke="#8F897F" stroke-width="0.6"/>'
+    + '<line x1="62" y1="58" x2="186" y2="58" stroke="#5E646B" stroke-width="1.6"/>';
+  for (var i = 0; i <= 24; i++) s += '<line x1="' + (64 + i * 5) + '" y1="58" x2="' + (64 + i * 5) + '" y2="92" stroke="#6E747B" stroke-width="0.6"/>';
+  var larg = Math.min(34, 112 / Math.max(1, n) - 4), x = 66 + (116 - n * (larg + 4)) / 2;
+  for (var k = 0; k < n; k++) {
+    var q = [[x + 2, 96], [x + larg + 2, 96], [x + larg - 3, 60], [x - 3, 60]];
+    s += _sol_panneaux(o, q, 1, 0.02, 'b' + k, true);
+    x += larg + 4;
+  }
+  // la prise murale et son cable
+  s += '<rect x="56" y="99" width="5" height="6" rx="1" fill="#F2F2F2" stroke="#8A8F96" stroke-width="0.5"/>'
+    + '<path d="M61 102 Q70 108 78 100" fill="none" stroke="#3A3F46" stroke-width="0.9"/>';
+  return s + _sol_onduleur(o, 40, 92) + _sol_batterie(o, 20, 90, 20)
+    + '<line x1="0" y1="112.5" x2="200" y2="112.5" stroke="#6B7078" stroke-width="1"/>';
+}
+
+function _sol_carport(o, n) {
+  /* Ombriere : un toit de panneaux legerement incline sur quatre poteaux, et
+   * le vehicule qu'il abrite. */
+  var q = [[18, 50], [182, 50], [172, 34], [28, 34]];
+  var s = _sol_halo(o, 100, 40, 84, 24) + _sol_rayons(o, [100, 42])
+    + '<rect x="30" y="50" width="4" height="62" fill="#7E848B"/><rect x="166" y="50" width="4" height="62" fill="#7E848B"/>'
+    + '<rect x="44" y="48" width="3" height="64" fill="#9AA0A6"/><rect x="153" y="48" width="3" height="64" fill="#9AA0A6"/>'
+    // le vehicule
+    + '<path d="M58 106 L60 96 Q64 90 72 88 L86 82 Q94 79 106 79 L122 79 Q132 80 138 88 L146 92 Q150 94 150 100 L150 106 Z" fill="#5D6E82" stroke="#3E4A58" stroke-width="0.8"/>'
+    + '<path d="M90 84 L102 81 L118 81 L126 88 L88 88 Z" fill="#9BB7D0" opacity="0.8"/>'
+    + '<circle cx="76" cy="106" r="6" fill="#23272D"/><circle cx="134" cy="106" r="6" fill="#23272D"/>'
+    + '<circle cx="76" cy="106" r="2.4" fill="#8A9099"/><circle cx="134" cy="106" r="2.4" fill="#8A9099"/>'
+    + '<path d="M18 50 L182 50 L182 53 L18 53 Z" fill="#6F757C"/>'
+    + _sol_panneaux(o, q, n, 0.03);
+  return s + _sol_onduleur(o, 172, 72) + _sol_batterie(o, 10, 88, 22)
+    + '<line x1="0" y1="112.5" x2="200" y2="112.5" stroke="#6B7078" stroke-width="1"/>';
+}
+
+function dessinSolaire(o) {
+  /* o = {kit, panneaux, id, largeur, hauteur, niveau (0..4), nuit (bool),
+   *      onduleur ('ok' | 'veille' | 'defaut'), batterie (null | {soc,
+   *      flux: 'charge' | 'decharge' | 'repos'})} -> chaine SVG. */
+  var kit = SOLAIRE_KITS[o.kit] ? o.kit : 'toiture';
+  var lim = SOLAIRE_KITS[kit];
+  var n = Math.max(lim.min, Math.min(lim.max, Math.round(o.panneaux || lim.min)));
+  var p = {kit: kit, id: String(o.id || 'sol').replace(/[^a-zA-Z0-9_]/g, ''),
+           niveau: Math.max(0, Math.min(4, Math.round(o.niveau || 0))), nuit: !!o.nuit,
+           onduleur: o.onduleur || 'veille', batterie: o.batterie || null};
+  var corps = kit === 'balcon' ? _sol_balcon(p, n) : (kit === 'toit_plat' ? _sol_toit_plat(p, n)
+    : (kit === 'carport' ? _sol_carport(p, n) : _sol_toiture(p, n)));
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + (o.largeur || 200) + '" height="' + (o.hauteur || 120)
+    + '" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" style="display:block;overflow:visible">'
+    + _sol_defs(p) + _sol_soleil(p) + corps + '</svg>';
+}
+
+    const KITS = { balcon: [0.8, 2], toit_plat: [3, 8], toiture: [6, 14], carport: [9, 20] };
+    const NOMS = { balcon: 'Kit Plug & Play', toit_plat: 'Toit plat / garage', toiture: 'Toiture', carport: 'Ombrière' };
+    const BATT = { zendure: 'Zendure SolarFlow', enphase: 'Enphase IQ', powerwall: 'Powerwall', luna: 'Huawei LUNA' };
+    const AMBIANCES = [['soleil', 'Plein soleil'], ['nuages', 'Nuageux'], ['nuit', 'Nuit'], ['defaut', 'Défaut']];
+    function lire(p, d) { const e = document.getElementById('param-appareil_panneau_solaire-' + p); return e && e.value ? e.value : d; }
+    function nombre(p, d) { const v = parseFloat(String(lire(p, '')).replace(',', '.')); return isNaN(v) ? d : v; }
+    function dessiner(cible) {
+      const kit = lire('SOLAIRE_KIT', 'toiture'), def = KITS[kit] || KITS.toiture;
+      const kwc = nombre('SOLAIRE_PUISSANCE', def[0]), n = Math.round(nombre('SOLAIRE_PANNEAUX', def[1]));
+      const batterie = lire('SOLAIRE_BATTERIE', 'auto'), ond = lire('SOLAIRE_ONDULEUR', 'auto');
+      const amb = cible.dataset.ambiance || 'soleil';
+      const avecBat = !!BATT[batterie];
+      const o = { kit: kit, panneaux: n, id: 'apercu', largeur: 288, hauteur: 173,
+        niveau: amb === 'soleil' ? 4 : (amb === 'nuages' ? 1 : (amb === 'defaut' ? 3 : 0)),
+        nuit: amb === 'nuit', onduleur: amb === 'defaut' ? 'defaut' : (amb === 'nuit' ? 'veille' : 'ok'),
+        batterie: avecBat ? { soc: amb === 'nuit' ? 40 : 75, flux: amb === 'soleil' ? 'charge' : (amb === 'nuit' ? 'decharge' : 'repos') } : null };
+      let html;
+      try { html = dessinSolaire(o); } catch (e) { cible.textContent = ''; return; }
+      const boutons = AMBIANCES.map(a => '<button type="button" data-ambiance="' + a[0] + '" style="font:inherit;font-size:11px;'
+        + 'padding:3px 8px;border-radius:12px;cursor:pointer;border:1px solid ' + (a[0] === amb ? '#52BE80' : 'rgba(128,128,128,0.45)')
+        + ';background:' + (a[0] === amb ? 'rgba(82,190,128,0.18)' : 'transparent') + ';color:inherit">' + a[1] + '</button>').join('');
+      const tech = ond.indexOf('micro') === 0 ? 'micro-onduleurs' : (ond.indexOf('central') === 0 ? 'onduleur central' : 'onduleur détecté');
+      cible.innerHTML = '<div style="text-align:center;font-size:12px;opacity:0.8;margin:6px 0 2px">'
+        + NOMS[kit] + ' · ' + n + ' panneaux · ' + String(kwc).replace('.', ',') + ' kWc · ' + tech + (avecBat ? ' · ' + BATT[batterie] : '') + '</div>'
+        + '<div style="width:300px;margin:4px auto;padding:6px;border-radius:12px;background:rgba(0,0,0,0.35)">'
+        + '<div style="width:288px;height:173px;margin:0 auto">' + html + '</div></div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:6px 0">' + boutons + '</div>';
+      cible.querySelectorAll('button[data-ambiance]').forEach(b => b.addEventListener('click', () => {
+        cible.dataset.ambiance = b.dataset.ambiance; dessiner(cible); }));
+      const l = cible.clientWidth; cible.style.zoom = l && l < 310 ? (l / 310).toFixed(3) : '1';
+    }
+    return function (racine) { (racine || document).querySelectorAll('.apercu-solaire').forEach(dessiner); };
+  })();
+  new MutationObserver(() => {
+    document.querySelectorAll('.apercu-solaire:not([data-dessine])').forEach(c => {
+      c.setAttribute('data-dessine', '1'); dessinerSolaire(c.parentNode); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  ['change', 'input'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target && /^param-appareil_panneau_solaire-SOLAIRE_(KIT|PANNEAUX|PUISSANCE|BATTERIE|ONDULEUR)$/.test(e.target.id || '')) dessinerSolaire();
+  }));
+  /* ---------- FIN APERCU DE L'INSTALLATION ---------- */
   const PACK_APERCU = {
     securite_camera: 'camera',
     OK_service_meteo: 'meteo',
@@ -19805,7 +20313,8 @@ var VOITURE_KEYFRAMES = '@keyframes voiture-tour {'
     appareil_serpillere: 'serpillere',
     eau_piscine: 'piscine',
     service_personne: 'personne',
-    appareil_voiture: 'voiture'
+    appareil_voiture: 'voiture',
+    appareil_panneau_solaire: 'solaire'
   };
 
   function themeSite(cle) {
@@ -20424,7 +20933,9 @@ var VOITURE_KEYFRAMES = '@keyframes voiture-tour {'
     // `service_personne` ajoute le 27/09/2026 : phase de test.
     'service_personne',
     // `appareil_voiture` ajoute le 27/09/2026 : phase de test.
-    'appareil_voiture'
+    'appareil_voiture',
+    // `appareil_panneau_solaire` ajoute le 27/09/2026 : phase de test.
+    'appareil_panneau_solaire'
   ]);
 
   const PRIX_PACK = 9;
@@ -21563,6 +22074,7 @@ var VOITURE_KEYFRAMES = '@keyframes voiture-tour {'
     service_capteur: 'capteur',
     service_personne: 'personne',
     appareil_voiture: 'voiture',
+    appareil_panneau_solaire: 'solaire',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
