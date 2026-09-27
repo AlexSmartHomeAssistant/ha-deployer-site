@@ -3975,7 +3975,7 @@
       { name: 'appareil_refrigerateur', desc: 'Réfrigérateur & Dégivrage' },
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
       { name: 'appareil_serpillere', desc: 'Robot ou balai laveur, réservoirs, modes de lavage, auto-nettoyage et alertes' },
-      { name: 'appareil_sonnette', desc: 'Sonnette vidéo / Interphone' },
+      { name: 'appareil_sonnette', desc: 'Sonnette vidéo dessinée, direct, appel interactif, ouverture de la porte, carillon et journal des visites' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot vivant sur sa pelouse, batterie, planning et modes, usure des lames et alertes' },
       { name: 'appareil_voiture', desc: 'Véhicule dessiné en 360°, recharge, climatisation, sécurité, pneus et mises à jour' },
@@ -4181,6 +4181,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    appareil_sonnette: {
+      resume: `Votre sonnette vidéo dessinée à sa finition, le direct plein cadre, l'appel entrant avec ouverture de la porte, la parole et la réponse rapide, le carillon et le journal des visites.`,
+      detail: `Le tableau de bord de votre <b>sonnette connectée</b>, sur une seule carte. Vous ne nommez que l'<b>appareil</b> de la sonnette (Reolink, UniFi Protect, Ring, Nest, Eufy, Aqara, DoorBird…) : le pack retrouve seul sa caméra — celle qui rend réellement une image —, son bouton, ses détections (visiteur, colis, véhicule, animal), sa batterie ou son alimentation, son carillon, sa mélodie, son volume, sa serrure ou sa gâche, son projecteur, son infrarouge, sa carte SD, et <b>n'affiche que ce qui existe</b>. Le premier onglet montre le <b>direct</b> à côté du <b>boîtier dessiné</b> dans sa finition (noir mat, blanc céramique, gris anthracite, aluminium brossé), sa fixation et son alimentation, dont l'<b>anneau LED</b> dit l'état : jaune au passage d'un visiteur, vert quand on sonne, bleu pendant la conversation, rouge à l'arrachement. Trois boutons : <b>ouvrir</b> la porte (avec confirmation), <b>parler</b>, et la <b>réponse rapide</b> (messages préenregistrés ou synthèse vocale). Le deuxième onglet pilote l'<b>accès</b> (serrure, portail piéton ou total, garage, contact de la porte), le <b>carillon</b> (intérieur, mélodie, volume, diffusion sur les enceintes) et la <b>détection</b> (sensibilité, alertes par catégorie, projecteur, infrarouge). Le troisième tient le <b>journal des dix dernières visites</b> avec leur photo, le rejeu des clips, l'état du boîtier et les compteurs du jour et de la semaine. Dès qu'un visiteur est détecté ou qu'une conversation est en cours, la carte prend sa <b>bordure animée verte</b> et son fond s'allume.`,
+      apercu: {}
     },
     appareil_panneau_solaire: {
       resume: `Votre installation solaire dessinée et vivante, le flux d'énergie en direct, le pilotage des panneaux, de la batterie, du réseau et du routage du surplus, les prévisions et l'historique.`,
@@ -4621,6 +4626,23 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    appareil_sonnette: [
+      { titre: `Appel entrant interactif`, icone: 'fa-bell',
+        declencheur: `On appuie sur la sonnette.`,
+        action: `Notification haute priorité sur tous vos mobiles, avec la photo du moment et trois actions : Ouvrir la porte (authentification demandée), Parler, Ignorer ; puis l'annonce sur les enceintes si le carillon et la diffusion sont actifs.` },
+      { titre: `Colis déposé`, icone: 'fa-box',
+        declencheur: `Un colis est détecté devant la porte depuis 2 minutes et personne n'est à la maison.`,
+        action: `Notification avec la photo du colis.` },
+      { titre: `Mode nuit silencieux`, icone: 'fa-moon',
+        declencheur: `De 22 h 00 à 7 h 30 (heures réglables).`,
+        action: `Le carillon intérieur se tait ; les notifications des mobiles continuent.` },
+      { titre: `Éclairage d'accueil`, icone: 'fa-lightbulb',
+        declencheur: `Un appui ou un mouvement après le coucher du soleil.`,
+        action: `L'éclairage de l'entrée s'allume à 100 %.` },
+      { titre: `Journal des visites`, icone: 'fa-images',
+        declencheur: `Chaque appel ou détection.`,
+        action: `Une photo est prise et rangée dans le journal, avec l'heure et la catégorie.` }
+    ],
     appareil_panneau_solaire: [
       { titre: `Routage du surplus`, icone: 'fa-code-branch',
         declencheur: `Le surplus réinjecté dépasse le palier (1200 W par défaut) pendant 5 minutes ; ou le foyer soutire plus de 200 W pendant 5 minutes.`,
@@ -4975,6 +4997,35 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    appareil_sonnette: {
+      intro: `Trois onglets : direct, contrôle, journal. Vous nommez l'<b>appareil</b> de la sonnette ; le pack classe ses entités et <b>n'affiche que ce qui existe</b> — ce sont elles qui font la variante, de la sonnette sur batterie sans cloud jusqu'à la Reolink PoE avec carillon et serrure. La <b>finition</b>, la <b>fixation</b> et l'<b>alimentation</b> choisies ci-dessous dessinent votre boîtier.<table style=\"width:100%;border-collapse:collapse;margin:8px 0;font-size:0.92em\"><tr><th style=\"text-align:left;padding:4px;border-bottom:1px solid #52BE80\">Entité</th><th style=\"padding:4px;border-bottom:1px solid #52BE80\">Statut</th><th style=\"text-align:left;padding:4px;border-bottom:1px solid #52BE80\">Sans elle</th></tr><tr><td style=\"padding:3px 4px\">Caméra (flux vidéo)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">—</td></tr><tr><td style=\"padding:3px 4px\">Bouton de sonnette (ding, visiteur, event doorbell)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">—</td></tr><tr><td style=\"padding:3px 4px\">Batterie</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">l'alimentation affichée est « Secteur » ou « PoE »</td></tr><tr><td style=\"padding:3px 4px\">Mouvement et détections IA (visiteur, colis, véhicule, animal)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">pastille de catégorie et alerte retirées ; sans aucune, pas de sous-onglet Détection</td></tr><tr><td style=\"padding:3px 4px\">Serrure connectée ou gâche électrique</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">bouton « Ouvrir » et tuile Serrure retirés</td></tr><tr><td style=\"padding:3px 4px\">Carillon intérieur</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">un carillon LOGIQUE le remplace (diffusion, mode nuit)</td></tr><tr><td style=\"padding:3px 4px\">Mélodie, volume</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">rangée retirée</td></tr><tr><td style=\"padding:3px 4px\">Micro (communication bidirectionnelle)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">bouton « Parler » retiré</td></tr><tr><td style=\"padding:3px 4px\">Réponse rapide / haut-parleur</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">bouton « Réponse » et messages retirés</td></tr><tr><td style=\"padding:3px 4px\">Projecteur, infrarouge, sensibilité</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">tuile ou curseur retiré</td></tr><tr><td style=\"padding:3px 4px\">Sabotage (arrachement)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">capsule retirée du journal</td></tr><tr><td style=\"padding:3px 4px\">Carte SD / stockage</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">capsule retirée du journal</td></tr><tr><td style=\"padding:3px 4px\">Signal Wi-Fi</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">indicateur retiré (PoE : « PoE » à la place)</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Direct', icone: 'fa-video',
+          texte: `Le <b>flux en direct</b> à côté du <b>boîtier dessiné</b>, et les trois gestes de la porte.`,
+          elements: [
+            { nom: `Boîtier et anneau LED`, texte: `la finition, la fixation et l'alimentation choisies ; l'anneau est blanc au repos, jaune au passage d'un visiteur, vert quand on sonne, bleu pendant la conversation, rouge à l'arrachement ou batterie critique.` },
+            { nom: `Direct`, texte: `plein cadre, un appui l'agrandit ; un halo vert l'entoure pendant l'appel, un badge nomme ce que la caméra voit (Visiteur, Colis, Véhicule).` },
+            { nom: `Quatre coins`, texte: `signal Wi-Fi ou PoE, batterie ou secteur, dernier passage, état du carillon.` },
+            { nom: `Ouvrir`, texte: `serrure ou gâche, avec confirmation.` },
+            { nom: `Parler`, texte: `ouvre le direct avec micro (communication bidirectionnelle).` },
+            { nom: `Réponse rapide`, texte: `messages préenregistrés de la sonnette, ou synthèse vocale sur son haut-parleur ; les flèches choisissent le message.` },
+            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé à une détection ou pendant une conversation ; il clignote quand on sonne.` }
+          ] },
+        { titre: '2 — Contrôle', icone: 'fa-sliders',
+          texte: `Trois sous-onglets : <b>Accès</b> (serrure, portail piéton ou total, garage, contact de la porte), <b>Carillon</b> (intérieur, mélodie, volume, diffusion sur les enceintes) et <b>Détection</b> (sensibilité, alertes par catégorie — humain, animal, véhicule, colis —, projecteur, infrarouge).`,
+          elements: [
+            { nom: `Portail`, texte: `ouverture piéton ou totale quand le portail sait se positionner.` },
+            { nom: `Alertes par catégorie`, texte: `chaque pastille active ou coupe les notifications de sa catégorie ; visiteur et colis actifs par défaut.` }
+          ] },
+        { titre: '3 — Journal', icone: 'fa-clock-rotate-left',
+          texte: `Les <b>dix dernières visites</b> avec leur photo, une visionneuse et sa bande de vignettes, le <b>rejeu des clips</b> (Reolink, UniFi Protect), l'état du boîtier (sabotage, carte SD, température) et les compteurs d'appels et de passages du jour et de la semaine.`,
+          elements: [
+            { nom: `Photos`, texte: `prises par Home Assistant à chaque appel ou détection, dix en rotation.` },
+            { nom: `Compteurs`, texte: `appels et passages, aujourd'hui et cette semaine.` }
+          ] }
       ]
     },
     appareil_panneau_solaire: {
@@ -7088,6 +7139,63 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    appareil_sonnette: [
+      { param: 'SONNETTE_APPAREIL', label: `Sonnette`, type: 'text', required: true,
+        groupe: `🔔 Sonnette`,
+        placeholder: `ex : Sonnette Entrée — nom de l'appareil dans Home Assistant (ou entity_id de sa caméra)` },
+      { param: 'SONNETTE_PIECE', label: `Pièce`, type: 'text', required: false,
+        groupe: `🔔 Sonnette`, placeholder: `vide : la pièce de l'appareil` },
+      { param: 'SONNETTE_MARQUE', label: `Matériel`, type: 'select', required: false,
+        groupe: `🔔 Sonnette`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Automatique (d'après l'intégration)` },
+          { value: 'reolink', label: `Reolink` },
+          { value: 'unifi', label: `UniFi Protect` },
+          { value: 'ring', label: `Ring` },
+          { value: 'nest', label: `Google Nest` },
+          { value: 'eufy', label: `Eufy` },
+          { value: 'aqara', label: `Aqara` },
+          { value: 'doorbird', label: `DoorBird` }
+        ] },
+      { param: 'SONNETTE_ALIMENTATION', label: `Alimentation`, type: 'select', required: false,
+        groupe: `🎨 Votre sonnette`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Automatique (batterie publiée ou marque)` },
+          { value: 'batterie', label: `🔋 Batterie` },
+          { value: 'filaire', label: `🔌 Filaire 12-24 V` },
+          { value: 'poe', label: `🌐 PoE (réseau)` }
+        ] },
+      { param: 'SONNETTE_FIXATION', label: `Fixation`, type: 'select', required: false,
+        groupe: `🎨 Votre sonnette`, defaut: 'plat',
+        options: [
+          { value: 'plat', label: `À plat` },
+          { value: 'angle', label: `Support d'angle 15° / 30°` },
+          { value: 'encastree', label: `Encastrée` }
+        ] },
+      { param: 'SONNETTE_FINITION', label: `Finition`, type: 'select', required: false,
+        groupe: `🎨 Votre sonnette`, defaut: 'noir',
+        options: [
+          { value: 'noir', label: `Noir mat`, rectangle: '#2B2D31' },
+          { value: 'blanc', label: `Blanc céramique`, rectangle: '#F5F5F2' },
+          { value: 'anthracite', label: `Gris anthracite`, rectangle: '#4B5057' },
+          { value: 'alu', label: `Aluminium brossé`, rectangle: '#C8CCD1' }
+        ] },
+      { param: 'SONNETTE_APERCU', label: '', type: 'note', groupe: `🎨 Votre sonnette`,
+        texte: `<div class="apercu-sonnette"></div>` },
+      { param: 'SONNETTE_SERRURE', label: `Serrure ou gâche`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `vide : déduite de l'appareil (lock.* ou bouton de gâche)` },
+      { param: 'SONNETTE_PORTAIL', label: `Portail`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `ex : cover.portail — vide : pas de portail` },
+      { param: 'SONNETTE_GARAGE', label: `Porte de garage`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `ex : cover.garage — vide : pas de garage` },
+      { param: 'SONNETTE_CONTACT', label: `Contact de la porte`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `vide : deviné (porte d'entrée) ou retiré` },
+      { param: 'SONNETTE_ECLAIRAGE', label: `Éclairage d'accueil`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `vide : deviné (porche, perron, façade) ou retiré` },
+      { param: 'SONNETTE_ENCEINTES', label: `Enceintes (diffusion)`, type: 'text', required: false,
+        groupe: `🚪 Autour de la porte`, placeholder: `media_player.* séparés par des virgules — vide : pas de diffusion` },
+      champThemeSite('SONNETTE_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_panneau_solaire: [
       { param: 'SOLAIRE_APPAREILS', label: `Onduleur ou passerelle`, type: 'text', required: true,
         groupe: `☀️ Installation`,
@@ -8121,6 +8229,17 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    appareil_sonnette:
+      `la vue et ses trois onglets, le boîtier dessiné selon sa finition, sa `
+      + `fixation et son alimentation, l'appel normalisé, le journal des dix `
+      + `dernières visites et les compteurs, les helpers (sous-onglets, `
+      + `communication, accès, messages, alertes par catégorie, heures du mode `
+      + `nuit, carillon et volume logiques au besoin), quatre scripts (ouvrir, `
+      + `parler, réponse, diffusion) et jusqu'à sept automatismes (appel `
+      + `interactif, action Ouvrir, colis, détections, mode nuit, accueil, `
+      + `journal), en mode fictif toute une sonnette pilotable, ainsi que HACS `
+      + `et les cartes personnalisées requises (button-card, swipe-card, `
+      + `stack-in-card, card-mod).`,
     appareil_panneau_solaire:
       `la vue et ses trois onglets, l'installation dessinée selon le kit, les `
       + `capteurs normalisés (production, réseau, consommation, batterie, `
@@ -17562,6 +17681,21 @@
         }
       }
     },
+    "sonnette": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/sonnette/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/sonnette/urban-factory-defaut-1.mp4",
+            "templates/apercus/sonnette/urban-factory-defaut-2.mp4",
+            "templates/apercus/sonnette/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "televiseur": {
       "urban-factory": {
         "cartes": {
@@ -20277,6 +20411,281 @@ function dessinSolaire(o) {
     if (e.target && /^param-appareil_panneau_solaire-SOLAIRE_(KIT|PANNEAUX|PUISSANCE|BATTERIE|ONDULEUR)$/.test(e.target.id || '')) dessinerSolaire();
   }));
   /* ---------- FIN APERCU DE L'INSTALLATION ---------- */
+  /* ---------- APERCU DE LA SONNETTE (pack Sonnette, 27/09/2026) ----------
+     ECRIT PAR `_patch_index_sonnette.py` depuis `templates/appareil_sonnette/
+     dessin_sonnette.js` : la page dessine le boitier choisi avec le meme
+     code que la carte. */
+  const dessinerSonnettes = (function () {
+/* Dessin de la sonnette -- pack Appareil / Sonnette Connectee.
+ *
+ * SOURCE UNIQUE, lue par `_generer_gabarit_sonnette.py` (carte : boitier du
+ * 1er onglet) ET par `_patch_index_sonnette.py` (apercu de la page de details
+ * du site). Deux copies du dessin auraient diverge au premier ajustement. NE
+ * DECLARE QUE DES FONCTIONS ET DES TABLES : le gabarit button-card qui
+ * l'embarque les appelle ensuite.
+ *
+ * AUCUNE RESSOURCE CLIENT : `template/appareil_sonnette/`, cite par la
+ * demande, n'existait pas. Le boitier est DESSINE : quatre finitions (noir
+ * mat, blanc ceramique, gris anthracite texture, aluminium brosse), trois
+ * fixations (a plat, support d'angle biseaute, platine encastree), trois
+ * alimentations (batterie, filaire 12-24 V, PoE) -- trente-six combinaisons
+ * sans une image.
+ *
+ * L'ANNEAU LED DU BOUTON dit l'etat, dans la palette stricte du pack :
+ *   repos          blanc, tamise
+ *   mouvement      jaune #F8C471 qui respire (visiteur, colis, vehicule...)
+ *   appel          vert #52BE80, halo qui s'echappe du bouton (appel entrant)
+ *   communication  bleu #5DADE2, ondes sonores au haut-parleur
+ *   ouvert         vert fixe, cadenas ouvert (acces deverrouille)
+ *   alerte         rouge #EC7063 qui clignote (arrachement, batterie critique)
+ *   hors_ligne     gris, eteint
+ *
+ * ANIMATIONS SMIL (`<animate>`), jamais `@keyframes` : elles jouent a
+ * l'identique dans la racine d'ombre d'un button-card et sur la page du site
+ * (lecon du pack Panneau Solaire).
+ *
+ * LA SORTIE DOIT ETRE STABLE : button-card ne remplace le DOM d'un champ que
+ * si la chaine rendue CHANGE. Aucun identifiant aleatoire -- ils derivent de
+ * `id` --, et la sortie ne depend que de l'etat, jamais d'une valeur
+ * continue : sinon le halo repartirait de zero a chaque relevé.
+ */
+
+var SONNETTE_FINITIONS = {
+  noir:       {corps: '#2B2D31', face: '#18191C', bord: '#50545B', grille: '#3C3F45',
+               reflet: 'rgba(255,255,255,0.10)', texte: '#9CA2AA', motif: 'mat'},
+  blanc:      {corps: '#F5F5F2', face: '#E6E6E1', bord: '#C2C2BC', grille: '#CFCFC9',
+               reflet: 'rgba(255,255,255,0.65)', texte: '#6E7278', motif: 'laque'},
+  anthracite: {corps: '#4B5057', face: '#3B3F45', bord: '#6A7078', grille: '#565B62',
+               reflet: 'rgba(255,255,255,0.12)', texte: '#B0B5BC', motif: 'grain'},
+  alu:        {corps: '#C8CCD1', face: '#AEB3B9', bord: '#E8EAED', grille: '#979CA3',
+               reflet: 'rgba(255,255,255,0.45)', texte: '#4C5158', motif: 'brosse'}
+};
+
+var SONNETTE_LED = {
+  repos: '#FFFFFF', mouvement: '#F8C471', appel: '#52BE80', communication: '#5DADE2',
+  ouvert: '#52BE80', alerte: '#EC7063', hors_ligne: '#6B6F75'
+};
+
+function snN(x) { return Math.round(x * 10) / 10; }
+
+/* Le motif de surface : grain d'anthracite, stries d'aluminium brosse. */
+function sonnetteMotif(f, id, x, y, w, h) {
+  if (f.motif === 'brosse') {
+    var s = '';
+    for (var i = 0; i < 44; i++) {
+      var yy = snN(y + 3 + i * (h - 6) / 44);
+      s += '<line x1="' + x + '" y1="' + yy + '" x2="' + (x + w) + '" y2="' + yy
+        + '" stroke="' + (i % 2 ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.07)') + '" stroke-width="0.6"/>';
+    }
+    return s;
+  }
+  if (f.motif === 'grain') {
+    var g = '', k = 0;
+    for (var gy = y + 4; gy < y + h - 4; gy += 5) {
+      for (var gx = x + 3 + (k % 2) * 2.5; gx < x + w - 2; gx += 5) {
+        g += '<circle cx="' + snN(gx) + '" cy="' + snN(gy) + '" r="0.55" fill="rgba(255,255,255,0.10)"/>';
+      }
+      k++;
+    }
+    return g;
+  }
+  return '';
+}
+
+/* Le glyphe du bouton : une cloche. */
+function sonnetteCloche(cx, cy, couleur) {
+  return '<path d="M' + (cx - 5.5) + ' ' + (cy + 3.2) + 'h11l-1.6-2.1v-3.4a3.9 3.9 0 0 0-7.8 0v3.4z" fill="'
+    + couleur + '"/><circle cx="' + cx + '" cy="' + (cy + 4.8) + '" r="1.4" fill="' + couleur + '"/>';
+}
+
+/* Le glyphe « acces deverrouille » : un cadenas ouvert. */
+function sonnetteCadenas(cx, cy, couleur) {
+  return '<rect x="' + (cx - 4.5) + '" y="' + (cy - 1) + '" width="9" height="7" rx="1.4" fill="' + couleur + '"/>'
+    + '<path d="M' + (cx - 2.8) + ' ' + (cy - 1) + 'v-2.6a2.8 2.8 0 0 1 5.6 0" fill="none" stroke="'
+    + couleur + '" stroke-width="1.5"/>';
+}
+
+/* dessinSonnette({finition, fixation, alimentation, etat, id, infrarouge,
+ *                 largeur, hauteur}) -> '<svg ...>...</svg>'
+ *
+ * Le boitier est dessine dans un repere de 80 x 200. `fixation` :
+ *   plat      le boitier pose sur le mur, une ombre portee
+ *   angle     un support biseaute visible sur le flanc gauche (15 / 30 deg)
+ *   encastree une platine murale qui encadre le boitier, quatre vis
+ */
+function dessinSonnette(o) {
+  var f = SONNETTE_FINITIONS[o.finition] || SONNETTE_FINITIONS.noir;
+  var etat = SONNETTE_LED[o.etat] ? o.etat : 'repos';
+  var led = SONNETTE_LED[etat];
+  var id = String(o.id || 'sn').replace(/[^a-zA-Z0-9_-]/g, '');
+  var L = o.largeur || 60, H = o.hauteur || 150;
+  var fix = o.fixation || 'plat';
+  var alim = o.alimentation || 'filaire';
+  var x0 = 18, y0 = 14, w = 44, h = 172;
+  if (fix === 'encastree') { x0 = 21; y0 = 20; w = 38; h = 160; }
+  var cx = x0 + w / 2;
+  var s = '<svg viewBox="0 0 80 200" width="' + L + '" height="' + H
+    + '" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible">';
+  s += '<defs>'
+    + '<linearGradient id="' + id + 'c" x1="0" y1="0" x2="1" y2="0">'
+    + '<stop offset="0" stop-color="' + f.bord + '"/><stop offset="0.18" stop-color="' + f.corps + '"/>'
+    + '<stop offset="0.82" stop-color="' + f.corps + '"/><stop offset="1" stop-color="' + f.face + '"/></linearGradient>'
+    + '<radialGradient id="' + id + 'o" cx="0.38" cy="0.35" r="0.7">'
+    + '<stop offset="0" stop-color="#3A4452"/><stop offset="0.55" stop-color="#0D0F12"/>'
+    + '<stop offset="1" stop-color="#050506"/></radialGradient>'
+    + '<clipPath id="' + id + 'k"><rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h
+    + '" rx="' + (w / 2) + '"/></clipPath>'
+    + '</defs>';
+
+  // -- La fixation ---------------------------------------------------------
+  if (fix === 'encastree') {
+    s += '<rect x="5" y="5" width="70" height="190" rx="9" fill="' + f.face + '" stroke="' + f.bord
+      + '" stroke-width="1.2"/>'
+      + '<rect x="' + (x0 - 3) + '" y="' + (y0 - 3) + '" width="' + (w + 6) + '" height="' + (h + 6) + '" rx="'
+      + (w / 2 + 3) + '" fill="rgba(0,0,0,0.35)"/>';
+    [[11, 11], [69, 11], [11, 189], [69, 189]].forEach(function (p) {
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.2" fill="' + f.corps + '" stroke="' + f.bord
+        + '" stroke-width="0.8"/><line x1="' + (p[0] - 1.4) + '" y1="' + p[1] + '" x2="' + (p[0] + 1.4)
+        + '" y2="' + p[1] + '" stroke="' + f.bord + '" stroke-width="0.7"/>';
+    });
+  } else if (fix === 'angle') {
+    // Le flanc du support biseaute, vu de face : un trapeze plus sombre.
+    s += '<path d="M' + (x0 + 6) + ' ' + (y0 + 8) + 'L' + (x0 - 9) + ' ' + (y0 + 16) + 'L' + (x0 - 9) + ' '
+      + (y0 + h - 16) + 'L' + (x0 + 6) + ' ' + (y0 + h - 8) + 'Z" fill="' + f.face + '" stroke="' + f.bord
+      + '" stroke-width="0.8" opacity="0.95"/>'
+      + '<line x1="' + (x0 - 4) + '" y1="' + (y0 + 30) + '" x2="' + (x0 - 4) + '" y2="' + (y0 + h - 30)
+      + '" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>'
+      + '<text x="' + (x0 - 2) + '" y="' + (y0 + h / 2) + '" font-size="5.5" font-family="sans-serif" fill="'
+      + f.texte + '" text-anchor="middle" transform="rotate(-90 ' + (x0 - 2) + ' ' + (y0 + h / 2)
+      + ')">15°</text>';
+  } else {
+    s += '<rect x="' + (x0 + 3) + '" y="' + (y0 + 5) + '" width="' + w + '" height="' + h + '" rx="' + (w / 2)
+      + '" fill="rgba(0,0,0,0.30)"/>';
+  }
+
+  // -- Le corps ------------------------------------------------------------
+  s += '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + (w / 2)
+    + '" fill="url(#' + id + 'c)" stroke="' + f.bord + '" stroke-width="1"/>';
+  s += '<g clip-path="url(#' + id + 'k)">' + sonnetteMotif(f, id, x0, y0, w, h)
+    + '<rect x="' + (x0 + 4) + '" y="' + (y0 + 3) + '" width="5" height="' + (h - 6) + '" rx="2.5" fill="'
+    + f.reflet + '"/></g>';
+  // La face avant, un cran plus sombre, qui porte l'objectif.
+  s += '<rect x="' + (x0 + 5) + '" y="' + (y0 + 8) + '" width="' + (w - 10) + '" height="62" rx="'
+    + ((w - 10) / 2) + '" fill="' + f.face + '"/>';
+
+  // -- L'objectif, ses LED infrarouges, le capteur de lumiere ----------------
+  var oy = y0 + 38;
+  var ir = !!o.infrarouge;
+  for (var a = 0; a < 6; a++) {
+    var ang = (a * 60 + 30) * Math.PI / 180;
+    s += '<circle cx="' + snN(cx + Math.cos(ang) * 15.5) + '" cy="' + snN(oy + Math.sin(ang) * 15.5)
+      + '" r="1.3" fill="' + (ir ? '#EC7063' : '#3A2424') + '"' + (ir ? ' opacity="0.9"' : '') + '/>';
+  }
+  s += '<circle cx="' + cx + '" cy="' + oy + '" r="12" fill="#0B0C0E" stroke="' + f.bord + '" stroke-width="1"/>'
+    + '<circle cx="' + cx + '" cy="' + oy + '" r="8.2" fill="url(#' + id + 'o)"/>'
+    + '<circle cx="' + (cx - 2.8) + '" cy="' + (oy - 2.8) + '" r="2" fill="rgba(255,255,255,0.55)"/>'
+    + '<circle cx="' + (cx + 3) + '" cy="' + (oy + 3) + '" r="0.9" fill="rgba(120,170,255,0.5)"/>';
+  s += '<circle cx="' + (cx - 7) + '" cy="' + (y0 + 62) + '" r="1.2" fill="#0B0C0E"/>'
+    + '<circle cx="' + (cx + 7) + '" cy="' + (y0 + 62) + '" r="1.2" fill="#0B0C0E"/>';
+
+  // -- Le haut-parleur (grille) et ses ondes en communication ----------------
+  var gy = y0 + 84;
+  for (var r = 0; r < 4; r++) {
+    for (var c = 0; c < 5; c++) {
+      s += '<circle cx="' + snN(cx - 10 + c * 5) + '" cy="' + snN(gy + r * 5) + '" r="1.25" fill="' + f.grille
+        + '" stroke="rgba(0,0,0,0.35)" stroke-width="0.4"/>';
+    }
+  }
+  if (etat === 'communication') {
+    [0, 1].forEach(function (i) {
+      s += '<path d="M' + (x0 + w + 3) + ' ' + (gy + 2) + 'a' + (8 + i * 5) + ' ' + (8 + i * 5) + ' 0 0 1 0 '
+        + (11 + i * 0) + '" fill="none" stroke="' + led + '" stroke-width="1.6" stroke-linecap="round" opacity="0">'
+        + '<animate attributeName="opacity" values="0;1;0" dur="1.2s" begin="' + (i * 0.4) + 's" repeatCount="indefinite"/></path>'
+        + '<path d="M' + (x0 - 3) + ' ' + (gy + 2) + 'a' + (8 + i * 5) + ' ' + (8 + i * 5) + ' 0 0 0 0 11"'
+        + ' fill="none" stroke="' + led + '" stroke-width="1.6" stroke-linecap="round" opacity="0">'
+        + '<animate attributeName="opacity" values="0;1;0" dur="1.2s" begin="' + (i * 0.4) + 's" repeatCount="indefinite"/></path>';
+    });
+  }
+
+  // -- Le bouton et son anneau LED --------------------------------------------
+  var by = y0 + h - 40;
+  if (etat === 'appel') {
+    [0, 1].forEach(function (i) {
+      s += '<circle cx="' + cx + '" cy="' + by + '" r="16" fill="none" stroke="' + led + '" stroke-width="2.4" opacity="0">'
+        + '<animate attributeName="r" values="16;31" dur="1.4s" begin="' + (i * 0.7) + 's" repeatCount="indefinite"/>'
+        + '<animate attributeName="opacity" values="0.9;0" dur="1.4s" begin="' + (i * 0.7) + 's" repeatCount="indefinite"/>'
+        + '</circle>';
+    });
+  }
+  var anim = '';
+  if (etat === 'appel') anim = '<animate attributeName="opacity" values="1;0.35;1" dur="0.7s" repeatCount="indefinite"/>';
+  else if (etat === 'mouvement') anim = '<animate attributeName="opacity" values="1;0.45;1" dur="2.2s" repeatCount="indefinite"/>';
+  else if (etat === 'alerte') anim = '<animate attributeName="opacity" values="1;0.1;1" dur="0.8s" calcMode="discrete" repeatCount="indefinite"/>';
+  else if (etat === 'communication') anim = '<animate attributeName="opacity" values="1;0.6;1" dur="1.2s" repeatCount="indefinite"/>';
+  var repos = etat === 'repos' || etat === 'hors_ligne';
+  s += '<circle cx="' + cx + '" cy="' + by + '" r="15.5" fill="none" stroke="' + led + '" stroke-width="3.2" opacity="'
+    + (repos ? (etat === 'hors_ligne' ? '0.35' : '0.55') : '1') + '">' + anim + '</circle>';
+  if (!repos) {
+    s += '<circle cx="' + cx + '" cy="' + by + '" r="15.5" fill="none" stroke="' + led
+      + '" stroke-width="7" opacity="0.18"/>';
+  }
+  s += '<circle cx="' + cx + '" cy="' + by + '" r="12.2" fill="' + f.face + '" stroke="' + f.bord + '" stroke-width="0.8"/>';
+  var glyphe = etat === 'ouvert' ? '#52BE80' : (f.motif === 'laque' || f.motif === 'brosse' ? '#5B6068' : '#C9CDD2');
+  s += etat === 'ouvert' ? sonnetteCadenas(cx, by, glyphe) : sonnetteCloche(cx, by - 1, glyphe);
+
+  // -- L'alimentation, gravee en bas du boitier -------------------------------
+  var ay = y0 + h - 12;
+  if (alim === 'batterie') {
+    s += '<rect x="' + (cx - 6) + '" y="' + (ay - 3.5) + '" width="11" height="6" rx="1.2" fill="none" stroke="'
+      + f.texte + '" stroke-width="0.9"/><rect x="' + (cx + 5.2) + '" y="' + (ay - 1.6) + '" width="1.4" height="2.2" fill="'
+      + f.texte + '"/><rect x="' + (cx - 4.8) + '" y="' + (ay - 2.3) + '" width="6.5" height="3.6" fill="' + f.texte + '"/>';
+  } else if (alim === 'poe') {
+    s += '<text x="' + cx + '" y="' + (ay + 2) + '" font-size="6.5" font-weight="700" font-family="sans-serif" fill="#5DADE2"'
+      + ' text-anchor="middle">PoE</text>';
+  } else {
+    s += '<text x="' + cx + '" y="' + (ay + 2) + '" font-size="5.2" font-weight="700" font-family="sans-serif" fill="'
+      + f.texte + '" text-anchor="middle">12-24V</text>';
+  }
+  s += '</svg>';
+  return s;
+}
+
+    const ETATS = [['repos', 'Repos'], ['mouvement', 'Visiteur'], ['appel', 'Appel'],
+      ['communication', 'Parole'], ['ouvert', 'Ouvert'], ['alerte', 'Alerte']];
+    const NOMS = {"noir": "Noir mat", "blanc": "Blanc céramique", "anthracite": "Gris anthracite", "alu": "Aluminium brossé"};
+    const FIX = { plat: 'à plat', angle: "sur support d'angle", encastree: 'encastrée' };
+    const ALIM = { batterie: 'batterie', filaire: 'filaire 12-24 V', poe: 'PoE' };
+    function lire(p, d) { const e = document.getElementById('param-appareil_sonnette-' + p); return e && e.value ? e.value : d; }
+    function dessiner(cible) {
+      const finition = lire('SONNETTE_FINITION', 'noir');
+      const fixation = lire('SONNETTE_FIXATION', 'plat');
+      let alim = lire('SONNETTE_ALIMENTATION', 'auto');
+      if (alim === 'auto') alim = { reolink: 'poe', unifi: 'poe', doorbird: 'poe', aqara: 'filaire' }[lire('SONNETTE_MARQUE', 'auto')] || 'batterie';
+      const etat = cible.dataset.etat || 'repos';
+      let html;
+      try { html = dessinSonnette({ finition: finition, fixation: fixation, alimentation: alim, etat: etat, id: 'apercu-sn', infrarouge: false, largeur: 72, hauteur: 180 }); }
+      catch (e) { cible.textContent = ''; return; }
+      const boutons = ETATS.map(v => '<button type="button" data-etat="' + v[0] + '" style="font:inherit;font-size:11px;'
+        + 'padding:3px 8px;border-radius:12px;cursor:pointer;border:1px solid ' + (v[0] === etat ? '#52BE80' : 'rgba(128,128,128,0.45)')
+        + ';background:' + (v[0] === etat ? 'rgba(82,190,128,0.18)' : 'transparent') + ';color:inherit">' + v[1] + '</button>').join('');
+      cible.innerHTML = '<div style="text-align:center;font-size:12px;opacity:0.8;margin:6px 0 2px">'
+        + (NOMS[finition] || finition) + ' · ' + (FIX[fixation] || fixation) + ' · ' + (ALIM[alim] || alim) + '</div>'
+        + '<div style="width:120px;margin:4px auto;padding:8px 0;border-radius:12px;background:rgba(0,0,0,0.35)">'
+        + '<div style="width:72px;height:180px;margin:0 auto">' + html + '</div></div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:6px 0">' + boutons + '</div>';
+      cible.querySelectorAll('button[data-etat]').forEach(b => b.addEventListener('click', () => {
+        cible.dataset.etat = b.dataset.etat; dessiner(cible); }));
+    }
+    return function (racine) { (racine || document).querySelectorAll('.apercu-sonnette').forEach(dessiner); };
+  })();
+  new MutationObserver(() => {
+    document.querySelectorAll('.apercu-sonnette:not([data-dessine])').forEach(c => {
+      c.setAttribute('data-dessine', '1'); dessinerSonnettes(c.parentNode); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  ['change', 'input'].forEach(ev => document.addEventListener(ev, e => {
+    if (e.target && /^param-appareil_sonnette-SONNETTE_(FINITION|FIXATION|ALIMENTATION|MARQUE)$/.test(e.target.id || '')) dessinerSonnettes();
+  }));
+  /* ---------- FIN APERCU DE LA SONNETTE ---------- */
   const PACK_APERCU = {
     securite_camera: 'camera',
     OK_service_meteo: 'meteo',
@@ -20314,7 +20723,8 @@ function dessinSolaire(o) {
     eau_piscine: 'piscine',
     service_personne: 'personne',
     appareil_voiture: 'voiture',
-    appareil_panneau_solaire: 'solaire'
+    appareil_panneau_solaire: 'solaire',
+    appareil_sonnette: 'sonnette'
   };
 
   function themeSite(cle) {
@@ -20935,7 +21345,9 @@ function dessinSolaire(o) {
     // `appareil_voiture` ajoute le 27/09/2026 : phase de test.
     'appareil_voiture',
     // `appareil_panneau_solaire` ajoute le 27/09/2026 : phase de test.
-    'appareil_panneau_solaire'
+    'appareil_panneau_solaire',
+    // `appareil_sonnette` ajoute le 27/09/2026 : phase de test.
+    'appareil_sonnette'
   ]);
 
   const PRIX_PACK = 9;
@@ -22075,6 +22487,7 @@ function dessinSolaire(o) {
     service_personne: 'personne',
     appareil_voiture: 'voiture',
     appareil_panneau_solaire: 'solaire',
+    appareil_sonnette: 'sonnette',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
