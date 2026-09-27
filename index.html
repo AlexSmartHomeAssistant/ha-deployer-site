@@ -3009,6 +3009,22 @@
       font-size: 0.85rem; line-height: 1.45; background: var(--bg-card-hover, rgba(127,127,127,0.12)); }
     .verif-antenne.verif-echec { border: 1px solid #EC7063; color: var(--text-main); }
     .verif-antenne.verif-echec i { color: #EC7063; }
+  .param-avatar { grid-column: 1 / -1; }
+  .avatar-depot { display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    padding: 8px 14px; border-radius: 10px; border: 1px dashed var(--primary-blue);
+    color: var(--primary-blue); font-weight: 600; margin: 4px 0 8px; }
+  .avatar-apercus { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .avatar-apercus figure { margin: 0; text-align: center; }
+  .avatar-apercus canvas { width: 120px; height: 120px; border-radius: 50%;
+    background: repeating-conic-gradient(rgba(128,128,128,.25) 0% 25%, transparent 0% 50%) 50% / 16px 16px;
+    border: 3px solid #52BE80; }
+  .avatar-apercus figcaption { font-size: 12px; opacity: .75; margin-top: 4px; }
+  .avatar-apercus > i { font-size: 22px; color: #BF71B2; }
+  .avatar-etat { font-size: 12px; opacity: .85; margin-top: 6px; }
+  .grille-entites { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+  .grille-entites th, .grille-entites td { border: 1px solid rgba(128,128,128,.35); padding: 6px 8px;
+    vertical-align: top; text-align: left; }
+  .grille-entites th { background: rgba(82,190,128,.15); }
 </style>
 </head>
 <body>
@@ -3971,7 +3987,7 @@
       { name: 'service_boite_aux_lettres', desc: 'Courrier et colis comptés et notifiés.' },
       { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
       { name: 'service_gestion_dechets', desc: 'Poubelles, compte à rebours et déchèterie' },
-      { name: 'service_person', desc: 'Présence des résidents' },
+      { name: 'service_personne', desc: 'Avatar, présence, batteries, brossage, trajet, agenda et santé' },
       { name: 'service_transport', desc: 'Horaires transports en commun' }
     ],
     eau: [
@@ -4035,7 +4051,7 @@
     service_capteur: 'Capteur d\'Ambiance',
     appareil_compteur_electricite: 'Compteur Électrique',
     service_gestion_dechets: 'Gestion des Déchets',
-    service_person: 'Présence',
+    service_personne: 'Personne',
     service_transport: 'Transports',
     eau_compteur: 'Compteur d\'Eau',
     eau_detecteur_fuite: 'Détecteur de Fuite',
@@ -4093,7 +4109,7 @@
     // Volontairement pas fa-trash : c'est l'icône du bouton « retirer », juste
     // à côté sur la même ligne du panier.
     service_gestion_dechets: 'fa-recycle',
-    service_person: 'fa-user-group',
+    service_personne: 'fa-user-group',
     service_transport: 'fa-bus',
     eau_compteur: 'fa-droplet',
     eau_detecteur_fuite: 'fa-house-flood-water',
@@ -4165,6 +4181,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    service_personne: {
+      resume: `Chaque membre du foyer en avatar cartoon : présence, batteries, brossage, pas, trajet, agenda et santé.`,
+      detail: `Le tableau de bord d'une <b>personne</b> du foyer. Téléversez sa photo : le site la <b>détoure</b> et la transforme en <b>avatar cartoon 2D</b>, directement dans votre navigateur. Vous ne désignez ensuite que la <b>personne</b> dans Home Assistant : le pack retrouve seul son téléphone et sa montre (application Companion), sa brosse à dents connectée, sa balance, son agenda, et <b>n'affiche que ce qui existe</b>. Le premier onglet place l'avatar au centre, cerclé de la couleur du lieu &mdash; vert à la maison, bleu au travail ou à l'école, ambre ailleurs &mdash;, avec aux quatre coins la batterie du téléphone et le Wi-Fi, la batterie de la montre, les pas du jour et les brossages validés, puis le prochain rendez-vous et le <b>temps de trajet</b> vers la destination opposée (Waze, sans clé). Le deuxième onglet ouvre sept sous-onglets : énergie des terminaux, trajet multimodal, <b>mâchoire</b> et quadrants brossés, activité, carte du jour, agenda des 48 heures, santé. Le troisième propose les raccourcis &mdash; faire sonner le téléphone, trois messages rapides, <b>SOS</b> &mdash;, la frise de la journée, un score et la fiche d'urgence. La bordure est <b>multicolore</b> à la maison ; un événement clé (brossage validé, objectif de pas atteint, téléphone en charge) allume le serpentin et le fond multicolores. Profils Adulte, Enfant et Senior.`,
+      apercu: {}
     },
     eau_piscine: {
       resume: `Votre piscine dessinée telle qu'elle est — forme, type, finition —, vivante : remous et bulles quand la filtration tourne, volet, éclairage de sa vraie couleur, robot nettoyeur. Filtration réglée sur la température, chimie de l'eau, pompe à chaleur, hivernage.`,
@@ -4590,6 +4611,23 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    service_personne: [
+      { titre: `Rappel brossage du soir`, icone: 'fa-tooth',
+        declencheur: `À 21 h 30, si aucun brossage n'a été compté depuis 18 h (brosse connectée).`,
+        action: `Notification interactive sur le téléphone de la personne ; « Plus tard » renvoie le rappel quinze minutes après.` },
+      { titre: `Batterie faible hors domicile`, icone: 'fa-battery-quarter',
+        declencheur: `La batterie du téléphone passe sous 15 % alors que la personne n'est pas à la maison.`,
+        action: `Alerte sur son téléphone, avec le niveau mesuré.` },
+      { titre: `Trafic inhabituel au retour`, icone: 'fa-car',
+        declencheur: `Quinze minutes avant l'heure habituelle de départ du travail, si le trajet vers la maison dépasse de 30 % le trajet habituel.`,
+        action: `Notification avec le temps de trajet du jour et le trajet habituel.` },
+      { titre: `Bienvenue à la maison`, icone: 'fa-house-chimney',
+        declencheur: `Arrivée à la maison après plus de quatre heures d'absence (enceinte et synthèse vocale requises).`,
+        action: `Message d'accueil prononcé sur l'enceinte du salon, avec le prochain rendez-vous.` },
+      { titre: `SOS`, icone: 'fa-triangle-exclamation',
+        declencheur: `Appui confirmé sur le bouton SOS de la carte.`,
+        action: `Alerte critique sur tous les mobiles du foyer et notification persistante avec la position et la fiche d'urgence.` }
+    ],
     eau_piscine: [
       { titre: `Temps de filtration dynamique`, icone: 'fa-rotate',
         declencheur: `Toutes les cinq minutes, et à chaque changement de mode, d'heure pivot ou d'état de gel.`,
@@ -4896,6 +4934,39 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    service_personne: {
+      intro: `Trois onglets : présence, détails, journée. <b>Obligatoires</b> : une entité <code>person.*</code> (ou <code>device_tracker.*</code>) et la <b>batterie de son téléphone</b> (application Companion de Home Assistant). <b>Facultatifs</b> &mdash; retrouvés seuls, et <b>ce sont eux qui font la variante</b> : montre connectée, Wi-Fi, mode ne pas déranger, type de chargeur ; pas, distance et calories (Health Connect / Fitbit) ; brosse à dents connectée (Oral-B, Philips Sonicare) ; agenda <code>calendar.*</code> ; balance connectée (Withings), température, fréquence cardiaque, sommeil, hydratation. Le <b>profil</b> (Adulte, Enfant / Ado, Senior) règle les objectifs et les sous-onglets : un enfant n'a ni trajet ni santé, sa destination est l'école.
+        <table class="grille-entites"><tr><th>Obligatoires</th><th>Facultatives</th></tr>
+        <tr><td><code>person.*</code> ou <code>device_tracker.*</code><br>batterie du smartphone</td>
+        <td>montre connectée · brosse à dents connectée · capteur de pas · agenda · capteur Wi-Fi · balance connectée · données de santé</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: '1 — Présence', icone: 'fa-user',
+          texte: `L'<b>avatar</b> au centre, cerclé de la couleur du lieu (vert maison, bleu travail / école, ambre ailleurs, gris inconnu) avec un halo qui respire, et son <b>badge de lieu</b> dessous. Aux quatre coins : batterie du téléphone et Wi-Fi, batterie de la montre, anneau des pas du jour vers l'objectif, brossages validés. En bas, le prochain rendez-vous et le temps de trajet vers la destination opposée. Rien ne bouge quand une entité manque : elle n'est simplement pas dessinée.`,
+          elements: [
+            { nom: `Avatar et lieu`, texte: `cartoon détouré ; anneau et badge à la couleur du lieu ; éclair animé quand le téléphone charge.` },
+            { nom: `Batteries`, texte: `téléphone et montre en vert, ambre sous 50 %, rouge clignotant sous 15 %.` },
+            { nom: `Pas`, texte: `anneau de progression vers l'objectif du profil (8 000, 12 000 ou 6 000 pas).` },
+            { nom: `Brossage`, texte: `séances du jour sur l'objectif ; vert et « Validé » une fois atteint, la brosse vibre pendant le brossage.` },
+            { nom: `Agenda et trajet`, texte: `prochain rendez-vous (heure et titre) et minutes de voiture vers la maison, ou vers le travail depuis la maison.` },
+            { nom: `Bordure`, texte: `multicolore à la maison, bleue au travail, sombre ailleurs ; serpentin et fond multicolores lors d'un événement clé.` }
+          ] },
+        { titre: '2 — Détails', icone: 'fa-layer-group',
+          texte: `Sept sous-onglets, choisis par des pastilles : <b>Énergie</b> (batterie du téléphone et de la montre de minuit à 23 h 59, chargeur, ne pas déranger), <b>Trajet</b> (voiture en temps réel, à pied et à vélo estimés, transports si vous en suivez), <b>Dents</b> (mâchoire dont chaque quadrant s'éclaircit à mesure qu'il est brossé, durée du dernier brossage et objectif de 2 minutes, mode, pression), <b>Activité</b> (pas par heure, sept derniers jours, cumul et moyenne, distance et calories), <b>Carte</b> (positions du jour), <b>Agenda</b> (rendez-vous des 48 heures), <b>Santé</b> (poids et tendance, température, fréquence cardiaque, sommeil, hydratation). Un sous-onglet sans données n'apparaît pas.`,
+          elements: [
+            { nom: `Pastilles`, texte: `une par sous-onglet disponible ; la pastille active est blanche et pulse.` },
+            { nom: `Mâchoire`, texte: `les quatre quadrants passent de « très sale » à « propre » à 15 puis 30 secondes de brossage ; celui qui est brossé pulse.` },
+            { nom: `Trajet`, texte: `temps de voiture Waze, estimations à pied (5 km/h) et à vélo (15 km/h) sur la distance, « trafic » au-delà de 30 % du trajet habituel.` }
+          ] },
+        { titre: '3 — Journée', icone: 'fa-list-check',
+          texte: `Les <b>raccourcis</b> : faire sonner le téléphone au volume maximal, trois messages rapides (« À table ! », « Appelle-moi », « Rentre vite ») envoyés en notification &mdash; et à voix haute sur l'enceinte du salon si la personne est à la maison &mdash;, et le bouton <b>SOS</b> qui prévient tout le foyer. La <b>frise</b> de la journée : réveil, départ, arrivée au travail ou à l'école, déjeuner, brossage du soir. Le <b>score</b> du jour (pas, brossage, sommeil, hydratation) et la <b>fiche d'urgence</b> (contact, groupe sanguin).`,
+          elements: [
+            { nom: `Sonner, messages, SOS`, texte: `chacun demande une confirmation avant de partir.` },
+            { nom: `Frise`, texte: `chaque étape validée passe au vert avec son heure ; la suivante respire.` },
+            { nom: `Score`, texte: `moyenne des objectifs disponibles, vert au-dessus de 80 %.` }
+          ] }
       ]
     },
     eau_piscine: {
@@ -6915,6 +6986,39 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    service_personne: [
+      { param: 'PERSONNE_ENTITE', label: `Personne suivie`, type: 'text', required: true,
+        groupe: `👤 Personne`,
+        placeholder: `ex : person.alex — ou le nom affiché dans Paramètres > Personnes` },
+      { param: 'PERSONNE_NOM', label: `Nom affiché`, type: 'text', required: false,
+        groupe: `👤 Personne`, placeholder: `vide : le nom de la personne dans Home Assistant` },
+      { param: 'PERSONNE_PROFIL', label: `Profil`, type: 'select', required: false,
+        groupe: `👤 Personne`, defaut: 'adulte',
+        options: [
+          { value: 'adulte', label: 'Adulte (travail, trajet, santé)' },
+          { value: 'enfant', label: 'Enfant / Ado (école, brossage, batterie)' },
+          { value: 'senior', label: 'Senior (sorties, santé, SOS)' }
+        ] },
+      { param: 'PERSONNE_AVATAR', label: `Avatar cartoon`, type: 'avatar', required: false,
+        groupe: `🎨 Avatar` },
+      { param: 'PERSONNE_URGENCE', label: `Contact d'urgence`, type: 'text', required: false,
+        groupe: `🚑 Fiche d'urgence`, placeholder: `ex : Samira 06 12 34 56 78` },
+      { param: 'PERSONNE_GROUPE', label: `Groupe sanguin`, type: 'select', required: false,
+        groupe: `🚑 Fiche d'urgence`, defaut: '',
+        options: [{ value: '', label: '— non renseigné —' }].concat(
+          ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'].map(g => ({ value: g, label: g }))) },
+      { param: 'PERSONNE_MONTRE', label: `Montre connectée`, type: 'text', required: false,
+        groupe: `🔧 Corrections (facultatif)`, placeholder: `vide : trouvée par le pack` },
+      { param: 'PERSONNE_BROSSE', label: `Brosse à dents`, type: 'text', required: false,
+        groupe: `🔧 Corrections (facultatif)`, placeholder: `vide : Oral-B / Sonicare à son nom` },
+      { param: 'PERSONNE_POIDS', label: `Balance (poids)`, type: 'text', required: false,
+        groupe: `🔧 Corrections (facultatif)`, placeholder: `vide : trouvée par le pack` },
+      { param: 'PERSONNE_AGENDA', label: `Agenda`, type: 'text', required: false,
+        groupe: `🔧 Corrections (facultatif)`, placeholder: `ex : calendar.abdou` },
+      { param: 'PERSONNE_ENCEINTE', label: `Enceinte d'accueil`, type: 'text', required: false,
+        groupe: `🔧 Corrections (facultatif)`, placeholder: `vide : enceinte du salon` },
+      champThemeSite('PERSONNE_THEME', 'urban-factory', `🎨 Avatar`)
+    ],
     eau_piscine: [
       { param: 'PISCINE_APPAREILS', label: `Équipements de la piscine`, type: 'text',
         required: true, groupe: `🏊 Équipements`,
@@ -7805,6 +7909,16 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    service_personne:
+      `la vue et ses trois onglets, l'avatar cartoon détouré depuis la photo `
+      + `téléversée, les capteurs du pack (brossages du jour et quadrants, frise de `
+      + `la journée, agenda des 48 heures, cumul des pas sur sept jours, tendance `
+      + `du poids), les trajets Waze vers la maison et le travail, les objectifs du `
+      + `profil, la fiche d'urgence, trois scripts (sonner, message, SOS) et `
+      + `quatre automatismes (rappel de brossage, batterie faible hors domicile, `
+      + `trafic inhabituel, accueil vocal), en mode fictif une personne entière `
+      + `et pilotable, ainsi que HACS et les cartes personnalisées requises `
+      + `(button-card, apexcharts-card, swipe-card, stack-in-card, card-mod).`,
     eau_piscine:
       `la vue et ses trois onglets, le bassin dessiné selon sa forme, son type et `
       + `sa finition, les helpers (mode de filtration, heure pivot, seuils de `
@@ -8086,6 +8200,21 @@
          jamais rempli -- ni laisse vide en connaissance de cause. */
       if (c.type === 'note') {
         return `<div class="param-champ param-note">${c.texte}</div>`;
+      }
+      if (c.type === 'avatar') {
+        return `<div class="param-champ param-avatar"><span class="param-label">${c.label}</span>
+          <input type="hidden" id="${id}" value="">
+          <label class="avatar-depot" for="${id}-fichier"><i class="fa-solid fa-camera"></i>
+            <span>Choisir une photo (visage bien éclairé, de face)</span></label>
+          <input type="file" accept="image/*" id="${id}-fichier" style="display:none"
+                 onchange="traiterAvatar('${id}', this)">
+          <div class="avatar-apercus">
+            <figure><canvas id="${id}-avant" width="160" height="160"></canvas><figcaption>Photo</figcaption></figure>
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <figure><canvas id="${id}-apres" width="160" height="160"></canvas><figcaption>Avatar</figcaption></figure>
+          </div>
+          <div class="avatar-etat" id="${id}-etat">Facultatif : sans photo, la carte reprend l'image de la personne dans Home Assistant.</div>
+        </div>`;
       }
       if (c.type === 'checkboxes') {
         const cases = c.options.map((o, i) =>
@@ -15571,6 +15700,21 @@
         }
       }
     },
+    "personne": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/personne/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/personne/urban-factory-defaut-1.mp4",
+            "templates/apercus/personne/urban-factory-defaut-2.mp4",
+            "templates/apercus/personne/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
     "piscine": {
       "urban-factory": {
         "cartes": {
@@ -19014,7 +19158,8 @@
     appareil_tondeuse: 'tondeuse',
     appareil_aspirateur: 'aspirateur',
     appareil_serpillere: 'serpillere',
-    eau_piscine: 'piscine'
+    eau_piscine: 'piscine',
+    service_personne: 'personne'
   };
 
   function themeSite(cle) {
@@ -19629,7 +19774,9 @@
     // `appareil_serpillere` ajoute le 26/09/2026 : phase de test.
     'appareil_serpillere',
     // `eau_piscine` ajoute le 26/09/2026 : phase de test.
-    'eau_piscine'
+    'eau_piscine',
+    // `service_personne` ajoute le 27/09/2026 : phase de test.
+    'service_personne'
   ]);
 
   const PRIX_PACK = 9;
@@ -20105,9 +20252,26 @@
       return;
     }
 
+    const avecAvatar = cart.some(item => Object.values(item.params || {}).some(v =>
+      typeof v === 'string' && v.indexOf('ha_deploy_avatar_') === 0));
+    if (avecAvatar && avatarsDeposesPour !== url + '|' + token) {
+      const zone = document.getElementById('checkout-verif');
+      const bouton = document.getElementById('btn-confirmer-payer');
+      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Dépôt de l\u2019avatar sur votre instance…</div>';
+      if (bouton) bouton.disabled = true;
+      deposerAvatars(url, token).then(res => {
+        if (bouton) bouton.disabled = false;
+        avatarsDeposesPour = url + '|' + token;
+        if (zone) zone.innerHTML = res.ok ? '' : '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> Avatar non déposé (' + res.message + ') : la carte reprendra l\u2019image de la personne dans Home Assistant.</div>';
+        confirmPayment();
+      });
+      return;
+    }
+
     cartModalStep = 'payment';
     renderCartModalBody();
   }
+  let avatarsDeposesPour = '';
 
   /* =====================================================================
      DÉPLOIEMENT — confié au serveur
@@ -20749,7 +20913,7 @@
     // « Service » : jauges circulaires, diagnostic de confort, point de rosee
     // et tendance barometrique.
     service_capteur: 'capteur',
-    service_person: 'personne',
+    service_personne: 'personne',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
@@ -21285,6 +21449,256 @@
   /* { ok: true, antenne } ou { ok: false, message }. Une verification
      IMPOSSIBLE (instance injoignable, jeton refuse, pas de Supervisor) bloque
      aussi : on ne vend pas un pack dont on ne sait pas s'il pourra servir. */
+  /* ---------- AVATAR CARTOON DU PACK PERSONNE (27/09/2026) ----------
+     Tout se passe DANS LE NAVIGATEUR : la photo ne quitte pas l'ordinateur du
+     visiteur avant la commande.
+       1. DETOURAGE : segmentation « selfie multiclasse » de MediaPipe (le
+          modele officiel de Google, charge a la demande). Il separe la
+          personne (cheveux, visage, corps, vetements) du decor.
+       2. RECADRAGE sur le haut du corps : la boite de la silhouette, centree
+          sur le visage, carree -- l'avatar est vu en buste, comme un Bitmoji.
+       3. STYLISATION 2D : lissage qui preserve les contours (filtre de
+          Kuwahara), aplats de couleurs (quantification sur une palette de
+          douze teintes), traits d'encre (contours de Sobel assombris), et
+          LISERE BLANC autour de la silhouette -- l'effet autocollant.
+     C'est une stylisation algorithmique, pas un dessin genere par une IA :
+     elle garde les traits de la personne et la reconnaissance du visage.
+     Le resultat (400 x 400, PNG a fond transparent) est garde dans le
+     navigateur sous une cle `ha_deploy_avatar_*` ; a la commande, il est
+     depose sur l'instance (`frontend/set_user_data`), ou le runner le reprend
+     et le publie en /local/images/personnes/<nom>.png. */
+  const MEDIAPIPE_VISION = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+  const MODELE_SEGMENTATION = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite';
+  let segmenteurAvatar = null;
+
+  async function chargerSegmenteur() {
+    if (segmenteurAvatar) return segmenteurAvatar;
+    const vision = await import(MEDIAPIPE_VISION + '/vision_bundle.mjs');
+    const fichiers = await vision.FilesetResolver.forVisionTasks(MEDIAPIPE_VISION + '/wasm');
+    segmenteurAvatar = await vision.ImageSegmenter.createFromOptions(fichiers, {
+      baseOptions: { modelAssetPath: MODELE_SEGMENTATION },
+      runningMode: 'IMAGE', outputCategoryMask: false, outputConfidenceMasks: true
+    });
+    return segmenteurAvatar;
+  }
+
+  function lireImage(fichier) {
+    return new Promise((ok, ko) => {
+      const img = new Image();
+      img.onload = () => ok(img);
+      img.onerror = () => ko(new Error('image illisible'));
+      img.src = URL.createObjectURL(fichier);
+    });
+  }
+
+  /* Masque de premier plan (0..1) de la taille de l'image : 1 - fond. */
+  async function masquePersonne(canvas) {
+    try {
+      const seg = await chargerSegmenteur();
+      const res = seg.segment(canvas);
+      const fond = res.confidenceMasks[0].getAsFloat32Array();
+      const m = new Float32Array(fond.length);
+      for (let i = 0; i < fond.length; i++) m[i] = 1 - fond[i];
+      res.close && res.close();
+      return { masque: m, detoure: true };
+    } catch (e) {
+      /* Sans le modele (hors ligne, navigateur trop ancien) : un disque
+         centre, pour que l'avatar existe quand meme -- et on le dit. */
+      const w = canvas.width, h = canvas.height, m = new Float32Array(w * h);
+      const r = Math.min(w, h) * 0.46;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const d = Math.hypot(x - w / 2, y - h * 0.46);
+        m[y * w + x] = d < r ? 1 : Math.max(0, 1 - (d - r) / 6);
+      }
+      return { masque: m, detoure: false };
+    }
+  }
+
+  function kuwahara(src, w, h, r) {
+    const out = new Uint8ClampedArray(src.length);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let meilleur = 1e9, mr = 0, mg = 0, mb = 0;
+      for (const [dx0, dy0] of [[-r, -r], [0, -r], [-r, 0], [0, 0]]) {
+        let n = 0, sr = 0, sg = 0, sb = 0, sl = 0, sl2 = 0;
+        for (let dy = dy0; dy <= dy0 + r; dy++) {
+          const yy = Math.min(h - 1, Math.max(0, y + dy));
+          for (let dx = dx0; dx <= dx0 + r; dx++) {
+            const xx = Math.min(w - 1, Math.max(0, x + dx));
+            const k = (yy * w + xx) * 4;
+            const R = src[k], G = src[k + 1], B = src[k + 2];
+            const l = 0.299 * R + 0.587 * G + 0.114 * B;
+            sr += R; sg += G; sb += B; sl += l; sl2 += l * l; n++;
+          }
+        }
+        const v = sl2 / n - (sl / n) * (sl / n);
+        if (v < meilleur) { meilleur = v; mr = sr / n; mg = sg / n; mb = sb / n; }
+      }
+      const k = (y * w + x) * 4;
+      out[k] = mr; out[k + 1] = mg; out[k + 2] = mb; out[k + 3] = src[k + 3];
+    }
+    return out;
+  }
+
+  /* Quantification des couleurs : k-moyennes sur un echantillon de pixels
+     du PREMIER PLAN, puis chaque pixel prend sa teinte la plus proche. */
+  function aplats(px, masque, n) {
+    const ech = [];
+    for (let i = 0; i < masque.length; i += 7) if (masque[i] > 0.5)
+      ech.push([px[i * 4], px[i * 4 + 1], px[i * 4 + 2]]);
+    if (!ech.length) return px;
+    let c = [];
+    for (let k = 0; k < n; k++) c.push(ech[Math.floor(k * ech.length / n)].slice());
+    for (let it = 0; it < 8; it++) {
+      const s = c.map(() => [0, 0, 0, 0]);
+      for (const p of ech) {
+        let b = 0, bd = 1e12;
+        for (let k = 0; k < n; k++) {
+          const d = (p[0] - c[k][0]) ** 2 + (p[1] - c[k][1]) ** 2 + (p[2] - c[k][2]) ** 2;
+          if (d < bd) { bd = d; b = k; }
+        }
+        s[b][0] += p[0]; s[b][1] += p[1]; s[b][2] += p[2]; s[b][3]++;
+      }
+      c = c.map((v, k) => s[k][3] ? [s[k][0] / s[k][3], s[k][1] / s[k][3], s[k][2] / s[k][3]] : v);
+    }
+    const out = new Uint8ClampedArray(px);
+    for (let i = 0; i < masque.length; i++) {
+      const k = i * 4;
+      let b = 0, bd = 1e12;
+      for (let j = 0; j < n; j++) {
+        const d = (px[k] - c[j][0]) ** 2 + (px[k + 1] - c[j][1]) ** 2 + (px[k + 2] - c[j][2]) ** 2;
+        if (d < bd) { bd = d; b = j; }
+      }
+      /* Un peu plus saturees et lumineuses : l'aplat d'un dessin anime. */
+      const moy = (c[b][0] + c[b][1] + c[b][2]) / 3;
+      for (let q = 0; q < 3; q++) out[k + q] = Math.min(255, (moy + (c[b][q] - moy) * 1.25) * 1.06);
+    }
+    return out;
+  }
+
+  function cartoon(canvas, masque) {
+    const w = canvas.width, h = canvas.height, ctx = canvas.getContext('2d');
+    const src = ctx.getImageData(0, 0, w, h);
+    const lisse = kuwahara(src.data, w, h, 3);
+    const plat = aplats(lisse, masque, 12);
+    /* Traits d'encre : gradient de Sobel sur la luminance lissee. */
+    const L = new Float32Array(w * h);
+    for (let i = 0; i < w * h; i++) L[i] = 0.299 * lisse[i * 4] + 0.587 * lisse[i * 4 + 1] + 0.114 * lisse[i * 4 + 2];
+    const out = ctx.createImageData(w, h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = y * w + x, k = i * 4;
+      let g = 0;
+      if (x > 0 && y > 0 && x < w - 1 && y < h - 1) {
+        const gx = -L[i - w - 1] - 2 * L[i - 1] - L[i + w - 1] + L[i - w + 1] + 2 * L[i + 1] + L[i + w + 1];
+        const gy = -L[i - w - 1] - 2 * L[i - w] - L[i - w + 1] + L[i + w - 1] + 2 * L[i + w] + L[i + w + 1];
+        g = Math.hypot(gx, gy);
+      }
+      const encre = g > 70 ? Math.max(0.12, 1 - (g - 70) / 90) : 1;
+      out.data[k] = plat[k] * encre; out.data[k + 1] = plat[k + 1] * encre; out.data[k + 2] = plat[k + 2] * encre;
+      out.data[k + 3] = Math.round(255 * Math.min(1, Math.max(0, (masque[i] - 0.35) / 0.3)));
+    }
+    /* Liseré blanc de l'autocollant, puis trait sombre : dilatation du masque. */
+    const bord = new Uint8ClampedArray(w * h);
+    const R = 5;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      if (out.data[(y * w + x) * 4 + 3] > 20) continue;
+      let pres = 0;
+      for (let dy = -R; dy <= R && !pres; dy++) for (let dx = -R; dx <= R; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx < 0 || yy < 0 || xx >= w || yy >= h || dx * dx + dy * dy > R * R) continue;
+        if (out.data[(yy * w + xx) * 4 + 3] > 128) { pres = dx * dx + dy * dy <= 4 ? 2 : 1; break; }
+      }
+      bord[y * w + x] = pres;
+    }
+    for (let i = 0; i < w * h; i++) if (bord[i]) {
+      const k = i * 4, clair = bord[i] === 1;
+      out.data[k] = out.data[k + 1] = out.data[k + 2] = clair ? 255 : 40;
+      out.data[k + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  async function traiterAvatar(idChamp, input) {
+    const etat = document.getElementById(idChamp + '-etat');
+    const fichier = input.files && input.files[0];
+    if (!fichier) return;
+    try {
+      etat.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Détourage de la photo…';
+      const img = await lireImage(fichier);
+      /* Travail a 512 px : assez pour le detourage, assez peu pour le filtre. */
+      const echelle = 512 / Math.max(img.width, img.height);
+      const tr = document.createElement('canvas');
+      tr.width = Math.round(img.width * echelle); tr.height = Math.round(img.height * echelle);
+      tr.getContext('2d').drawImage(img, 0, 0, tr.width, tr.height);
+      const avant = document.getElementById(idChamp + '-avant').getContext('2d');
+      avant.clearRect(0, 0, 160, 160);
+      const cote = Math.min(tr.width, tr.height);
+      avant.drawImage(tr, (tr.width - cote) / 2, (tr.height - cote) / 2, cote, cote, 0, 0, 160, 160);
+      const { masque, detoure } = await masquePersonne(tr);
+      /* Boite de la silhouette, carree, calee sur le HAUT du corps. */
+      let x0 = tr.width, y0 = tr.height, x1 = 0, y1 = 0;
+      for (let y = 0; y < tr.height; y++) for (let x = 0; x < tr.width; x++)
+        if (masque[y * tr.width + x] > 0.5) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      if (x1 <= x0) { x0 = 0; y0 = 0; x1 = tr.width; y1 = tr.height; }
+      const larg = x1 - x0, c2 = Math.min(Math.max(larg * 1.08, (y1 - y0) * 0.72), Math.max(tr.width, tr.height));
+      const cx = (x0 + x1) / 2, cy = y0 + c2 * 0.5 - c2 * 0.06;
+      const sortie = document.createElement('canvas');
+      sortie.width = sortie.height = 400;
+      const sctx = sortie.getContext('2d');
+      sctx.drawImage(tr, cx - c2 / 2, cy - c2 / 2, c2, c2, 0, 0, 400, 400);
+      const m2 = new Float32Array(400 * 400);
+      for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) {
+        const sx = Math.round(cx - c2 / 2 + x * c2 / 400), sy = Math.round(cy - c2 / 2 + y * c2 / 400);
+        m2[y * 400 + x] = (sx >= 0 && sy >= 0 && sx < tr.width && sy < tr.height) ? masque[sy * tr.width + sx] : 0;
+      }
+      etat.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Stylisation cartoon…';
+      await new Promise(r => setTimeout(r, 30));
+      cartoon(sortie, m2);
+      const apres = document.getElementById(idChamp + '-apres').getContext('2d');
+      apres.clearRect(0, 0, 160, 160);
+      apres.drawImage(sortie, 0, 0, 160, 160);
+      const url = sortie.toDataURL('image/png');
+      const cle = 'ha_deploy_avatar_' + Math.random().toString(36).slice(2, 10);
+      try { localStorage.setItem(cle, url); }
+      catch (e) { etat.textContent = 'Avatar trop volumineux pour être conservé par le navigateur.'; return; }
+      document.getElementById(idChamp).value = cle;
+      etat.innerHTML = '<i class="fa-solid fa-check" style="color:#52BE80"></i> Avatar prêt (' + Math.round(url.length / 1024)
+        + ' ko)' + (detoure ? '' : ' — détourage indisponible dans ce navigateur : recadrage en disque.')
+        + ' Il sera déposé sur votre instance au moment de la commande.';
+    } catch (e) {
+      etat.textContent = 'Traitement impossible : ' + e.message;
+    }
+  }
+
+  /* A LA COMMANDE : chaque avatar du panier est depose dans les donnees
+     utilisateur de l'instance, sous sa cle. C'est le compte du jeton qui les
+     porte -- le meme que celui qu'emploie le runner, qui les relit puis les
+     efface. Un echec ne bloque pas la commande : la carte reprendra l'image
+     de la personne, et on le dit. */
+  async function deposerAvatars(url, token) {
+    const cles = [];
+    for (const ligne of cart) for (const v of Object.values(ligne.params || {}))
+      if (typeof v === 'string' && v.indexOf('ha_deploy_avatar_') === 0) cles.push(v);
+    if (!cles.length) return { ok: true, n: 0 };
+    const cible = checkInstanceUrlNavigateur(url);
+    if (cible.error) return { ok: false, message: cible.error };
+    let ha;
+    try { ha = await haConnect(cible.ws, token); }
+    catch (e) { return { ok: false, message: e.message }; }
+    try {
+      let n = 0;
+      for (const cle of cles) {
+        let donnees = null;
+        try { donnees = localStorage.getItem(cle); } catch (e) { donnees = null; }
+        if (!donnees) continue;
+        const rep = await ha.call({ type: 'frontend/set_user_data', key: cle, value: donnees });
+        if (rep.success) n++;
+      }
+      return { ok: true, n: n };
+    } catch (e) {
+      return { ok: false, message: e.message };
+    } finally { ha.close(); }
+  }
+
   async function verifierAntenneZigbee(url, token) {
     const cible = checkInstanceUrlNavigateur(url);
     if (cible.error) return { ok: false, message: cible.error };
