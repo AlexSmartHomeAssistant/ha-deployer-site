@@ -3997,6 +3997,7 @@
       { name: 'eau_arrosage', desc: 'Arrosage par zones, programmateur et consommation' }
     ],
     interface: [
+      { name: 'interface_avatar', desc: `Avatar animé qui vous écoute et vous répond : Cyber IA ou T-800, LLM au choix, voix et contrôle de la maison` },
       { name: 'interface_dashboard_principal', desc: 'Personnalisation des tuiles et vues Lovelace' }
     ],
     // Derniere categorie du catalogue, et derniere pastille du bandeau.
@@ -4058,6 +4059,7 @@
     eau_piscine: 'Piscine Connectée',
     eau_arrosage: 'Arrosage',
     interface_dashboard_principal: 'Tableau de Bord',
+    interface_avatar: `Avatar IA & Contrôle Vocal`,
     maintenance_instance: 'Maintenance'
   };
 
@@ -4116,6 +4118,7 @@
     eau_piscine: 'fa-water-ladder',
     eau_arrosage: 'fa-faucet',
     interface_dashboard_principal: 'fa-table-cells-large',
+    interface_avatar: 'fa-user-astronaut',
     maintenance_instance: 'fa-screwdriver-wrench'
   };
 
@@ -4181,6 +4184,11 @@
     securite_camera: {
       resume: "Flux en direct, orientation, réglages de la caméra et derniers enregistrements.",
       detail: `Pilotage complet de votre <b>caméra de surveillance</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul son flux, son détecteur de mouvement, ses six réglages et ses commandes d'orientation. Une caméra est vue par plusieurs intégrations à la fois (EZVIZ, ONVIF, suivi réseau) : le pack les <b>réunit</b>, et <b>teste laquelle rend vraiment une image</b> avant d'en faire le direct &mdash; rien dans Home Assistant ne le dit, et une caméra qui ne rend rien laisse un cadre vide. Le premier onglet montre le <b>flux en direct plein cadre</b>, avec les <b>quatre flèches d'orientation</b> posées dessus, un badge « DIRECT » dont le point rouge bat, et un badge « MOUVEMENT » qui clignote dès qu'il se passe quelque chose ; dessous, <b>instantané envoyé sur vos mobiles</b>, plein écran, et mise en veille. Tant que la caméra filme, la carte porte sa <b>bordure animée violette</b> et son fond s'allume ; endormie ou hors ligne, tout retombe au repos. Le deuxième onglet réunit l'<b>adresse IP</b>, le <b>signal réseau</b> en jauge (ou « Filaire »), l'<b>état de la carte SD</b>, les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection, éclairage, enregistrement, chacun avec son mouvement propre &mdash;, le <b>rechargement du flux</b> quand il gèle, le <b>redémarrage</b> et le réglage de <b>sensibilité</b>. Le troisième est une <b>visionneuse des derniers enregistrements</b> de la carte SD, avec sa bande de vignettes. Et à chaque mouvement anormal, tous vos mobiles reçoivent la photo.`
+    },
+    interface_avatar: {
+      resume: `Un avatar animé qui vous écoute et vous répond — Cyber IA holographique ou T-800 chromé —, branché sur votre LLM et votre voix préférés, qui pilote la maison.`,
+      detail: `Un <b>assistant vocal incarné</b>, sur une seule carte. Touchez l'avatar : il <b>écoute</b> (micro de l'écran ou satellite vocal), <b>réfléchit</b> avec le cerveau de votre choix — <b>Claude</b>, <b>Gemini</b>, <b>GPT</b>, <b>Ollama</b> en local ou Home Assistant seul —, puis <b>répond à voix haute</b>, bouche synchronisée sur le son, et commande vos appareils exposés à Assist. Deux avatars commutables d'un appui : la <b>Cyber IA</b>, androïde holographique aux circuits cyan, et le <b>T-800 Skynet</b>, endosquelette chromé aux yeux rouges, avec ses lignes de balayage et son HUD. Chaque état — repos, écoute, réflexion, parole — a son animation, en <b>vidéo</b> si vous déposez les vôtres (prompts fournis) ou en <b>dessin animé</b> sinon, sans jamais un clignotement. La bordure <b>multicolore</b> accélère quand il écoute, s'illumine quand il réfléchit, pulse quand il parle. Le panneau de réglages de la carte change la <b>voix</b>, la <b>vitesse d'élocution</b>, le <b>volume</b>, le <b>cerveau</b>, la sensibilité du <b>mot d'éveil</b> et le mot d'éveil de vos <b>téléphones Android</b>.`,
+      apercu: {}
     },
     appareil_sonnette: {
       resume: `Votre sonnette vidéo dessinée à sa finition, le direct plein cadre, l'appel entrant avec ouverture de la porte, la parole et la réponse rapide, le carillon et le journal des visites.`,
@@ -4626,6 +4634,20 @@
         declencheur: `Le détecteur de mouvement de la caméra s'allume <b>deux secondes</b> d'affilée &mdash; les capteurs de mouvement battent, et sans ce délai un seul passage ferait plusieurs avis. L'automatisation se tait quand la caméra est <b>en veille</b>, quand vous avez <b>coupé sa détection</b>, et pendant les <b>trois minutes</b> qui suivent un avis : un passage devant l'objectif déclenche plusieurs détections d'affilée.`,
         action: `Notification sur tous vos mobiles, avec la <b>photo prise à l'instant</b>. Le relevé de la caméra est ensuite redemandé pour que le nouvel enregistrement paraisse dans le troisième onglet sans attendre le prochain quart d'heure.` }
     ],
+    interface_avatar: [
+      { titre: `Changer d'avatar`, icone: 'fa-masks-theater',
+        declencheur: `Un appui sur la pastille de la carte, ou un appel du script depuis vos propres automatismes.`,
+        action: `Bascule entre Cyber IA et T-800, passe le satellite vocal sur le pipeline de l'avatar et fait dire sa réplique avec sa voix.` },
+      { titre: `Retour au repos`, icone: 'fa-rotate-left',
+        declencheur: `L'avatar est resté en écoute, en réflexion ou en parole plus de 90 secondes (écran fermé en pleine conversation).`,
+        action: `Son état revient au repos.` },
+      { titre: `Sensibilité du mot d'éveil`, icone: 'fa-ear-listen',
+        declencheur: `Le curseur de sensibilité de la carte change.`,
+        action: `La sensibilité est appliquée au satellite vocal qui l'expose.` },
+      { titre: `Mot d'éveil du téléphone`, icone: 'fa-mobile-screen',
+        declencheur: `L'interrupteur « Mot d'éveil du téléphone » de la carte change.`,
+        action: `La détection du mot d'éveil est activée ou coupée sur vos téléphones Android.` }
+    ],
     appareil_sonnette: [
       { titre: `Appel entrant interactif`, icone: 'fa-bell',
         declencheur: `On appuie sur la sonnette.`,
@@ -4997,6 +5019,37 @@
           texte: `L'<b>adresse IP</b>, le <b>signal réseau</b> en jauge de quatre barres (ou « Filaire » sur une caméra en ethernet) et l'<b>état de la carte SD</b> avec sa capacité. Puis les <b>six interrupteurs</b> de la caméra &mdash; son, veille, infrarouge, détection de mouvement, éclairage, enregistrement &mdash;, chacun violet et <b>animé d'un mouvement qui lui est propre</b> quand il est enclenché, gris et immobile sinon (l'enregistrement, lui, prend le rouge du point REC). Enfin <b>« Recharger le flux »</b> pour un direct qui a gelé, <b>« Redémarrer »</b> avec confirmation, le réglage de <b>sensibilité</b> de détection en points, le micrologiciel et la date du dernier redémarrage.` },
         { titre: '3 — Enregistrements', icone: 'fa-film',
           texte: `Une <b>visionneuse des derniers enregistrements</b> de la carte SD : la photo de l'événement plein cadre, son <b>type</b> (personne, véhicule, animal, bruit, mouvement) avec son icône, sa date, son rang, et deux flèches pour passer de l'un à l'autre. Dessous, une <b>bande de vignettes</b> où celle qui est affichée est bordée de violet &mdash; un appui la choisit. En bas, la capacité de la carte SD, la date depuis laquelle elle enregistre et l'heure du dernier relevé. Un appui sur la photo l'ouvre en grand.` }
+      ]
+    },
+    interface_avatar: {
+      intro: `Une seule carte, sans onglet : l'avatar au centre, son état en direct, et une barre d'indicateurs en bas. Vous choisissez le <b>cerveau</b> et la <b>voix</b> ; le pack crée l'état unifié, les deux pipelines Assist (un par avatar, chacun avec sa voix), le script de changement d'avatar et les réglages de la carte — <b>rien d'autre n'est obligatoire</b>.<table style=\"width:100%;border-collapse:collapse;margin:8px 0;font-size:0.92em\"><tr><th style=\"text-align:left;padding:4px;border-bottom:1px solid #5DADE2\">Élément</th><th style=\"padding:4px;border-bottom:1px solid #5DADE2\">Statut</th><th style=\"text-align:left;padding:4px;border-bottom:1px solid #5DADE2\">Sans lui</th></tr><tr><td style=\"padding:3px 4px\"><code>sensor.avatar_ia_state</code> (état unifié)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">— créé par le pack</td></tr><tr><td style=\"padding:3px 4px\">Pipeline Assist (reconnaissance, cerveau, voix)</td><td style=\"padding:3px 4px;text-align:center;color:#52BE80;font-weight:700\">Obligatoire</td><td style=\"padding:3px 4px;opacity:0.8\">— complété par le pack : deux pipelines « Avatar IA — Cyber » et « — T-800 »</td></tr><tr><td style=\"padding:3px 4px\">Micro de l'écran (HTTPS)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">un appui ouvre la boîte Assist native</td></tr><tr><td style=\"padding:3px 4px\">Satellite vocal (<code>assist_satellite.*</code>)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">l'écoute passe par la carte ; pas de sensibilité du mot d'éveil</td></tr><tr><td style=\"padding:3px 4px\">LLM (Claude, Gemini, GPT, Ollama)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">l'agent de Home Assistant : commandes, pas de conversation libre</td></tr><tr><td style=\"padding:3px 4px\">Voix enrichie (Cloud, ElevenLabs, Piper)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">Google Translate, installé par le pack</td></tr><tr><td style=\"padding:3px 4px\">Téléphone Android (application Companion)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">réglage du mot d'éveil du téléphone retiré</td></tr><tr><td style=\"padding:3px 4px\">Vidéos de l'avatar (quatre états × deux avatars)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">l'avatar dessiné et animé les remplace</td></tr><tr><td style=\"padding:3px 4px\">Enceinte de secours (<code>media_player</code>)</td><td style=\"padding:3px 4px;text-align:center;color:#F8C471;font-weight:700\">Optionnelle</td><td style=\"padding:3px 4px;opacity:0.8\">la réplique de l'avatar n'est dite que par l'écran</td></tr></table>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: 'Cyber IA', icone: 'fa-microchip',
+          texte: `L'<b>androïde holographique</b> : circuits cyan, halo néon qui suit l'état, pastille d'état en clair (En veille, À l'écoute, Réflexion…, Parle).`,
+          elements: [
+            { nom: `Appui sur l'avatar`, texte: `il écoute ; un nouvel appui interrompt. Appui long : la boîte Assist (clavier, historique).` },
+            { nom: `Sous-titres`, texte: `ce qu'il a compris, puis sa réponse, s'affichent sous le visage.` },
+            { nom: `Bouche`, texte: `synchronisée sur le volume réel de la voix.` },
+            { nom: `Bordure`, texte: `serpentin multicolore lent au repos, accéléré à l'écoute, lumineux à la réflexion, pulsé à la parole ; le fond s'allume dès qu'il n'est plus au repos.` }
+          ] },
+        { titre: 'T-800 Skynet', icone: 'fa-robot',
+          texte: `L'<b>endosquelette chromé</b> : yeux rouges, lignes de balayage cathodiques, vignettage rouge qui pulse à l'écoute et à la parole, HUD <code>SYS.T800 // ONLINE</code> en capitales.`,
+          elements: [
+            { nom: `Changer d'avatar`, texte: `la pastille en haut à droite bascule, et l'avatar se présente avec SA voix (« Skynet en ligne. Je suis de retour. »).` },
+            { nom: `Pipeline dédié`, texte: `chaque avatar a son pipeline Assist et sa voix ; un satellite vocal suit l'avatar choisi.` },
+            { nom: `Latence`, texte: `le temps entre la fin de votre phrase et le début de la réponse, affiché en millisecondes.` }
+          ] },
+        { titre: 'Réglages et indicateurs', icone: 'fa-sliders',
+          texte: `La barre du bas : <b>micro</b> actif ou coupé, <b>volume</b> de la voix, <b>latence</b>, et le bouton des <b>réglages</b>, qui s'ouvrent par-dessus l'avatar.`,
+          elements: [
+            { nom: `Cerveau`, texte: `le LLM qui répond, changé en direct.` },
+            { nom: `Voix`, texte: `une par avatar, parmi celles de votre moteur de synthèse.` },
+            { nom: `Vitesse d'élocution`, texte: `de 0,6× à 1,6×, sans changer la hauteur de la voix.` },
+            { nom: `Sensibilité du mot d'éveil`, texte: `cinq crans, appliqués au satellite vocal qui l'expose.` },
+            { nom: `Mot d'éveil du téléphone`, texte: `active ou coupe la détection sur vos téléphones Android (application Companion).` },
+            { nom: `Rendu`, texte: `Automatique (vidéos si présentes), Vidéo, ou Dessin.` }
+          ] }
       ]
     },
     appareil_sonnette: {
@@ -7139,6 +7192,72 @@
         placeholder: 'vide : testée — certaines caméras ne savent que streamer' },
       champThemeSite('CAMERA_THEME', 'urban-factory', '🎨 Apparence')
     ],
+    interface_avatar: [
+      { param: 'AVATAR_NOM', label: `Nom de l'assistant`, type: 'text', required: false,
+        groupe: `🤖 Assistant`, placeholder: `ex : Linéa — vide : « Avatar IA »` },
+      { param: 'AVATAR_SKIN', label: `Avatar au démarrage`, type: 'select', required: false,
+        groupe: `🤖 Assistant`, defaut: 'Cyber_IA',
+        options: [
+          { value: 'Cyber_IA', label: `🟦 Cyber IA — androïde holographique` },
+          { value: 'T800_Skynet', label: `🟥 T-800 Skynet — endosquelette chromé` }
+        ] },
+      { param: 'AVATAR_APERCU', label: '', type: 'note', groupe: `🤖 Assistant`,
+        texte: `<div class="apercu-avatar"></div>` },
+      { param: 'AVATAR_LLM', label: `Cerveau (LLM)`, type: 'select', required: false,
+        groupe: `🧠 Cerveau`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Automatique (le LLM déjà installé, sinon Home Assistant)` },
+          { value: 'claude', label: `Claude (Anthropic)` },
+          { value: 'gemini', label: `Gemini (Google)` },
+          { value: 'gpt', label: `GPT (OpenAI)` },
+          { value: 'ollama', label: `Ollama (local)` },
+          { value: 'local', label: `Home Assistant seul (sans LLM)` }
+        ] },
+      { param: 'AVATAR_LLM_CLE', label: `Clé API du LLM`, type: 'password', required: false,
+        groupe: `🧠 Cerveau`, placeholder: `vide : l'intégration déjà installée sur votre instance` },
+      { param: 'AVATAR_OLLAMA_URL', label: `Adresse d'Ollama`, type: 'text', required: false,
+        groupe: `🧠 Cerveau`, placeholder: `ex : http://192.168.1.20:11434 (Ollama seulement)` },
+      { param: 'AVATAR_LLM_MODELE', label: `Modèle`, type: 'text', required: false,
+        groupe: `🧠 Cerveau`, placeholder: `vide : le modèle par défaut (Ollama : llama3.2)` },
+      { param: 'AVATAR_TTS', label: `Voix (synthèse)`, type: 'select', required: false,
+        groupe: `🗣️ Voix`, defaut: 'auto',
+        options: [
+          { value: 'auto', label: `✨ Automatique (Home Assistant Cloud, sinon Piper, sinon Google)` },
+          { value: 'cloud', label: `Home Assistant Cloud (Nabu Casa)` },
+          { value: 'piper', label: `Piper (local)` },
+          { value: 'elevenlabs', label: `ElevenLabs` },
+          { value: 'google_translate', label: `Google Translate` }
+        ] },
+      { param: 'AVATAR_TTS_CLE', label: `Clé API de la voix`, type: 'password', required: false,
+        groupe: `🗣️ Voix`, placeholder: `ElevenLabs seulement` },
+      { param: 'AVATAR_VOIX_CYBER', label: `Voix de la Cyber IA`, type: 'text', required: false,
+        groupe: `🗣️ Voix`, placeholder: `vide : une voix féminine (Denise, Brigitte…)` },
+      { param: 'AVATAR_VOIX_T800', label: `Voix du T-800`, type: 'text', required: false,
+        groupe: `🗣️ Voix`, placeholder: `vide : une voix masculine (Henri, Alain…)` },
+      { param: 'AVATAR_VITESSE', label: `Vitesse d'élocution`, type: 'select', required: false,
+        groupe: `🗣️ Voix`, defaut: '',
+        options: [
+          { value: '', label: `Normale (1×) — réglable ensuite sur la carte` },
+          { value: '0.8', label: `Posée (0,8×)` },
+          { value: '0.9', label: `Calme (0,9×)` },
+          { value: '1.1', label: `Vive (1,1×)` },
+          { value: '1.25', label: `Rapide (1,25×)` },
+          { value: '1.4', label: `Très rapide (1,4×)` }
+        ] },
+      { param: 'AVATAR_ECOUTE', label: `Écoute`, type: 'select', required: false,
+        groupe: `🎙️ Écoute`, defaut: 'carte',
+        options: [
+          { value: 'carte', label: `Micro de l'écran (tablette murale, téléphone, PC)` },
+          { value: 'satellite', label: `Satellite vocal (Home Assistant Voice, ESPHome)` }
+        ] },
+      { param: 'AVATAR_SATELLITE', label: `Satellite vocal`, type: 'text', required: false,
+        groupe: `🎙️ Écoute`, placeholder: `ex : assist_satellite.salon — vide : deviné s'il n'y en a qu'un` },
+      { param: 'AVATAR_LECTEUR', label: `Enceinte de secours`, type: 'text', required: false,
+        groupe: `🎙️ Écoute`, placeholder: `ex : media_player.salon — vide : aucune` },
+      { param: 'AVATAR_TELEPHONES', label: `Téléphones Android (mot d'éveil)`, type: 'text', required: false,
+        groupe: `🎙️ Écoute`, placeholder: `vide : tous vos téléphones Android — « aucun » pour ne rien piloter` },
+      champThemeSite('AVATAR_THEME', 'urban-factory', `🎨 Apparence`)
+    ],
     appareil_sonnette: [
       { param: 'SONNETTE_APPAREIL', label: `Sonnette`, type: 'text', required: true,
         groupe: `🔔 Sonnette`,
@@ -8229,6 +8348,16 @@
       + `enregistrements, sans aucun identifiant \u00e9crit nulle part), ainsi `
       + `que HACS et les cartes personnalis\u00e9es requises (button-card, `
       + `swipe-card, stack-in-card, card-mod).`,
+    interface_avatar:
+      `la vue et sa carte unique (avatar vidéo ou dessiné, HUD, sous-titres, `
+      + `barre d'indicateurs, panneau de réglages), le pilote vocal de la carte `
+      + `(écoute, lecture de la voix, synchronisation labiale), l'état unifié `
+      + `sensor.avatar_ia_state, deux pipelines Assist (un par avatar), le `
+      + `cerveau et la voix choisis (intégrations créées au besoin), seize `
+      + `entrées de réglage, le script changer_avatar_ia et trois automatismes `
+      + `(retour au repos, sensibilité, mot d'éveil du téléphone), les prompts `
+      + `de génération des vidéos, ainsi que HACS et les cartes personnalisées `
+      + `requises (button-card, card-mod).`,
     appareil_sonnette:
       `la vue et ses trois onglets, le boîtier dessiné selon sa finition, sa `
       + `fixation et son alimentation, l'appel normalisé, le journal des dix `
@@ -9438,6 +9567,21 @@
             "templates/apercus/aspirateur/urban-factory-defaut-1.mp4",
             "templates/apercus/aspirateur/urban-factory-defaut-2.mp4",
             "templates/apercus/aspirateur/urban-factory-defaut-3.mp4"
+          ]
+        }
+      }
+    },
+    "avatar-ia": {
+      "urban-factory": {
+        "cartes": {
+          "defaut": []
+        },
+        "video": "templates/apercus/avatar-ia/urban-factory.mp4",
+        "videos": {
+          "defaut": [
+            "templates/apercus/avatar-ia/urban-factory-defaut-1.mp4",
+            "templates/apercus/avatar-ia/urban-factory-defaut-2.mp4",
+            "templates/apercus/avatar-ia/urban-factory-defaut-3.mp4"
           ]
         }
       }
@@ -20686,6 +20830,573 @@ function dessinSonnette(o) {
     if (e.target && /^param-appareil_sonnette-SONNETTE_(FINITION|FIXATION|ALIMENTATION|MARQUE)$/.test(e.target.id || '')) dessinerSonnettes();
   }));
   /* ---------- FIN APERCU DE LA SONNETTE ---------- */
+  /* ---------- APERCU DE L'AVATAR IA (pack Avatar IA, 29/09/2026) ----------
+     ECRIT PAR `_patch_index_avatar.py` depuis `templates/interface_avatar/
+     dessin_avatar.js` : la page anime les deux avatars avec le meme code
+     que la carte. */
+  const dessinerAvatars = (function () {
+/* templates/interface_avatar/dessin_avatar.js
+ *
+ * Pack Interface / Avatar IA — dessin vectoriel de secours de la scene (290 x 196).
+ * SOURCE UNIQUE : lu par le generateur de la carte (Node, vm) ET par la page du site.
+ *
+ * JavaScript ES2017 SANS module. Deux fonctions globales, et deux seulement :
+ *   svgAvatar(skin, id)  -> '<svg class="av-svg av-cyber|av-t800" viewBox="0 0 290 196">...</svg>'
+ *   cssAvatar(ancetre)   -> feuille CSS complete (regles + @keyframes prefixes « av- »)
+ *
+ * Regles tenues :
+ *  - DETERMINISTE : ni Math.random ni Date. La chevelure est semee par un generateur a
+ *    graine fixe (mulberry32) : la meme chaine sort a chaque appel, la carte peut la figer.
+ *  - Les id SVG sont prefixes par `id` PUIS par la peau (« -cy- » / « -t8- ») : les deux
+ *    peaux rendues dans la meme racine avec le meme `id` ne se marchent pas dessus.
+ *  - Aucun fichier externe, aucune police, aucun <script>, aucun filtre SVG : les lueurs
+ *    sont des couches d'opacite (traits larges translucides, degrades radiaux).
+ *  - Les ETATS ne changent que des attributs de l'ancetre (data-etat, data-skin,
+ *    data-audio, --bouche) : tout mouvement est en CSS (opacity / transform).
+ *    Les groupes animes n'ont JAMAIS d'attribut transform (le CSS l'ecraserait).
+ */
+
+function svgAvatar(skin, id) {
+  'use strict';
+  var T8 = skin === 'T800_Skynet';
+  var P = String(id == null ? 'av' : id).replace(/[^A-Za-z0-9_-]/g, '') + (T8 ? '-t8-' : '-cy-');
+
+  /* ---------- outils ---------- */
+  function f(v) { var r = Math.round(v * 10) / 10; return String(r === 0 ? 0 : r); }
+  function pt(x, y) { return f(x) + ' ' + f(y); }
+  function u(n) { return 'url(#' + P + n + ')'; }
+  function stops(a) {
+    return a.map(function (s) {
+      return '<stop offset="' + s[0] + '" stop-color="' + s[1] + '"' +
+        (s[2] != null ? ' stop-opacity="' + s[2] + '"' : '') + '/>';
+    }).join('');
+  }
+  function rg(n, at, a) { return '<radialGradient id="' + P + n + '"' + at + '>' + stops(a) + '</radialGradient>'; }
+  function lg(n, at, a) { return '<linearGradient id="' + P + n + '"' + at + '>' + stops(a) + '</linearGradient>'; }
+  /* generateur pseudo-aleatoire a graine fixe (mulberry32) */
+  function graine(a) {
+    return function () {
+      a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  /* miroir gauche -> droite d'un trace absolu (M L H V C Q Z) autour de x = 145 */
+  function mx(d) {
+    var out = [], cmd = '', i = 0;
+    d.replace(/[MLHVCQZ]|-?\d*\.?\d+/g, function (t) {
+      if (/[A-Z]/.test(t)) { cmd = t; i = 0; out.push(t); return t; }
+      var v = parseFloat(t);
+      if (cmd === 'H' || (cmd !== 'V' && i % 2 === 0)) v = 290 - v;
+      i++; out.push(f(v)); return t;
+    });
+    return out.join(' ').replace(/ ?([A-Z]) ?/g, '$1');
+  }
+  function sym(d) { return d + mx(d); }
+  /* points en « M x y h0 » : un point rond par trait a bout arrondi */
+  function points(l) { return l.map(function (p) { return 'M' + pt(p[0], p[1]) + 'h0'; }).join(''); }
+  function pointsSym(l) { return points(l) + points(l.map(function (p) { return [290 - p[0], p[1]]; })); }
+  /* ondes d'ecoute, de part et d'autre de la tete (centre 145,86) */
+  function ondes(col) {
+    var o = '';
+    [106, 117, 128].forEach(function (r, i) {
+      var a = 24 * Math.PI / 180, d = '';
+      [[Math.PI - a, Math.PI + a], [-a, a]].forEach(function (g) {
+        d += 'M' + pt(145 + r * Math.cos(g[0]), 86 + r * Math.sin(g[0])) + 'A' + r + ' ' + r + ' 0 0 1 ' +
+          pt(145 + r * Math.cos(g[1]), 86 + r * Math.sin(g[1]));
+      });
+      o += '<g class="av-onde av-o' + (i + 1) + '"><path d="' + d + '" stroke="' + col + '" stroke-width="5" stroke-opacity=".22"/>' +
+        '<path d="' + d + '" stroke="' + col + '" stroke-width="' + f(1.8 - i * .35) + '"/></g>';
+    });
+    return '<g class="av-ondes" fill="none" stroke-linecap="round">' + o + '</g>';
+  }
+  var TETE = 'viewBox="0 0 290 196" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"';
+
+  /* =====================================================================
+   *  CYBER IA — androide feminine, circuits cyan, chevelure frisee
+   * ===================================================================== */
+  function cyber() {
+    var R = graine(20260928);
+    function yh(x) { var d = Math.min(Math.abs(x - 145) / 54, 1.25); return 36 + 55 * Math.pow(d, 2.1); }
+    function scl(cx, cy, s) {
+      return 'M' + pt(cx - s * 14, cy + 1.5) + 'Q' + pt(cx - s * 1, cy - 12) + ' ' + pt(cx + s * 15, cy - 1) +
+        'Q' + pt(cx + s * 1, cy + 9) + ' ' + pt(cx - s * 14, cy + 1.5) + 'Z';
+    }
+    function curl(x, y, r, a0) {
+      var a1 = a0 + 4.3;
+      return 'M' + pt(x + r * Math.cos(a0), y + r * Math.sin(a0)) + 'A' + f(r) + ' ' + f(r) + ' 0 1 1 ' +
+        pt(x + r * Math.cos(a1), y + r * Math.sin(a1));
+    }
+    function trait(d, c, w, o) {
+      return '<path d="' + d + '" stroke="' + c + '" stroke-width="' + w + '"' + (o != null ? ' stroke-opacity="' + o + '"' : '') + '/>';
+    }
+
+    /* --- chevelure arriere : silhouette festonnee --- */
+    var N = 54, pts = [], i;
+    for (i = 0; i < N; i++) {
+      var t = -Math.PI + i * 2 * Math.PI / N, c = Math.cos(t), sn = Math.sin(t);
+      var bosse = 1 + .035 * Math.sin(t * 7) + .02 * Math.sin(t * 13 + 1);
+      pts.push([145 + 99 * c * bosse * (sn > 0 ? 1 - .12 * sn : 1), 67 + (sn < 0 ? 66 : 84) * sn * bosse]);
+    }
+    var sil = 'M' + pt(pts[0][0], pts[0][1]);
+    for (i = 1; i <= N; i++) {
+      var a = pts[i - 1], b = pts[i % N], ch = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      sil += 'A' + f(ch * (.53 + R() * .12)) + ' ' + f(ch * (.53 + R() * .12)) + ' 0 0 1 ' + pt(b[0], b[1]);
+    }
+    sil += 'Z';
+
+    /* --- boucles : quatre couches de couleur (profondeur -> reflets) --- */
+    var cou = { s: '', m: '', v: '', r: '', c: '' };
+    function dansTete(x, y) {
+      var ry = y < 67 ? 64 : 80;
+      return Math.pow((x - 145) / 95, 2) + Math.pow((y - 67) / ry, 2);
+    }
+    var k = 0;
+    for (i = 0; i < 900 && k < 190; i++) {
+      var x = 44 + R() * 202, y = -2 + R() * 156, q = dansTete(x, y);
+      if (q > 1) continue;
+      if (Math.pow((x - 145) / 47, 2) + Math.pow((y - 93) / 62, 2) < 1) continue;   /* sous le visage */
+      if (Math.abs(x - 145) < 58 && y < yh(x) - 2) continue;                         /* sous la frange */
+      var r = 2.3 + R() * 2.2, a0 = R() * 6.28, cl = curl(x, y, r, a0);
+      q = Math.sqrt(q);
+      var lum = q + (x < 145 ? .05 : 0) + (y < 40 ? .06 : 0) + (R() - .5) * .2;
+      if (lum > .95) cou.r += cl; else if (lum > .82) cou.v += cl; else if (lum > .6) cou.m += cl; else cou.s += cl;
+      k++;
+    }
+    /* frange (au-dessus du front) */
+    var fcou = { s: '', m: '', v: '' };
+    for (i = 0, k = 0; i < 400 && k < 48; i++) {
+      var fx = 88 + R() * 114, fy = 16 + R() * 80;
+      if (fy > yh(fx) - 2.5 || Math.abs(fx - 145) > 58) continue;
+      var fc = curl(fx, fy, 2.2 + R() * 2, R() * 6.28), fl = (fy < 34 ? .9 : .6) + (R() - .5) * .3;
+      if (fl > .85) fcou.v += fc; else if (fl > .55) fcou.m += fc; else fcou.s += fc;
+      k++;
+    }
+    /* meches libres au bord de la silhouette */
+    for (i = 0; i < 30; i++) {
+      var ta = -Math.PI + (i + R() * .6) * 2 * Math.PI / 30, tc = Math.cos(ta), ts = Math.sin(ta);
+      if (ts > .55) continue;
+      var rr = 1.02 + R() * .05;
+      cou.c += curl(145 + 99 * tc * rr, 67 + (ts < 0 ? 66 : 84) * ts * rr, 1.8 + R() * 1.6, R() * 6.28);
+    }
+    /* frange festonnee : bord inferieur qui suit la ligne des cheveux */
+    var fd = 'M' + pt(86, yh(86) + 2), px = 86;
+    for (var xx = 92; xx <= 204; xx += 7) {
+      var x2 = Math.min(xx, 204), yy = yh(x2) + 2, cc = Math.hypot(x2 - px, yy - yh(px) - 2);
+      fd += 'A' + f(cc * .6) + ' ' + f(cc * .6) + ' 0 0 0 ' + pt(x2, yy);
+      px = x2;
+    }
+    fd += 'L206 60Q202 12 145 10Q88 12 84 60Z';
+
+    var visage = 'M145 26C171 26 191 43 193 69C195 92 189 113 178 129C168 144 157 154 145 155C133 154 122 144 112 129C101 113 95 92 97 69C99 43 119 26 145 26Z';
+
+    /* --- yeux --- */
+    function oeil(cx, cy, s, clip) {
+      var sc = scl(cx, cy, s);
+      return '<g class="av-oeil" style="transform-origin:' + cx + 'px ' + (cy - .5) + 'px">' +
+        '<path d="' + sc + '" fill="#edf3f6"/>' +
+        '<g clip-path="url(#' + P + clip + ')">' +
+        '<g class="av-iris">' +
+        '<circle cx="' + cx + '" cy="' + f(cy - .6) + '" r="6.7" fill="' + u('iris') + '" stroke="#0b3350" stroke-width=".6"/>' +
+        '<circle class="av-irisf" cx="' + cx + '" cy="' + f(cy - .6) + '" r="6.7" fill="' + u('irisf') + '"/>' +
+        '<circle cx="' + cx + '" cy="' + f(cy - .6) + '" r="2.7" fill="#03121a"/>' +
+        '<circle cx="' + f(cx - 2.4) + '" cy="' + f(cy - 3.1) + '" r="1.7" fill="#fff"/>' +
+        '<circle cx="' + f(cx + 2.4) + '" cy="' + f(cy + 1.5) + '" r=".8" fill="#fff" fill-opacity=".7"/>' +
+        '</g><path d="' + sc + '" fill="' + u('paup') + '"/></g>' +
+        '<g fill="none" stroke-linecap="round">' +
+        trait('M' + pt(cx - s * 14.5, cy + 1.3) + 'Q' + pt(cx - s * 1, cy - 12.9) + ' ' + pt(cx + s * 15.6, cy - 1.3), '#150a0e', 2.2) +
+        trait('M' + pt(cx + s * 14.2, cy - 1.3) + 'Q' + pt(cx + s * 18, cy - 2) + ' ' + pt(cx + s * 21, cy - 5.8), '#150a0e', 1.5) +
+        trait('M' + pt(cx + s * 6, cy - 5.6) + 'l' + pt(s * 1.2, -2.6) + 'M' + pt(cx + s * 9.5, cy - 4.4) + 'l' + pt(s * 1.8, -2.4) +
+          'M' + pt(cx + s * 12.5, cy - 2.8) + 'l' + pt(s * 2.3, -1.9), '#150a0e', .8) +
+        trait('M' + pt(cx - s * 10, cy + 4.2) + 'Q' + pt(cx + s * 3, cy + 7.8) + ' ' + pt(cx + s * 14.5, cy - .4), '#4a2821', .7, .75) +
+        '</g></g>';
+    }
+    function sourcil(cx, cy, s) {
+      return 'M' + pt(cx - s * 14, cy - 11) + 'Q' + pt(cx - s * 1, cy - 21.5) + ' ' + pt(cx + s * 17.5, cy - 12.5) +
+        'Q' + pt(cx + s * 1, cy - 17.8) + ' ' + pt(cx - s * 14, cy - 9) + 'Z';
+    }
+    function paupiere(cx, cy, s) {
+      return 'M' + pt(cx - s * 12, cy - 6.4) + 'Q' + pt(cx + s * 1, cy - 16) + ' ' + pt(cx + s * 15, cy - 6.4);
+    }
+
+    /* --- circuits (cote gauche, le droit est le miroir) --- */
+    var k1 = 'M127 97L127 105L121 111L121 127L126 136L126 145L135 152M145 144L145 152',
+      k2 = 'M116 96L112 100L112 116L106 122',
+      k3 = 'M108 91L104 95L104 106',
+      k4 = 'M121 118L115 124L115 133',
+      k5 = 'M139 157L139 166L134 172L134 182';
+    function circuit(n, d, pts2) {
+      var dd = n === 1 ? d.replace('M145 144L145 152', '') : d;
+      var dl = sym(dd) + (n === 1 ? 'M145 145L145 153' : '') + (n === 5 ? 'M145 160L145 190' : '');
+      var dp = pointsSym(pts2) + (n === 1 ? points([[145, 145]]) : '') + (n === 5 ? points([[145, 190]]) : '');
+      return '<g class="av-k av-k' + n + '" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+        trait(dl, '#5DADE2', 3.4, .3) + trait(dp, '#5DADE2', 6.2, .3) +
+        trait(dl, '#c6f4ff', 1) + trait(dp, '#e4fbff', 3) +
+        '<path class="av-flux" d="' + dl + '" stroke="#fff" stroke-width="1.5"/></g>';
+    }
+
+    var defs = '<defs>' +
+      rg('peau', ' cx=".46" cy=".4" r=".64"', [[0, '#ecb693'], [.42, '#d49571'], [.78, '#ad6a45'], [1, '#7e4429']]) +
+      rg('omb', ' cx=".5" cy=".38" r=".62"', [[.62, '#4d2415', 0], [1, '#3a170b', .6]]) +
+      lg('bord', '', [[0, '#5DADE2', .95], [.22, '#5DADE2', 0], [.78, '#5DADE2', 0], [1, '#5DADE2', .95]]) +
+      rg('chev', ' gradientUnits="userSpaceOnUse" cx="145" cy="74" r="106"', [[0, '#0b0711'], [.5, '#181022'], [.8, '#2a1b3d'], [1, '#48305f']]) +
+      rg('iris', '', [[0, '#f2fdff'], [.25, '#9be6ff'], [.6, '#5DADE2'], [.88, '#1d6a98'], [1, '#0c3653']]) +
+      rg('irisf', '', [[0, '#e8fdff', .9], [.7, '#8fe6ff', .5], [1, '#5DADE2', 0]]) +
+      rg('lueur', '', [[0, '#c8f3ff', .95], [.3, '#5DADE2', .6], [1, '#5DADE2', 0]]) +
+      rg('aura', '', [[0, '#5DADE2', .5], [.55, '#5DADE2', .14], [1, '#5DADE2', 0]]) +
+      rg('joue', '', [[0, '#e46f7e', .4], [1, '#e46f7e', 0]]) +
+      rg('fard', '', [[0, '#5a2c55', .6], [1, '#5a2c55', 0]]) +
+      rg('lum', '', [[0, '#fbd9c2', .55], [1, '#fbd9c2', 0]]) +
+      lg('lv1', ' x2="0" y2="1"', [[0, '#b3605e'], [1, '#86403f']]) +
+      lg('lv2', ' x2="0" y2="1"', [[0, '#d5827d'], [1, '#a14f4e']]) +
+      lg('cou', ' x2="0" y2="1"', [[0, '#55291a'], [.3, '#a3603c'], [1, '#c58260']]) +
+      lg('holo', ' x2="0" y2="1"', [[0, '#5DADE2', .5], [1, '#5DADE2', .04]]) +
+      lg('paup', ' x2="0" y2="1"', [[0, '#3b1d19', .6], [.5, '#3b1d19', 0]]) +
+      '<pattern id="' + P + 'tr" width="6" height="3" patternUnits="userSpaceOnUse"><rect width="6" height=".8" fill="#c4ecff" fill-opacity=".32"/></pattern>' +
+      '<clipPath id="' + P + 'cg"><path d="' + scl(124, 86, -1) + '"/></clipPath>' +
+      '<clipPath id="' + P + 'cd"><path d="' + scl(166, 86, 1) + '"/></clipPath>' +
+      '</defs>';
+
+    var buste = 'M20 196C36 182 76 174 116 171Q145 199 174 171C214 174 254 182 270 196Z';
+
+    return '<svg class="av-svg av-cyber" ' + TETE + '>' + defs +
+      '<circle class="av-aura" cx="145" cy="84" r="132" fill="' + u('aura') + '"/>' +
+      ondes('#5DADE2') +
+      '<g class="av-corps">' +
+      /* cou + circuits du cou + buste holographique */
+      '<path d="M128 136C129 151 128 162 120 172L118 192L172 192L170 172C162 162 161 151 162 136Z" fill="' + u('cou') + '"/>' +
+      '<path d="M132 150Q145 162 158 150Q145 158 132 150Z" fill="#3a170b" fill-opacity=".25"/>' +
+      circuit(5, k5, [[134, 182]]) +
+      '<path d="' + buste + '" fill="' + u('holo') + '"/><path d="' + buste + '" fill="' + u('tr') + '"/>' +
+      '<g fill="none" stroke-linecap="round">' +
+      trait('M20 196C36 182 76 174 116 171M174 171C214 174 254 182 270 196', '#5DADE2', 3.5, .25) +
+      trait('M20 196C36 182 76 174 116 171M174 171C214 174 254 182 270 196', '#bfeaff', 1, .85) +
+      trait('M116 171Q145 199 174 171', '#5DADE2', 4, .3) + trait('M116 171Q145 199 174 171', '#dff7ff', 1.2) +
+      trait(sym('M58 190Q88 180 112 179'), '#5DADE2', .8, .5) +
+      trait(sym('M92 196L100 184'), '#5DADE2', .7, .35) +
+      '</g>' +
+      '<path d="' + pointsSym([[112, 179], [100, 184]]) + '" stroke="#dff7ff" stroke-width="2.4" stroke-linecap="round"/>' +
+      /* tete */
+      '<g class="av-pose"><g class="av-tete">' +
+      '<path d="' + sil + '" fill="' + u('chev') + '"/>' +
+      '<g fill="none" stroke-linecap="round">' +
+      trait(cou.s, '#3b2752', 1.2) + trait(cou.m, '#6a4388', 1.05, .9) + trait(cou.v, '#BF71B2', .95, .85) +
+      trait(cou.r, '#e8b3de', .85, .8) + trait(cou.c, '#BF71B2', .8, .7) +
+      '</g>' +
+      /* visage */
+      '<path d="' + visage + '" fill="' + u('peau') + '"/>' +
+      '<path d="' + visage + '" fill="' + u('omb') + '"/>' +
+      '<ellipse cx="145" cy="54" rx="22" ry="11" fill="' + u('lum') + '"/>' +
+      '<ellipse cx="112" cy="97" rx="9" ry="5" fill="' + u('lum') + '"/><ellipse cx="178" cy="97" rx="9" ry="5" fill="' + u('lum') + '"/>' +
+      '<ellipse cx="117" cy="109" rx="14" ry="9" fill="' + u('joue') + '"/><ellipse cx="173" cy="109" rx="14" ry="9" fill="' + u('joue') + '"/>' +
+      '<ellipse cx="123" cy="80" rx="17" ry="9" fill="' + u('fard') + '"/><ellipse cx="167" cy="80" rx="17" ry="9" fill="' + u('fard') + '"/>' +
+      '<path d="' + sourcil(124, 86, -1) + sourcil(166, 86, 1) + '" fill="#3a2117"/>' +
+      '<g fill="none" stroke-linecap="round">' + trait(paupiere(124, 86, -1) + paupiere(166, 86, 1), '#5a2d22', .9, .5) + '</g>' +
+      '<circle class="av-lueur" cx="124" cy="85.5" r="17" fill="' + u('lueur') + '"/>' +
+      '<circle class="av-lueur" cx="166" cy="85.5" r="17" fill="' + u('lueur') + '"/>' +
+      oeil(124, 86, -1, 'cg') + oeil(166, 86, 1, 'cd') +
+      /* nez */
+      '<g fill="none" stroke-linecap="round">' +
+      trait('M140 91Q137.6 102 137.4 110', '#8a4b32', 1.5, .3) + trait('M150 92Q151.3 102 151.2 108', '#f2c6a8', 1, .4) +
+      trait('M134.5 111.5Q137 117.6 145 117.9Q153 117.6 155.5 111.5', '#763c26', 1, .45) +
+      trait('M143 120L143.7 126M147 120L146.3 126', '#95553a', .8, .3) +
+      '</g>' +
+      '<ellipse cx="145" cy="109.6" rx="4.4" ry="3" fill="#f4c7a9" fill-opacity=".55"/>' +
+      '<path d="' + sym('M137.5 113.6Q140.6 117 143.5 114.9Q140.6 112.6 137.5 113.6Z') + '" fill="#57291b" fill-opacity=".75"/>' +
+      /* bouche : ouverture (echelle), levre inferieure (translation), levre superieure fixe */
+      '<g class="av-bouche"><path d="M129.5 131.3Q145 130 160.5 131.3Q153 140 145 140.6Q137 140 129.5 131.3Z" fill="#2a0e13"/>' +
+      '<path d="M134 131.3Q145 130.6 156 131.3L155 133.7Q145 134.5 135 133.7Z" fill="#f4eeea"/>' +
+      '<ellipse cx="145" cy="138.4" rx="6" ry="1.8" fill="#a3474f"/></g>' +
+      '<g class="av-levre-b"><path d="M128 131.2Q136 132.6 145 132.8Q154 132.6 162 131.2Q157 139.4 145 140.6Q133 139.4 128 131.2Z" fill="' + u('lv2') + '"/>' +
+      '<path d="M139 135.5Q145 134.4 151 135.5" fill="none" stroke="#ffe6de" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/></g>' +
+      '<path d="M128 131.2Q133 126.4 138.6 126Q142.6 125.7 145 127.3Q147.4 125.7 151.4 126Q157 126.4 162 131.2Q154 132.5 145 132.7Q136 132.5 128 131.2Z" fill="' + u('lv1') + '"/>' +
+      '<path d="M128.5 131.3Q145 133.3 161.5 131.3" fill="none" stroke="#561f25" stroke-width=".7" stroke-opacity=".8"/>' +
+      '<ellipse cx="145" cy="147" rx="7" ry="3.4" fill="#eeb592" fill-opacity=".35"/>' +
+      /* lumiere neon de contour */
+      '<path d="' + visage + '" fill="none" stroke="' + u('bord') + '" stroke-width="1.3"/>' +
+      circuit(3, k3, [[104, 106]]) + circuit(2, k2, [[106, 122], [116, 96]]) +
+      circuit(1, k1, [[135, 152], [127, 97]]) + circuit(4, k4, [[115, 133]]) +
+      /* frange */
+      '<path d="' + fd.replace(/L206 60.*$/, '') + '" fill="none" stroke="#3a150a" stroke-width="4" stroke-opacity=".28" transform="translate(0 1.6)"/>' +
+      '<path d="' + fd + '" fill="' + u('chev') + '"/>' +
+      '<g fill="none" stroke-linecap="round">' + trait(fcou.s, '#3b2752', 1.2) + trait(fcou.m, '#6a4388', 1.05, .9) +
+      trait(fcou.v, '#BF71B2', .95, .85) + '</g>' +
+      '</g></g></g></svg>';
+  }
+
+  /* =====================================================================
+   *  T-800 SKYNET — endosquelette chrome, optiques rouges
+   * ===================================================================== */
+  function t800() {
+    var R = graine(800);
+    function rect(x, y, w, h, fill, extra) {
+      return '<rect x="' + f(x) + '" y="' + f(y) + '" width="' + f(w) + '" height="' + f(h) + '" fill="' + fill + '"' + (extra || '') + '/>';
+    }
+    function trait(d, c, w, o) {
+      return '<path d="' + d + '" stroke="' + c + '" stroke-width="' + w + '"' + (o != null ? ' stroke-opacity="' + o + '"' : '') + '/>';
+    }
+    function rivets(l) {
+      return '<path d="' + points(l) + '" stroke="#1b1f24" stroke-width="3.2" stroke-linecap="round"/>' +
+        '<path d="' + points(l) + '" stroke="#d9dfe5" stroke-width="2" stroke-linecap="round"/>';
+    }
+    function optique(cx, cy) {
+      return '<circle class="av-t-glow" cx="' + cx + '" cy="' + cy + '" r="15" fill="' + u('rouge') + '"/>' +
+        '<g class="av-t-oeil" style="transform-origin:' + cx + 'px ' + cy + 'px">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="5.4" fill="#2a0806" stroke="#7a2219" stroke-width="1.1"/>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="3.7" fill="#EC7063"/>' +
+        '<circle class="av-t-coeur" cx="' + cx + '" cy="' + cy + '" r="1.8" fill="#fff1ec"/>' +
+        '<circle cx="' + f(cx - 1.7) + '" cy="' + f(cy - 1.7) + '" r=".8" fill="#fff" fill-opacity=".85"/></g>';
+    }
+    var crane = 'M145 8C177 8 199 30 200 60C201 76 197 88 191 97L180 104L110 104L99 97C93 88 89 76 90 60C91 30 113 8 145 8Z';
+    var i, dents = '', dentsB = '';
+    for (i = 0; i < 10; i++) dents += 'M' + pt(121 + i * 4.85, 115.5) + 'h4.3v8q-2.15 2.4-4.3 0z';
+    for (i = 0; i < 10; i++) dentsB += 'M' + pt(122 + i * 4.6, 134.2) + 'v-6.8q2.15-2.2 4.3 0v6.8z';
+    /* barres de donnees sur le chassis (traitement) */
+    var data = '', ly = [187.5, 190.5, 193.5];
+    ly.forEach(function (y, r) {
+      var x = 68, segs = [];
+      while (x < 108) { var w = 2 + R() * 7; if (x + w > 110) break; segs.push([x, w]); x += w + 1.4 + R() * 2; }
+      var d = segs.map(function (s) { return 'M' + pt(s[0], y) + 'h' + f(s[1]) + 'M' + pt(290 - s[0] - s[1], y) + 'h' + f(s[1]); }).join('');
+      data += '<path class="av-t-d av-t-d' + (r + 1) + '" d="' + d + '" stroke="' + (r === 1 ? '#F8C471' : '#EC7063') + '" stroke-width="1.3"/>';
+    });
+    var eq = '';
+    for (i = 0; i < 7; i++) { var h = 3 + R() * 7; eq += 'M' + pt(133 + i * 4, 194) + 'v' + f(-h); }
+    data += '<path class="av-t-d av-t-d4" d="' + eq + '" stroke="#EC7063" stroke-width="2"/>';
+
+    var cables = 'M130 152C125 165 116 173 98 181M136 155C134 168 128 177 118 186';
+
+    var defs = '<defs>' +
+      rg('dome', ' cx=".38" cy=".22" r=".85"', [[0, '#ffffff'], [.12, '#e2e7ec'], [.36, '#9ba4ae'], [.66, '#4a525b'], [1, '#1e2227']]) +
+      lg('chrome', ' x2="0" y2="1"', [[0, '#f1f4f7'], [.25, '#c2c9d1'], [.46, '#7b858f'], [.52, '#2c3238'], [.6, '#5b646e'], [.82, '#a9b2bb'], [1, '#4b535c']]) +
+      lg('acier', '', [[0, '#23272c'], [.3, '#a3acb5'], [.46, '#eef2f5'], [.62, '#838c95'], [1, '#1f2327']]) +
+      lg('sombre', ' x2="0" y2="1"', [[0, '#4a525b'], [.35, '#262b30'], [1, '#101215']]) +
+      lg('plaque', ' x2="1" y2="1"', [[0, '#e3e8ed'], [.4, '#8e98a2'], [.56, '#363d44'], [.8, '#7c8691'], [1, '#bcc4cc']]) +
+      rg('orbite', '', [[0, '#000'], [.55, '#08090b'], [.85, '#24292f'], [1, '#4d555e']]) +
+      rg('rouge', '', [[0, '#ffb3a4'], [.22, '#EC7063', .9], [.55, '#EC7063', .3], [1, '#EC7063', 0]]) +
+      lg('dent', ' x2="0" y2="1"', [[0, '#f5f7f9'], [.6, '#bcc3ca'], [1, '#6a727b']]) +
+      lg('cav', ' x2="0" y2="1"', [[0, '#000'], [1, '#1a0706']]) +
+      lg('scan', ' x2="0" y2="1"', [[0, '#EC7063', 0], [.85, '#EC7063', .3], [1, '#ffb3a4', .9]]) +
+      rg('aura', '', [[0, '#EC7063', .38], [.55, '#EC7063', .1], [1, '#EC7063', 0]]) +
+      '</defs>';
+
+    return '<svg class="av-svg av-t800" ' + TETE + '>' + defs +
+      '<circle class="av-aura" cx="145" cy="84" r="132" fill="' + u('aura') + '"/>' +
+      ondes('#EC7063') +
+      '<g class="av-corps">' +
+      /* epaules, clavicules, plastron */
+      '<path d="M14 196C30 184 70 178 104 177L120 171L170 171L186 177C220 178 260 184 276 196Z" fill="' + u('sombre') + '"/>' +
+      '<g fill="none" stroke-linecap="round">' + trait(sym('M14 196C30 184 70 178 104 177L120 171'), '#b3bbc3', 1, .6) + '</g>' +
+      '<path d="' + sym('M60 184L108 178L112 183L64 189Z') + '" fill="' + u('plaque') + '" stroke="#15181b" stroke-width=".5"/>' +
+      '<path d="M127 178L163 178L159 196L131 196Z" fill="' + u('chrome') + '" stroke="#15181b" stroke-width=".5"/>' +
+      rivets([[40, 190], [88, 185], [250, 190], [202, 185]]) +
+      '<g class="av-t-data" fill="none">' + data + '</g>' +
+      /* cou : cables, verins, vertebres */
+      '<g fill="none" stroke-linecap="round">' +
+      trait(sym(cables), '#101215', 3.3) + trait(sym(cables), '#6f7a85', .8) +
+      '<path class="av-t-flux" d="' + sym(cables) + '" stroke="#ff8a78" stroke-width="1.3"/>' +
+      trait(sym('M121 163L114 178'), '#191c20', 7.6) + trait(sym('M121 163L114 178'), '#7f8993', 5.4) +
+      trait(sym('M119.8 162.6L112.8 177.6'), '#eef2f5', 1.2, .7) +
+      trait(sym('M128 149L121 163'), '#1a1d21', 3.6) + trait(sym('M128 149L121 163'), '#d4dae0', 2.2) +
+      '</g>' +
+      [0, 1, 2, 3, 4, 5].map(function (n) { return rect(137, 149 + n * 7.6, 16, 6, u('acier'), ' rx="2" stroke="#131619" stroke-width=".5"'); }).join('') +
+      /* tete */
+      '<g class="av-pose"><g class="av-tete">' +
+      '<circle cx="93" cy="94" r="7" fill="' + u('acier') + '" stroke="#15181b" stroke-width=".8"/><circle cx="197" cy="94" r="7" fill="' + u('acier') + '" stroke="#15181b" stroke-width=".8"/>' +
+      '<path d="' + crane + '" fill="' + u('dome') + '"/>' +
+      '<path d="M91 50C112 43 178 43 199 50L199 55C178 48 112 48 91 55Z" fill="#14181c" fill-opacity=".45"/>' +
+      '<ellipse cx="123" cy="27" rx="17" ry="6.5" fill="#fff" fill-opacity=".5" transform="rotate(-28 123 27)"/>' +
+      '<ellipse cx="171" cy="22" rx="8" ry="2.6" fill="#fff" fill-opacity=".25" transform="rotate(25 171 22)"/>' +
+      '<g fill="none">' +
+      trait(crane, '#e6ebef', .7, .45) +
+      trait('M145 10L145 58', '#1b1f24', .9) + trait('M146.3 12L146.3 56', '#fff', .5, .45) +
+      trait(sym('M104 38C111 50 112 63 107 76'), '#1b1f24', .9) + trait(sym('M105.3 38C112.3 50 113.3 63 108.3 76'), '#fff', .5, .35) +
+      '</g>' +
+      rivets([[114, 44], [176, 44], [104, 72], [186, 72]]) +
+      /* bouche : cavite, machoire articulee */
+      rect(112, 116, 66, 32, u('cav')) +
+      '<g class="av-machoire">' +
+      rect(104.2, 110, 3.6, 26, u('acier')) + rect(182.2, 110, 3.6, 26, u('acier')) +
+      '<g fill="none">' + trait(sym('M106 136L113 138'), '#23272c', 2.4) + '</g>' +
+      '<circle cx="106" cy="136" r="3.2" fill="' + u('acier') + '" stroke="#15181b" stroke-width=".6"/><circle cx="184" cy="136" r="3.2" fill="' + u('acier') + '" stroke="#15181b" stroke-width=".6"/>' +
+      '<path d="M113 126L177 126L180 139C178 151 165 160 145 161C125 160 112 151 110 139Z" fill="' + u('chrome') + '" stroke="#15181b" stroke-width=".6"/>' +
+      '<path d="' + dentsB + '" fill="' + u('dent') + '" stroke="#2e3439" stroke-width=".35"/>' +
+      '<g fill="none">' + trait('M126 151L164 151', '#1b1f24', .9) + trait('M126 152.2L164 152.2', '#fff', .5, .35) + '</g>' +
+      rivets([[121, 141], [169, 141]]) +
+      '</g>' +
+      '<path d="M117 102C129 98 161 98 173 102L175 125L115 125Z" fill="' + u('chrome') + '" stroke="#15181b" stroke-width=".5"/>' +
+      '<path d="M145 94C150 97 153 105 152 112C150 115 147 114 145 111C143 114 140 115 138 112C137 105 140 97 145 94Z" fill="#06080a" stroke="#5a636c" stroke-width=".6"/>' +
+      '<path d="' + sym('M104 91C108 100 118 104 132 104L137 110L126 117C113 117 104 111 99 101Z') + '" fill="' + u('plaque') + '" stroke="#15181b" stroke-width=".5"/>' +
+      '<path d="' + dents + '" fill="' + u('dent') + '" stroke="#2e3439" stroke-width=".35"/>' +
+      rect(102, 98, 8, 20, u('acier'), ' rx="1.6" stroke="#15181b" stroke-width=".5"') + rect(180, 98, 8, 20, u('acier'), ' rx="1.6" stroke="#15181b" stroke-width=".5"') +
+      '<path d="M98 66C112 57 132 58 145 64C158 58 178 57 192 66L190 74C177 68 160 69 145 75C130 69 113 68 100 74Z" fill="' + u('chrome') + '" stroke="#15181b" stroke-width=".5"/>' +
+      '<path d="' + sym('M105 75C113 70 131 70 141 78C144 87 139 98 127 99C114 99 106 90 105 75Z') + '" fill="' + u('orbite') + '" stroke="#c9d0d7" stroke-opacity=".55" stroke-width=".7"/>' +
+      optique(124, 85) + optique(166, 85) +
+      '<g class="av-t-scan"><g class="av-t-balai">' + rect(86, 0, 118, 10, u('scan')) + rect(86, 9.4, 118, .9, '#ffd2c8') + '</g></g>' +
+      '</g></g></g></svg>';
+  }
+
+  return T8 ? t800() : cyber();
+}
+
+function cssAvatar(ancetre) {
+  'use strict';
+  var A = typeof ancetre === 'function' ? ancetre : function (c) { return '.scene-avatar' + c; };
+  var L = A('[data-etat="listening"]') + ' ', PR = A('[data-etat="processing"]') + ' ',
+    S = A('[data-etat="speaking"]') + ' ', AU = A('[data-etat="speaking"][data-audio]') + ' ',
+    T = A('[data-skin="T800_Skynet"]') + ' ';
+  /* profil de parole irregulier : 7 ouvertures par cycle (~6-7 Hz a 1,1 s) */
+  var PAROLE = [[0, 0], [7, .55], [13, .15], [21, .8], [27, .25], [34, .6], [40, .05], [48, .9], [55, .3], [62, .7], [68, .1], [76, .55], [83, .2], [91, .75], [100, 0]];
+  function kf(nom, fn) {
+    return '@keyframes ' + nom + '{' + PAROLE.map(function (p) { return p[0] + '%{transform:' + fn(p[1]) + '}'; }).join('') + '}';
+  }
+  function r(v) { return Math.round(v * 100) / 100; }
+  return [
+    '.av-svg{display:block;width:100%;height:100%}',
+    '.av-t800{display:none}',
+    T + '.av-t800{display:block}',
+    T + '.av-cyber{display:none}',
+    '.av-svg *{transform-box:fill-box}',
+    /* --- commun : souffle, pose, micro-mouvement de tete, aura, ondes --- */
+    '.av-corps{animation:av-souffle 5.2s ease-in-out infinite}',
+    '@keyframes av-souffle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}',
+    '.av-pose,.av-tete{transform-box:view-box;transform-origin:145px 150px}',
+    '.av-pose{transition:transform .8s cubic-bezier(.25,.8,.3,1)}',
+    '.av-tete{animation:av-tete 8s ease-in-out infinite}',
+    '@keyframes av-tete{0%,100%{transform:rotate(0)}30%{transform:rotate(.9deg) translateX(.5px)}65%{transform:rotate(-.7deg) translateX(-.3px)}}',
+    L + '.av-pose{transform:translateY(2.5px) rotate(-2.2deg) scale(1.03)}',
+    PR + '.av-pose{transform:rotate(1.2deg)}',
+    '.av-aura{opacity:.35;transition:opacity .8s}',
+    L + '.av-aura{opacity:.85}',
+    PR + '.av-aura{animation:av-pouls 1.3s ease-in-out infinite}',
+    S + '.av-aura{opacity:.55}',
+    AU + '.av-aura{opacity:calc(.4 + var(--bouche,0) * .5);transition:opacity .08s}',
+    '@keyframes av-pouls{0%,100%{opacity:.45}50%{opacity:.85}}',
+    '.av-ondes{opacity:0;transition:opacity .6s}',
+    L + '.av-ondes{opacity:1}',
+    '.av-onde{opacity:0;transform-box:view-box;transform-origin:145px 86px}',
+    L + '.av-onde{animation:av-onde 1.8s ease-out infinite}',
+    L + '.av-o2{animation-delay:.3s}',
+    L + '.av-o3{animation-delay:.6s}',
+    '@keyframes av-onde{0%{opacity:0;transform:scale(.93)}25%{opacity:1}100%{opacity:0;transform:scale(1.07)}}',
+    /* --- Cyber IA --- */
+    '.av-oeil{transform-box:view-box;animation:av-cligne 6.5s ease-in-out infinite}',
+    '@keyframes av-cligne{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.06)}}',
+    '.av-lueur{opacity:.2;transition:opacity .5s}',
+    L + '.av-lueur{opacity:1}', PR + '.av-lueur{opacity:.6}', S + '.av-lueur{opacity:.45}',
+    '.av-irisf{opacity:0;transition:opacity .5s}',
+    L + '.av-irisf{opacity:.5}', PR + '.av-irisf{opacity:.3}',
+    PR + '.av-iris{animation:av-saccade 1.1s steps(1,end) infinite}',
+    '@keyframes av-saccade{0%{transform:translate(0,0)}18%{transform:translate(1.7px,-.3px)}36%{transform:translate(-1.3px,.3px)}52%{transform:translate(.6px,.6px)}70%{transform:translate(-1.8px,-.4px)}86%{transform:translate(1px,.2px)}}',
+    '.av-k{animation:av-circ 4.5s ease-in-out infinite}',
+    '@keyframes av-circ{0%,100%{opacity:.62}50%{opacity:.95}}',
+    PR + '.av-k{animation:av-seq 1.3s linear infinite}',
+    PR + '.av-k2{animation-delay:.18s}', PR + '.av-k1{animation-delay:.36s}',
+    PR + '.av-k4{animation-delay:.54s}', PR + '.av-k5{animation-delay:.72s}',
+    '@keyframes av-seq{0%,55%,100%{opacity:.3}18%{opacity:1}}',
+    AU + '.av-k{animation:none;opacity:calc(.55 + var(--bouche,0) * .45)}',
+    '.av-flux{opacity:0;stroke-dasharray:2.5 21;transition:opacity .4s}',
+    PR + '.av-flux{opacity:1;animation:av-flux 1.1s linear infinite}',
+    '@keyframes av-flux{to{stroke-dashoffset:-23.5}}',
+    '.av-bouche{transform-origin:50% 0;transform:scaleY(0);transition:transform .09s linear}',
+    '.av-levre-b{transition:transform .09s linear}',
+    S + '.av-bouche{animation:av-bouche 1.1s linear infinite}',
+    S + '.av-levre-b{animation:av-levre 1.1s linear infinite}',
+    kf('av-bouche', function (v) { return 'scaleY(' + v + ')'; }),
+    kf('av-levre', function (v) { return 'translateY(' + r(v * 6) + 'px)'; }),
+    AU + '.av-bouche{animation:none;transform:scaleY(var(--bouche,0))}',
+    AU + '.av-levre-b{animation:none;transform:translateY(calc(var(--bouche,0) * 6px))}',
+    /* --- T-800 --- */
+    '.av-t-glow{animation:av-optique 4.5s ease-in-out infinite}',
+    '@keyframes av-optique{0%,100%{opacity:.5}50%{opacity:.9}}',
+    L + '.av-t-glow{animation:av-optique-e 1.3s ease-in-out infinite}',
+    '@keyframes av-optique-e{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}',
+    PR + '.av-t-glow{animation:av-optique-p .5s linear infinite}',
+    '@keyframes av-optique-p{0%,100%{opacity:.95}50%{opacity:.6}}',
+    S + '.av-t-glow{animation:none;opacity:.9}',
+    AU + '.av-t-glow{opacity:calc(.6 + var(--bouche,0) * .4)}',
+    '.av-t-oeil{transform-box:view-box;transition:transform .5s}',
+    L + '.av-t-oeil{transform:scale(1.12)}',
+    PR + '.av-t-oeil{animation:av-saccade .9s steps(1,end) infinite}',
+    '.av-t-coeur{opacity:.8;transition:opacity .4s}',
+    L + '.av-t-coeur,' + PR + '.av-t-coeur,' + S + '.av-t-coeur{opacity:1}',
+    '.av-t-scan,.av-t-data,.av-t-flux{opacity:0;transition:opacity .4s}',
+    PR + '.av-t-scan,' + PR + '.av-t-data,' + PR + '.av-t-flux{opacity:1}',
+    '.av-t-balai{transform-box:view-box}',
+    PR + '.av-t-balai{animation:av-balai 1.9s linear infinite}',
+    '@keyframes av-balai{0%{transform:translateY(0);opacity:0}8%,90%{opacity:1}100%{transform:translateY(158px);opacity:0}}',
+    PR + '.av-t-d{animation:av-data .8s steps(1,end) infinite}',
+    PR + '.av-t-d2{animation-delay:.2s}', PR + '.av-t-d3{animation-delay:.4s}', PR + '.av-t-d4{animation-delay:.6s}',
+    '@keyframes av-data{0%{opacity:1}35%{opacity:.25}60%{opacity:.9}80%{opacity:.4}}',
+    '.av-t-flux{stroke-dasharray:2 13}',
+    PR + '.av-t-flux{animation:av-flux-t .7s linear infinite}',
+    '@keyframes av-flux-t{to{stroke-dashoffset:15}}',
+    '.av-machoire{transition:transform .09s linear}',
+    S + '.av-machoire{animation:av-machoire 1.25s linear infinite}',
+    kf('av-machoire', function (v) { return 'translateY(' + r(v * 7) + 'px)'; }),
+    AU + '.av-machoire{animation:none;transform:translateY(calc(var(--bouche,0) * 8px))}',
+    '@media (prefers-reduced-motion:reduce){.av-corps,.av-tete,.av-oeil,.av-k,.av-t-glow{animation:none}}'
+  ].join('\n');
+}
+
+    const SKINS = [['Cyber_IA', 'Cyber IA', '#5DADE2'], ['T800_Skynet', 'T-800 Skynet', '#EC7063']];
+    const ETATS = [['idle', 'Repos'], ['listening', 'Écoute'], ['processing', 'Réflexion'], ['speaking', 'Parole']];
+    const LIB = { Cyber_IA: { idle: 'En veille', listening: 'À l’écoute', processing: 'Réflexion…', speaking: 'Parle' },
+      T800_Skynet: { idle: 'IDLE', listening: 'LISTENING', processing: 'PROCESSING', speaking: 'SPEAKING' } };
+    let feuille = null;
+    function styles() {
+      if (feuille) return;
+      feuille = document.createElement('style');
+      feuille.textContent = cssAvatar(function (c) { return '.apercu-av-scene' + c; })
+        + '.apercu-av-scene{position:relative;width:100%;aspect-ratio:290/196;border-radius:12px;overflow:hidden;background:#05070b}'
+        + '.apercu-av-scene .av-svg{position:absolute;inset:0}'
+        + '.apercu-av-fx{position:absolute;inset:0;pointer-events:none;border-radius:12px}'
+        + '.apercu-av-scene[data-skin="T800_Skynet"] .apercu-av-fx{background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0,rgba(0,0,0,.28) 1px,transparent 1px,transparent 3px)}'
+        + '.apercu-av-scene[data-skin="Cyber_IA"] .apercu-av-fx{box-shadow:inset 0 0 22px 2px rgba(93,173,226,.35)}'
+        + '.apercu-av-hud{position:absolute;top:7px;left:8px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(0,0,0,.5);color:#DDEFFA;border:1px solid rgba(93,173,226,.55)}'
+        + '.apercu-av-scene[data-skin="T800_Skynet"] .apercu-av-hud{font-family:ui-monospace,Menlo,Consolas,monospace;color:#EC7063;border-color:transparent;background:transparent;text-shadow:0 0 6px rgba(236,112,99,.8);letter-spacing:1px}'
+        + '.apercu-av-cadre{padding:3px;border-radius:15px;background:conic-gradient(#FFFFFF,#52BE80,#F8C471,#EC7063,#5DADE2,#BF71B2,#FFFFFF)}'
+        + '.apercu-av-cadre[data-etat="idle"]{background:#333333}';
+      document.head.appendChild(feuille);
+    }
+    function bouton(cle, valeur, libelle, actif, couleur) {
+      return '<button type="button" data-' + cle + '="' + valeur + '" style="font:inherit;font-size:11px;padding:3px 9px;'
+        + 'border-radius:12px;cursor:pointer;border:1px solid ' + (actif ? couleur : 'rgba(128,128,128,0.45)')
+        + ';background:' + (actif ? couleur + '2E' : 'transparent') + ';color:inherit">' + libelle + '</button>';
+    }
+    function dessiner(cible) {
+      styles();
+      const skin = cible.dataset.skin || (document.getElementById('param-interface_avatar-AVATAR_SKIN') || {}).value || 'Cyber_IA';
+      const etat = cible.dataset.etat || 'speaking';
+      const couleur = skin === 'T800_Skynet' ? '#EC7063' : '#5DADE2';
+      let svg;
+      try { svg = svgAvatar(skin, 'apercu-av'); } catch (e) { cible.textContent = ''; return; }
+      cible.innerHTML = '<div style="max-width:320px;margin:6px auto">'
+        + '<div class="apercu-av-cadre" data-etat="' + etat + '">'
+        + '<div class="apercu-av-scene" data-skin="' + skin + '"' + (etat === 'idle' ? '' : ' data-etat="' + etat + '"') + '>'
+        + svg + '<div class="apercu-av-fx"></div><div class="apercu-av-hud">' + LIB[skin][etat] + '</div></div></div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:8px 0 4px">'
+        + SKINS.map(s => bouton('skin', s[0], s[1], s[0] === skin, s[2])).join('') + '</div>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:0 0 6px">'
+        + ETATS.map(e => bouton('etat', e[0], e[1], e[0] === etat, couleur)).join('') + '</div></div>';
+      cible.querySelectorAll('button[data-skin]').forEach(b => b.addEventListener('click', () => {
+        cible.dataset.skin = b.dataset.skin; dessiner(cible); }));
+      cible.querySelectorAll('button[data-etat]').forEach(b => b.addEventListener('click', () => {
+        cible.dataset.etat = b.dataset.etat; dessiner(cible); }));
+    }
+    return function (racine) { (racine || document).querySelectorAll('.apercu-avatar').forEach(dessiner); };
+  })();
+  new MutationObserver(() => {
+    document.querySelectorAll('.apercu-avatar:not([data-dessine])').forEach(c => {
+      c.setAttribute('data-dessine', '1'); dessinerAvatars(c.parentNode); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('change', e => {
+    if (e.target && e.target.id === 'param-interface_avatar-AVATAR_SKIN') {
+      document.querySelectorAll('.apercu-avatar').forEach(c => { c.dataset.skin = e.target.value; });
+      dessinerAvatars();
+    }
+  });
+  /* ---------- FIN APERCU DE L'AVATAR IA ---------- */
   const PACK_APERCU = {
     securite_camera: 'camera',
     OK_service_meteo: 'meteo',
@@ -20724,7 +21435,8 @@ function dessinSonnette(o) {
     service_personne: 'personne',
     appareil_voiture: 'voiture',
     appareil_panneau_solaire: 'solaire',
-    appareil_sonnette: 'sonnette'
+    appareil_sonnette: 'sonnette',
+    interface_avatar: 'avatar-ia'
   };
 
   function themeSite(cle) {
@@ -21259,6 +21971,8 @@ function dessinSonnette(o) {
     // (`FREE_MODULES` de backend/src/jobs.js) : c'est le serveur qui decide,
     // et lui seul.
     'securite_camera',
+    // `interface_avatar` ajoute le 29/09/2026 : phase de test.
+    'interface_avatar',
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'configuration_zigbee2mqtt',
@@ -22488,6 +23202,7 @@ function dessinSonnette(o) {
     appareil_voiture: 'voiture',
     appareil_panneau_solaire: 'solaire',
     appareil_sonnette: 'sonnette',
+    interface_avatar: 'avatar-ia',
     appareil_refrigerateur: 'refrigerateur',
     // Pack Lave-linge (03/09/2026), ecrit sur le gabarit du pack
     // Lumiere : synoptique de cycle, statistiques et historique de
