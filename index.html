@@ -6,10 +6,18 @@
   <title>HA-Deploy — Déploiement Domotique</title>
   <meta name="theme-color" content="#24282e">
   <!-- Favicon du site (SVG inline : aucune requête réseau, net sur tous les écrans) -->
-  <!-- Logo du client (20/09/2026) : cubes isometriques bois + neon bleu,
-       detoure du fond gris du fichier fourni (templates/logo/). -->
-  <link rel="icon" type="image/png" sizes="64x64" href="templates/logo/ha-deploy-favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="templates/logo/ha-deploy-touch.png">
+  <!-- Logo du client, DEUX dessins (29/09/2026) : sur la version sombre l'oeil
+       est blanc lumineux et le cadre part du blanc, sur la claire l'oeil est
+       anthracite et le cadre part du noir. Les deux sont detoures sur une boite
+       commune (`_detourer_logo.py`), donc superposables au pixel.
+       `media` choisit au premier rendu ; `applyTheme` suit ensuite le theme que
+       le visiteur choisit lui-meme, qu'aucune regle CSS ne peut atteindre. -->
+  <link rel="icon" type="image/png" sizes="64x64" id="favicon-clair"
+        href="templates/logo/ha-deploy-favicon-clair.png" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" sizes="64x64" id="favicon-sombre"
+        href="templates/logo/ha-deploy-favicon-sombre.png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" sizes="180x180" id="touch-icone"
+        href="templates/logo/ha-deploy-touch-sombre.png">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css" rel="stylesheet">
   <style>
@@ -254,9 +262,12 @@
       align-items: center;
       justify-content: center;
     }
-    /* Le logo du client (20/09/2026) remplace l'icone de maison : il porte
-       sa forme et ses couleurs, donc ni fond, ni arrondi, ni ombre autour.
-       Un leger halo bleu sous le cube, qui suit le neon du dessin. */
+    /* Le logo du client remplace l'icone de maison : il porte sa forme et ses
+       couleurs, donc ni fond, ni arrondi, ni ombre autour. Un leger halo bleu
+       sous le cube, qui suit le neon du dessin.
+       DEUX DESSINS, UN PAR POLARITE (29/09/2026) : les deux <img> sont posees,
+       le theme en masque une. Changer un `src` en JS laisserait un temps mort au
+       premier basculement, le temps que l'autre fichier arrive. */
     .nav-brand-mark img {
       width: 100%;
       height: 100%;
@@ -264,6 +275,9 @@
       display: block;
       filter: drop-shadow(0 3px 8px rgba(93, 173, 226, 0.35));
     }
+    .nav-brand-mark img.logo-clair { display: none; }
+    html[data-theme="light"] .nav-brand-mark img.logo-sombre { display: none; }
+    html[data-theme="light"] .nav-brand-mark img.logo-clair { display: block; }
 
     .nav-brand-title {
       font-size: 1.28rem;
@@ -3036,7 +3050,7 @@
       <i class="fa-solid fa-bars"></i>
     </button>
     <button type="button" class="nav-brand" onclick="switchTab('accueil')" title="Retour à l'accueil" aria-label="Retour à l'accueil">
-      <span class="nav-brand-mark"><img src="templates/logo/ha-deploy-logo-96.png" alt="" width="96" height="96" decoding="async"></span>
+      <span class="nav-brand-mark"><img class="logo-sombre" src="templates/logo/ha-deploy-96-sombre.png" alt="" width="96" height="96" decoding="async"><img class="logo-clair" src="templates/logo/ha-deploy-96-clair.png" alt="" width="96" height="96" decoding="async"></span>
       <span class="nav-brand-title">HA-Deploy</span>
     </button>
     <div class="nav-links">
@@ -3978,8 +3992,7 @@
       { name: 'appareil_sonnette', desc: 'Sonnette vidéo dessinée, direct, appel interactif, ouverture de la porte, carillon et journal des visites' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_tondeuse', desc: 'Robot vivant sur sa pelouse, batterie, planning et modes, usure des lames et alertes' },
-      { name: 'appareil_voiture', desc: 'Véhicule dessiné en 360°, recharge, climatisation, sécurité, pneus et mises à jour' },
-      { name: 'appareil_zigbee', desc: 'Passerelle et réseau Zigbee' }
+      { name: 'appareil_voiture', desc: 'Véhicule dessiné en 360°, recharge, climatisation, sécurité, pneus et mises à jour' }
     ],
     service: [
       { name: 'OK_service_meteo', desc: 'Service Météo & Prévisions' },
@@ -3987,8 +4000,7 @@
       { name: 'service_boite_aux_lettres', desc: 'Courrier et colis comptés et notifiés.' },
       { name: 'service_capteur', desc: 'Capteurs divers d\'ambiance' },
       { name: 'service_gestion_dechets', desc: 'Poubelles, compte à rebours et déchèterie' },
-      { name: 'service_personne', desc: 'Avatar, présence, batteries, brossage, trajet, agenda et santé' },
-      { name: 'service_transport', desc: 'Horaires transports en commun' }
+      { name: 'service_personne', desc: 'Avatar, présence, batteries, brossage, trajet, agenda et santé' }
     ],
     eau: [
       { name: 'eau_compteur', desc: 'Distribution de l\'eau, consommation par vanne, répartition, coûts et fuites' },
@@ -3997,8 +4009,9 @@
       { name: 'eau_arrosage', desc: 'Arrosage par zones, programmateur et consommation' }
     ],
     interface: [
-      { name: 'interface_avatar', desc: `Avatar animé qui vous écoute et vous répond : Cyber IA ou T-800, LLM au choix, voix et contrôle de la maison` },
-      { name: 'interface_dashboard_principal', desc: 'Personnalisation des tuiles et vues Lovelace' }
+      { name: 'interface_pieces', desc: 'Vue d\'ensemble par pièce : personnes, météo, horloge et six familles d\'appareils, pièce par pièce' },
+      { name: 'interface_plan', desc: 'Plan de la maison : vos pièces à leur place, appareils posés dessus' },
+      { name: 'interface_avatar', desc: `Avatar animé qui vous écoute et vous répond : Cyber IA ou T-800, LLM au choix, voix et contrôle de la maison` }
     ],
     // Derniere categorie du catalogue, et derniere pastille du bandeau.
     maintenance: [
@@ -4045,7 +4058,6 @@
     appareil_television: 'Téléviseur',
     appareil_tondeuse: 'Robot Tondeuse',
     appareil_voiture: 'Véhicule Électrique',
-    appareil_zigbee: 'Passerelle Zigbee',
     OK_service_meteo: 'Météo',
     OK_service_temps: 'Temps',
     service_boite_aux_lettres: 'Boîte aux Lettres',
@@ -4053,12 +4065,12 @@
     appareil_compteur_electricite: 'Compteur Électrique',
     service_gestion_dechets: 'Gestion des Déchets',
     service_personne: 'Personne',
-    service_transport: 'Transports',
     eau_compteur: 'Compteur d\'Eau',
     eau_detecteur_fuite: 'Détecteur de Fuite',
     eau_piscine: 'Piscine Connectée',
     eau_arrosage: 'Arrosage',
-    interface_dashboard_principal: 'Tableau de Bord',
+    interface_pieces: 'Pièces',
+    interface_plan: 'Plan',
     interface_avatar: `Avatar IA & Contrôle Vocal`,
     maintenance_instance: 'Maintenance'
   };
@@ -4102,7 +4114,6 @@
     appareil_television: 'fa-tv',
     appareil_tondeuse: 'fa-seedling',
     appareil_voiture: 'fa-car',
-    appareil_zigbee: 'fa-diagram-project',
     OK_service_meteo: 'fa-cloud-sun',
     OK_service_temps: 'fa-clock',
     service_boite_aux_lettres: 'fa-envelope',
@@ -4112,12 +4123,12 @@
     // à côté sur la même ligne du panier.
     service_gestion_dechets: 'fa-recycle',
     service_personne: 'fa-user-group',
-    service_transport: 'fa-bus',
     eau_compteur: 'fa-droplet',
     eau_detecteur_fuite: 'fa-house-flood-water',
     eau_piscine: 'fa-water-ladder',
     eau_arrosage: 'fa-faucet',
-    interface_dashboard_principal: 'fa-table-cells-large',
+    interface_pieces: 'fa-table-cells-large',
+    interface_plan: 'fa-map',
     interface_avatar: 'fa-user-astronaut',
     maintenance_instance: 'fa-screwdriver-wrench'
   };
@@ -4177,6 +4188,10 @@
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
   const MODULE_MEDIA = {
+    interface_pieces: {
+      resume: "Une carte unique pour toute la maison : personnes, météo, horloge, et une pastille par pièce qui dit ce qui s'y passe.",
+      detail: `Un <b>tableau de bord d'ensemble</b>, façon cockpit &mdash; vous ne saisissez que les <b>noms de vos pièces</b> (3 à 15), le pack relit tout ce que Home Assistant sait déjà de chacune. En haut, trois capsules : les <b>personnes</b> du foyer avec un halo qui suit leur zone (vert à la maison, bleu au travail, ambre ailleurs), une <b>horloge</b> avec la date et le prochain rendez-vous de votre agenda, et la <b>météo</b> du jour. En dessous, une pastille par pièce : son icône (déduite de son nom), sa température si elle en a une, et six petites icônes &mdash; <b>Ouverture</b>, <b>Appareil</b>, <b>Lumière</b>, <b>Chauffage</b>, <b>Eau</b>, <b>Sécurité</b> &mdash; qui s'allument dans la couleur de leur famille dès qu'au moins un appareil de cette catégorie est actif dans la pièce, avec sa propre animation (oscillation, pulsation, halo, flamme, onde, battement). Dès qu'une pièce a de l'activité, sa bordure prend un <b>dégradé multicolore tournant</b>, composé UNIQUEMENT des couleurs des catégories actives &mdash; une pièce éteinte reste sobre, grise. Aucun appareil n'est piloté par ce pack : c'est une vue de synthèse, pensée pour cohabiter avec tous les autres.`
+    },
     appareil_raspberry: {
       resume: "Le Raspberry qui fait tourner votre maison, vivant : charge, mémoire, température, disque, Zigbee, Wi-Fi, Bluetooth, consommation et alertes.",
       detail: `La supervision complète du <b>Raspberry Pi</b> qui fait tourner votre Home Assistant &mdash; <b>rien à saisir</b> : le pack reconnaît seul le modèle (Pi 3, 4 ou 5) et sa mémoire, lit le System Monitor, l'alerte de sous-tension, le pont Zigbee2MQTT, l'adaptateur Bluetooth et la prise connectée qui l'alimente. Le premier onglet montre la <b>carte du Raspberry</b>, vivante : sur chaque composant une icône colorée selon son état &mdash; processeur qui pulse d'autant plus vite qu'il travaille, mémoire, température, disque, port Ethernet avec ses deux diodes de lien et d'activité, dongle Zigbee, puce Wi-Fi et Bluetooth &mdash; et les deux voyants de la carte, PWR rouge et ACT vert qui scintille. À côté, trois jauges verticales (processeur, mémoire, disque) dans lesquelles un reflet monte tant que la machine tourne. Quand le Raspberry fonctionne, la carte prend sa <b>bordure animée verte</b> et son fond s'allume ; un seuil franchi ou une sous-tension, et tout passe au <b>rouge</b>. Le deuxième onglet détaille en six sous-onglets : système (modèle, mise à jour disponible, dernier démarrage, réseau), performance, disque, et <b>Zigbee, Wi-Fi et Bluetooth au même dessin</b> &mdash; une capsule d'état puis la liste de vos appareils, lue sur votre instance. Le troisième trace la consommation électrique, la charge et la température sur le jour, la semaine, le mois ou l'année. Vos mobiles sont prévenus d'une coupure, d'un nouvel appareil appairé, d'un disque rempli à 75 %, d'un processeur ou d'une mémoire saturés.`
@@ -4973,6 +4988,31 @@
   };
 
   const PACK_DETAILS = {
+    interface_pieces: {
+      intro: `Une seule vue, sans onglet : le bandeau des personnes, de l'horloge et de la météo, puis la grille de vos pièces. Vous ne saisissez que leurs <b>noms</b> &mdash; le pack lit, pour chacune, ce que Home Assistant y a déjà : lumières, prises, volets, capteurs, thermostats, caméras... et en déduit ce qui est actif. <b>Rien n'est piloté</b> : c'est une vue d'ensemble, pas une télécommande.`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: 'Bandeau', icone: 'fa-users',
+          texte: `Trois capsules. <b>Personnes</b> : les membres du foyer suivis par Home Assistant, chacun avec son avatar et un halo qui dit où il est (vert à la maison, bleu au travail, ambre à une autre zone connue, gris sans position). <b>Horloge</b> : l'heure, la date du jour, et &mdash; si vous avez un agenda &mdash; le titre et la date du prochain événement. <b>Météo</b> : l'icône et la température du moment, avec une bordure qui vire du bleu au rouge selon qu'il fait frais ou chaud.`,
+          elements: [
+            { nom: `Personnes`, texte: `jusqu'à six avatars, halo de zone en direct.` },
+            { nom: `Horloge`, texte: `heure, date, prochain rendez-vous de l'agenda choisi.` },
+            { nom: `Météo`, texte: `icône animée selon la condition, température, bordure colorée selon le froid ou la chaleur.` }
+          ] },
+        { titre: 'Grille des pièces', icone: 'fa-border-all',
+          texte: `Une pastille par pièce, trois par rangée. Chacune montre l'icône de la pièce (déduite de son nom : canapé pour un séjour, lit pour une chambre, voiture pour un garage...), son nom, sa température si un capteur ou un thermostat en publie une, puis six petites icônes de catégorie. Une catégorie sans aucun appareil dans cette pièce reste grise et discrète ; dès qu'un appareil de cette famille est actif, son icône s'allume dans la couleur de la famille et s'anime. La bordure de la pièce prend un dégradé tournant fait des couleurs actives &mdash; une seule catégorie active donne une bordure unie, plusieurs donnent un anneau multicolore.`,
+          elements: [
+            { nom: `Icône et nom`, texte: `déduits du nom de la pièce que vous avez saisi.` },
+            { nom: `Température`, texte: `un capteur dédié en priorité, sinon celle d'un thermostat de la pièce.` },
+            { nom: `Ouverture`, texte: `blanc &mdash; volets, fenêtres, portes ouvertes.` },
+            { nom: `Appareil`, texte: `vert &mdash; prises, robots, multimédia allumés.` },
+            { nom: `Lumière`, texte: `jaune &mdash; au moins une lumière allumée.` },
+            { nom: `Chauffage`, texte: `rouge &mdash; un thermostat qui n'est pas éteint.` },
+            { nom: `Eau`, texte: `bleu &mdash; une vanne ouverte, une fuite détectée, un chauffe-eau en marche.` },
+            { nom: `Sécurité`, texte: `violet &mdash; mouvement détecté, alarme armée, porte déverrouillée.` }
+          ] }
+      ]
+    },
     appareil_raspberry: {
       intro: `Trois onglets : indicateur, détails, historique. <b>Rien à saisir</b> : le pack reconnaît le modèle de votre Raspberry (3, 4 ou 5) et sa mémoire, et retrouve seul le System Monitor, l'alerte de sous-tension, le pont Zigbee2MQTT, l'adaptateur Bluetooth et la prise connectée qui l'alimente. <b>C'est votre installation qui fait la variante</b> : la carte suit votre modèle, et sans Zigbee, sans Wi-Fi ou sans Bluetooth leur sous-onglet disparaît ; sans prise, la courbe de consommation aussi.`,
       carte: () => 'defaut',
@@ -6536,12 +6576,20 @@
       // Le lien « Détails » est présent sur tous les packs, les captures non :
       // le dire vaut mieux qu'ouvrir une page vide.
       const desc = detailSepare(descriptifDe(cleModule));
+      // Deux replis, et il faut les deux : un pack LIVRÉ dont les captures ne
+      // sont pas encore prises se déploie dès maintenant ; un pack À VENIR (pas
+      // d'entrée dans SERVER_MODULES, donc rien à exécuter côté serveur) ne se
+      // déploie pas, et le lui promettre serait mentir sur ce qu'il achète.
+      const livre = !!SERVER_MODULES[cleModule];
       corps.innerHTML = `
         <div class="card detail-bloc">
           <p class="detail-intro">${desc.descriptif || ''}</p>
           <div class="detail-attente" style="margin-top: 14px;">
-            <i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack sont en
-            cours de préparation. Le pack reste déployable dès maintenant depuis l'onglet Packs.
+            ${livre
+              ? `<i class="fa-solid fa-camera"></i> Les captures détaillées de ce pack sont en
+                 cours de préparation. Le pack reste déployable dès maintenant depuis l'onglet Packs.`
+              : `<i class="fa-solid fa-hourglass-half"></i> Ce pack est <b>en cours de préparation</b>
+                 et n'est pas encore déployable. Il apparaît ici pour que vous sachiez ce qui arrive.`}
           </div>
         </div>`;
       return;
@@ -7154,6 +7202,20 @@
   ];
 
   const MODULE_PARAMS = {
+    interface_pieces: [
+      { param: 'PIECES_LISTE', label: 'Vos pièces (3 à 15)', type: 'text', required: true,
+        groupe: '🏠 Pièces',
+        placeholder: 'ex : Salon, Cuisine, Chambre, Garage, Salle de bain, Jardin' },
+      { param: 'PIECES_PERSONNES', label: 'Personnes à afficher', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : toutes les personnes suivies par votre instance' },
+      { param: 'PIECES_METEO', label: 'Entité météo', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : déduite (met.no en priorité)' },
+      { param: 'PIECES_AGENDA', label: 'Agenda (calendriers)', type: 'text', required: false,
+        groupe: '🔧 Corrections (rarement utiles)',
+        placeholder: 'vide : le premier calendrier personnel trouvé' }
+    ],
     appareil_raspberry: [
       { param: 'RPI_MODELE', label: 'Modèle', type: 'select', required: false,
         groupe: '🍓 Raspberry',
@@ -8329,6 +8391,12 @@
      déploiement (`REQUIRED_RESOURCES` / `REQUIRED_HACS_REPOS`), pas d'une
      supposition. */
   const INCLUS_PACK = {
+    interface_pieces:
+      'la vue et son bandeau (personnes, horloge, agenda, météo), '
+      + 'la grille de vos pièces avec leurs six catégories, le capteur '
+      + 'de synthèse créé pour chaque pièce (aucun appareil n\'est '
+      + 'piloté), ainsi que HACS et les cartes personnalisées requises '
+      + '(button-card, stack-in-card, card-mod).',
     appareil_raspberry:
       'la vue et ses trois onglets, les s\u00e9lecteurs et les quatre seuils '
       + 'r\u00e9glables, l\u2019automatisation aux huit alertes (processeur, '
@@ -21973,6 +22041,7 @@ function cssAvatar(ancetre) {
     'securite_camera',
     // `interface_avatar` ajoute le 29/09/2026 : phase de test.
     'interface_avatar',
+    'interface_pieces',
     'configuration_file_editor', 'configuration_terminal_ssh',
     'configuration_hacs', 'configuration_duckdns',
     'configuration_zigbee2mqtt',
@@ -23245,6 +23314,7 @@ function cssAvatar(ancetre) {
     eau_detecteur_fuite: 'fuite-eau',
     eau_arrosage: 'arrosage',
     securite_alarme: 'alarme',
+    interface_pieces: 'pieces',
     appareil_box_internet: 'box-internet',
     appareil_television: 'televiseur',
     appareil_compteur_electricite: 'compteur-electrique',
@@ -24303,6 +24373,20 @@ function cssAvatar(ancetre) {
 
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', isLight ? '#eef1f6' : '#24282e');
+
+    /* Les deux favicons restent declares (leur `media` sert au tout premier
+       rendu) ; on retire la contrainte de celui du theme choisi et on la rend a
+       l'autre, sinon le navigateur garderait celui du theme du SYSTEME. */
+    const favChoisi = document.getElementById(isLight ? 'favicon-clair' : 'favicon-sombre');
+    const favAutre = document.getElementById(isLight ? 'favicon-sombre' : 'favicon-clair');
+    if (favChoisi && favAutre) {
+      favChoisi.removeAttribute('media');
+      favAutre.setAttribute('media', 'not all');
+      // Redeposer le lien force le navigateur a relire l'icone.
+      favChoisi.parentNode.appendChild(favChoisi);
+    }
+    const touche = document.getElementById('touch-icone');
+    if (touche) touche.setAttribute('href', 'templates/logo/ha-deploy-touch-' + (isLight ? 'clair' : 'sombre') + '.png');
 
     try { localStorage.setItem('ha-deployer-theme', isLight ? 'light' : 'dark'); } catch (e) { /* stockage indisponible */ }
   }
