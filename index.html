@@ -24385,8 +24385,16 @@ function cssAvatar(ancetre) {
       // Redeposer le lien force le navigateur a relire l'icone.
       favChoisi.parentNode.appendChild(favChoisi);
     }
+    /* Les deux chemins sont ECRITS EN TOUTES LETTRES, jamais composes :
+       `publier_site.py` releve les fichiers cites par index.html, et un chemin
+       assemble a l'execution lui laisse un troncon qu'il ne sait pas completer
+       -- la variante claire n'etait pas partie sur le site. */
+    const TOUCH_ICONES = {
+      clair: 'templates/logo/ha-deploy-touch-clair.png',
+      sombre: 'templates/logo/ha-deploy-touch-sombre.png'
+    };
     const touche = document.getElementById('touch-icone');
-    if (touche) touche.setAttribute('href', 'templates/logo/ha-deploy-touch-' + (isLight ? 'clair' : 'sombre') + '.png');
+    if (touche) touche.setAttribute('href', TOUCH_ICONES[isLight ? 'clair' : 'sombre']);
 
     try { localStorage.setItem('ha-deployer-theme', isLight ? 'light' : 'dark'); } catch (e) { /* stockage indisponible */ }
   }
