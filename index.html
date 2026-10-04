@@ -2220,17 +2220,23 @@
        Le bouton est pose en haut a droite de la fiche, HORS du flux : la
        fiche garde ses trois rangees alignees d'une fiche a l'autre. */
     .pack-cliquable { position: relative; }
-    .pack-supprimer {
-      position: absolute; top: 6px; right: 6px; z-index: 2;
-      width: 28px; height: 28px; border-radius: 50%;
+    /* Petit bouton « Supprimer » (corbeille rouge), A COTE du bouton
+       d'ajout de la page de details et du bouton du Test Gratuit. */
+    .detail-actions { display: flex; gap: 8px; align-items: stretch; margin-top: 6px; }
+    .detail-actions > .btn-add-big { flex: 1 1 auto; margin-top: 0; justify-self: auto; }
+    .btn-supprimer-petit {
+      flex: 0 0 auto; width: 52px; min-height: 44px; border-radius: 8px; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
-      background: var(--hover-bg); border: 1px solid var(--card-border);
-      color: var(--text-muted); font-size: 0.78rem; cursor: pointer;
-      opacity: 0.75; transition: opacity .15s, color .15s, border-color .15s, background .15s;
+      background: transparent; border: 1px solid rgba(236, 112, 99, 0.6);
+      color: #EC7063; font-size: 1.15rem; transition: background .15s, color .15s;
     }
-    .pack-supprimer:hover, .pack-supprimer:focus-visible {
-      opacity: 1; color: #fff; background: var(--col-chauffage); border-color: var(--col-chauffage);
-    }
+    .btn-supprimer-petit:hover, .btn-supprimer-petit:focus-visible { background: #EC7063; color: #fff; outline: none; }
+    .desinstall-perimetre { font-size: 0.78rem; line-height: 1.5; margin: -6px 0 14px; color: var(--text-muted); }
+    .desinstall-perimetre b { color: var(--text-main); }
+    .desinstall-perimetre .retire i { color: #EC7063; }
+    .desinstall-perimetre .garde i { color: var(--col-valide); }
+    .desinstall-id-fixe { font-size: 0.76rem; color: var(--text-muted); margin-top: 4px; }
+    #desinstall-id[readonly] { opacity: 0.85; cursor: default; }
     .desinstall-pack {
       display: flex; align-items: center; gap: 8px; font-weight: 700;
       color: var(--cat, var(--text-main)); margin-bottom: 14px;
@@ -3428,7 +3434,11 @@
           autorisation, la vue est injectée dans votre tableau de bord et vous
           suivez chaque étape en direct.
         </p>
-        <button class="btn-add-big" id="test-deploy-btn" onclick="connecterHomeAssistant('test')"><i class="fa-solid fa-plug-circle-bolt"></i> Connecter mon Home Assistant</button>
+        <div class="detail-actions">
+          <button class="btn-add-big" id="test-deploy-btn" onclick="connecterHomeAssistant('test')"><i class="fa-solid fa-plug-circle-bolt"></i> Connecter mon Home Assistant</button>
+          <button type="button" class="btn-supprimer-petit" title="Supprimer le Test Gratuit de mon Home Assistant"
+                  aria-label="Supprimer le Test Gratuit" onclick="ouvrirDesinstallation('test_gratuit')"><i class="fa-solid fa-trash-can"></i></button>
+        </div>
         <div class="deploy-log" id="test-log"></div>
       </div>
     </div>
@@ -3848,6 +3858,7 @@
       </div>
       <div class="modal-body">
         <div class="desinstall-pack" id="desinstall-pack"></div>
+        <div class="desinstall-perimetre" id="desinstall-perimetre"></div>
 
         <div class="form-group">
           <label for="desinstall-id"><i class="fa-solid fa-fingerprint"></i> Veuillez entrer l'Identifiant unique du pack à supprimer</label>
@@ -3858,6 +3869,9 @@
                     aria-controls="desinstall-tuto" title="Où trouver cet identifiant ?" onclick="basculerTutoIdentifiant()">?</button>
           </div>
           <div class="desinstall-apercu" id="desinstall-apercu"></div>
+          <div class="desinstall-id-fixe" id="desinstall-id-fixe" hidden>
+            <i class="fa-solid fa-lock"></i> Ce pack s'installe en un seul exemplaire : son identifiant est fixe.
+          </div>
           <div class="desinstall-tuto" id="desinstall-tuto" hidden>
             <h4><i class="fa-solid fa-circle-question"></i> Qu'est-ce que l'identifiant unique d'un pack ?</h4>
             Chaque pack installé par HA-Deploy porte un identifiant de la forme
@@ -3886,6 +3900,12 @@
           </div>
         </div>
 
+        <div class="form-group" id="desinstall-cible-groupe" hidden>
+          <label for="desinstall-cible"><i class="fa-brands fa-github"></i> Dépôt HACS ajouté par le pack (propriétaire/dépôt)</label>
+          <input type="text" id="desinstall-cible" class="field-required" placeholder="ex : piitaya/lovelace-mushroom"
+                 autocomplete="off" spellcheck="false" oninput="this.classList.toggle('field-required', !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(this.value.trim()))">
+        </div>
+
         <div class="form-group">
           <label for="desinstall-url"><i class="fa-solid fa-link"></i> URL Home Assistant</label>
           <input type="url" id="desinstall-url" class="field-required" placeholder="https://votre-instance.ui.nabu.casa"
@@ -3898,6 +3918,7 @@
           <b>administrateur</b> et autorisez <b>HA-Deploy</b>. La suppression est <b>définitive</b>
           (cartes, helpers, scripts, automatismes et configuration du pack) ; Home Assistant peut
           redémarrer une fois. L'accès est révoqué automatiquement à la fin.
+          Un bilan détaillé est déposé en notification dans votre Home Assistant.
         </div>
         <div id="desinstall-verif"></div>
         <button class="btn-supprimer" id="desinstall-btn" onclick="validerDesinstallation()">
@@ -6743,6 +6764,7 @@
               : `<i class="fa-solid fa-hourglass-half"></i> Ce pack est <b>en cours de préparation</b>
                  et n'est pas encore déployable. Il apparaît ici pour que vous sachiez ce qui arrive.`}
           </div>
+          <div class="detail-actions" style="justify-content: flex-end;">${boutonSupprimerHtml(cleModule)}</div>
         </div>`;
       return;
     }
@@ -6824,10 +6846,13 @@
           </div>
           <div class="detail-colonne-action">
             ${champsDetailHtml(cleModule)}
-            <button class="btn-add-big detail-ajouter"
-                    onclick="addModuleToCart('${cleModule}', this)">
-              <i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(cleModule))})
-            </button>
+            <div class="detail-actions">
+              <button class="btn-add-big detail-ajouter"
+                      onclick="addModuleToCart('${cleModule}', this)">
+                <i class="fa-solid fa-cart-plus"></i> Ajouter (${prixLisible(prixDe(cleModule))})
+              </button>
+              ${boutonSupprimerHtml(cleModule)}
+            </div>
           </div>
         </div>
       </div>`;
@@ -21462,8 +21487,7 @@ function dessinSonnette(o) {
          rangees de grille au lieu de cinq (voir `subgrid`).
          Le selecteur n'ouvre PAS les details : un clic ou une touche dans
          `.pack-selecteur` reste au selecteur. */
-      // Le bouton « Supprimer » (04/10/2026) n'ouvre pas les details non plus.
-      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur, .pack-supprimer'));
+      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur'));
       item.className = 'module-item module-item-detailed pack-cliquable';
       item.setAttribute('role', 'link');
       item.setAttribute('tabindex', '0');
@@ -21484,7 +21508,6 @@ function dessinSonnette(o) {
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
         <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
-        ${boutonSupprimerHtml(mod.name)}
       `;
 
       container.appendChild(item);
@@ -23485,22 +23508,53 @@ function dessinSonnette(o) {
   // Meme expression que PACK_ID_VALIDE de backend/src/jobs.js et ha_pack_id.py.
   const PACK_ID_VALIDE = /^[a-z][a-z0-9_]{2,60}_[0-9]{1,3}$/;
   const CLE_URL_INSTANCE = 'hadeploy-ha-url';
-  // Packs installes en UN seul exemplaire, sans identifiant numerote : ils
-  // n'ont pas de bouton de suppression (Meteo, Temps, Pieces, Avatar IA,
-  // Test Gratuit, et les briques d'infrastructure « Configuration »).
-  const PACKS_SANS_IDENTIFIANT = new Set(['meteo', 'temps', 'pieces', 'avatar-ia', 'test-gratuit']);
+  /* Packs installes en UN SEUL exemplaire : identifiant FIXE (nom court ->
+     identifiant). Meme liste que IDENTIFIANTS_UNIQUES de ha_pack_id.py et de
+     backend/src/jobs.js -- le controle hors ligne les compare. */
+  const IDENTIFIANTS_UNIQUES = {
+    'meteo': 'meteo', 'temps': 'temps', 'pieces': 'pieces', 'avatar-ia': 'avatar_ia',
+    'test-gratuit': 'test_gratuit',
+    'config-file-editor': 'config_file_editor', 'config-terminal-ssh': 'config_terminal_ssh',
+    'config-hacs': 'config_hacs', 'config-duckdns': 'config_duckdns',
+    'config-zigbee2mqtt': 'config_zigbee2mqtt', 'config-backup': 'config_backup',
+    'config-esphome': 'config_esphome', 'config-matter': 'config_matter',
+    'config-google-translate': 'config_google_translate'
+  };
+  /* Ce que la suppression retire et garde, pack par pack -- le miroir de
+     FICHES (desinstaller_pack.py). `numerote` vaut pour tous les packs
+     installables plusieurs fois. */
+  const PERIMETRE_SUPPRESSION = {
+    numerote: { retire: "ses cartes, ses helpers, scripts et automatismes, ses entités et sa configuration (configuration.yaml), ses intégrations d'aide (prévision, trajets, agenda…), ses lignes du tableau Énergie, ses fichiers et les visuels qui ne servent plus",
+                garde: "votre matériel et ses entités, les cartes HACS partagées, la pièce créée" },
+    meteo: { retire: "les vues Météo, le capteur de précipitations et l'alerte météo",
+             garde: "l'intégration met.no (partagée avec d'autres packs), les cartes HACS" },
+    temps: { retire: "les vues Temps, les capteurs de fêtes et leurs calendriers d'abonnement",
+             garde: "les intégrations natives Jours fériés, Calendrier hébraïque et Heures de prière" },
+    pieces: { retire: "la vue Pièces et ses capteurs de synthèse", garde: "les pièces (zones) de votre maison" },
+    avatar_ia: { retire: "la vue, les entrées, le script et les automatismes de l'avatar, ses assistants Assist, son pilote vocal et ses vidéos",
+                 garde: "vos intégrations de conversation et de voix (et leurs clés), votre assistant préféré" },
+    test_gratuit: { retire: "les deux vues du Test Gratuit", garde: "les cartes HACS et les fonds d'écran" },
+    config_file_editor: { retire: "l'add-on File editor", garde: "vos fichiers de configuration" },
+    config_terminal_ssh: { retire: "l'add-on Terminal & SSH", garde: "votre configuration" },
+    config_hacs: { retire: "le dépôt HACS que le pack a ajouté (et ce qu'il a téléchargé)", garde: "HACS lui-même, qui sert aux cartes des packs" },
+    config_duckdns: { retire: "l'add-on DuckDNS et son intégration (redémarrage)", garde: "l'adresse externe de l'instance et les certificats déjà obtenus" },
+    config_zigbee2mqtt: { retire: "l'add-on Zigbee2MQTT", garde: "Mosquitto, l'intégration MQTT et les données d'appairage de votre réseau Zigbee" },
+    config_backup: { retire: "l'alerte de sauvegarde et le montage réseau (NAS) créés par le pack", garde: "vos sauvegardes existantes et leur programmation" },
+    config_esphome: { retire: "l'add-on ESPHome Device Builder et l'alerte ESPHome", garde: "vos appareils ESPHome et le dossier /config/esphome" },
+    config_matter: { retire: "l'add-on Matter Server et l'intégration Matter — vos appareils Matter devront être ré-appairés", garde: "l'intégration Thread" },
+    config_google_translate: { retire: "l'intégration Google Translate et le script « Annonce vocale » (la voix des assistants qui l'employaient est retirée)", garde: "vos assistants Assist" }
+  };
+  const IDS_FIXES = new Set(Object.values(IDENTIFIANTS_UNIQUES));
   let packDesinstallation = null;
 
-  function packDesinstallable(cle) {
-    const court = SERVER_MODULES[cle];
-    return !!court && !PACKS_SANS_IDENTIFIANT.has(court) && court.indexOf('config-') !== 0;
-  }
+  function identifiantValide(id) { return PACK_ID_VALIDE.test(id || '') || IDS_FIXES.has(id || ''); }
+  function moduleDeCle(cle) { return cle === 'test_gratuit' ? 'test-gratuit' : (SERVER_MODULES[cle] || ''); }
 
+  /* Le petit bouton « Supprimer » de la page de details, a cote d'Ajouter. */
   function boutonSupprimerHtml(cle) {
-    if (!packDesinstallable(cle)) return '';
-    return `<button type="button" class="pack-supprimer" title="Supprimer ce pack de mon Home Assistant"
+    return `<button type="button" class="btn-supprimer-petit" title="Supprimer ce pack de mon Home Assistant"
               aria-label="Supprimer le pack ${moduleTitle(cle)}"
-              onclick="event.stopPropagation(); ouvrirDesinstallation('${cle}')"><i class="fa-solid fa-trash-can"></i></button>`;
+              onclick="ouvrirDesinstallation('${cle}')"><i class="fa-solid fa-trash-can"></i></button>`;
   }
 
   /* Ce que le visiteur a colle -- l'identifiant, le titre de la carte, ou
@@ -23514,7 +23568,7 @@ function dessinSonnette(o) {
     let s = String(saisie || '').trim();
     if (s.includes('.') && !s.includes(' ')) s = s.split('.').slice(1).join('.');
     s = slugIdentifiant(s);
-    if (PACK_ID_VALIDE.test(s)) return s;
+    if (identifiantValide(s)) return s;
     const morceaux = s.split('_');
     for (let fin = morceaux.length - 1; fin > 1; fin--) {
       const candidat = morceaux.slice(0, fin).join('_');
@@ -23529,7 +23583,7 @@ function dessinSonnette(o) {
     const champ = document.getElementById('desinstall-id');
     if (!saisie.trim()) { zone.className = 'desinstall-apercu'; zone.innerHTML = ''; return null; }
     const id = identifiantDepuisSaisie(saisie);
-    const ok = PACK_ID_VALIDE.test(id);
+    const ok = identifiantValide(id);
     zone.className = 'desinstall-apercu' + (ok ? '' : ' invalide');
     zone.innerHTML = ok
       ? `<i class="fa-solid fa-circle-check"></i> Identifiant retenu : <code>${echapperHtml(id)}</code>`
@@ -23553,13 +23607,35 @@ function dessinSonnette(o) {
   }
 
   function ouvrirDesinstallation(cle) {
+    const module = moduleDeCle(cle);
+    if (cle && !module) {
+      // Pack a venir (Plan...) : il n'a jamais rien installe.
+      afficherToast('info', `Le pack <b>${echapperHtml(moduleTitle(cle))}</b> n'est pas encore disponible : il n'a rien installé sur votre instance.`);
+      return;
+    }
     packDesinstallation = cle || null;
+    const fixe = IDENTIFIANTS_UNIQUES[module] || '';
+    const testGratuit = cle === 'test_gratuit';
     const entete = document.getElementById('desinstall-pack');
-    entete.style.setProperty('--cat', cle ? moduleColor(cle) : 'var(--text-main)');
+    entete.style.setProperty('--cat', testGratuit ? 'var(--primary-blue)' : cle ? moduleColor(cle) : 'var(--text-main)');
     entete.innerHTML = cle
-      ? `<i class="fa-solid ${moduleIcon(cle)}"></i><span>Pack ${echapperHtml(moduleTitle(cle))}</span>`
+      ? `<i class="fa-solid ${testGratuit ? 'fa-vial' : moduleIcon(cle)}"></i><span>Pack ${echapperHtml(testGratuit ? 'Test Gratuit' : moduleTitle(cle))}</span>`
       : '';
-    document.getElementById('desinstall-id').value = '';
+    const perim = PERIMETRE_SUPPRESSION[fixe || 'numerote'];
+    document.getElementById('desinstall-perimetre').innerHTML = perim
+      ? `<div class="retire"><i class="fa-solid fa-trash-can"></i> <b>Retiré :</b> ${perim.retire}.</div>
+         <div class="garde"><i class="fa-solid fa-shield-halved"></i> <b>Conservé :</b> ${perim.garde}.</div>` : '';
+    const champId = document.getElementById('desinstall-id');
+    champId.value = fixe;
+    champId.readOnly = !!fixe;
+    document.getElementById('desinstall-id-fixe').hidden = !fixe;
+    // `hidden` ne suffit pas : `.help-icon` et `.form-group` posent leur propre `display`.
+    document.getElementById('desinstall-aide-btn').style.display = fixe ? 'none' : '';
+    document.getElementById('desinstall-tuto').hidden = true;
+    const groupeCible = document.getElementById('desinstall-cible-groupe');
+    groupeCible.hidden = fixe !== 'config_hacs';
+    groupeCible.style.display = fixe === 'config_hacs' ? '' : 'none';
+    document.getElementById('desinstall-cible').value = '';
     const champUrl = document.getElementById('desinstall-url');
     champUrl.value = urlInstanceConnue();
     champUrl.classList.toggle('field-required', !champUrl.value.trim());
@@ -23569,7 +23645,8 @@ function dessinSonnette(o) {
     majApercuIdentifiant();
     etatBoutonDesinstallation(false);
     document.getElementById('desinstall-modal-overlay').classList.add('active');
-    setTimeout(() => document.getElementById('desinstall-id').focus(), 50);
+    setTimeout(() => document.getElementById(fixe === 'config_hacs' ? 'desinstall-cible'
+                                             : fixe ? 'desinstall-url' : 'desinstall-id').focus(), 50);
   }
 
   function fermerDesinstallation() {
@@ -23612,7 +23689,23 @@ function dessinSonnette(o) {
       erreurDesinstallation("Identifiant manquant ou mal formé : attendu <code>pièce_pack_numéro</code>, ex. <code>salon_lumiere_3</code>.");
       return;
     }
+    if (id === 'config_hacs' && !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(document.getElementById('desinstall-cible').value.trim())) {
+      document.getElementById('desinstall-cible').focus();
+      erreurDesinstallation('Indiquez le dépôt GitHub que le pack HACS a ajouté, sous la forme <code>propriétaire/dépôt</code>.');
+      return;
+    }
     return uninstallPack(id);
+  }
+
+  /* PACK_MODULE : le pack de la page d'ou part la demande -- le runner
+     verifie qu'il correspond a l'identifiant, et refuse sinon. PACK_CIBLE :
+     le depot du pack HACS. */
+  function parametresDesinstallation(identifiant) {
+    const p = { PACK_ID: identifiant };
+    const module = moduleDeCle(packDesinstallation);
+    if (module) p.PACK_MODULE = module;
+    if (identifiant === 'config_hacs') p.PACK_CIBLE = document.getElementById('desinstall-cible').value.trim();
+    return p;
   }
 
   /* Lance la suppression du pack `identifiant`.
@@ -23622,7 +23715,7 @@ function dessinSonnette(o) {
      3. au retour (?ha_job=...), `reprendreDesinstallation` suit l'avancement. */
   async function uninstallPack(identifiant) {
     document.getElementById('desinstall-verif').innerHTML = '';
-    if (!PACK_ID_VALIDE.test(identifiant || '')) {
+    if (!identifiantValide(identifiant)) {
       erreurDesinstallation('Identifiant de pack invalide.');
       return false;
     }
@@ -23647,7 +23740,7 @@ function dessinSonnette(o) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ha_url: cible.url, state, mode: 'desinstall',
-          items: [{ module: 'desinstaller', params: { PACK_ID: identifiant } }],
+          items: [{ module: 'desinstaller', params: parametresDesinstallation(identifiant) }],
           lang: document.documentElement.getAttribute('lang') || 'fr'
         })
       });
@@ -23669,7 +23762,8 @@ function dessinSonnette(o) {
   function reprendreDesinstallation(attendu, jobId, erreur, etatRecu) {
     ouvrirDesinstallation(attendu && attendu.pack);
     if (attendu) {
-      document.getElementById('desinstall-id').value = attendu.identifiant || '';
+      if (!document.getElementById('desinstall-id').readOnly)
+        document.getElementById('desinstall-id').value = attendu.identifiant || '';
       document.getElementById('desinstall-url').value = attendu.url || '';
       document.getElementById('desinstall-url').classList.toggle('field-required', !attendu.url);
       majApercuIdentifiant();
