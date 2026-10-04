@@ -2216,6 +2216,83 @@
 
     .modal-close:hover { color: var(--col-chauffage); }
 
+    /* ===== DESINSTALLATION PAR IDENTIFIANT UNIQUE (04/10/2026) =====
+       Le bouton est pose en haut a droite de la fiche, HORS du flux : la
+       fiche garde ses trois rangees alignees d'une fiche a l'autre. */
+    .pack-cliquable { position: relative; }
+    .pack-supprimer {
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 28px; height: 28px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--hover-bg); border: 1px solid var(--card-border);
+      color: var(--text-muted); font-size: 0.78rem; cursor: pointer;
+      opacity: 0.75; transition: opacity .15s, color .15s, border-color .15s, background .15s;
+    }
+    .pack-supprimer:hover, .pack-supprimer:focus-visible {
+      opacity: 1; color: #fff; background: var(--col-chauffage); border-color: var(--col-chauffage);
+    }
+    .desinstall-pack {
+      display: flex; align-items: center; gap: 8px; font-weight: 700;
+      color: var(--cat, var(--text-main)); margin-bottom: 14px;
+    }
+    .desinstall-champ { display: flex; gap: 8px; align-items: stretch; }
+    .desinstall-champ input { flex: 1 1 auto; font-family: ui-monospace, Consolas, monospace; }
+    .desinstall-champ .help-icon { width: 34px; height: auto; min-height: 34px; font-size: 0.95rem; flex: 0 0 auto; }
+    .desinstall-apercu { font-size: 0.78rem; margin-top: 6px; min-height: 1.2em; color: var(--text-muted); }
+    .desinstall-apercu code { color: var(--primary-blue); font-weight: 700; }
+    .desinstall-apercu.invalide, .desinstall-apercu.invalide code { color: var(--col-required); }
+    .desinstall-tuto {
+      background: rgba(93, 173, 226, 0.08); border-left: 3px solid var(--primary-blue);
+      border-radius: 6px; padding: 12px 14px; margin: 4px 0 10px;
+      font-size: 0.8rem; line-height: 1.55; color: var(--text-muted);
+    }
+    .desinstall-tuto[hidden] { display: none; }
+    .desinstall-tuto h4 { margin: 0 0 6px; color: var(--text-main); font-size: 0.88rem; }
+    .desinstall-tuto ol { margin: 6px 0 8px 18px; padding: 0; }
+    .desinstall-tuto code { color: var(--primary-blue); }
+    .desinstall-tuto figure { margin: 8px 0 0; }
+    .desinstall-tuto img {
+      display: block; width: 100%; height: auto; border-radius: 6px;
+      border: 1px dashed var(--card-border); background: var(--hover-bg);
+    }
+    .desinstall-tuto figcaption { font-size: 0.72rem; margin-top: 4px; text-align: center; }
+    .btn-supprimer {
+      width: 100%; background: var(--col-chauffage); color: #fff; border: none;
+      padding: 13px; border-radius: 6px; font-size: 1rem; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-supprimer[disabled] { opacity: 0.6; cursor: progress; }
+    .btn-supprimer .spinner {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      animation: tourne-spinner .8s linear infinite;
+    }
+    .btn-supprimer .spinner[hidden] { display: none; }
+    @keyframes tourne-spinner { to { transform: rotate(360deg); } }
+    #desinstall-log { margin-top: 12px; }
+
+    /* Notifications « toast » : en bas a droite, au-dessus de tout. */
+    .toast-zone {
+      position: fixed; right: 16px; bottom: 16px; z-index: 5000;
+      display: flex; flex-direction: column; gap: 8px; max-width: min(380px, calc(100vw - 32px));
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto; display: flex; gap: 10px; align-items: flex-start;
+      background: var(--modal-bg); color: var(--text-main);
+      border: 1px solid var(--card-border); border-left: 4px solid var(--primary-blue);
+      border-radius: 8px; padding: 12px 14px; font-size: 0.86rem; line-height: 1.45;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      animation: toast-entree .25s ease;
+    }
+    .toast i { margin-top: 2px; }
+    .toast.succes { border-left-color: var(--col-valide); }
+    .toast.succes i { color: var(--col-valide); }
+    .toast.erreur { border-left-color: var(--col-required); }
+    .toast.erreur i { color: var(--col-required); }
+    .toast.sortie { opacity: 0; transform: translateY(8px); transition: opacity .3s, transform .3s; }
+    @keyframes toast-entree { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
     /* Chaque ligne du panier porte la COULEUR DE SA CATÉGORIE, transmise au
        rendu par la variable `--cat` posée en style inline. C'est le repère
        déjà utilisé par les sous-onglets du catalogue : on retrouve un module
@@ -3760,6 +3837,79 @@
       <div class="modal-body" id="journal-modal-body"></div>
     </div>
   </div>
+
+  <!-- MODALE : SUPPRESSION D'UN PACK PAR SON IDENTIFIANT UNIQUE (04/10/2026) -->
+  <div class="modal-overlay" id="desinstall-modal-overlay"
+       onclick="if(event.target.id==='desinstall-modal-overlay')fermerDesinstallation()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-trash-can"></i> Supprimer un pack</h3>
+        <button class="modal-close" onclick="fermerDesinstallation()" aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="desinstall-pack" id="desinstall-pack"></div>
+
+        <div class="form-group">
+          <label for="desinstall-id"><i class="fa-solid fa-fingerprint"></i> Veuillez entrer l'Identifiant unique du pack à supprimer</label>
+          <div class="desinstall-champ">
+            <input type="text" id="desinstall-id" class="field-required" placeholder="ex : salon_lumiere_3"
+                   autocomplete="off" autocapitalize="off" spellcheck="false" oninput="majApercuIdentifiant()">
+            <button type="button" class="help-icon" id="desinstall-aide-btn" aria-expanded="false"
+                    aria-controls="desinstall-tuto" title="Où trouver cet identifiant ?" onclick="basculerTutoIdentifiant()">?</button>
+          </div>
+          <div class="desinstall-apercu" id="desinstall-apercu"></div>
+          <div class="desinstall-tuto" id="desinstall-tuto" hidden>
+            <h4><i class="fa-solid fa-circle-question"></i> Qu'est-ce que l'identifiant unique d'un pack ?</h4>
+            Chaque pack installé par HA-Deploy porte un identifiant de la forme
+            <code>pièce_pack_numéro</code> — par exemple <code>salon_lumiere_3</code>.
+            Il désigne <b>une</b> installation précise : deux lampes du salon sont
+            <code>salon_lumiere_1</code> et <code>salon_lumiere_2</code>.
+            <ol>
+              <li><b>Le plus simple : le titre de la carte.</b> « Salon - Lumière 3 »
+                donne <code>salon_lumiere_3</code> (minuscules, sans accent, espaces et tirets
+                remplacés par <code>_</code>). Vous pouvez d'ailleurs coller le titre tel quel :
+                il est converti automatiquement.</li>
+              <li><b>Dans Home Assistant</b> : <i>Paramètres → Appareils et services → Entités</i>,
+                cherchez le nom de la pièce. Toutes les entités du pack commencent par
+                son identifiant : <code>input_select.salon_lumiere_3_select</code>,
+                <code>timer.salon_lumiere_3</code>… Collez l'une d'elles, l'identifiant en est déduit.</li>
+              <li><b>Dans le journal du déploiement</b> (Mon historique → Journal), où le pack se nomme.</li>
+            </ol>
+            Votre matériel (lampes, capteurs, prises) n'est <b>jamais</b> supprimé : seuls les
+            éléments que le pack a créés le sont.
+            <figure>
+              <!-- Capture d'écran illustrative : remplacez ce fichier par la vôtre
+                   (même nom), le site la reprendra telle quelle. -->
+              <img src="templates/aide/identifiant-pack.svg" alt="Où lire l'identifiant d'un pack : le titre de la carte et le préfixe de ses entités" loading="lazy">
+              <figcaption>Le titre de la carte et le préfixe de ses entités donnent l'identifiant.</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="desinstall-url"><i class="fa-solid fa-link"></i> URL Home Assistant</label>
+          <input type="url" id="desinstall-url" class="field-required" placeholder="https://votre-instance.ui.nabu.casa"
+                 oninput="this.classList.toggle('field-required', !this.value.trim())">
+        </div>
+
+        <div class="notice-box" style="font-size: 0.8rem;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--primary-blue);"></i>
+          <b>Aucun jeton à créer.</b> Votre Home Assistant va s'ouvrir : connectez-vous avec un compte
+          <b>administrateur</b> et autorisez <b>HA-Deploy</b>. La suppression est <b>définitive</b>
+          (cartes, helpers, scripts, automatismes et configuration du pack) ; Home Assistant peut
+          redémarrer une fois. L'accès est révoqué automatiquement à la fin.
+        </div>
+        <div id="desinstall-verif"></div>
+        <button class="btn-supprimer" id="desinstall-btn" onclick="validerDesinstallation()">
+          <span class="spinner" hidden></span><i class="fa-solid fa-trash-can"></i>
+          <span class="libelle">Supprimer ce pack</span>
+        </button>
+        <div class="deploy-log" id="desinstall-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-zone" id="toast-zone" aria-live="polite" aria-atomic="false"></div>
 
   <div class="modal-overlay" id="compte-modal-overlay"
        onclick="if(event.target.id==='compte-modal-overlay')fermerCompteModal()">
@@ -21312,7 +21462,8 @@ function dessinSonnette(o) {
          rangees de grille au lieu de cinq (voir `subgrid`).
          Le selecteur n'ouvre PAS les details : un clic ou une touche dans
          `.pack-selecteur` reste au selecteur. */
-      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur'));
+      // Le bouton « Supprimer » (04/10/2026) n'ouvre pas les details non plus.
+      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur, .pack-supprimer'));
       item.className = 'module-item module-item-detailed pack-cliquable';
       item.setAttribute('role', 'link');
       item.setAttribute('tabindex', '0');
@@ -21333,6 +21484,7 @@ function dessinSonnette(o) {
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
         <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
+        ${boutonSupprimerHtml(mod.name)}
       `;
 
       container.appendChild(item);
@@ -23163,6 +23315,9 @@ function dessinSonnette(o) {
     const mode = (attendu && attendu.mode) || (location.hash === '#test' ? 'test' : 'panier');
     const url = attendu ? attendu.url : '';
 
+    // Retour d'une DESINSTALLATION : elle a sa propre fenetre (04/10/2026).
+    if (mode === 'desinstall') return reprendreDesinstallation(attendu, jobId, erreur, etatRecu);
+
     if (mode === 'test') {
       const champ = document.getElementById('test-ha-url');
       if (champ && url) champ.value = url;
@@ -23306,6 +23461,264 @@ function dessinSonnette(o) {
       const btn = closeBtnId && document.getElementById(closeBtnId);
       if (btn) btn.disabled = false;
       if (bouton) bouton.disabled = false;
+      hideSticky(8000);
+    }
+  }
+
+  /* =====================================================================
+     SUPPRESSION D'UN PACK PAR SON IDENTIFIANT UNIQUE (04/10/2026)
+
+     Chaque pack installe porte un identifiant `piece_pack_numero`
+     (ex. salon_lumiere_3), prefixe de toutes les entites qu'il a creees
+     (standard : ha_pack_id.py). Le visiteur le saisit, puis AUTORISE
+     HA-Deploy depuis sa propre instance -- exactement comme pour un
+     deploiement, sans aucun jeton longue duree --, et le runner retire tout
+     ce que porte l'identifiant (desinstaller_pack.py).
+
+     Pourquoi pas un webhook Home Assistant appele directement d'ici : ce site
+     est en https, et un navigateur refuse d'y appeler http://<ip>:8123
+     (contenu mixte, acces au reseau prive) ; un webhook n'a pas
+     d'authentification, n'importe qui sur le reseau pourrait supprimer les
+     packs ; et les tableaux de bord vivent en memoire de Home Assistant, pas
+     dans un fichier qu'un script pourrait editer.
+     ===================================================================== */
+  // Meme expression que PACK_ID_VALIDE de backend/src/jobs.js et ha_pack_id.py.
+  const PACK_ID_VALIDE = /^[a-z][a-z0-9_]{2,60}_[0-9]{1,3}$/;
+  const CLE_URL_INSTANCE = 'hadeploy-ha-url';
+  // Packs installes en UN seul exemplaire, sans identifiant numerote : ils
+  // n'ont pas de bouton de suppression (Meteo, Temps, Pieces, Avatar IA,
+  // Test Gratuit, et les briques d'infrastructure « Configuration »).
+  const PACKS_SANS_IDENTIFIANT = new Set(['meteo', 'temps', 'pieces', 'avatar-ia', 'test-gratuit']);
+  let packDesinstallation = null;
+
+  function packDesinstallable(cle) {
+    const court = SERVER_MODULES[cle];
+    return !!court && !PACKS_SANS_IDENTIFIANT.has(court) && court.indexOf('config-') !== 0;
+  }
+
+  function boutonSupprimerHtml(cle) {
+    if (!packDesinstallable(cle)) return '';
+    return `<button type="button" class="pack-supprimer" title="Supprimer ce pack de mon Home Assistant"
+              aria-label="Supprimer le pack ${moduleTitle(cle)}"
+              onclick="event.stopPropagation(); ouvrirDesinstallation('${cle}')"><i class="fa-solid fa-trash-can"></i></button>`;
+  }
+
+  /* Ce que le visiteur a colle -- l'identifiant, le titre de la carte, ou
+     une entite du pack -- ramene a l'identifiant. Miroir de
+     identifiant_depuis_titre (ha_pack_id.py). */
+  function slugIdentifiant(texte) {
+    return String(texte || '').normalize('NFKD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  }
+  function identifiantDepuisSaisie(saisie) {
+    let s = String(saisie || '').trim();
+    if (s.includes('.') && !s.includes(' ')) s = s.split('.').slice(1).join('.');
+    s = slugIdentifiant(s);
+    if (PACK_ID_VALIDE.test(s)) return s;
+    const morceaux = s.split('_');
+    for (let fin = morceaux.length - 1; fin > 1; fin--) {
+      const candidat = morceaux.slice(0, fin).join('_');
+      if (PACK_ID_VALIDE.test(candidat)) return candidat;
+    }
+    return s;
+  }
+
+  function majApercuIdentifiant() {
+    const saisie = document.getElementById('desinstall-id').value;
+    const zone = document.getElementById('desinstall-apercu');
+    const champ = document.getElementById('desinstall-id');
+    if (!saisie.trim()) { zone.className = 'desinstall-apercu'; zone.innerHTML = ''; return null; }
+    const id = identifiantDepuisSaisie(saisie);
+    const ok = PACK_ID_VALIDE.test(id);
+    zone.className = 'desinstall-apercu' + (ok ? '' : ' invalide');
+    zone.innerHTML = ok
+      ? `<i class="fa-solid fa-circle-check"></i> Identifiant retenu : <code>${echapperHtml(id)}</code>`
+      : `<i class="fa-solid fa-circle-exclamation"></i> Forme attendue : <code>pièce_pack_numéro</code> (ex. salon_lumiere_3). Cliquez sur « ? » pour savoir où le trouver.`;
+    champ.classList.toggle('field-required', !ok);
+    return ok ? id : null;
+  }
+
+  function basculerTutoIdentifiant() {
+    const tuto = document.getElementById('desinstall-tuto');
+    const bouton = document.getElementById('desinstall-aide-btn');
+    tuto.hidden = !tuto.hidden;
+    bouton.setAttribute('aria-expanded', String(!tuto.hidden));
+  }
+
+  function urlInstanceConnue() {
+    const champs = ['ha-url', 'test-ha-url'].map(id => document.getElementById(id)).filter(Boolean);
+    const saisie = champs.map(c => c.value.trim()).find(Boolean);
+    if (saisie) return saisie;
+    try { return localStorage.getItem(CLE_URL_INSTANCE) || ''; } catch (e) { return ''; }
+  }
+
+  function ouvrirDesinstallation(cle) {
+    packDesinstallation = cle || null;
+    const entete = document.getElementById('desinstall-pack');
+    entete.style.setProperty('--cat', cle ? moduleColor(cle) : 'var(--text-main)');
+    entete.innerHTML = cle
+      ? `<i class="fa-solid ${moduleIcon(cle)}"></i><span>Pack ${echapperHtml(moduleTitle(cle))}</span>`
+      : '';
+    document.getElementById('desinstall-id').value = '';
+    const champUrl = document.getElementById('desinstall-url');
+    champUrl.value = urlInstanceConnue();
+    champUrl.classList.toggle('field-required', !champUrl.value.trim());
+    document.getElementById('desinstall-verif').innerHTML = '';
+    const log = document.getElementById('desinstall-log');
+    log.innerHTML = ''; log.classList.remove('open');
+    majApercuIdentifiant();
+    etatBoutonDesinstallation(false);
+    document.getElementById('desinstall-modal-overlay').classList.add('active');
+    setTimeout(() => document.getElementById('desinstall-id').focus(), 50);
+  }
+
+  function fermerDesinstallation() {
+    const overlay = document.getElementById('desinstall-modal-overlay');
+    if (overlay.classList.contains('deploiement-en-cours')) return;
+    overlay.classList.remove('active');
+  }
+
+  function etatBoutonDesinstallation(occupe, libelle) {
+    const bouton = document.getElementById('desinstall-btn');
+    bouton.disabled = !!occupe;
+    bouton.querySelector('.spinner').hidden = !occupe;
+    bouton.querySelector('.fa-trash-can').style.display = occupe ? 'none' : '';
+    bouton.querySelector('.libelle').textContent = libelle || 'Supprimer ce pack';
+  }
+
+  function afficherToast(type, message, duree = 7000) {
+    const zone = document.getElementById('toast-zone');
+    if (!zone) return;
+    const icones = { succes: 'fa-circle-check', erreur: 'fa-circle-xmark', info: 'fa-circle-info' };
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.setAttribute('role', type === 'erreur' ? 'alert' : 'status');
+    t.innerHTML = `<i class="fa-solid ${icones[type] || icones.info}"></i><span>${message}</span>`;
+    zone.appendChild(t);
+    setTimeout(() => { t.classList.add('sortie'); setTimeout(() => t.remove(), 350); }, duree);
+  }
+
+  function erreurDesinstallation(message) {
+    document.getElementById('desinstall-verif').innerHTML =
+      '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + message + '</div>';
+    afficherToast('erreur', message);
+  }
+
+  function validerDesinstallation() {
+    const id = majApercuIdentifiant();
+    if (!id) {
+      const champ = document.getElementById('desinstall-id');
+      champ.focus();
+      erreurDesinstallation("Identifiant manquant ou mal formé : attendu <code>pièce_pack_numéro</code>, ex. <code>salon_lumiere_3</code>.");
+      return;
+    }
+    return uninstallPack(id);
+  }
+
+  /* Lance la suppression du pack `identifiant`.
+     1. enregistre la demande aupres du serveur (POST /api/ha/authorize, module
+        `desinstaller`, parametre PACK_ID) avec un `state` tire ici ;
+     2. part sur l'instance du visiteur, qui y autorise HA-Deploy ;
+     3. au retour (?ha_job=...), `reprendreDesinstallation` suit l'avancement. */
+  async function uninstallPack(identifiant) {
+    document.getElementById('desinstall-verif').innerHTML = '';
+    if (!PACK_ID_VALIDE.test(identifiant || '')) {
+      erreurDesinstallation('Identifiant de pack invalide.');
+      return false;
+    }
+    const cible = checkInstanceUrl(document.getElementById('desinstall-url').value);
+    if (cible.error) { erreurDesinstallation(cible.error); return false; }
+
+    const state = etatAleatoire();
+    try {
+      sessionStorage.setItem(CLE_AUTORISATION_HA, JSON.stringify({
+        state, mode: 'desinstall', url: cible.url, depuis: Date.now(),
+        pack: packDesinstallation, identifiant }));
+      localStorage.setItem(CLE_URL_INSTANCE, cible.url);
+    } catch (e) {
+      erreurDesinstallation("Le stockage de session de votre navigateur est indisponible : la connexion ne peut pas être sécurisée.");
+      return false;
+    }
+
+    etatBoutonDesinstallation(true, 'Connexion à votre Home Assistant…');
+    try {
+      const res = await api('/api/ha/authorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ha_url: cible.url, state, mode: 'desinstall',
+          items: [{ module: 'desinstaller', params: { PACK_ID: identifiant } }],
+          lang: document.documentElement.getAttribute('lang') || 'fr'
+        })
+      });
+      let data = {};
+      try { data = await res.json(); } catch (e) { /* reponse non JSON */ }
+      if (!res.ok) throw new Error(data.error || `Le serveur a refusé la demande (${res.status}).`);
+      location.assign(data.authorize_url);
+      return true;
+    } catch (e) {
+      try { sessionStorage.removeItem(CLE_AUTORISATION_HA); } catch (er) { /* ignore */ }
+      etatBoutonDesinstallation(false);
+      erreurDesinstallation(echapperHtml(e.message || 'La connexion a échoué.'));
+      return false;
+    }
+  }
+
+  /* Retour de l'instance apres autorisation (appelee par
+     reprendreRetourHomeAssistant). */
+  function reprendreDesinstallation(attendu, jobId, erreur, etatRecu) {
+    ouvrirDesinstallation(attendu && attendu.pack);
+    if (attendu) {
+      document.getElementById('desinstall-id').value = attendu.identifiant || '';
+      document.getElementById('desinstall-url').value = attendu.url || '';
+      document.getElementById('desinstall-url').classList.toggle('field-required', !attendu.url);
+      majApercuIdentifiant();
+    }
+    if (!attendu || !etatRecu || attendu.state !== etatRecu) {
+      erreurDesinstallation("Ce retour ne correspond à aucune demande lancée depuis cet onglet : il a été ignoré par sécurité.");
+      return true;
+    }
+    if (erreur) {
+      erreurDesinstallation(MESSAGES_RETOUR_HA[erreur] || 'La connexion à votre instance a échoué.');
+      return true;
+    }
+    if (!/^[a-f0-9]{32}$/.test(jobId || '')) {
+      erreurDesinstallation('Réponse inattendue du serveur.');
+      return true;
+    }
+    suivreDesinstallation(jobId, attendu.identifiant);
+    return true;
+  }
+
+  async function suivreDesinstallation(jobId, identifiant) {
+    const box = 'desinstall-log';
+    const overlay = document.getElementById('desinstall-modal-overlay');
+    overlay.classList.add('deploiement-en-cours');
+    etatBoutonDesinstallation(true, 'Suppression en cours…');
+    logLine(box, 'ok', 'Instance autorisée depuis Home Assistant — aucun jeton saisi, aucun jeton conservé.', 0);
+    let courante = logLine(box, 'run', `Suppression du pack <code>${echapperHtml(identifiant || '')}</code>…`, 0);
+    try {
+      const job = await ecouterTache(jobId,
+        e => {
+          const kind = e.step === 'error' ? 'err' : /ATTENTION/.test(e.message || '') ? 'warn' : 'ok';
+          logLine(box, kind, `<span class="sous-etape">${echapperHtml(e.message)}</span>`, 0);
+        },
+        () => {});
+      if (job.status === 'success') {
+        replaceLine(courante, 'ok', 'Suppression prise en charge sur votre instance.');
+        logLine(box, 'ok', 'Suppression terminée.', 0);
+        afficherToast('succes', `Le pack <b>${echapperHtml(identifiant || '')}</b> a été supprimé de votre Home Assistant.`);
+      } else {
+        const motif = job.error ? echapperHtml(job.error) : 'La suppression a échoué.';
+        replaceLine(courante, 'err', motif);
+        afficherToast('erreur', motif, 10000);
+      }
+    } catch (e) {
+      replaceLine(courante, 'err', echapperHtml(e.message || 'La suppression a échoué.'));
+      afficherToast('erreur', echapperHtml(e.message || 'La suppression a échoué.'), 10000);
+    } finally {
+      overlay.classList.remove('deploiement-en-cours');
+      etatBoutonDesinstallation(false);
       hideSticky(8000);
     }
   }

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <!-- Illustration du tutoriel « Où trouver l'identifiant unique d'un pack ? ».
+       Remplacez ce fichier par une capture d'écran de votre choix (même nom,
+       ou changez l'attribut src dans index.html). -->
+  <rect width="640" height="300" rx="14" fill="#16191f"/>
+
+  <!-- 1. La carte du pack dans le tableau de bord -->
+  <text x="24" y="34" fill="#9aa4b2" font-size="13" font-weight="700">1 · Le titre de la carte</text>
+  <rect x="24" y="46" width="250" height="150" rx="12" fill="#22262e" stroke="#F8C471" stroke-width="2"/>
+  <text x="149" y="78" fill="#e8ecf2" font-size="16" font-weight="800" text-anchor="middle">Salon - Lumière 3</text>
+  <text x="149" y="98" fill="#9aa4b2" font-size="12" text-anchor="middle">(Contrôle)</text>
+  <circle cx="149" cy="148" r="30" fill="none" stroke="#F8C471" stroke-width="5"/>
+  <path d="M149 132 a12 12 0 0 1 7 22 v6 h-14 v-6 a12 12 0 0 1 7 -22z" fill="#F8C471"/>
+  <rect x="142" y="163" width="14" height="4" rx="2" fill="#F8C471"/>
+
+  <!-- Flèche vers l'identifiant -->
+  <path d="M286 121 h52" stroke="#5DADE2" stroke-width="3" fill="none"/>
+  <path d="M338 113 l12 8 l-12 8z" fill="#5DADE2"/>
+
+  <!-- L'identifiant -->
+  <text x="490" y="34" fill="#9aa4b2" font-size="13" font-weight="700" text-anchor="middle">Identifiant unique</text>
+  <rect x="362" y="96" width="256" height="50" rx="10" fill="#0f2a3b" stroke="#5DADE2" stroke-width="2"/>
+  <text x="490" y="128" fill="#5DADE2" font-size="20" font-weight="800" text-anchor="middle"
+        font-family="Consolas, Menlo, monospace">salon_lumiere_3</text>
+  <text x="490" y="168" fill="#9aa4b2" font-size="11.5" text-anchor="middle">minuscules · sans accent · espaces → _</text>
+
+  <!-- 2. Le préfixe des entités dans Home Assistant -->
+  <text x="24" y="226" fill="#9aa4b2" font-size="13" font-weight="700">2 · Ou le préfixe de ses entités (Paramètres → Entités)</text>
+  <g font-family="Consolas, Menlo, monospace" font-size="12.5">
+    <rect x="24" y="238" width="592" height="46" rx="8" fill="#22262e"/>
+    <text x="38" y="257" fill="#c9d1db">input_select.<tspan fill="#5DADE2" font-weight="700">salon_lumiere_3</tspan>_select</text>
+    <text x="330" y="257" fill="#c9d1db">timer.<tspan fill="#5DADE2" font-weight="700">salon_lumiere_3</tspan></text>
+    <text x="38" y="276" fill="#c9d1db">script.<tspan fill="#5DADE2" font-weight="700">salon_lumiere_3</tspan>_timer_gestion</text>
+    <text x="330" y="276" fill="#c9d1db">light.<tspan fill="#5DADE2" font-weight="700">salon_lumiere_3</tspan>_memoire</text>
+  </g>
+</svg>
