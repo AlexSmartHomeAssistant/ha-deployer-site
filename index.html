@@ -22731,7 +22731,7 @@ function dessinSonnette(o) {
             <td class="nw">${(j.steps || 0) > 0 || j.error
               ? `<a href="#" onclick="voirJournal('${j.id}');return false;">voir</a>` : '—'}</td>
           </tr>${j.error ? `<tr><td colspan="7" style="color:var(--col-required);font-size:.74rem;
-            padding-top:0;border-top:none">${j.error}</td></tr>` : ''}`).join('')}
+            padding-top:0;border-top:none">${echapperHtml(j.error)}</td></tr>` : ''}`).join('')}
         </table>
       </div>`;
   }
@@ -22766,13 +22766,13 @@ function dessinSonnette(o) {
         ${packsFr((d.modules || []).join(','))} —
         <span class="etat-${d.status}">${ETAT_LIBELLE[d.status] || d.status}</span>${
         d.finished_at ? `, terminé en ${dureeFr(d.created_at, d.finished_at)}` : ''}.</p>
-      ${d.error ? `<p class="compte-erreur">${d.error}</p>` : ''}
+      ${d.error ? `<p class="compte-erreur">${echapperHtml(d.error)}</p>` : ''}
       ${etapes.length ? `<div class="histo-defile"><table class="compte-table journal-table">
         <tr><th>Heure</th><th>Étape</th><th>Message</th></tr>
         ${etapes.map(e => `<tr>
           <td class="nw">${heure(e.at)}</td>
           <td class="nw"><code>${e.step || ''}</code></td>
-          <td>${e.message || ''}</td></tr>`).join('')}
+          <td>${echapperHtml(e.message)}</td></tr>`).join('')}
       </table></div>` : '<p class="compte-intro">Aucune étape enregistrée pour ce déploiement.</p>'}`;
   }
   function fermerJournalModal() {
@@ -22919,6 +22919,13 @@ function dessinSonnette(o) {
     return etapesJournal[boxId];
   }
 
+  // Les messages du deployeur sont du TEXTE : ecrits tels quels en HTML, un
+  // « /local/avatars/<id>/ » perdait son <id> (pris pour une balise), et un
+  // message d'erreur rapporte par l'instance pourrait injecter du HTML.
+  function echapperHtml(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
   function logLine(boxId, kind, text, numero) {
     const box = document.getElementById(boxId);
     if (!box) return null;
@@ -23114,7 +23121,7 @@ function dessinSonnette(o) {
           deploiement = log('run', 'Déploiement en cours sur votre instance…');
         }
         etapes.forEach(e => logLine(boxId, e.step === 'error' ? 'err' : 'ok',
-                                    `<span class="sous-etape">${e.message}</span>`, 0));
+                                    `<span class="sous-etape">${echapperHtml(e.message)}</span>`, 0));
       });
       if (!priseEnCharge) {
         replaceLine(courante, 'ok', 'Demande prise en charge.');
@@ -23134,11 +23141,11 @@ function dessinSonnette(o) {
         // Etape 4/4
         log('ok', `Terminé — <a href="${lien}" target="_blank" rel="noopener">ouvrir votre tableau de bord</a>.`);
       } else {
-        replaceLine(courante, 'err', job.error || 'Le déploiement a échoué.');
+        replaceLine(courante, 'err', job.error ? echapperHtml(job.error) : 'Le déploiement a échoué.');
       }
       return job;
     } catch (e) {
-      replaceLine(courante, 'err', e.message || 'Le déploiement a échoué.');
+      replaceLine(courante, 'err', e.message ? echapperHtml(e.message) : 'Le déploiement a échoué.');
       return null;
     } finally {
       // Succes, echec ou exception : la tache est close, on rend les sorties.
