@@ -3142,7 +3142,7 @@
       <div class="card">
           <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-circle-info"></i> Descriptif</h3>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-            <b style="color: var(--col-gold);">HA-Deploy</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et un jeton d'accès : le déploiement se fait à distance, sans que vous ayez quoi que ce soit à installer.
+            <b style="color: var(--col-gold);">HA-Deploy</b> installe pour vous des tableaux de bord Home Assistant clé en main. Vous choisissez vos packs, vous donnez l'adresse de votre instance et vous <b>autorisez HA-Deploy depuis votre Home Assistant</b>, en un clic : le déploiement se fait à distance, sans jeton à créer ni rien à installer.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 10px;">
             Chaque pack apporte sa vue, ses scripts, ses automatisations et ses capteurs — ainsi que <b>HACS</b>, les <b>cartes personnalisées</b> et les <b>intégrations</b> dont il a besoin.
@@ -3199,8 +3199,8 @@
         <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
           1. Choisissez vos packs dans l'onglet <b>Packs</b>, en renseignant l'entité concernée pour chacun.<br>
           2. Ouvrez le <b>Panier</b> (dans le bandeau du haut), validez votre sélection.<br>
-          3. Renseignez l'URL et le jeton d'accès de votre instance Home Assistant.<br>
-          4. Procédez au paiement — les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance, sous la forme d'une nouvelle vue dans le tableau de bord « Accueil » de la barre latérale.
+          3. Procédez au paiement, puis renseignez l'URL de votre instance et cliquez sur <b>Connecter mon Home Assistant</b> : vous autorisez HA-Deploy depuis votre propre instance, avec votre compte.<br>
+          4. Les dépendances sont installées, puis le tableau de bord est injecté automatiquement à distance sur votre instance, sous la forme d'une nouvelle vue dans le tableau de bord « Accueil » de la barre latérale.
         </p>
       </div>
 
@@ -3220,13 +3220,13 @@
 
       <div class="card">
         <div class="notice-box" style="margin-bottom: 0;">
-          <strong><i class="fa-solid fa-key"></i> Paramètres de Connexion Home Assistant :</strong>
+          <strong><i class="fa-solid fa-key"></i> Connexion à Home Assistant — aucun jeton à créer :</strong>
           <ol>
-            <li>Ouvrez votre instance Home Assistant → Cliquez sur votre <b>Profil</b> (en bas à gauche) → Cliquez sur l'onglet <b>Sécurité</b>.</li>
-            <li>Allez dans l'onglet <b>Jetons d'accès longue durée</b> → Cliquez sur <b>Créer un jeton</b>.</li>
-            <li>Saisissez le nom <code>HA-Deploy</code>.</li>
+            <li>Indiquez l'adresse de votre instance, puis cliquez sur <b>Connecter mon Home Assistant</b>.</li>
+            <li>Votre Home Assistant s'ouvre : connectez-vous avec un compte <b>administrateur</b> et autorisez <b>HA-Deploy</b>.</li>
+            <li>Vous revenez ici et suivez le déploiement en direct.</li>
           </ol>
-          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
+          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Bon à savoir :</b> l'accès accordé est <b>révoqué automatiquement</b> dès la fin du déploiement — rien à supprimer ensuite.</span>
         </div>
       </div>
     </div>
@@ -3335,23 +3335,23 @@
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Connexion</h3>
         <div class="form-group">
           <label for="test-ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-url', this)" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse est en <b>https</b> — ou en <b>http</b> si vous passez par un <b>VPN</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="test" style="display:block; margin-top:6px;"></span></div>
+          <div class="field-help" id="help-test-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. Elle doit être joignable depuis Internet, en <b>https</b> avec un certificat valide.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="test" style="display:block; margin-top:6px;"></span></div>
           <input type="url" id="test-ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123">
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label for="test-ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-test-token', this)" title="Aide">?</button></label>
-          <div class="field-help" id="help-test-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans « Jetons d'accès longue durée », cliquez sur « Créer un jeton ».<br>3. Donnez-lui un nom (ex : HA-Deploy) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
-          <input type="password" id="test-ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
-        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--primary-blue);"></i>
+          Aucun jeton à créer : vous autorisez HA-Deploy depuis votre propre Home Assistant, et l'accès est révoqué dès la fin du test.
+        </p>
       </div>
 
       <div class="card test-action">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-rocket"></i> Lancer le test</h3>
         <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
-          Renseignez l'adresse et le jeton, puis lancez le déploiement : la vue est
-          injectée dans votre tableau de bord en quelques secondes.
+          Renseignez l'adresse, puis connectez votre Home Assistant : après votre
+          autorisation, la vue est injectée dans votre tableau de bord et vous
+          suivez chaque étape en direct.
         </p>
-        <button class="btn-add-big" id="test-deploy-btn" onclick="runFreeTest()"><i class="fa-solid fa-rocket"></i> Tester Gratuitement</button>
+        <button class="btn-add-big" id="test-deploy-btn" onclick="connecterHomeAssistant('test')"><i class="fa-solid fa-plug-circle-bolt"></i> Connecter mon Home Assistant</button>
         <div class="deploy-log" id="test-log"></div>
       </div>
     </div>
@@ -3395,9 +3395,9 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-shield-halved"></i> Vos données</h3>
         <div class="prose">
-          <p>L'URL et le jeton d'accès que vous fournissez servent <strong>uniquement</strong> à établir la connexion nécessaire au déploiement de vos packs.</p>
-          <p>Vous gardez la main : un jeton d'accès longue durée se révoque à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
-          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le pack concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Ni votre jeton ni l'adresse de votre instance ne sont conservés</strong> — seule une empreinte irréversible de cette adresse l'est, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
+          <p>Vous ne nous confiez <strong>aucun jeton</strong> : vous autorisez HA-Deploy depuis votre propre Home Assistant, avec votre compte, comme vous autorisez l'application mobile. L'accès ainsi accordé ne sert <strong>qu'au</strong> déploiement de vos packs.</p>
+          <p>Il est <strong>révoqué automatiquement</strong> sur votre instance dès la fin du déploiement, qu'il ait réussi ou non. Vous gardez de toute façon la main : il se retire à tout moment depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>.</p>
+          <p>Pour suivre la fiabilité des déploiements, nous enregistrons l'issue de chaque tentative : le pack concerné, sa réussite ou son échec, et la version de Home Assistant. <strong>Aucun accès à votre instance ni son adresse ne sont conservés</strong> — seule une empreinte irréversible de cette adresse l'est, afin de compter les installations distinctes sans jamais pouvoir les identifier.</p>
           <p>Le détail complet — durées de conservation, destinataires, base légale, registre des traitements et contact du responsable — figure dans la <strong>politique de confidentialité</strong>.</p>
           <div class="descriptif-liens">
             <button type="button" class="descriptif-lien" onclick="switchTab('confidentialite')"><i class="fa-solid fa-user-shield"></i> Politique de confidentialité</button>
@@ -3464,7 +3464,7 @@
 
       <div class="card">
         <h3 class="faq-q"><i class="fa-solid fa-key"></i> Comment révoquer l'accès après coup ?</h3>
-        <div class="prose"><p>Dans Home Assistant : <strong>Profil → Sécurité → Jetons d'accès longue durée</strong>, puis supprimez le jeton nommé <code>HA-Deploy</code>. Les packs déjà déployés restent en place.</p></div>
+        <div class="prose"><p>Il n'y a rien à faire : l'accès accordé à HA-Deploy est <strong>révoqué automatiquement</strong> dès la fin du déploiement. Si un message vous signale que la révocation a échoué (instance injoignable à ce moment-là), retirez-le vous-même : <strong>Profil → Sécurité → Jetons d'actualisation</strong>, entrée <code>HA-Deploy</code>. Les packs déjà déployés restent en place.</p></div>
       </div>
     </div>
   </div>
@@ -3483,30 +3483,29 @@
             <li>Ouvrez l'onglet <strong>Packs</strong> et choisissez une catégorie.</li>
             <li>Renseignez l'entité demandée, puis cliquez sur <strong>Ajouter</strong>.</li>
             <li>Ouvrez le <strong>Panier</strong> en haut, vérifiez la liste, retirez au besoin.</li>
-            <li>Validez, saisissez l'URL et le jeton de votre instance.</li>
-            <li>Choisissez votre moyen de paiement : le déploiement démarre ensuite.</li>
+            <li>Validez, puis choisissez votre moyen de paiement.</li>
+            <li>Saisissez l'URL de votre instance et cliquez sur <strong>Connecter mon Home Assistant</strong> : autorisez HA-Deploy dans votre instance, le déploiement démarre aussitôt.</li>
           </ul>
         </div>
       </div>
 
       <div class="card">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Obtenir un jeton d'accès</h3>
+        <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-key"></i> Autoriser HA-Deploy sur votre instance</h3>
         <div class="prose">
           <ul>
-            <li>Dans Home Assistant, cliquez sur votre <strong>Profil</strong> (en bas à gauche).</li>
-            <li>Ouvrez l'onglet <strong>Sécurité</strong>.</li>
-            <li>Section <strong>Jetons d'accès longue durée</strong> → <strong>Créer un jeton</strong>.</li>
-            <li>Nommez-le <code>HA-Deploy</code> et copiez la valeur affichée : elle n'est montrée qu'une seule fois.</li>
+            <li>Aucun jeton à créer ni à copier : cliquez sur <strong>Connecter mon Home Assistant</strong>.</li>
+            <li>Votre instance s'ouvre sur sa page de connexion : identifiez-vous avec un compte <strong>administrateur</strong>.</li>
+            <li>Autorisez <strong>HA-Deploy</strong> : vous revenez sur ce site et le déploiement démarre.</li>
           </ul>
-          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span>
+          <span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Bon à savoir :</b> l'accès est révoqué automatiquement dès la fin du déploiement.</span>
         </div>
       </div>
 
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-triangle-exclamation"></i> Résoudre un problème</h3>
         <div class="prose">
-          <p><strong>La connexion échoue :</strong> vérifiez que l'URL est complète (avec <code>https://</code> — ou <code>http://</code> via VPN — et le port), et qu'elle s'ouvre bien depuis un réseau extérieur — depuis votre mobile en 4G, Wi-Fi coupé, par exemple.</p>
-          <p><strong>Le jeton est refusé :</strong> il a peut-être expiré ou été révoqué. Générez-en un nouveau puis réessayez.</p>
+          <p><strong>La connexion échoue :</strong> vérifiez que l'URL est complète (avec <code>https://</code> et le port), et qu'elle s'ouvre bien depuis un réseau extérieur — depuis votre mobile en 4G, Wi-Fi coupé, par exemple. Notre serveur doit pouvoir la joindre : un certificat auto-signé ou un accès par VPN seul ne suffisent pas.</p>
+          <p><strong>« Compte non administrateur » :</strong> l'autorisation a été donnée avec un compte Home Assistant sans droits d'administration. Relancez la connexion et identifiez-vous avec un compte administrateur.</p>
           <p><strong>Une carte affiche « Erreur de configuration » :</strong> une carte personnalisée est manquante. Elle est normalement installée automatiquement ; un rechargement forcé du navigateur (<code>Ctrl+Maj+R</code>) suffit le plus souvent.</p>
           <p>Si le problème persiste, écrivez à <strong>smarthomeassistant.alex@gmail.com</strong> en précisant le pack concerné.</p>
         </div>
@@ -3633,7 +3632,7 @@
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-database"></i> Données traitées, finalités et bases légales</h3>
         <div class="prose">
           <ul>
-            <li><strong>Adresse (URL) de votre instance</strong> et <strong>jeton d'accès longue durée</strong> — nécessaires à l'exécution du déploiement. Le jeton est chiffré dès sa réception, n'est jamais transmis en clair au système d'exécution et n'est jamais journalisé. <em>Base légale : exécution du contrat (art. 6.1.b du RGPD).</em></li>
+            <li><strong>Adresse (URL) de votre instance</strong> et <strong>autorisation temporaire</strong> accordée depuis votre instance (jeton d'actualisation émis par Home Assistant pour HA-Deploy) — nécessaires à l'exécution du déploiement. Vous ne nous transmettez aucun jeton vous-même ; celui que votre instance émet est chiffré dès sa réception, n'est jamais transmis en clair au système d'exécution, n'est jamais journalisé, et il est <strong>révoqué sur votre instance</strong> dès la fin du déploiement. <em>Base légale : exécution du contrat (art. 6.1.b du RGPD).</em></li>
             <li><strong>Empreinte irréversible de l'adresse de votre instance</strong> — condensat cryptographique salé, à sens unique : il ne permet pas de retrouver l'adresse d'origine. Il sert uniquement à compter les installations distinctes et à mesurer la fiabilité des déploiements. <em>Base légale : intérêt légitime (art. 6.1.f) — fiabilité et amélioration du service.</em></li>
             <li><strong>Journal technique de déploiement</strong> — pack concerné, réussite ou échec, message d'erreur éventuel, version de Home Assistant, langue de l'interface. <em>Base légale : intérêt légitime (art. 6.1.f).</em></li>
             <li><strong>Données de commande et de facturation</strong> — traitées par le prestataire de paiement ; seules les données nécessaires à la comptabilité sont conservées ici. <em>Base légale : obligation légale (art. 6.1.c).</em></li>
@@ -3648,8 +3647,8 @@
         <div class="prose">
           <p>Chaque catégorie de données fait l'objet d'une durée de conservation déterminée, au terme de laquelle elle est effacée :</p>
           <ul>
-            <li><strong>Jeton d'accès :</strong> effacé dès la fin du déploiement, et au plus tard <strong>24 heures</strong> après la création de la demande — y compris si le déploiement a échoué.</li>
-            <li><strong>Adresse (URL) de l'instance :</strong> même durée que le jeton, soit <strong>24 heures</strong> au maximum. Seule l'empreinte irréversible lui survit.</li>
+            <li><strong>Autorisation d'accès :</strong> effacée de nos systèmes dès sa prise en charge par le système d'exécution, et <strong>révoquée sur votre instance</strong> dès la fin du déploiement ; si le déploiement ne démarre pas, elle est révoquée puis effacée au plus tard <strong>25 minutes</strong> après votre autorisation.</li>
+            <li><strong>Adresse (URL) de l'instance :</strong> même durée que l'autorisation, soit <strong>25 minutes</strong> au maximum. Seule l'empreinte irréversible lui survit.</li>
             <li><strong>Empreinte irréversible de l'instance :</strong> <strong>24 mois</strong> à compter du dernier déploiement.</li>
             <li><strong>Journal technique de déploiement :</strong> <strong>90 jours</strong>.</li>
             <li><strong>Pièces comptables et factures :</strong> <strong>10 ans</strong>, durée imposée par l'article <strong>L.123-22</strong> du code de commerce.</li>
@@ -3678,7 +3677,7 @@
           <p>Vous disposez, sur les données vous concernant, des droits d'<strong>accès</strong>, de <strong>rectification</strong>, d'<strong>effacement</strong>, de <strong>limitation</strong> du traitement, d'<strong>opposition</strong> et de <strong>portabilité</strong> (articles 15 à 22 du RGPD), ainsi que du droit de définir des directives relatives au sort de vos données après votre décès.</p>
           <p>Ces droits s'exercent auprès du responsable du traitement, à l'adresse <strong>smarthomeassistant.alex@gmail.com</strong>. Une réponse vous est apportée dans un délai d'un mois.</p>
           <p><em>Une limite à signaler franchement :</em> l'empreinte de l'adresse de votre instance étant <strong>irréversible par construction</strong>, elle ne permet pas de vous ré-identifier. Nous ne pouvons donc pas retrouver la vôtre pour l'effacer sur simple demande, cas prévu par l'<strong>article 11 du RGPD</strong>. Vous pouvez toutefois nous communiquer l'adresse concernée : l'empreinte correspondante est alors recalculée puis supprimée.</p>
-          <p>Vous pouvez à tout moment <strong>révoquer l'accès</strong> accordé, depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>, en supprimant le jeton nommé <code>HA-Deploy</code>.</p>
+          <p>L'accès accordé est révoqué automatiquement à la fin de chaque déploiement. Vous pouvez aussi le <strong>révoquer vous-même</strong> à tout moment, depuis votre profil Home Assistant, onglet <strong>Sécurité</strong>, rubrique « Jetons d'actualisation », entrée <code>HA-Deploy</code>.</p>
           <p>Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 — ou sur <strong>cnil.fr</strong>.</p>
         </div>
       </div>
@@ -3695,9 +3694,9 @@
       <div class="card">
         <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--primary-blue);"><i class="fa-solid fa-lock"></i> Sécurité</h3>
         <div class="prose">
-          <p>Les échanges avec ce site et avec votre instance sont chiffrés (HTTPS / WSS). Le jeton d'accès est chiffré au repos, n'est jamais inscrit dans les journaux d'exécution et ne figure jamais dans les paramètres de déclenchement du déploiement.</p>
+          <p>Les échanges avec ce site et avec votre instance sont chiffrés (HTTPS / WSS). L'accès à votre instance passe par le flux d'autorisation officiel de Home Assistant (OAuth2 / IndieAuth) : ce site ne voit jamais de jeton, l'autorisation est chiffrée au repos, n'est jamais inscrite dans les journaux d'exécution, ne figure jamais dans les paramètres de déclenchement du déploiement, et elle est révoquée sur votre instance dès la fin du déploiement.</p>
           <p>En cas de violation de données susceptible d'engendrer un risque pour vos droits et libertés, la CNIL en est informée dans les 72 heures et vous en êtes averti, conformément aux <strong>articles 33 et 34 du RGPD</strong>.</p>
-          <p style="margin-top: 12px;"><em>Dernière mise à jour : 25 août 2026.</em></p>
+          <p style="margin-top: 12px;"><em>Dernière mise à jour : 4 octobre 2026.</em></p>
         </div>
       </div>
     </div>
@@ -4484,7 +4483,7 @@
         `Installez l'add-on <b>WireGuard</b> (<a href="https://www.wireguard.com/" target="_blank" rel="noopener noreferrer">wireguard.com</a>) ou <a href="https://tailscale.com/" target="_blank" rel="noopener noreferrer">Tailscale</a>, plus simple car sans ouverture de port.`,
         `Connectez votre ordinateur au VPN, puis relevez l'adresse locale de Home Assistant.`
       ],
-      reserve: `<b>À savoir :</b> via un VPN, l'adresse de votre instance est acceptée <b>en HTTP</b> (ex : <code>http://192.168.1.20:8123</code>) — le HTTPS n'est plus strictement requis sous ce mode d'accès. Le déploiement des packs payants n'aboutit toutefois que si notre serveur de déploiement est relié à votre VPN ; à défaut, préférez Nabu Casa, DuckDNS ou Cloudflare Tunnel.`
+      reserve: `<b>À savoir :</b> un VPN seul ne suffit pas au déploiement. Votre instance autorise HA-Deploy, puis notre serveur s'y connecte depuis Internet : elle doit donc être publiée en <b>https</b> (Nabu Casa, DuckDNS ou Cloudflare Tunnel). Le VPN reste utile pour vos propres accès.`
     }
   ];
 
@@ -21710,7 +21709,9 @@ function dessinSonnette(o) {
     totalEl.classList.add('price-flash');
   }
 
-  // Panier en 3 étapes : 1) liste des modules 2) connexion HA 3) moyen de paiement
+  // Panier en 3 étapes : 1) liste des modules 2) moyen de paiement 3) connexion HA
+  // (04/10/2026 : la connexion vient EN DERNIER -- elle quitte la page pour
+  // l'instance du visiteur, et le deploiement part des son retour).
   let cartModalStep = 'list';
 
   function openCartModal() {
@@ -21938,25 +21939,23 @@ function dessinSonnette(o) {
 
   function cartCheckoutStepHtml() {
     return `
-      <button class="modal-back" onclick="backToCartListStep()"><i class="fa-solid fa-arrow-left"></i> Retour à la sélection</button>
+      <button class="modal-back" onclick="backToCartPaymentStep()"><i class="fa-solid fa-arrow-left"></i> Retour au paiement</button>
       <div class="modal-step-title"><i class="fa-solid fa-key"></i> Connexion à votre instance Home Assistant</div>
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url', this)" title="Aide">?</button></label>
-        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. L'adresse est en <b>https</b> — ou en <b>http</b> si vous passez par un <b>VPN</b>.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
+        <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. Elle doit être joignable depuis Internet, en <b>https</b> avec un certificat valide.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
         <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
       </div>
-      <div class="form-group" style="margin-bottom: 0;">
-        <label for="ha-token"><i class="fa-solid fa-shield-halved"></i> Jeton d'accès <button type="button" class="help-icon" onclick="toggleFieldHelp('help-token', this)" title="Aide">?</button></label>
-        <div class="field-help" id="help-token">1. Dans Home Assistant, ouvrez votre Profil (en bas à gauche) → onglet Sécurité.<br>2. Dans "Jetons d'accès longue durée", cliquez sur "Créer un jeton".<br>3. Donnez-lui un nom (ex : HA-Deploy) puis copiez le jeton généré ici.<span class="rappel-jeton"><i class="fa-solid fa-circle-info"></i><b>Rappel :</b> une fois l'installation réussie, supprimez ce jeton depuis ce même onglet Sécurité.</span></div>
-        <input type="password" id="ha-token" class="field-required" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." required>
+      <div class="notice-box" style="margin: 0 0 4px; font-size: 0.8rem; line-height: 1.5;">
+        <i class="fa-solid fa-shield-halved" style="color: var(--primary-blue);"></i>
+        <b>Aucun jeton à créer.</b> Votre Home Assistant va s'ouvrir : connectez-vous avec un compte <b>administrateur</b> et autorisez <b>HA-Deploy</b>. Vous reviendrez ici pour suivre le déploiement en direct. L'accès est <b>révoqué automatiquement</b> dès la fin du déploiement.
       </div>
       <div class="modal-footer">
-        <div class="cart-total" style="margin-bottom: 10px;">Total à payer : ${cartTotal()} €</div>
         <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px;">
           ${cart.map(item => `<div>${item.name} : ${prixLisible(item.price)}</div>`).join('')}
         </div>
         <div id="checkout-verif"></div>
-        <button class="btn-pay" id="btn-confirmer-payer" onclick="confirmPayment()"><i class="fa-solid fa-lightbulb"></i> Confirmer et payer</button>
+        <button class="btn-pay" id="btn-connecter-ha" onclick="connecterHomeAssistant('panier')"><i class="fa-solid fa-plug-circle-bolt"></i> Connecter mon Home Assistant</button>
       </div>
     `;
   }
@@ -21982,7 +21981,7 @@ function dessinSonnette(o) {
       ouvrirCompteModal('', 'panier');
       return;
     }
-    cartModalStep = 'checkout';
+    cartModalStep = 'payment';
     renderCartModalBody();
   }
 
@@ -21994,7 +21993,7 @@ function dessinSonnette(o) {
     reprisePanierApresConnexion = false;
     if (!attendu || !compteConnecte || !cart.length) return false;
     fermerCompteModal();
-    cartModalStep = 'checkout';
+    cartModalStep = 'payment';
     renderCartModalBody();
     document.getElementById('cart-modal-overlay').classList.add('active');
     return true;
@@ -22038,7 +22037,7 @@ function dessinSonnette(o) {
 
   function cartPaymentStepHtml() {
     return `
-      <button class="modal-back" onclick="backToCartCheckoutStep()"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+      <button class="modal-back" onclick="backToCartListStep()"><i class="fa-solid fa-arrow-left"></i> Retour à la sélection</button>
       <div class="modal-step-title"><i class="fa-solid fa-wallet"></i> Choisissez votre moyen de paiement</div>
       <div class="cart-total" style="margin-bottom: 18px;">Total à payer : ${cartTotal()} €</div>
       <div class="payment-methods">
@@ -22049,11 +22048,11 @@ function dessinSonnette(o) {
         `).join('')}
       </div>
       <div class="modal-footer">
-        <button class="btn-pay" style="background: var(--primary-blue); width: 100%;" onclick="runCartDeployment()">
-          <i class="fa-solid fa-forward"></i> Passer — déployer sans paiement
+        <button class="btn-pay" style="background: var(--primary-blue); width: 100%;" onclick="backToCartCheckoutStep()">
+          <i class="fa-solid fa-forward"></i> Passer — continuer sans paiement
         </button>
         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
-          Phase de test : injecte directement les packs sur votre instance.
+          Phase de test : étape suivante, la connexion à votre instance.
         </div>
       </div>
     `;
@@ -22071,6 +22070,11 @@ function dessinSonnette(o) {
 
   function backToCartCheckoutStep() {
     cartModalStep = 'checkout';
+    renderCartModalBody();
+  }
+
+  function backToCartPaymentStep() {
+    cartModalStep = 'payment';
     renderCartModalBody();
   }
 
@@ -22097,81 +22101,12 @@ function dessinSonnette(o) {
     if (e.target.id === 'cart-modal-overlay') closeCartModal();
   }
 
-  function confirmPayment() {
-    const url = document.getElementById('ha-url').value;
-    const token = document.getElementById('ha-token').value;
-
-    if (!url || !token) {
-      alert("Veuillez renseigner l'URL et le Jeton d'accès Home Assistant.");
-      return;
-    }
-
-    // Conservés en mémoire pour l'étape de déploiement : le re-rendu de la
-    // modale détruit les champs de saisie.
-    checkoutCreds = { url: url, token: token };
-
-    const ligneEsphome = cart.find(item => item.key === 'configuration_esphome');
-    if (ligneEsphome && esphomeVerifiePour !== url + '|' + token) {
-      const zone = document.getElementById('checkout-verif');
-      const bouton = document.getElementById('btn-confirmer-payer');
-      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Vérification de la compatibilité de votre instance avec ESPHome…</div>';
-      if (bouton) bouton.disabled = true;
-      verifierEsphome(url, token).then(res => {
-        if (bouton) bouton.disabled = false;
-        if (!res.ok) {
-          if (zone) zone.innerHTML = '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + res.message + '</div>';
-          return;
-        }
-        esphomeVerifiePour = url + '|' + token;
-        if (zone) zone.innerHTML = '';
-        confirmPayment();
-      });
-      return;
-    }
-
-    const ligneZigbee = cart.find(item => item.key === 'configuration_zigbee2mqtt');
-    if (ligneZigbee) {
-      const zone = document.getElementById('checkout-verif');
-      const bouton = document.getElementById('btn-confirmer-payer');
-      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Recherche de votre antenne Zigbee sur les ports USB…</div>';
-      if (bouton) bouton.disabled = true;
-      verifierAntenneZigbee(url, token).then(res => {
-        if (bouton) bouton.disabled = false;
-        if (!res.ok) {
-          if (zone) zone.innerHTML = '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + res.message + '</div>';
-          return;
-        }
-        // L'antenne vue par le navigateur voyage jusqu'au runner, qui la
-        // reprend si elle est toujours branchee.
-        ligneZigbee.params = Object.assign({}, ligneZigbee.params || {},
-          { Z2M_PORT: res.antenne.port, Z2M_ADAPTER: res.antenne.adaptateur });
-        sauverPanier();
-        cartModalStep = 'payment';
-        renderCartModalBody();
-      });
-      return;
-    }
-
-    const avecAvatar = cart.some(item => Object.values(item.params || {}).some(v =>
-      typeof v === 'string' && v.indexOf('ha_deploy_avatar_') === 0));
-    if (avecAvatar && avatarsDeposesPour !== url + '|' + token) {
-      const zone = document.getElementById('checkout-verif');
-      const bouton = document.getElementById('btn-confirmer-payer');
-      if (zone) zone.innerHTML = '<div class="verif-antenne"><i class="fa-solid fa-spinner fa-spin"></i> Dépôt de l\u2019avatar sur votre instance…</div>';
-      if (bouton) bouton.disabled = true;
-      deposerAvatars(url, token).then(res => {
-        if (bouton) bouton.disabled = false;
-        avatarsDeposesPour = url + '|' + token;
-        if (zone) zone.innerHTML = res.ok ? '' : '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> Avatar non déposé (' + res.message + ') : la carte reprendra l\u2019image de la personne dans Home Assistant.</div>';
-        confirmPayment();
-      });
-      return;
-    }
-
-    cartModalStep = 'payment';
-    renderCartModalBody();
-  }
-  let avatarsDeposesPour = '';
+  /* Les verifications prealables (antenne Zigbee, architecture 64 bits pour
+     ESPHome) et le depot des avatars du pack Personne se faisaient ICI, avec
+     le jeton longue duree que le visiteur collait. Ce site ne detient plus
+     aucun jeton (04/10/2026) : le runner les fait avant TOUTE installation
+     (run_deploy.verifications_prealables / deposer_avatars), et un prerequis
+     manquant n'installe rien, pas meme les autres packs du panier. */
 
   /* =====================================================================
      DÉPLOIEMENT — confié au serveur
@@ -22190,9 +22125,11 @@ function dessinSonnette(o) {
          scripts, redémarrage puis attente du retour de l'instance ;
        - les libellés sont traduits en 20 langues, contre 2 auparavant.
 
-     Le jeton ne part qu'une fois, en HTTPS, vers le Worker : celui-ci le
-     chiffre aussitôt et ne le place jamais dans le déclenchement du
-     runner, qui ne reçoit que l'identifiant de la tâche.
+     Depuis le 04/10/2026, le visiteur ne colle plus de jeton : il autorise
+     HA-Deploy depuis son instance (voir « AUTORISATION DE L'INSTANCE »
+     ci-dessous). Le serveur échange le code, chiffre aussitôt le jeton
+     obtenu et ne le place jamais dans le déclenchement du runner, qui ne
+     reçoit que l'identifiant de la tâche.
      ===================================================================== */
 
   const BACKEND_URL = 'https://ha-deployer-api.alexsmarthome.workers.dev';
@@ -23030,51 +22967,27 @@ function dessinSonnette(o) {
   function checkInstanceUrl(raw) {
     let u;
     try { u = new URL(String(raw).trim()); }
-    catch (e) { return { error: "L'adresse saisie n'est pas une URL valide (attendu : https://… ou http://… via VPN)." }; }
+    catch (e) { return { error: "L'adresse saisie n'est pas une URL valide (attendu : https://…)." }; }
 
     if (u.protocol !== 'https:' && u.protocol !== 'http:') {
       return { error: "L'adresse doit commencer par http:// ou https://." };
     }
     if (/^(localhost|127\.|0\.|169\.254\.)/.test(u.hostname) || u.hostname.endsWith('.local')) {
-      return { error: "Cette adresse ne désigne votre instance que depuis l'appareil où elle tourne. Indiquez son adresse publique (Nabu Casa, Cloudflare Tunnel, DuckDNS) ou son adresse sur votre VPN (http://10.x.x.x:8123, http://100.x.x.x:8123)." };
+      return { error: "Cette adresse ne désigne votre instance que depuis l'appareil où elle tourne. Indiquez son adresse publique (Nabu Casa, Cloudflare Tunnel, DuckDNS)." };
     }
-    const vpn = ADRESSES_VPN.test(u.hostname);
-    return { url: u.origin + u.pathname.replace(/\/+$/, ''), vpn: vpn,
-             note: vpn ? "Adresse de VPN acceptée (HTTP autorisé). Le déploiement n'aboutira que si le serveur de déploiement est relié à ce VPN." : '' };
+    // 04/10/2026 : l'autorisation est echangee par NOTRE serveur, depuis
+    // Internet. Une adresse de VPN (ou de reseau local) ne lui est jamais
+    // joignable : on le dit tout de suite plutot qu'apres l'autorisation.
+    if (ADRESSES_VPN.test(u.hostname)) {
+      return { error: "Cette adresse n'est joignable que par votre VPN ou votre réseau local : notre serveur ne peut pas s'y connecter. Publiez votre instance en https (Nabu Casa, DuckDNS ou Cloudflare Tunnel) et indiquez cette adresse." };
+    }
+    return { url: u.origin + u.pathname.replace(/\/+$/, '') };
   }
 
   /* ---------- Dialogue avec le Worker ---------- */
-  async function createJob(creds, items) {
-    // `api()` ajoute l'en-tete `Authorization` quand une session existe : la
-    // tache est alors rattachee au compte, et le client la retrouve dans son
-    // espace. Sans session, elle reste anonyme — c'est voulu.
-    const res = await api('/api/jobs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ha_url: creds.url,
-        ha_token: creds.token,
-        // Une entrée par OCCURRENCE, dans l'ordre du panier : c'est cet
-        // ordre que le runner suit, et donc l'ordre des cartes dans la vue.
-        // Chaque occurrence porte ses propres réglages — sans quoi deux
-        // lampes achetées ensemble se marcheraient dessus, la seconde
-        // écrasant les réglages de la première.
-        items: items,
-        modules: items.map(it => it.module),
-        lang: document.documentElement.getAttribute('lang') || 'fr'
-      })
-    });
-
-    let data = {};
-    try { data = await res.json(); } catch (e) { /* réponse non JSON */ }
-    if (!res.ok) throw new Error(data.error || `Le serveur a refusé la demande (${res.status}).`);
-    if (!data.job_id) throw new Error("Réponse inattendue du serveur.");
-    return data.job_id;
-  }
-
-  async function pollJob(jobId, onSteps) {
+  async function pollJob(jobId, onSteps, depuis = 0) {
     const debut = Date.now();
-    let affichees = 0;
+    let affichees = depuis;
 
     while (Date.now() - debut < POLL_TIMEOUT_MS) {
       await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
@@ -23096,50 +23009,290 @@ function dessinSonnette(o) {
     throw new Error("Le déploiement dépasse le délai d'attente. Vérifiez votre instance : il a pu aboutir malgré tout.");
   }
 
-  async function submitDeployment(opts) {
-    const { creds, items, boxId, closeBtnId } = opts;
+  /* =====================================================================
+     AUTORISATION DE L'INSTANCE — flux officiel de Home Assistant (04/10/2026)
+
+     Le visiteur ne crée plus de jeton d'accès longue durée, et n'en colle
+     plus nulle part. Il donne l'adresse de son instance, puis AUTORISE
+     HA-Deploy depuis sa propre instance, avec son compte Home Assistant —
+     exactement comme on autorise l'application mobile :
+
+       1. un `state` aléatoire est tiré ici et gardé en sessionStorage (il ne
+          survit pas à l'onglet), puis enregistré par le serveur avec la
+          demande (packs, réglages) : POST /api/ha/authorize ;
+       2. le navigateur part sur <instance>/auth/authorize, où le visiteur se
+          connecte et autorise l'accès ;
+       3. l'instance renvoie sur le serveur (/auth/callback), qui échange le
+          code, vérifie le droit administrateur et lance le déploiement ;
+       4. le serveur ramène ici avec ?ha_job=…&ha_state=… : on vérifie que le
+          `state` est bien celui de CET onglet — sans quoi le retour est
+          ignoré —, puis on suit l'avancement en direct (Server-Sent Events).
+
+     Ce site ne voit JAMAIS de jeton : ni le code d'autorisation (il va au
+     serveur), ni le jeton d'accès. L'accès accordé est révoqué sur l'instance
+     dès la fin du déploiement, qu'il ait réussi ou non.
+     ===================================================================== */
+  const CLE_AUTORISATION_HA = 'hadeploy-autorisation-ha';
+
+  function etatAleatoire() {
+    const octets = crypto.getRandomValues(new Uint8Array(32));
+    return btoa(String.fromCharCode(...octets))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  /* Les avatars du pack Personne vivent dans ce navigateur : ils partent
+     avec la demande, et c'est le runner qui les dépose sur l'instance. */
+  function avatarsDesOccurrences(items) {
+    const avatars = {};
+    items.forEach(it => Object.values(it.params || {}).forEach(v => {
+      if (typeof v !== 'string' || v.indexOf('ha_deploy_avatar_') !== 0) return;
+      try { const d = localStorage.getItem(v); if (d) avatars[v] = d; } catch (e) { /* stockage indisponible */ }
+    }));
+    return avatars;
+  }
+
+  function afficherErreurConnexion(mode, message) {
+    if (mode === 'test') { logLine('test-log', 'err', message, 0); return; }
+    const zone = document.getElementById('checkout-verif');
+    if (zone) zone.innerHTML = '<div class="verif-antenne verif-echec"><i class="fa-solid fa-triangle-exclamation"></i> ' + message + '</div>';
+  }
+
+  async function connecterHomeAssistant(mode) {
+    const champ = document.getElementById(mode === 'test' ? 'test-ha-url' : 'ha-url');
+    const bouton = document.getElementById(mode === 'test' ? 'test-deploy-btn' : 'btn-connecter-ha');
+    const zone = document.getElementById('checkout-verif');
+    if (zone) zone.innerHTML = '';
+    if (mode === 'test') { const box = document.getElementById('test-log'); if (box) box.innerHTML = ''; }
+
+    const cible = checkInstanceUrl(champ ? champ.value : '');
+    if (cible.error) { afficherErreurConnexion(mode, cible.error); return; }
+
+    let items;
+    if (mode === 'test') {
+      items = [{ module: 'test-gratuit', params: {} }];
+    } else {
+      const deployables = cart.filter(item => SERVER_MODULES[item.key]);
+      if (!deployables.length) {
+        afficherErreurConnexion(mode, "Aucun pack de ce panier n'est déployable automatiquement.");
+        return;
+      }
+      // Une occurrence par ligne du panier, avec SES reglages, dans l'ordre
+      // du panier : c'est l'ordre des cartes dans la vue.
+      items = deployables.map(item => ({ module: SERVER_MODULES[item.key], params: item.params || {} }));
+    }
+
+    const state = etatAleatoire();
+    try {
+      sessionStorage.setItem(CLE_AUTORISATION_HA, JSON.stringify({ state, mode, url: cible.url, depuis: Date.now() }));
+    } catch (e) {
+      afficherErreurConnexion(mode, "Le stockage de session de votre navigateur est indisponible (navigation privée stricte ?) : la connexion ne peut pas être sécurisée.");
+      return;
+    }
+
+    if (bouton) bouton.disabled = true;
+    try {
+      const res = await api('/api/ha/authorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ha_url: cible.url, state, mode, items,
+          lang: document.documentElement.getAttribute('lang') || 'fr',
+          avatars: avatarsDesOccurrences(items)
+        })
+      });
+      let data = {};
+      try { data = await res.json(); } catch (e) { /* réponse non JSON */ }
+      if (!res.ok) {
+        if (data.code === 'compte_requis') {
+          reprisePanierApresConnexion = true;
+          try { localStorage.setItem(CLE_REPRISE_PANIER, '1'); } catch (e) { /* ignore */ }
+          ouvrirCompteModal('', 'panier');
+        }
+        throw new Error(data.error || `Le serveur a refusé la demande (${res.status}).`);
+      }
+      if (mode === 'panier') sauverPanier();
+      // Départ vers l'instance du visiteur : il s'y connecte et autorise.
+      location.assign(data.authorize_url);
+    } catch (e) {
+      try { sessionStorage.removeItem(CLE_AUTORISATION_HA); } catch (er) { /* ignore */ }
+      afficherErreurConnexion(mode, e.message || 'La connexion a échoué.');
+      if (bouton) bouton.disabled = false;
+    }
+  }
+
+  /* Ce que le serveur peut répondre au retour de l'instance (?ha_erreur=…). */
+  const MESSAGES_RETOUR_HA = {
+    'refus': "Vous avez refusé l'autorisation dans Home Assistant : rien n'a été installé.",
+    'demande-expiree': "L'autorisation a pris plus de dix minutes : relancez la connexion.",
+    'demande-inconnue': "Cette autorisation est inconnue ou a déjà servi : relancez la connexion.",
+    'instance-injoignable': "Notre serveur n'a pas pu joindre votre instance. Elle doit être accessible depuis Internet, en <b>https</b> avec un certificat valide (Nabu Casa, Cloudflare Tunnel, ou DuckDNS avec Let's Encrypt).",
+    'code-refuse': "Votre instance a refusé le code d'autorisation : relancez la connexion.",
+    'instance-erreur': "Votre instance a répondu de façon inattendue : réessayez dans un instant.",
+    'non-admin': "Le compte Home Assistant utilisé n'est pas <b>administrateur</b> : le déploiement exige ce droit. L'accès accordé a déjà été révoqué ; reconnectez-vous avec un compte administrateur.",
+    'runner': "Le serveur de déploiement est momentanément indisponible. L'accès accordé a été révoqué : réessayez dans quelques minutes.",
+    'serveur': "Erreur du serveur de déploiement : réessayez dans quelques minutes."
+  };
+
+  function ouvrirPanierA(etape, url) {
+    cartModalStep = etape;
+    renderCartModalBody();
+    document.getElementById('cart-modal-overlay').classList.add('active');
+    const champ = document.getElementById('ha-url');
+    if (champ && url) champ.value = url;
+  }
+
+  /* Appelée au chargement : le visiteur revient-il de son instance ? */
+  function reprendreRetourHomeAssistant() {
+    const params = new URLSearchParams(location.search);
+    const jobId = params.get('ha_job');
+    const erreur = params.get('ha_erreur');
+    const etatRecu = params.get('ha_state');
+    if (!jobId && !erreur) return false;
+
+    // Le retour ne doit pas se rejouer au rechargement de la page, ni rester
+    // dans l'historique.
+    ['ha_job', 'ha_erreur', 'ha_state'].forEach(k => params.delete(k));
+    const reste = params.toString();
+    history.replaceState(history.state, '', location.pathname + (reste ? '?' + reste : '') + location.hash);
+
+    let attendu = null;
+    try {
+      attendu = JSON.parse(sessionStorage.getItem(CLE_AUTORISATION_HA) || 'null');
+      sessionStorage.removeItem(CLE_AUTORISATION_HA);   // usage unique
+    } catch (e) { attendu = null; }
+    const mode = (attendu && attendu.mode) || (location.hash === '#test' ? 'test' : 'panier');
+    const url = attendu ? attendu.url : '';
+
+    if (mode === 'test') {
+      const champ = document.getElementById('test-ha-url');
+      if (champ && url) champ.value = url;
+    } else {
+      ouvrirPanierA(erreur || !attendu ? 'checkout' : 'deploy', url);
+    }
+
+    // Protection CSRF côté navigateur : le `state` renvoyé doit être celui que
+    // CET onglet a tiré. Un lien forgé, ou ouvert dans un autre onglet, est
+    // ignoré — on ne suit pas un déploiement qu'on n'a pas lancé.
+    if (!attendu || !etatRecu || attendu.state !== etatRecu) {
+      afficherErreurConnexion(mode, "Ce retour ne correspond à aucune connexion lancée depuis cet onglet : il a été ignoré par sécurité. Relancez la connexion.");
+      return true;
+    }
+    if (erreur) {
+      afficherErreurConnexion(mode, MESSAGES_RETOUR_HA[erreur] || 'La connexion à votre instance a échoué.');
+      return true;
+    }
+    if (!/^[a-f0-9]{32}$/.test(jobId)) {
+      afficherErreurConnexion(mode, 'Réponse inattendue du serveur.');
+      return true;
+    }
+
+    if (mode === 'test') {
+      suivreDeploiement(jobId, { url, boxId: 'test-log', boutonId: 'test-deploy-btn' });
+    } else {
+      verrouillerFermeture(true);
+      suivreDeploiement(jobId, { url, boxId: 'cart-deploy-log', closeBtnId: 'cart-deploy-close', viderPanier: true });
+    }
+    return true;
+  }
+
+  /* Avancement en direct : un flux Server-Sent Events, que le serveur ferme
+     de lui-même toutes les minutes environ (borne de ses lectures en base) et
+     qu'on rouvre là où il s'était arrêté (?depuis=n). Si le flux échoue à
+     répétition — mandataire qui le coupe, navigateur ancien —, on retombe sur
+     l'interrogation périodique, qui donne le même résultat en moins vif. */
+  function ecouterTache(jobId, onStep, onStatus) {
+    if (typeof EventSource === 'undefined') {
+      return pollJob(jobId, etapes => etapes.forEach(onStep));
+    }
+    return new Promise((resolve, reject) => {
+      const base = `${BACKEND_URL.replace(/\/+$/, '')}/api/jobs/${jobId}/events`;
+      const debut = Date.now();
+      let recues = 0, echecs = 0, fini = false, source = null;
+
+      const ouvrir = () => {
+        source = new EventSource(`${base}?depuis=${recues}`);
+        source.addEventListener('step', ev => {
+          echecs = 0;
+          const n = parseInt(ev.lastEventId, 10);
+          if (n && n <= recues) return;          // déjà affichée
+          recues = n || recues + 1;
+          try { onStep(JSON.parse(ev.data)); } catch (e) { /* étape illisible */ }
+        });
+        source.addEventListener('status', ev => {
+          echecs = 0;
+          try { onStatus(JSON.parse(ev.data).status); } catch (e) { /* ignore */ }
+        });
+        source.addEventListener('done', ev => {
+          fini = true;
+          source.close();
+          let d = {};
+          try { d = JSON.parse(ev.data); } catch (e) { /* ignore */ }
+          resolve({ status: d.status, error: d.error });
+        });
+        source.onerror = () => {
+          source.close();
+          if (fini) return;
+          if (Date.now() - debut > POLL_TIMEOUT_MS) {
+            reject(new Error("Le déploiement dépasse le délai d'attente. Vérifiez votre instance : il a pu aboutir malgré tout."));
+            return;
+          }
+          if (++echecs > 5) {
+            pollJob(jobId, etapes => etapes.forEach(onStep), recues).then(resolve, reject);
+            return;
+          }
+          setTimeout(ouvrir, 1500);
+        };
+      };
+      ouvrir();
+    });
+  }
+
+  async function suivreDeploiement(jobId, opts) {
+    const { boxId, closeBtnId, boutonId, url } = opts;
     const log = (kind, text) => logLine(boxId, kind, text);
+    const bouton = boutonId && document.getElementById(boutonId);
+    if (bouton) bouton.disabled = true;
 
     reinitialiserEtapes(boxId);
     // Etape 1/4
-    let courante = log('run', 'Envoi de la demande au serveur de déploiement…');
-    try {
-      const jobId = await createJob(creds, items);
-      replaceLine(courante, 'ok', `Demande acceptée — ${items.length} pack(s) en file d'attente.`);
-
-      // Etape 2/4
-      courante = log('run', 'Prise en charge par le déployeur…');
-      let priseEnCharge = false;
-
+    log('ok', 'Instance autorisée depuis Home Assistant — aucun jeton saisi, aucun jeton conservé par ce site.');
+    // Etape 2/4
+    let courante = log('run', 'Prise en charge par le déployeur…');
+    let deploiement = null;
+    const avancer = () => {
+      if (deploiement) return;
+      replaceLine(courante, 'ok', 'Demande prise en charge.');
       // Etape 3/4 — les messages du runner s'y rangent en SOUS-etapes
       // (numero 0 : elles ne consomment pas de rang).
-      let deploiement = null;
-      const job = await pollJob(jobId, etapes => {
-        if (!priseEnCharge) {
-          priseEnCharge = true;
-          replaceLine(courante, 'ok', 'Demande prise en charge.');
-          deploiement = log('run', 'Déploiement en cours sur votre instance…');
-        }
-        etapes.forEach(e => logLine(boxId, e.step === 'error' ? 'err' : 'ok',
-                                    `<span class="sous-etape">${echapperHtml(e.message)}</span>`, 0));
-      });
-      if (!priseEnCharge) {
-        replaceLine(courante, 'ok', 'Demande prise en charge.');
-        deploiement = log('run', 'Déploiement en cours sur votre instance…');
-      }
+      deploiement = log('run', 'Déploiement en cours sur votre instance…');
       courante = deploiement;
+    };
+
+    try {
+      const job = await ecouterTache(jobId,
+        e => {
+          avancer();
+          const kind = e.step === 'error' ? 'err'
+                     : (e.step === 'revoke' && /ATTENTION/.test(e.message || '')) ? 'warn' : 'ok';
+          logLine(boxId, kind, `<span class="sous-etape">${echapperHtml(e.message)}</span>`, 0);
+        },
+        statut => { if (statut === 'running') avancer(); });
+      avancer();
 
       if (job.status === 'success') {
-        const lien = `${creds.url}/${DASHBOARD_PATH}`;
         replaceLine(courante, 'ok', 'Déploiement terminé.');
         // Le panier a été livré : le vider évite un second déploiement
         // involontaire des mêmes modules au prochain passage.
         if (opts.viderPanier) {
           cart.length = 0;
           updateCartUI();
+          sauverPanier();
         }
         // Etape 4/4
-        log('ok', `Terminé — <a href="${lien}" target="_blank" rel="noopener">ouvrir votre tableau de bord</a>.`);
+        const lien = url ? `${url}/${DASHBOARD_PATH}` : '';
+        log('ok', lien
+          ? `Terminé — <a href="${lien}" target="_blank" rel="noopener">ouvrir votre tableau de bord</a>.`
+          : 'Terminé.');
       } else {
         replaceLine(courante, 'err', job.error ? echapperHtml(job.error) : 'Le déploiement a échoué.');
       }
@@ -23149,15 +23302,26 @@ function dessinSonnette(o) {
       return null;
     } finally {
       // Succes, echec ou exception : la tache est close, on rend les sorties.
-      verrouillerFermeture(false);
+      if (closeBtnId) verrouillerFermeture(false);
       const btn = closeBtnId && document.getElementById(closeBtnId);
       if (btn) btn.disabled = false;
+      if (bouton) bouton.disabled = false;
       hideSticky(8000);
     }
   }
 
   /* =====================================================================
-     TEST GRATUIT — déployé par le NAVIGATEUR, sans passer par le serveur
+     TEST GRATUIT — données conservées pour build_site.py
+
+     Jusqu'au 04/10/2026, le Test Gratuit était déployé par le NAVIGATEUR,
+     avec le jeton longue durée que le visiteur collait. Il passe désormais,
+     comme les packs, par l'autorisation de l'instance et le runner
+     (module `test-gratuit`, déployable SANS compte) : ce site ne détient
+     plus aucun jeton. Les constantes ci-dessous ne servent plus qu'au
+     contrôle de cohérence de build_site.py et à publier_site.py ; le texte
+     qui suit décrit l'ancien fonctionnement.
+
+     (Ancien fonctionnement) TEST GRATUIT — déployé par le NAVIGATEUR
 
      Les modules payants restent confiés au runner GitHub Actions (bloc
      ci-dessus) : c'est là que se décide le droit de déployer, et là que
@@ -23239,128 +23403,6 @@ function dessinSonnette(o) {
      ici parfaitement joignable — à condition que le navigateur accepte de
      s'y connecter. Ce qui l'en empêche, c'est le contenu mixte : cette page
      est servie en HTTPS, elle ne peut pas ouvrir une WebSocket en clair. */
-  function checkInstanceUrlNavigateur(raw) {
-    let u;
-    try { u = new URL(String(raw).trim()); }
-    catch (e) { return { error: "L'adresse saisie n'est pas une URL valide (attendu : https://…)." }; }
-
-    if (u.protocol !== 'https:' && u.protocol !== 'http:') {
-      return { error: "L'adresse doit commencer par http:// ou https://." };
-    }
-    if (typeof location !== 'undefined' && location.protocol === 'https:' && u.protocol === 'http:') {
-      return { error: "Cette page est en HTTPS : votre navigateur bloque toute connexion vers une instance en HTTP. Utilisez une adresse https:// (Nabu Casa, Cloudflare Tunnel, ou DuckDNS avec certificat)." };
-    }
-    const proto = u.protocol === 'https:' ? 'wss:' : 'ws:';
-    const chemin = u.pathname.replace(/\/+$/, '');
-    return { origine: u.origin + chemin, ws: proto + '//' + u.host + chemin + '/api/websocket' };
-  }
-
-  /* ---------- Connexion WebSocket authentifiée ---------- */
-  function haConnect(wsUrl, token) {
-    return new Promise((resolve, reject) => {
-      let ws;
-      try { ws = new WebSocket(wsUrl); } catch (e) { return reject(new Error('Connexion impossible.')); }
-
-      const etat = { id: 1, attente: {} };
-      const minuteur = setTimeout(() => {
-        try { ws.close(); } catch (e) {}
-        reject(new Error("Délai dépassé. Vérifiez que l'adresse est joignable et que son certificat est accepté par votre navigateur."));
-      }, 15000);
-
-      ws.onerror = () => {
-        clearTimeout(minuteur);
-        reject(new Error("Connexion refusée. Si votre instance utilise un certificat auto-signé, ouvrez d'abord son adresse dans un onglet pour l'accepter, puis réessayez."));
-      };
-
-      // Aucune réponse ne viendra après la fermeture : sans ceci, un appel
-      // en cours resterait en attente indéfiniment.
-      ws.onclose = () => {
-        Object.keys(etat.attente).forEach(id => etat.attente[id].reject(new Error('Connexion fermée.')));
-        etat.attente = {};
-      };
-
-      ws.onmessage = (evt) => {
-        const msg = JSON.parse(evt.data);
-        if (msg.type === 'auth_required') {
-          ws.send(JSON.stringify({ type: 'auth', access_token: token }));
-          return;
-        }
-        if (msg.type === 'auth_invalid') {
-          clearTimeout(minuteur);
-          try { ws.close(); } catch (e) {}
-          reject(new Error("Jeton refusé. Générez un nouveau jeton d'accès longue durée puis réessayez."));
-          return;
-        }
-        if (msg.type === 'auth_ok') {
-          clearTimeout(minuteur);
-          resolve({
-            call: (charge) => new Promise((res, rej) => {
-              const id = etat.id++;
-              etat.attente[id] = { resolve: res, reject: rej };
-              ws.send(JSON.stringify(Object.assign({}, charge, { id: id })));
-            }),
-            close: () => { try { ws.close(); } catch (e) {} }
-          });
-          return;
-        }
-        if (msg.id && etat.attente[msg.id]) {
-          etat.attente[msg.id].resolve(msg);
-          delete etat.attente[msg.id];
-        }
-      };
-    });
-  }
-
-
-  /* ===== ZIGBEE2MQTT : L'ANTENNE EST VERIFIEE AVANT LA COMMANDE (25/09/2026) =====
-     Sans antenne Zigbee branchee, le pack ne peut rien faire d'utile : le
-     client doit le savoir AVANT de payer, et aucune installation ne doit
-     partir. Le navigateur interroge donc lui-meme l'instance (le WebSocket de
-     Home Assistant n'est pas soumis au CORS -- c'est ce qu'utilise deja le
-     Test Gratuit) et lit le materiel USB (`supervisor/api /hardware/info`).
-     Les tables ci-dessous sont ECRITES depuis zigbee_usb.py par
-     _patch_index_zigbee2mqtt.py : le runner refait la meme verification avant
-     d'installer quoi que ce soit, avec exactement les memes criteres. */
-  const ZIGBEE_ANTENNES = [["1a86:55d4", "ember", false], ["10c4:ea60", "zstack", true], ["1a86:7523", "zstack", true], ["0451:16a8", "zstack", false], ["0451:bef3", "zstack", false], ["1cf1:0030", "deconz", false], ["0403:6015", "deconz", true], ["303a:4001", "ember", false], ["303a:831a", "ember", false], ["067b:2303", "zigate", true]];
-  const ZIGBEE_MOTS = ["zigbee", "conbee", "skyconnect", "zbt 1", "zbt 2", "zbt1", "zbt2", "zbdongle", "zigstar", "slzb", "cc2531", "cc2652", "cc1352", "zigate", "efr32", "ember", "tube zb", "ezsp"];
-  const ZIGBEE_ADAPTATEUR_PAR_NOM = [["skyconnect", "ember"], ["zbt", "ember"], ["dongle e", "ember"], ["dongle plus v2", "ember"], ["dongle max", "ember"], ["efr32", "ember"], ["ezsp", "ember"], ["conbee", "deconz"], ["zigate", "zigate"], ["cc2652", "zstack"], ["cc1352", "zstack"], ["cc2531", "zstack"], ["dongle p", "zstack"]];
-
-  function zigbeeTexte(d) {
-    const a = d.attributes || {};
-    return [a.ID_MODEL, a.ID_VENDOR, a.ID_MODEL_FROM_DATABASE, d.by_id]
-      .map(x => String(x || '')).join(' ').toLowerCase()
-      .replace(/[^a-z0-9]+/g, ' ').trim();
-  }
-  function zigbeeContient(texte, mot) {
-    return (' ' + texte + ' ').indexOf(' ' + mot + ' ') >= 0;
-  }
-  function antennesZigbee(info) {
-    const trouvees = [];
-    ((info && info.devices) || []).forEach(d => {
-      if (d.subsystem !== 'tty') return;
-      const texte = zigbeeTexte(d);
-      const nomZigbee = ZIGBEE_MOTS.some(m => zigbeeContient(texte, m));
-      const a = d.attributes || {};
-      const ident = (a.ID_VENDOR_ID && a.ID_MODEL_ID)
-        ? (a.ID_VENDOR_ID + ':' + a.ID_MODEL_ID).toLowerCase() : '';
-      const connue = ZIGBEE_ANTENNES.find(e => e[0] === ident);
-      if (!connue && !nomZigbee) return;
-      if (connue && connue[2] && !nomZigbee) return;
-      const parNom = ZIGBEE_ADAPTATEUR_PAR_NOM.find(e => zigbeeContient(texte, e[0]));
-      trouvees.push({
-        port: d.by_id || d.dev_path,
-        adaptateur: parNom ? parNom[1] : (connue ? connue[1] : 'ember'),
-        modele: String(a.ID_MODEL || '').replace(/_/g, ' ').trim() || 'Antenne Zigbee'
-      });
-    });
-    trouvees.sort((x, y) => (x.port.indexOf('/dev/serial/by-id/') === 0 ? 0 : 1)
-                          - (y.port.indexOf('/dev/serial/by-id/') === 0 ? 0 : 1));
-    return trouvees;
-  }
-
-  /* { ok: true, antenne } ou { ok: false, message }. Une verification
-     IMPOSSIBLE (instance injoignable, jeton refuse, pas de Supervisor) bloque
-     aussi : on ne vend pas un pack dont on ne sait pas s'il pourra servir. */
   /* ---------- AVATAR CARTOON DU PACK PERSONNE (27/09/2026) ----------
      Tout se passe DANS LE NAVIGATEUR : la photo ne quitte pas l'ordinateur du
      visiteur avant la commande.
@@ -23376,9 +23418,10 @@ function dessinSonnette(o) {
      C'est une stylisation algorithmique, pas un dessin genere par une IA :
      elle garde les traits de la personne et la reconnaissance du visage.
      Le resultat (400 x 400, PNG a fond transparent) est garde dans le
-     navigateur sous une cle `ha_deploy_avatar_*` ; a la commande, il est
-     depose sur l'instance (`frontend/set_user_data`), ou le runner le reprend
-     et le publie en /local/images/personnes/<nom>.png. */
+     navigateur sous une cle `ha_deploy_avatar_*` ; a la commande, il part
+     avec la demande d'autorisation, et le RUNNER le depose sur l'instance
+     (`frontend/set_user_data`) avant le premier module, puis le publie en
+     /local/images/personnes/<nom>.png. */
   const MEDIAPIPE_VISION = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const MODELE_SEGMENTATION = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite';
   let segmenteurAvatar = null;
@@ -23581,343 +23624,6 @@ function dessinSonnette(o) {
     }
   }
 
-  /* A LA COMMANDE : chaque avatar du panier est depose dans les donnees
-     utilisateur de l'instance, sous sa cle. C'est le compte du jeton qui les
-     porte -- le meme que celui qu'emploie le runner, qui les relit puis les
-     efface. Un echec ne bloque pas la commande : la carte reprendra l'image
-     de la personne, et on le dit. */
-  async function deposerAvatars(url, token) {
-    const cles = [];
-    for (const ligne of cart) for (const v of Object.values(ligne.params || {}))
-      if (typeof v === 'string' && v.indexOf('ha_deploy_avatar_') === 0) cles.push(v);
-    if (!cles.length) return { ok: true, n: 0 };
-    const cible = checkInstanceUrlNavigateur(url);
-    if (cible.error) return { ok: false, message: cible.error };
-    let ha;
-    try { ha = await haConnect(cible.ws, token); }
-    catch (e) { return { ok: false, message: e.message }; }
-    try {
-      let n = 0;
-      for (const cle of cles) {
-        let donnees = null;
-        try { donnees = localStorage.getItem(cle); } catch (e) { donnees = null; }
-        if (!donnees) continue;
-        const rep = await ha.call({ type: 'frontend/set_user_data', key: cle, value: donnees });
-        if (rep.success) n++;
-      }
-      return { ok: true, n: n };
-    } catch (e) {
-      return { ok: false, message: e.message };
-    } finally { ha.close(); }
-  }
-
-  async function verifierAntenneZigbee(url, token) {
-    const cible = checkInstanceUrlNavigateur(url);
-    if (cible.error) return { ok: false, message: cible.error };
-    let ha;
-    try { ha = await haConnect(cible.ws, token); }
-    catch (e) { return { ok: false, message: 'Vérification de l\'antenne impossible : ' + e.message }; }
-    try {
-      const rep = await ha.call({ type: 'supervisor/api', endpoint: '/hardware/info', method: 'get' });
-      if (!rep.success) {
-        return { ok: false, message: 'Impossible de lire le matériel de votre instance. Le pack Zigbee2MQTT exige Home Assistant OS (ou Supervised) et un jeton administrateur.' };
-      }
-      const antennes = antennesZigbee(rep.result);
-      if (!antennes.length) {
-        return { ok: false, message: '<b>Aucune antenne Zigbee détectée</b> sur les ports USB de votre instance. Branchez votre antenne (SONOFF ZBDongle, ConBee, Home Assistant Connect ZBT…) directement sur la machine Home Assistant, de préférence via une rallonge USB, puis réessayez. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
-      }
-      return { ok: true, antenne: antennes[0], nombre: antennes.length };
-    } catch (e) {
-      return { ok: false, message: 'Vérification de l\'antenne impossible : ' + e.message };
-    } finally { ha.close(); }
-  }
-  /* ---------- ESPHome : l'instance doit etre en 64 bits ----------
-     L'add-on ESPHome Device Builder n'existe que pour amd64 et aarch64.
-     { ok: true, arch } ou { ok: false, message }. Une verification
-     IMPOSSIBLE bloque aussi : on ne vend pas un pack qui ne pourra pas servir. */
-  let esphomeVerifiePour = '';
-  async function verifierEsphome(url, token) {
-    const cible = checkInstanceUrlNavigateur(url);
-    if (cible.error) return { ok: false, message: cible.error };
-    let ha;
-    try { ha = await haConnect(cible.ws, token); }
-    catch (e) { return { ok: false, message: 'Vérification de votre instance impossible : ' + e.message }; }
-    try {
-      const rep = await ha.call({ type: 'supervisor/api', endpoint: '/info', method: 'get' });
-      if (!rep.success) {
-        return { ok: false, message: 'Impossible de joindre le Supervisor de votre instance. Le pack ESPHome exige Home Assistant OS (ou Supervised) et un jeton administrateur. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
-      }
-      const arch = (rep.result && rep.result.arch) || '?';
-      if (['amd64', 'aarch64'].indexOf(arch) < 0) {
-        return { ok: false, message: '<b>ESPHome ne peut pas fonctionner sur votre instance</b> (architecture ' + arch + ') : il n\'existe qu\'en 64 bits. Sur un Raspberry Pi, réinstallez Home Assistant OS en version 64 bits. <b>Aucun paiement ni aucune installation n\'a eu lieu.</b>' };
-      }
-      return { ok: true, arch: arch };
-    } catch (e) {
-      return { ok: false, message: 'Vérification de votre instance impossible : ' + e.message };
-    } finally { ha.close(); }
-  }
-  /* ---------- Fond d'écran : présent ou non sur l'instance ----------
-     Une balise <img> n'est pas soumise au CORS, contrairement à fetch() :
-     c'est le seul moyen, depuis cette origine, de savoir si le fichier
-     existe sur l'instance du visiteur. */
-  function fondDisponible(origine, fichier) {
-    return new Promise(resolve => {
-      if (typeof Image === 'undefined') return resolve(false);
-      const img = new Image();
-      let repondu = false;
-      const fini = (present) => {
-        if (repondu) return;
-        repondu = true;
-        img.onload = null;
-        img.onerror = null;
-        resolve(present);
-      };
-      img.onload = () => fini(img.naturalWidth > 0);
-      img.onerror = () => fini(false);
-      setTimeout(() => fini(false), 5000);
-      // Paramètre anti-cache : un 404 mis en cache lors d'un essai antérieur
-      // ferait conclure à tort que le fond manque encore.
-      img.src = origine + TEST_FOND_PREFIXE + fichier + '?v=' + Date.now();
-    });
-  }
-
-  /* La texture telle que ce site la sert. Même origine que la page : fetch()
-     y a droit, contrairement à l'instance du visiteur. */
-  async function textureDuSite(fichier) {
-    try {
-      const res = await fetch('templates/' + fichier);
-      if (!res.ok) return null;
-      const blob = await res.blob();
-      return await new Promise((resolve) => {
-        const lecteur = new FileReader();
-        lecteur.onload = () => resolve(lecteur.result);
-        lecteur.onerror = () => resolve(null);
-        lecteur.readAsDataURL(blob);
-      });
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /* Substitution du fond dans une structure de carte. On parcourt plutôt que
-     de viser une position : la déclaration se trouve dans un `card_mod`,
-     dont la profondeur dépend de la structure du gabarit. */
-  function remplacerFond(valeur, fichier, remplacement) {
-    if (typeof valeur === 'string') {
-      return valeur.split('url("' + TEST_FOND_PREFIXE + fichier + '")').join(remplacement);
-    }
-    if (Array.isArray(valeur)) return valeur.map(v => remplacerFond(v, fichier, remplacement));
-    if (valeur && typeof valeur === 'object') {
-      const sortie = {};
-      Object.keys(valeur).forEach(cle => {
-        sortie[cle] = remplacerFond(valeur[cle], fichier, remplacement);
-      });
-      return sortie;
-    }
-    return valeur;
-  }
-
-  /* Les deux vues, chaque texture résolue selon les trois recours décrits
-     plus haut. Renvoie aussi ce qu'il a fallu faire, pour le dire au
-     visiteur plutôt que de le lui laisser découvrir. */
-  async function vuesTestGratuit(origine) {
-    let vues = JSON.parse(JSON.stringify(TEST_VUES));
-    const embarquees = [], manquantes = [];
-
-    for (const fichier of TEST_TEXTURES) {
-      if (await fondDisponible(origine, fichier)) continue;   // déjà sur l'instance
-
-      const donnees = await textureDuSite(fichier);
-      if (donnees) {
-        embarquees.push(fichier);
-        vues = remplacerFond(vues, fichier, 'url("' + donnees + '")');
-      } else {
-        manquantes.push(fichier);
-        vues = remplacerFond(vues, fichier, TEST_FOND_REPLI[fichier]);
-      }
-    }
-    return { vues: vues, embarquees: embarquees, manquantes: manquantes };
-  }
-
-  /* ---------- Déploiement ---------- */
-  async function runFreeTest() {
-    const adresse = document.getElementById('test-ha-url').value;
-    const jeton = document.getElementById('test-ha-token').value;
-    const bouton = document.getElementById('test-deploy-btn');
-
-    if (!adresse || !jeton) {
-      logLine('test-log', 'err', "Renseignez l'adresse de votre instance et un jeton d'accès.");
-      return;
-    }
-    const cible = checkInstanceUrlNavigateur(adresse);
-    if (cible.error) { logLine('test-log', 'err', cible.error); return; }
-
-    if (bouton) bouton.disabled = true;
-    let ha = null;
-    let etape = logLine('test-log', 'run', 'Connexion à votre instance Home Assistant…');
-
-    try {
-      ha = await haConnect(cible.ws, jeton);
-      let version = null;
-      try {
-        const cfg = await ha.call({ type: 'get_config' });
-        version = (cfg.result && cfg.result.version) || null;
-      } catch (e) { /* la version n'est pas déterminante */ }
-      replaceLine(etape, 'ok', version ? 'Connecté à Home Assistant ' + version + '.' : 'Connecté et authentifié.');
-
-      // 1. Cartes personnalisées réellement installées côté HACS
-      etape = logLine('test-log', 'run', 'Vérification des cartes personnalisées…');
-      let hacsOk = false, installees = 0;
-      try {
-        const res = await ha.call({ type: 'hacs/repositories/list' });
-        if (res.success) {
-          hacsOk = true;
-          const parNom = {};
-          (res.result || []).forEach(r => { parNom[r.full_name] = r; });
-          const depots = Object.keys(TEST_HACS_REPOS).map(k => TEST_HACS_REPOS[k]);
-          for (const nomComplet of depots) {
-            const depot = parNom[nomComplet];
-            if (depot && !depot.installed) {
-              await ha.call({ type: 'hacs/repository/download', repository: depot.id });
-              installees++;
-            }
-          }
-        }
-      } catch (e) { /* HACS absent : traité juste en dessous */ }
-
-      if (!hacsOk) {
-        replaceLine(etape, 'warn', "HACS n'a pas répondu. Si la carte s'affiche en erreur, installez card-mod, mushroom, swipe-card et stack-in-card depuis HACS.");
-      } else {
-        replaceLine(etape, 'ok', installees
-          ? installees + ' carte(s) personnalisée(s) installée(s) via HACS.'
-          : 'Cartes personnalisées déjà installées.');
-      }
-
-      // 2. Ressources Lovelace
-      etape = logLine('test-log', 'run', 'Enregistrement des ressources Lovelace…');
-      const resRes = await ha.call({ type: 'lovelace/resources' });
-      const inscrites = (resRes.result || []).map(r => r.url).join(' ');
-      const manquantes = Object.keys(TEST_RESOURCES)
-        .map(k => TEST_RESOURCES[k])
-        .filter(chemin => !inscrites.includes(chemin));
-      for (const chemin of manquantes) {
-        await ha.call({ type: 'lovelace/resources/create', url: chemin, res_type: 'module' });
-      }
-      replaceLine(etape, 'ok', manquantes.length
-        ? manquantes.length + ' ressource(s) ajoutée(s).'
-        : 'Ressources déjà en place.');
-
-      // 3. Tableau de bord partagé « Accueil » — jamais recréé s'il existe
-      etape = logLine('test-log', 'run', 'Préparation du tableau de bord « Accueil »…');
-      const dashRes = await ha.call({ type: 'lovelace/dashboards/list' });
-      const present = (dashRes.result || []).some(d => d.url_path === TEST_DASHBOARD);
-      if (!present) {
-        const cree = await ha.call({
-          type: 'lovelace/dashboards/create',
-          url_path: TEST_DASHBOARD, title: 'Accueil', icon: 'mdi:home-assistant',
-          show_in_sidebar: true, require_admin: false, mode: 'storage'
-        });
-        if (!cree.success) throw new Error("Impossible de créer le tableau de bord « Accueil ».");
-      }
-      replaceLine(etape, 'ok', present
-        ? 'Tableau de bord « Accueil » déjà présent, réutilisé.'
-        : 'Tableau de bord « Accueil » créé.');
-
-      // 4. Injection de la vue, fusionnée dans les vues existantes.
-      //    La racine du tableau de bord n'est jamais réécrite.
-      etape = logLine('test-log', 'run', 'Injection des cartes…');
-      const fonds = await vuesTestGratuit(cible.origine);
-      const cfgRes = await ha.call({ type: 'lovelace/config', url_path: TEST_DASHBOARD });
-      const config = cfgRes.success ? cfgRes.result : { title: 'Accueil', views: [] };
-      const views = config.views || [];
-
-      let ajoutees = 0, remplacees = 0;
-      fonds.vues.forEach(vue => {
-        const idx = views.findIndex(v => v.path === vue.path);
-        if (idx >= 0) { views[idx] = vue; remplacees++; } else { views.push(vue); ajoutees++; }
-      });
-      config.views = views;
-
-      const sauve = await ha.call({ type: 'lovelace/config/save', url_path: TEST_DASHBOARD, config: config });
-      if (!sauve.success) throw new Error('La sauvegarde du tableau de bord a échoué.');
-      replaceLine(etape, 'ok', remplacees
-        ? remplacees + ' carte(s) mise(s) à jour, ' + ajoutees + ' ajoutée(s).'
-        : ajoutees + ' carte(s) injectée(s) — un thème sombre et un thème clair.');
-
-      if (fonds.embarquees.length) {
-        logLine('test-log', 'ok', "Fond d'écran fourni par ce site et intégré à la carte (" + fonds.embarquees.join(', ') + ').');
-      }
-      if (fonds.manquantes.length) {
-        logLine('test-log', 'warn', "Fond d'écran indisponible (" + fonds.manquantes.join(', ') + ") : un dégradé équivalent a été utilisé à la place.");
-      }
-
-      const lien = cible.origine + '/' + TEST_DASHBOARD + '/' + TEST_VIEW_PATH;
-      logLine('test-log', 'ok', 'Terminé — <a href="' + lien + '" target="_blank" rel="noopener">ouvrir la carte sur votre instance</a>');
-    } catch (e) {
-      const message = (e && e.message) || 'Le déploiement a échoué.';
-      if (etape) replaceLine(etape, 'err', message);
-      else logLine('test-log', 'err', message);
-    } finally {
-      if (ha) ha.close();
-      if (bouton) bouton.disabled = false;
-      hideSticky(8000);
-    }
-  }
-
-  /* ---------- Panier ---------- */
-  async function runCartDeployment() {
-    if (!checkoutCreds) { alert("Renseignez d'abord l'adresse et le jeton."); return; }
-
-    const parsed = checkInstanceUrl(checkoutCreds.url);
-
-    cartModalStep = 'deploy';
-    renderCartModalBody();
-
-    const debloquerFermeture = () => {
-      verrouillerFermeture(false);
-      const btn = document.getElementById('cart-deploy-close');
-      if (btn) btn.disabled = false;
-    };
-
-    verrouillerFermeture(true);
-
-    if (parsed.error) {
-      logLine('cart-deploy-log', 'err', parsed.error);
-      debloquerFermeture();
-      return;
-    }
-    if (parsed.note) logLine('cart-deploy-log', 'warn', parsed.note);
-
-    const deployables = [], indisponibles = [];
-    cart.forEach(item => (SERVER_MODULES[item.key] ? deployables : indisponibles).push(item));
-
-    indisponibles.forEach(item => logLine('cart-deploy-log', 'warn',
-      `<b>${item.name}</b> — déploiement automatique pas encore disponible pour ce pack.`));
-
-    if (!deployables.length) {
-      logLine('cart-deploy-log', 'warn', 'Aucun pack de ce panier n\'est déployable automatiquement.');
-      debloquerFermeture();
-      return;
-    }
-
-    // Une occurrence par ligne du panier, avec SES reglages. La version
-    // precedente fusionnait tous les reglages en un seul objet : deux
-    // occurrences d'Eclairage y partageaient une meme piece et une meme
-    // entite, et la seconde ecrasait la carte de la premiere.
-    const items = deployables.map(item => ({
-      module: SERVER_MODULES[item.key],
-      params: item.params || {}
-    }));
-
-    await submitDeployment({
-      creds: { url: parsed.url, token: checkoutCreds.token },
-      items: items,
-      viderPanier: true,
-      boxId: 'cart-deploy-log',
-      closeBtnId: 'cart-deploy-close'
-    });
-  }
-
   /* ===== THÈME CLAIR / SOMBRE ===== */
   function applyTheme(theme) {
     const isLight = theme === 'light';
@@ -24051,6 +23757,10 @@ function dessinSonnette(o) {
     history.replaceState({ onglet: cible, categorie: categorieCourante }, '',
                          '#' + cible);
     if (cible !== 'accueil') { ignorerHistorique = true; afficherOnglet(cible); ignorerHistorique = false; }
+
+    // Retour de l'instance du visiteur apres son autorisation (?ha_job=… ou
+    // ?ha_erreur=…) : on verifie le `state`, puis on suit le deploiement.
+    reprendreRetourHomeAssistant();
   };
 </script>
 
