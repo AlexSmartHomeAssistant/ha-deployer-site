@@ -1997,6 +1997,18 @@
 
     .deploy-log.open { display: block; }
 
+    /* « Fermer », pose sous le journal une fois le processus termine
+       (05/10/2026) — Test Gratuit et suppression d'un pack. */
+    .btn-fermer-fin {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; margin-top: 10px; padding: 11px 14px;
+      border: none; border-radius: 6px; cursor: pointer;
+      background: var(--primary-blue); color: #fff;
+      font-size: 0.95rem; font-weight: bold;
+      transition: transform 0.1s;
+    }
+    .btn-fermer-fin:active { transform: scale(0.98); }
+
     .deploy-log .line { display: flex; gap: 8px; align-items: flex-start; }
     .deploy-log .line + .line { margin-top: 3px; }
     .deploy-log .line i { width: 14px; text-align: center; flex-shrink: 0; margin-top: 2px; }
@@ -2896,7 +2908,7 @@
            l'arrondi. */
         #section-module .pack-media { overflow: visible; }
         #section-module .module-item {
-          grid-row: span 3;
+          grid-row: span 2;
           display: grid;
           grid-template-rows: subgrid;
           /* Une sous-grille herite des gouttieres de sa grille parente. Sans
@@ -3220,7 +3232,7 @@
            le remplace et porte seule l'entrée en matière. -->
       <div class="hero-pitch">
         Déployez vos packs sur Home Assistant en 1 clic
-        <span class="hero-sub">Des tableaux de bord clé en main, installés à distance sur votre instance — vous n'avez rien à préparer.</span>
+        <span class="hero-sub">Des packs clé en main (tableau de bord, helpers, scripts, automatismes ...), installés à distance sur votre instance — vous n'avez rien à préparer.</span>
       </div>
 
       <!-- Sur PC, .container est déjà une grille 2 colonnes (≥1024px) :
@@ -4038,12 +4050,53 @@
     section.querySelector('.container').setAttribute('dir', rtl ? 'rtl' : 'ltr');
   }
 
+  /* ---------- TRADUCTION DES FICHES DE PACK (05/10/2026) ----------
+     Les fiches File Editor, Terminal & SSH et HACS - Dépôt GitHub dans les
+     20 langues du site, plus le bouton « Fermer ». Table ECRITE par
+     _injecter_i18n_packs.py depuis i18n/packs_config.json. En français la
+     page garde ses propres textes ; une langue absente retombe sur l'anglais. */
+  /* PACKS_I18N:debut */const PACKS_I18N = {"en":{"fermer":"Close","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"The file editor, the foundation of every pack.","descriptif":"Installs and configures the official <b>File editor</b> add-on, the file editor built into Home Assistant. All our other packs go through it to write <code>configuration.yaml</code> and upload their backgrounds: install it first on a new instance.","inclus":"<b>Included:</b> installation or update of the add-on, and the four settings enabled &mdash; start on boot, watchdog, automatic updates, show in sidebar.","intro":"Three fully automatic steps. The pack asks you for nothing: the add-on has no required setting. It is the building block to install first on a new instance — all our other packs use it to write to your configuration."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"A full terminal in the sidebar.","descriptif":"Installs and configures the official <b>Terminal &amp; SSH</b> add-on. You get a full terminal right in the Home Assistant sidebar, with nothing to install on your computer.","inclus":"<b>Included:</b> installation or update of the add-on, and the four settings enabled &mdash; start on boot, watchdog, automatic updates, show in sidebar. No SSH key is added on your behalf: remote access stays closed until you add your own.","intro":"A full terminal in the Home Assistant sidebar, with nothing to install on your computer. The pack asks you for nothing and adds <b>no SSH key</b> on your behalf."},"configuration_hacs":{"titre":"HACS - GitHub repository","resume":"Adds and updates a HACS repository.","descriptif":"Adds a <b>GitHub</b> repository of your choice to <b>HACS</b>, the community store, then downloads it &mdash; and updates it if it is already there. Enter the repository address and its category below.","inclus":"<b>Included:</b> update of HACS itself if it is out of date, addition of the custom repository, download, and a Home Assistant restart only if the category requires it.<br><br><b>Prerequisite:</b> HACS must already be running on your instance &mdash; setting it up requires a personal GitHub pairing, which we cannot do for you.","intro":"Adds the GitHub repository of your choice to <b>HACS</b>, then downloads it — and updates it if it is already there. You enter the repository address and its category when ordering."}}},"de":{"fermer":"Schließen","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"Der Datei-Editor, Grundlage aller Pakete.","descriptif":"Installiert und konfiguriert das offizielle Add-on <b>File editor</b>, den in Home Assistant integrierten Datei-Editor. Alle unsere anderen Pakete nutzen ihn, um <code>configuration.yaml</code> zu schreiben und ihre Hintergründe abzulegen: Installieren Sie ihn auf einer neuen Instanz zuerst.","inclus":"<b>Enthalten:</b> Installation oder Aktualisierung des Add-ons und die vier aktivierten Einstellungen &mdash; Start beim Booten, Watchdog, automatische Aktualisierung, Anzeige in der Seitenleiste.","intro":"Drei vollständig automatische Schritte. Das Paket fragt Sie nichts: Das Add-on hat keine Pflichtangabe. Es ist der Baustein, der auf einer neuen Instanz zuerst installiert wird — alle unsere anderen Pakete schreiben über ihn in Ihre Konfiguration."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Ein vollständiges Terminal in der Seitenleiste.","descriptif":"Installiert und konfiguriert das offizielle Add-on <b>Terminal &amp; SSH</b>. Sie erhalten ein vollständiges Terminal direkt in der Seitenleiste von Home Assistant, ohne etwas auf Ihrem Computer zu installieren.","inclus":"<b>Enthalten:</b> Installation oder Aktualisierung des Add-ons und die vier aktivierten Einstellungen &mdash; Start beim Booten, Watchdog, automatische Aktualisierung, Anzeige in der Seitenleiste. Es wird kein SSH-Schlüssel für Sie hinterlegt: Der Fernzugriff bleibt geschlossen, bis Sie Ihren eigenen hinzufügen.","intro":"Ein vollständiges Terminal in der Seitenleiste von Home Assistant, ohne etwas auf Ihrem Computer zu installieren. Das Paket fragt Sie nichts und hinterlegt <b>keinen SSH-Schlüssel</b> für Sie."},"configuration_hacs":{"titre":"HACS - GitHub-Repository","resume":"Fügt ein HACS-Repository hinzu und hält es aktuell.","descriptif":"Fügt ein <b>GitHub</b>-Repository Ihrer Wahl zu <b>HACS</b>, dem Community-Store, hinzu und lädt es herunter &mdash; oder aktualisiert es, falls es schon vorhanden ist. Geben Sie unten die Adresse des Repositorys und seine Kategorie an.","inclus":"<b>Enthalten:</b> Aktualisierung von HACS selbst, falls veraltet, Hinzufügen des benutzerdefinierten Repositorys, Download und ein Neustart von Home Assistant nur, wenn die Kategorie es erfordert.<br><br><b>Voraussetzung:</b> HACS muss auf Ihrer Instanz bereits laufen &mdash; seine Einrichtung erfordert eine persönliche GitHub-Kopplung, die wir nicht für Sie durchführen können.","intro":"Fügt das GitHub-Repository Ihrer Wahl zu <b>HACS</b> hinzu und lädt es herunter — oder aktualisiert es, falls es schon vorhanden ist. Sie geben die Adresse des Repositorys und seine Kategorie bei der Bestellung an."}}},"es":{"fermer":"Cerrar","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"El editor de archivos, base de todos los packs.","descriptif":"Instala y configura el complemento oficial <b>File editor</b>, el editor de archivos integrado en Home Assistant. Todos nuestros demás packs pasan por él para escribir <code>configuration.yaml</code> y subir sus fondos: instálelo primero en una instancia nueva.","inclus":"<b>Incluye:</b> instalación o actualización del complemento y los cuatro ajustes activados &mdash; inicio al arrancar, watchdog, actualización automática, visualización en la barra lateral.","intro":"Tres pasos totalmente automáticos. El pack no le pide nada: el complemento no tiene ningún parámetro obligatorio. Es la pieza que se instala primero en una instancia nueva — todos nuestros demás packs pasan por ella para escribir en su configuración."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Un terminal completo en la barra lateral.","descriptif":"Instala y configura el complemento oficial <b>Terminal &amp; SSH</b>. Obtiene un terminal completo directamente en la barra lateral de Home Assistant, sin instalar nada en su ordenador.","inclus":"<b>Incluye:</b> instalación o actualización del complemento y los cuatro ajustes activados &mdash; inicio al arrancar, watchdog, actualización automática, visualización en la barra lateral. No se añade ninguna clave SSH en su lugar: el acceso remoto permanece cerrado hasta que añada la suya.","intro":"Un terminal completo en la barra lateral de Home Assistant, sin instalar nada en su ordenador. El pack no le pide nada y no añade <b>ninguna clave SSH</b> en su lugar."},"configuration_hacs":{"titre":"HACS - Repositorio GitHub","resume":"Añade y actualiza un repositorio HACS.","descriptif":"Añade un repositorio de <b>GitHub</b> de su elección a <b>HACS</b>, la tienda comunitaria, y luego lo descarga &mdash; o lo actualiza si ya está. Indique la dirección del repositorio y su categoría a continuación.","inclus":"<b>Incluye:</b> actualización del propio HACS si está desactualizado, adición del repositorio personalizado, descarga y reinicio de Home Assistant solo si la categoría lo exige.<br><br><b>Requisito previo:</b> HACS debe estar ya en funcionamiento en su instancia &mdash; su puesta en marcha requiere un emparejamiento personal con GitHub, que no podemos hacer en su lugar.","intro":"Añade a <b>HACS</b> el repositorio de GitHub de su elección y luego lo descarga — o lo actualiza si ya está. Usted indica la dirección del repositorio y su categoría al hacer el pedido."}}},"it":{"fermer":"Chiudi","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"L'editor di file, base di tutti i pacchetti.","descriptif":"Installa e configura il componente aggiuntivo ufficiale <b>File editor</b>, l'editor di file integrato in Home Assistant. Tutti i nostri altri pacchetti passano da lui per scrivere <code>configuration.yaml</code> e caricare i loro sfondi: installatelo per primo su un'istanza nuova.","inclus":"<b>Incluso:</b> installazione o aggiornamento del componente aggiuntivo e le quattro impostazioni attivate &mdash; avvio all'accensione, watchdog, aggiornamento automatico, visualizzazione nella barra laterale.","intro":"Tre passaggi completamente automatici. Il pacchetto non vi chiede nulla: il componente aggiuntivo non ha alcun parametro obbligatorio. È il mattone da posare per primo su un'istanza nuova — tutti i nostri altri pacchetti passano da lui per scrivere nella vostra configurazione."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Un terminale completo nella barra laterale.","descriptif":"Installa e configura il componente aggiuntivo ufficiale <b>Terminal &amp; SSH</b>. Ottenete un terminale completo direttamente nella barra laterale di Home Assistant, senza installare nulla sul vostro computer.","inclus":"<b>Incluso:</b> installazione o aggiornamento del componente aggiuntivo e le quattro impostazioni attivate &mdash; avvio all'accensione, watchdog, aggiornamento automatico, visualizzazione nella barra laterale. Nessuna chiave SSH viene aggiunta al posto vostro: l'accesso remoto resta chiuso finché non aggiungete la vostra.","intro":"Un terminale completo nella barra laterale di Home Assistant, senza installare nulla sul vostro computer. Il pacchetto non vi chiede nulla e non aggiunge <b>alcuna chiave SSH</b> al posto vostro."},"configuration_hacs":{"titre":"HACS - Repository GitHub","resume":"Aggiunge e aggiorna un repository HACS.","descriptif":"Aggiunge un repository <b>GitHub</b> a vostra scelta a <b>HACS</b>, lo store della comunità, poi lo scarica &mdash; e lo aggiorna se è già presente. Indicate qui sotto l'indirizzo del repository e la sua categoria.","inclus":"<b>Incluso:</b> aggiornamento di HACS stesso se non è aggiornato, aggiunta del repository personalizzato, download e riavvio di Home Assistant solo se la categoria lo richiede.<br><br><b>Prerequisito:</b> HACS deve essere già in funzione sulla vostra istanza &mdash; la sua attivazione richiede un abbinamento GitHub personale, che non possiamo fare al posto vostro.","intro":"Aggiunge a <b>HACS</b> il repository GitHub di vostra scelta, poi lo scarica — e lo aggiorna se è già presente. Indicate l'indirizzo del repository e la sua categoria al momento dell'acquisto."}}},"pt":{"fermer":"Fechar","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"O editor de ficheiros, base de todos os pacotes.","descriptif":"Instala e configura o add-on oficial <b>File editor</b>, o editor de ficheiros integrado no Home Assistant. Todos os nossos outros pacotes passam por ele para escrever o <code>configuration.yaml</code> e enviar os seus fundos: instale-o primeiro numa instância nova.","inclus":"<b>Incluído:</b> instalação ou atualização do add-on e as quatro definições ativadas &mdash; iniciar no arranque, watchdog, atualização automática, mostrar na barra lateral.","intro":"Três etapas, totalmente automáticas. O pacote não lhe pede nada: o add-on não tem nenhum parâmetro obrigatório. É a peça a instalar primeiro numa instância nova — todos os nossos outros pacotes passam por ela para escrever na sua configuração."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Um terminal completo na barra lateral.","descriptif":"Instala e configura o add-on oficial <b>Terminal &amp; SSH</b>. Obtém um terminal completo diretamente na barra lateral do Home Assistant, sem instalar nada no seu computador.","inclus":"<b>Incluído:</b> instalação ou atualização do add-on e as quatro definições ativadas &mdash; iniciar no arranque, watchdog, atualização automática, mostrar na barra lateral. Nenhuma chave SSH é adicionada por si: o acesso remoto fica fechado até adicionar a sua.","intro":"Um terminal completo na barra lateral do Home Assistant, sem instalar nada no seu computador. O pacote não lhe pede nada e não adiciona <b>nenhuma chave SSH</b> por si."},"configuration_hacs":{"titre":"HACS - Repositório GitHub","resume":"Adiciona e atualiza um repositório HACS.","descriptif":"Adiciona um repositório <b>GitHub</b> à sua escolha ao <b>HACS</b>, a loja da comunidade, e depois descarrega-o &mdash; e atualiza-o se já lá estiver. Indique abaixo o endereço do repositório e a sua categoria.","inclus":"<b>Incluído:</b> atualização do próprio HACS se estiver desatualizado, adição do repositório personalizado, descarga e reinício do Home Assistant apenas se a categoria o exigir.<br><br><b>Pré-requisito:</b> o HACS já tem de estar a funcionar na sua instância &mdash; a sua ativação exige um emparelhamento pessoal com o GitHub, que não podemos fazer por si.","intro":"Adiciona ao <b>HACS</b> o repositório GitHub à sua escolha e depois descarrega-o — e atualiza-o se já lá estiver. Indica o endereço do repositório e a sua categoria no momento da compra."}}},"nl":{"fermer":"Sluiten","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"De bestandseditor, basis van alle pakketten.","descriptif":"Installeert en configureert de officiële add-on <b>File editor</b>, de bestandseditor die in Home Assistant is ingebouwd. Al onze andere pakketten gebruiken hem om <code>configuration.yaml</code> te schrijven en hun achtergronden te plaatsen: installeer hem als eerste op een nieuwe instantie.","inclus":"<b>Inbegrepen:</b> installatie of update van de add-on, en de vier ingeschakelde instellingen &mdash; starten bij opstarten, watchdog, automatische updates, weergave in de zijbalk.","intro":"Drie volledig automatische stappen. Het pakket vraagt u niets: de add-on heeft geen verplichte instelling. Het is de bouwsteen die u als eerste op een nieuwe instantie installeert — al onze andere pakketten schrijven via hem in uw configuratie."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Een volledige terminal in de zijbalk.","descriptif":"Installeert en configureert de officiële add-on <b>Terminal &amp; SSH</b>. U krijgt een volledige terminal direct in de zijbalk van Home Assistant, zonder iets op uw computer te installeren.","inclus":"<b>Inbegrepen:</b> installatie of update van de add-on, en de vier ingeschakelde instellingen &mdash; starten bij opstarten, watchdog, automatische updates, weergave in de zijbalk. Er wordt geen SSH-sleutel namens u geplaatst: toegang op afstand blijft dicht tot u uw eigen sleutel toevoegt.","intro":"Een volledige terminal in de zijbalk van Home Assistant, zonder iets op uw computer te installeren. Het pakket vraagt u niets en plaatst <b>geen SSH-sleutel</b> namens u."},"configuration_hacs":{"titre":"HACS - GitHub-repository","resume":"Voegt een HACS-repository toe en houdt het bij.","descriptif":"Voegt een <b>GitHub</b>-repository naar keuze toe aan <b>HACS</b>, de communitywinkel, en downloadt het &mdash; of werkt het bij als het er al is. Vul hieronder het adres van de repository en de categorie in.","inclus":"<b>Inbegrepen:</b> update van HACS zelf als het verouderd is, toevoegen van de aangepaste repository, download, en een herstart van Home Assistant alleen als de categorie dat vereist.<br><br><b>Vereiste:</b> HACS moet al actief zijn op uw instantie &mdash; de ingebruikname vereist een persoonlijke GitHub-koppeling, die wij niet voor u kunnen doen.","intro":"Voegt de GitHub-repository van uw keuze toe aan <b>HACS</b> en downloadt het — of werkt het bij als het er al is. U geeft het adres van de repository en de categorie op bij de bestelling."}}},"pl":{"fermer":"Zamknij","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"Edytor plików, podstawa wszystkich pakietów.","descriptif":"Instaluje i konfiguruje oficjalny dodatek <b>File editor</b>, edytor plików wbudowany w Home Assistant. Wszystkie nasze pozostałe pakiety korzystają z niego, aby zapisać <code>configuration.yaml</code> i przesłać swoje tła: zainstaluj go jako pierwszy na nowej instancji.","inclus":"<b>W zestawie:</b> instalacja lub aktualizacja dodatku oraz cztery włączone ustawienia &mdash; uruchamianie przy starcie, watchdog, automatyczna aktualizacja, wyświetlanie na pasku bocznym.","intro":"Trzy w pełni automatyczne kroki. Pakiet o nic nie pyta: dodatek nie ma żadnego wymaganego parametru. To element, który instaluje się jako pierwszy na nowej instancji — wszystkie nasze pozostałe pakiety zapisują przez niego w Twojej konfiguracji."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Pełny terminal na pasku bocznym.","descriptif":"Instaluje i konfiguruje oficjalny dodatek <b>Terminal &amp; SSH</b>. Otrzymujesz pełny terminal bezpośrednio na pasku bocznym Home Assistant, bez instalowania czegokolwiek na komputerze.","inclus":"<b>W zestawie:</b> instalacja lub aktualizacja dodatku oraz cztery włączone ustawienia &mdash; uruchamianie przy starcie, watchdog, automatyczna aktualizacja, wyświetlanie na pasku bocznym. Żaden klucz SSH nie jest dodawany w Twoim imieniu: dostęp zdalny pozostaje zamknięty, dopóki nie dodasz własnego.","intro":"Pełny terminal na pasku bocznym Home Assistant, bez instalowania czegokolwiek na komputerze. Pakiet o nic nie pyta i nie dodaje w Twoim imieniu <b>żadnego klucza SSH</b>."},"configuration_hacs":{"titre":"HACS - Repozytorium GitHub","resume":"Dodaje i aktualizuje repozytorium HACS.","descriptif":"Dodaje wybrane repozytorium <b>GitHub</b> do <b>HACS</b>, sklepu społeczności, a następnie je pobiera &mdash; lub aktualizuje, jeśli już tam jest. Podaj poniżej adres repozytorium i jego kategorię.","inclus":"<b>W zestawie:</b> aktualizacja samego HACS, jeśli jest nieaktualny, dodanie niestandardowego repozytorium, pobranie oraz ponowne uruchomienie Home Assistant tylko wtedy, gdy wymaga tego kategoria.<br><br><b>Wymaganie:</b> HACS musi już działać na Twojej instancji &mdash; jego uruchomienie wymaga osobistego sparowania z GitHubem, którego nie możemy wykonać za Ciebie.","intro":"Dodaje wybrane repozytorium GitHub do <b>HACS</b>, a następnie je pobiera — lub aktualizuje, jeśli już tam jest. Adres repozytorium i jego kategorię podajesz przy zamówieniu."}}},"ru":{"fermer":"Закрыть","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"Редактор файлов — основа всех пакетов.","descriptif":"Устанавливает и настраивает официальное дополнение <b>File editor</b> — встроенный в Home Assistant редактор файлов. Все наши остальные пакеты используют его, чтобы записывать <code>configuration.yaml</code> и загружать свои фоны: установите его первым на новом экземпляре.","inclus":"<b>Включено:</b> установка или обновление дополнения и четыре включённые настройки &mdash; запуск при загрузке, сторожевой таймер, автоматическое обновление, отображение на боковой панели.","intro":"Три полностью автоматических шага. Пакет ничего у вас не спрашивает: у дополнения нет обязательных параметров. Это кирпичик, который устанавливают первым на новом экземпляре — все наши остальные пакеты записывают через него в вашу конфигурацию."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Полноценный терминал на боковой панели.","descriptif":"Устанавливает и настраивает официальное дополнение <b>Terminal &amp; SSH</b>. Вы получаете полноценный терминал прямо на боковой панели Home Assistant, ничего не устанавливая на компьютер.","inclus":"<b>Включено:</b> установка или обновление дополнения и четыре включённые настройки &mdash; запуск при загрузке, сторожевой таймер, автоматическое обновление, отображение на боковой панели. SSH-ключ за вас не добавляется: удалённый доступ остаётся закрытым, пока вы не добавите свой.","intro":"Полноценный терминал на боковой панели Home Assistant, ничего не устанавливая на компьютер. Пакет ничего у вас не спрашивает и <b>не добавляет SSH-ключ</b> за вас."},"configuration_hacs":{"titre":"HACS - Репозиторий GitHub","resume":"Добавляет и обновляет репозиторий HACS.","descriptif":"Добавляет выбранный вами репозиторий <b>GitHub</b> в <b>HACS</b>, магазин сообщества, затем загружает его &mdash; и обновляет, если он уже есть. Укажите ниже адрес репозитория и его категорию.","inclus":"<b>Включено:</b> обновление самого HACS, если он устарел, добавление пользовательского репозитория, загрузка и перезапуск Home Assistant, только если этого требует категория.<br><br><b>Требование:</b> HACS уже должен работать на вашем экземпляре &mdash; его запуск требует личной привязки к GitHub, которую мы не можем выполнить за вас.","intro":"Добавляет выбранный вами репозиторий GitHub в <b>HACS</b>, затем загружает его — и обновляет, если он уже есть. Адрес репозитория и его категорию вы указываете при заказе."}}},"tr":{"fermer":"Kapat","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"Dosya düzenleyici, tüm paketlerin temeli.","descriptif":"Home Assistant'a yerleşik dosya düzenleyici olan resmi <b>File editor</b> eklentisini kurar ve yapılandırır. Diğer tüm paketlerimiz <code>configuration.yaml</code> dosyasını yazmak ve arka planlarını yüklemek için onu kullanır: yeni bir kurulumda önce onu kurun.","inclus":"<b>Dahil:</b> eklentinin kurulumu veya güncellenmesi ve etkinleştirilen dört ayar &mdash; açılışta başlatma, bekçi, otomatik güncelleme, kenar çubuğunda gösterme.","intro":"Tamamen otomatik üç adım. Paket sizden hiçbir şey istemez: eklentinin zorunlu bir ayarı yoktur. Yeni bir kurulumda ilk kurulacak yapı taşıdır — diğer tüm paketlerimiz yapılandırmanıza onun üzerinden yazar."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Kenar çubuğunda eksiksiz bir terminal.","descriptif":"Resmi <b>Terminal &amp; SSH</b> eklentisini kurar ve yapılandırır. Bilgisayarınıza hiçbir şey kurmadan doğrudan Home Assistant kenar çubuğunda eksiksiz bir terminal elde edersiniz.","inclus":"<b>Dahil:</b> eklentinin kurulumu veya güncellenmesi ve etkinleştirilen dört ayar &mdash; açılışta başlatma, bekçi, otomatik güncelleme, kenar çubuğunda gösterme. Sizin yerinize hiçbir SSH anahtarı eklenmez: kendi anahtarınızı ekleyene kadar uzaktan erişim kapalı kalır.","intro":"Bilgisayarınıza hiçbir şey kurmadan Home Assistant kenar çubuğunda eksiksiz bir terminal. Paket sizden hiçbir şey istemez ve sizin yerinize <b>hiçbir SSH anahtarı</b> eklemez."},"configuration_hacs":{"titre":"HACS - GitHub deposu","resume":"Bir HACS deposu ekler ve günceller.","descriptif":"Seçtiğiniz bir <b>GitHub</b> deposunu topluluk mağazası <b>HACS</b>'e ekler, ardından indirir &mdash; zaten varsa günceller. Aşağıya deponun adresini ve kategorisini girin.","inclus":"<b>Dahil:</b> güncel değilse HACS'in kendisinin güncellenmesi, özel deponun eklenmesi, indirme ve yalnızca kategori gerektiriyorsa Home Assistant'ın yeniden başlatılması.<br><br><b>Ön koşul:</b> HACS kurulumunuzda zaten çalışıyor olmalıdır &mdash; devreye alınması, sizin yerinize yapamayacağımız kişisel bir GitHub eşleştirmesi gerektirir.","intro":"Seçtiğiniz GitHub deposunu <b>HACS</b>'e ekler, ardından indirir — zaten varsa günceller. Deponun adresini ve kategorisini sipariş sırasında belirtirsiniz."}}},"vi":{"fermer":"Đóng","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"Trình chỉnh sửa tệp, nền tảng của mọi gói.","descriptif":"Cài đặt và cấu hình tiện ích bổ sung chính thức <b>File editor</b>, trình chỉnh sửa tệp tích hợp trong Home Assistant. Tất cả các gói khác của chúng tôi đều dùng nó để ghi <code>configuration.yaml</code> và tải hình nền lên: hãy cài nó đầu tiên trên một phiên bản mới.","inclus":"<b>Bao gồm:</b> cài đặt hoặc cập nhật tiện ích bổ sung, và bốn thiết lập được bật &mdash; khởi chạy khi khởi động, giám sát, tự động cập nhật, hiển thị trên thanh bên.","intro":"Ba bước hoàn toàn tự động. Gói không hỏi bạn điều gì: tiện ích bổ sung không có tham số bắt buộc nào. Đây là viên gạch cần đặt đầu tiên trên một phiên bản mới — tất cả các gói khác của chúng tôi đều ghi vào cấu hình của bạn thông qua nó."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"Một terminal đầy đủ trên thanh bên.","descriptif":"Cài đặt và cấu hình tiện ích bổ sung chính thức <b>Terminal &amp; SSH</b>. Bạn có một terminal đầy đủ ngay trên thanh bên của Home Assistant, không cần cài gì lên máy tính.","inclus":"<b>Bao gồm:</b> cài đặt hoặc cập nhật tiện ích bổ sung, và bốn thiết lập được bật &mdash; khởi chạy khi khởi động, giám sát, tự động cập nhật, hiển thị trên thanh bên. Không có khóa SSH nào được thêm thay bạn: truy cập từ xa vẫn đóng cho đến khi bạn thêm khóa của mình.","intro":"Một terminal đầy đủ trên thanh bên của Home Assistant, không cần cài gì lên máy tính. Gói không hỏi bạn điều gì và <b>không thêm khóa SSH nào</b> thay bạn."},"configuration_hacs":{"titre":"HACS - Kho GitHub","resume":"Thêm và cập nhật một kho HACS.","descriptif":"Thêm một kho <b>GitHub</b> do bạn chọn vào <b>HACS</b>, cửa hàng cộng đồng, rồi tải về &mdash; và cập nhật nếu đã có. Hãy nhập địa chỉ kho và danh mục của nó bên dưới.","inclus":"<b>Bao gồm:</b> cập nhật chính HACS nếu đã cũ, thêm kho tùy chỉnh, tải về, và khởi động lại Home Assistant chỉ khi danh mục yêu cầu.<br><br><b>Điều kiện tiên quyết:</b> HACS phải đang chạy trên phiên bản của bạn &mdash; việc kích hoạt nó cần ghép nối GitHub cá nhân, điều chúng tôi không thể làm thay bạn.","intro":"Thêm kho GitHub do bạn chọn vào <b>HACS</b>, rồi tải về — và cập nhật nếu đã có. Bạn nhập địa chỉ kho và danh mục của nó khi đặt mua."}}},"ar":{"fermer":"إغلاق","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"محرر الملفات، أساس جميع الحزم.","descriptif":"يثبّت ويهيّئ الإضافة الرسمية <b>File editor</b>، محرر الملفات المدمج في Home Assistant. تمر عبره جميع حزمنا الأخرى لكتابة <code>configuration.yaml</code> ورفع خلفياتها: ثبّته أولاً على أي نسخة جديدة.","inclus":"<b>يتضمن:</b> تثبيت الإضافة أو تحديثها، والإعدادات الأربعة المفعّلة &mdash; التشغيل عند الإقلاع، المراقبة، التحديث التلقائي، الإظهار في الشريط الجانبي.","intro":"ثلاث خطوات تلقائية بالكامل. لا تطلب منك الحزمة شيئاً: ليس للإضافة أي إعداد إلزامي. إنها اللبنة التي تُثبَّت أولاً على نسخة جديدة — جميع حزمنا الأخرى تكتب في إعداداتك عبرها."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"طرفية كاملة في الشريط الجانبي.","descriptif":"يثبّت ويهيّئ الإضافة الرسمية <b>Terminal &amp; SSH</b>. تحصل على طرفية كاملة مباشرة في الشريط الجانبي لـ Home Assistant، دون تثبيت أي شيء على حاسوبك.","inclus":"<b>يتضمن:</b> تثبيت الإضافة أو تحديثها، والإعدادات الأربعة المفعّلة &mdash; التشغيل عند الإقلاع، المراقبة، التحديث التلقائي، الإظهار في الشريط الجانبي. لا يُضاف أي مفتاح SSH نيابةً عنك: يبقى الوصول عن بُعد مغلقاً حتى تضيف مفتاحك.","intro":"طرفية كاملة في الشريط الجانبي لـ Home Assistant، دون تثبيت أي شيء على حاسوبك. لا تطلب منك الحزمة شيئاً و<b>لا تضيف أي مفتاح SSH</b> نيابةً عنك."},"configuration_hacs":{"titre":"HACS - مستودع GitHub","resume":"يضيف مستودع HACS ويحدّثه.","descriptif":"يضيف مستودع <b>GitHub</b> من اختيارك إلى <b>HACS</b>، متجر المجتمع، ثم ينزّله &mdash; ويحدّثه إن كان موجوداً. أدخل أدناه عنوان المستودع وفئته.","inclus":"<b>يتضمن:</b> تحديث HACS نفسه إن كان قديماً، وإضافة المستودع المخصص، والتنزيل، وإعادة تشغيل Home Assistant فقط إذا تطلبت الفئة ذلك.<br><br><b>المتطلبات:</b> يجب أن يكون HACS قيد التشغيل مسبقاً على نسختك &mdash; يتطلب تشغيله ربطاً شخصياً بـ GitHub لا يمكننا القيام به نيابةً عنك.","intro":"يضيف مستودع GitHub الذي تختاره إلى <b>HACS</b>، ثم ينزّله — ويحدّثه إن كان موجوداً. تحدد عنوان المستودع وفئته عند الطلب."}}},"fa":{"fermer":"بستن","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"ویرایشگر فایل، پایه همه بسته‌ها.","descriptif":"افزونه رسمی <b>File editor</b>، ویرایشگر فایل داخلی Home Assistant، را نصب و پیکربندی می‌کند. همه بسته‌های دیگر ما از طریق آن <code>configuration.yaml</code> را می‌نویسند و پس‌زمینه‌هایشان را بارگذاری می‌کنند: آن را پیش از همه روی یک نمونه تازه نصب کنید.","inclus":"<b>شامل:</b> نصب یا به‌روزرسانی افزونه و چهار تنظیم فعال‌شده &mdash; اجرا هنگام راه‌اندازی، نگهبان، به‌روزرسانی خودکار، نمایش در نوار کناری.","intro":"سه مرحله کاملاً خودکار. بسته چیزی از شما نمی‌خواهد: افزونه هیچ پارامتر اجباری ندارد. این آجری است که باید پیش از همه روی یک نمونه تازه گذاشت — همه بسته‌های دیگر ما از طریق آن در پیکربندی شما می‌نویسند."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"یک ترمینال کامل در نوار کناری.","descriptif":"افزونه رسمی <b>Terminal &amp; SSH</b> را نصب و پیکربندی می‌کند. یک ترمینال کامل مستقیماً در نوار کناری Home Assistant دارید، بی‌آنکه چیزی روی رایانه‌تان نصب کنید.","inclus":"<b>شامل:</b> نصب یا به‌روزرسانی افزونه و چهار تنظیم فعال‌شده &mdash; اجرا هنگام راه‌اندازی، نگهبان، به‌روزرسانی خودکار، نمایش در نوار کناری. هیچ کلید SSH به جای شما افزوده نمی‌شود: دسترسی از راه دور بسته می‌ماند تا کلید خودتان را بیفزایید.","intro":"یک ترمینال کامل در نوار کناری Home Assistant، بی‌آنکه چیزی روی رایانه‌تان نصب کنید. بسته چیزی از شما نمی‌خواهد و <b>هیچ کلید SSH</b> به جای شما نمی‌افزاید."},"configuration_hacs":{"titre":"HACS - مخزن GitHub","resume":"یک مخزن HACS را می‌افزاید و به‌روز می‌کند.","descriptif":"یک مخزن <b>GitHub</b> به انتخاب شما را به <b>HACS</b>، فروشگاه جامعه، می‌افزاید و سپس دانلود می‌کند &mdash; و اگر از پیش باشد به‌روزش می‌کند. نشانی مخزن و دسته آن را در زیر وارد کنید.","inclus":"<b>شامل:</b> به‌روزرسانی خود HACS اگر قدیمی باشد، افزودن مخزن سفارشی، دانلود، و راه‌اندازی دوباره Home Assistant فقط اگر دسته آن را لازم بداند.<br><br><b>پیش‌نیاز:</b> HACS باید از پیش روی نمونه شما در حال اجرا باشد &mdash; راه‌اندازی آن به یک جفت‌سازی شخصی با GitHub نیاز دارد که ما نمی‌توانیم به جای شما انجام دهیم.","intro":"مخزن GitHub دلخواه شما را به <b>HACS</b> می‌افزاید و سپس دانلود می‌کند — و اگر از پیش باشد به‌روزش می‌کند. نشانی مخزن و دسته آن را هنگام خرید وارد می‌کنید."}}},"he":{"fermer":"סגירה","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"עורך הקבצים, הבסיס של כל החבילות.","descriptif":"מתקין ומגדיר את התוסף הרשמי <b>File editor</b>, עורך הקבצים המובנה ב־Home Assistant. כל החבילות האחרות שלנו עוברות דרכו כדי לכתוב את <code>configuration.yaml</code> ולהעלות את הרקעים שלהן: התקינו אותו ראשון במופע חדש.","inclus":"<b>כלול:</b> התקנה או עדכון של התוסף, וארבע ההגדרות המופעלות &mdash; הפעלה בעלייה, כלב שמירה, עדכון אוטומטי, הצגה בסרגל הצד.","intro":"שלושה שלבים, אוטומטיים לחלוטין. החבילה לא מבקשת מכם דבר: לתוסף אין שום פרמטר חובה. זוהי הלבנה שמניחים ראשונה במופע חדש — כל החבילות האחרות שלנו כותבות דרכה לתצורה שלכם."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"מסוף מלא בסרגל הצד.","descriptif":"מתקין ומגדיר את התוסף הרשמי <b>Terminal &amp; SSH</b>. אתם מקבלים מסוף מלא ישירות בסרגל הצד של Home Assistant, בלי להתקין דבר במחשב.","inclus":"<b>כלול:</b> התקנה או עדכון של התוסף, וארבע ההגדרות המופעלות &mdash; הפעלה בעלייה, כלב שמירה, עדכון אוטומטי, הצגה בסרגל הצד. שום מפתח SSH לא מוגדר במקומכם: הגישה מרחוק נשארת סגורה עד שתוסיפו מפתח משלכם.","intro":"מסוף מלא בסרגל הצד של Home Assistant, בלי להתקין דבר במחשב. החבילה לא מבקשת מכם דבר ו<b>לא מוסיפה מפתח SSH</b> במקומכם."},"configuration_hacs":{"titre":"HACS - מאגר GitHub","resume":"מוסיף ומעדכן מאגר HACS.","descriptif":"מוסיף מאגר <b>GitHub</b> לבחירתכם ל־<b>HACS</b>, חנות הקהילה, ואז מוריד אותו &mdash; ומעדכן אותו אם הוא כבר שם. הזינו למטה את כתובת המאגר ואת הקטגוריה שלו.","inclus":"<b>כלול:</b> עדכון HACS עצמו אם אינו מעודכן, הוספת המאגר המותאם, הורדה, והפעלה מחדש של Home Assistant רק אם הקטגוריה מחייבת זאת.<br><br><b>דרישה מוקדמת:</b> HACS חייב כבר לפעול במופע שלכם &mdash; הפעלתו דורשת צימוד אישי ל־GitHub, שאיננו יכולים לבצע במקומכם.","intro":"מוסיף ל־<b>HACS</b> את מאגר GitHub לבחירתכם, ואז מוריד אותו — ומעדכן אותו אם הוא כבר שם. את כתובת המאגר והקטגוריה שלו אתם מזינים בעת ההזמנה."}}},"hi":{"fermer":"बंद करें","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"फ़ाइल संपादक, सभी पैक का आधार।","descriptif":"आधिकारिक ऐड-ऑन <b>File editor</b> को इंस्टॉल और कॉन्फ़िगर करता है, जो Home Assistant में बना फ़ाइल संपादक है। हमारे बाकी सभी पैक <code>configuration.yaml</code> लिखने और अपनी पृष्ठभूमि अपलोड करने के लिए इसी का उपयोग करते हैं: नए इंस्टेंस पर इसे सबसे पहले इंस्टॉल करें।","inclus":"<b>शामिल:</b> ऐड-ऑन का इंस्टॉलेशन या अपडेट, और चार सक्रिय सेटिंग्स &mdash; बूट पर शुरू, वॉचडॉग, स्वचालित अपडेट, साइडबार में दिखाना।","intro":"तीन पूरी तरह स्वचालित चरण। पैक आपसे कुछ नहीं पूछता: ऐड-ऑन का कोई अनिवार्य पैरामीटर नहीं है। नए इंस्टेंस पर सबसे पहले लगाई जाने वाली यही ईंट है — हमारे बाकी सभी पैक इसी के ज़रिए आपके कॉन्फ़िगरेशन में लिखते हैं।"},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"साइडबार में एक पूरा टर्मिनल।","descriptif":"आधिकारिक ऐड-ऑन <b>Terminal &amp; SSH</b> को इंस्टॉल और कॉन्फ़िगर करता है। आपको अपने कंप्यूटर पर कुछ भी इंस्टॉल किए बिना सीधे Home Assistant के साइडबार में एक पूरा टर्मिनल मिलता है।","inclus":"<b>शामिल:</b> ऐड-ऑन का इंस्टॉलेशन या अपडेट, और चार सक्रिय सेटिंग्स &mdash; बूट पर शुरू, वॉचडॉग, स्वचालित अपडेट, साइडबार में दिखाना। आपकी ओर से कोई SSH कुंजी नहीं जोड़ी जाती: जब तक आप अपनी कुंजी नहीं जोड़ते, दूरस्थ पहुँच बंद रहती है।","intro":"आपके कंप्यूटर पर कुछ भी इंस्टॉल किए बिना Home Assistant के साइडबार में एक पूरा टर्मिनल। पैक आपसे कुछ नहीं पूछता और आपकी ओर से <b>कोई SSH कुंजी</b> नहीं जोड़ता।"},"configuration_hacs":{"titre":"HACS - GitHub रिपॉज़िटरी","resume":"एक HACS रिपॉज़िटरी जोड़ता और अपडेट करता है।","descriptif":"आपकी पसंद की एक <b>GitHub</b> रिपॉज़िटरी को सामुदायिक स्टोर <b>HACS</b> में जोड़ता है, फिर उसे डाउनलोड करता है &mdash; और यदि वह पहले से है तो अपडेट करता है। नीचे रिपॉज़िटरी का पता और उसकी श्रेणी दर्ज करें।","inclus":"<b>शामिल:</b> पुराना होने पर स्वयं HACS का अपडेट, कस्टम रिपॉज़िटरी जोड़ना, डाउनलोड, और Home Assistant का पुनरारंभ केवल तभी जब श्रेणी को इसकी ज़रूरत हो।<br><br><b>पूर्व-आवश्यकता:</b> HACS आपके इंस्टेंस पर पहले से चल रहा होना चाहिए &mdash; इसे चालू करने के लिए व्यक्तिगत GitHub पेयरिंग चाहिए, जो हम आपकी ओर से नहीं कर सकते।","intro":"आपकी पसंद की GitHub रिपॉज़िटरी को <b>HACS</b> में जोड़ता है, फिर उसे डाउनलोड करता है — और यदि वह पहले से है तो अपडेट करता है। रिपॉज़िटरी का पता और उसकी श्रेणी आप ऑर्डर करते समय देते हैं।"}}},"bn":{"fermer":"বন্ধ করুন","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"ফাইল এডিটর, সব প্যাকের ভিত্তি।","descriptif":"অফিসিয়াল অ্যাড-অন <b>File editor</b> ইনস্টল ও কনফিগার করে, যা Home Assistant-এ অন্তর্নির্মিত ফাইল এডিটর। আমাদের অন্য সব প্যাক <code>configuration.yaml</code> লিখতে এবং তাদের ব্যাকগ্রাউন্ড আপলোড করতে এটি ব্যবহার করে: নতুন ইনস্ট্যান্সে এটি সবার আগে ইনস্টল করুন।","inclus":"<b>অন্তর্ভুক্ত:</b> অ্যাড-অনের ইনস্টলেশন বা আপডেট, এবং চারটি সক্রিয় সেটিং &mdash; বুটে চালু, ওয়াচডগ, স্বয়ংক্রিয় আপডেট, সাইডবারে প্রদর্শন।","intro":"সম্পূর্ণ স্বয়ংক্রিয় তিনটি ধাপ। প্যাকটি আপনার কাছে কিছুই চায় না: অ্যাড-অনের কোনো বাধ্যতামূলক প্যারামিটার নেই। নতুন ইনস্ট্যান্সে সবার আগে বসানোর ইট এটিই — আমাদের অন্য সব প্যাক এর মাধ্যমেই আপনার কনফিগারেশনে লেখে।"},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"সাইডবারে একটি পূর্ণাঙ্গ টার্মিনাল।","descriptif":"অফিসিয়াল অ্যাড-অন <b>Terminal &amp; SSH</b> ইনস্টল ও কনফিগার করে। কম্পিউটারে কিছু ইনস্টল না করেই সরাসরি Home Assistant-এর সাইডবারে একটি পূর্ণাঙ্গ টার্মিনাল পান।","inclus":"<b>অন্তর্ভুক্ত:</b> অ্যাড-অনের ইনস্টলেশন বা আপডেট, এবং চারটি সক্রিয় সেটিং &mdash; বুটে চালু, ওয়াচডগ, স্বয়ংক্রিয় আপডেট, সাইডবারে প্রদর্শন। আপনার হয়ে কোনো SSH কী যোগ করা হয় না: আপনি নিজের কী যোগ না করা পর্যন্ত দূরবর্তী অ্যাক্সেস বন্ধ থাকে।","intro":"কম্পিউটারে কিছু ইনস্টল না করেই Home Assistant-এর সাইডবারে একটি পূর্ণাঙ্গ টার্মিনাল। প্যাকটি আপনার কাছে কিছুই চায় না এবং আপনার হয়ে <b>কোনো SSH কী</b> যোগ করে না।"},"configuration_hacs":{"titre":"HACS - GitHub রিপোজিটরি","resume":"একটি HACS রিপোজিটরি যোগ ও আপডেট করে।","descriptif":"আপনার পছন্দের একটি <b>GitHub</b> রিপোজিটরি কমিউনিটি স্টোর <b>HACS</b>-এ যোগ করে, তারপর ডাউনলোড করে &mdash; আর আগে থেকেই থাকলে আপডেট করে। নিচে রিপোজিটরির ঠিকানা ও তার বিভাগ লিখুন।","inclus":"<b>অন্তর্ভুক্ত:</b> পুরোনো হলে HACS নিজের আপডেট, কাস্টম রিপোজিটরি যোগ, ডাউনলোড, এবং বিভাগ প্রয়োজন হলে তবেই Home Assistant পুনরায় চালু।<br><br><b>পূর্বশর্ত:</b> HACS আপনার ইনস্ট্যান্সে আগে থেকেই চালু থাকতে হবে &mdash; এটি চালু করতে ব্যক্তিগত GitHub পেয়ারিং লাগে, যা আমরা আপনার হয়ে করতে পারি না।","intro":"আপনার পছন্দের GitHub রিপোজিটরি <b>HACS</b>-এ যোগ করে, তারপর ডাউনলোড করে — আর আগে থেকেই থাকলে আপডেট করে। রিপোজিটরির ঠিকানা ও বিভাগ আপনি অর্ডারের সময় দেন।"}}},"zh":{"fermer":"关闭","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"文件编辑器，所有套件的基础。","descriptif":"安装并配置官方加载项 <b>File editor</b>，即 Home Assistant 内置的文件编辑器。我们的所有其他套件都通过它写入 <code>configuration.yaml</code> 并上传背景图：在新实例上请首先安装它。","inclus":"<b>包含：</b>安装或更新该加载项，并启用四项设置 &mdash; 开机启动、看门狗、自动更新、在侧边栏显示。","intro":"三个完全自动的步骤。套件不需要您提供任何信息：该加载项没有任何必填参数。这是在新实例上首先安装的基础组件 — 我们的所有其他套件都通过它写入您的配置。"},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"侧边栏中的完整终端。","descriptif":"安装并配置官方加载项 <b>Terminal &amp; SSH</b>。无需在电脑上安装任何东西，即可直接在 Home Assistant 侧边栏中获得完整的终端。","inclus":"<b>包含：</b>安装或更新该加载项，并启用四项设置 &mdash; 开机启动、看门狗、自动更新、在侧边栏显示。不会代您添加任何 SSH 密钥：在您添加自己的密钥之前，远程访问保持关闭。","intro":"Home Assistant 侧边栏中的完整终端，无需在电脑上安装任何东西。套件不需要您提供任何信息，也<b>不会代您添加 SSH 密钥</b>。"},"configuration_hacs":{"titre":"HACS - GitHub 仓库","resume":"添加并更新一个 HACS 仓库。","descriptif":"将您选择的 <b>GitHub</b> 仓库添加到社区商店 <b>HACS</b>，然后下载它 &mdash; 如果已存在则更新。请在下方填写仓库地址及其类别。","inclus":"<b>包含：</b>如果 HACS 本身版本过旧则更新它，添加自定义仓库，下载，并仅在类别需要时重启 Home Assistant。<br><br><b>前提条件：</b>HACS 必须已在您的实例上运行 &mdash; 启用它需要个人 GitHub 配对，我们无法代您完成。","intro":"将您选择的 GitHub 仓库添加到 <b>HACS</b>，然后下载它 — 如果已存在则更新。仓库地址及其类别在下单时填写。"}}},"ja":{"fermer":"閉じる","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"ファイルエディター、すべてのパックの土台。","descriptif":"Home Assistant に組み込まれたファイルエディターである公式アドオン <b>File editor</b> をインストールして設定します。ほかのすべてのパックは、これを通じて <code>configuration.yaml</code> を書き込み、背景画像をアップロードします。新しいインスタンスでは最初にインストールしてください。","inclus":"<b>含まれるもの：</b>アドオンのインストールまたは更新と、有効化される4つの設定 &mdash; 起動時に開始、ウォッチドッグ、自動更新、サイドバーに表示。","intro":"完全に自動の3ステップ。パックは何も尋ねません。アドオンに必須の設定はありません。新しいインスタンスで最初に置く基礎となる部品です — ほかのすべてのパックはこれを通じて設定に書き込みます。"},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"サイドバーに完全なターミナル。","descriptif":"公式アドオン <b>Terminal &amp; SSH</b> をインストールして設定します。パソコンに何もインストールせずに、Home Assistant のサイドバーで直接完全なターミナルが使えます。","inclus":"<b>含まれるもの：</b>アドオンのインストールまたは更新と、有効化される4つの設定 &mdash; 起動時に開始、ウォッチドッグ、自動更新、サイドバーに表示。SSH キーを代わりに設定することはありません。ご自身のキーを追加するまで、リモートアクセスは閉じたままです。","intro":"パソコンに何もインストールせずに、Home Assistant のサイドバーで使える完全なターミナル。パックは何も尋ねず、<b>SSH キーを代わりに設定することもありません</b>。"},"configuration_hacs":{"titre":"HACS - GitHub リポジトリ","resume":"HACS リポジトリを追加して更新します。","descriptif":"お好みの <b>GitHub</b> リポジトリをコミュニティストア <b>HACS</b> に追加し、ダウンロードします &mdash; すでにある場合は更新します。下にリポジトリのアドレスとカテゴリーを入力してください。","inclus":"<b>含まれるもの：</b>古い場合は HACS 自体の更新、カスタムリポジトリの追加、ダウンロード、そしてカテゴリーが必要とする場合のみ Home Assistant の再起動。<br><br><b>前提条件：</b>HACS がすでにインスタンスで稼働している必要があります &mdash; その有効化には個人の GitHub ペアリングが必要で、代わりに行うことはできません。","intro":"お好みの GitHub リポジトリを <b>HACS</b> に追加し、ダウンロードします — すでにある場合は更新します。リポジトリのアドレスとカテゴリーはご注文時に入力します。"}}},"ko":{"fermer":"닫기","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"파일 편집기, 모든 팩의 기반.","descriptif":"Home Assistant에 내장된 파일 편집기인 공식 애드온 <b>File editor</b>를 설치하고 구성합니다. 다른 모든 팩은 이를 통해 <code>configuration.yaml</code>을 작성하고 배경 이미지를 업로드합니다. 새 인스턴스에는 가장 먼저 설치하세요.","inclus":"<b>포함:</b> 애드온 설치 또는 업데이트, 그리고 활성화되는 네 가지 설정 &mdash; 부팅 시 시작, 워치독, 자동 업데이트, 사이드바에 표시.","intro":"완전히 자동인 세 단계. 팩은 아무것도 묻지 않습니다. 애드온에는 필수 설정이 없습니다. 새 인스턴스에 가장 먼저 놓는 기본 구성 요소입니다 — 다른 모든 팩은 이를 통해 구성에 기록합니다."},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"사이드바의 완전한 터미널.","descriptif":"공식 애드온 <b>Terminal &amp; SSH</b>를 설치하고 구성합니다. 컴퓨터에 아무것도 설치하지 않고 Home Assistant 사이드바에서 바로 완전한 터미널을 사용할 수 있습니다.","inclus":"<b>포함:</b> 애드온 설치 또는 업데이트, 그리고 활성화되는 네 가지 설정 &mdash; 부팅 시 시작, 워치독, 자동 업데이트, 사이드바에 표시. 사용자를 대신해 SSH 키를 추가하지 않습니다. 직접 키를 추가하기 전까지 원격 접속은 닫혀 있습니다.","intro":"컴퓨터에 아무것도 설치하지 않고 Home Assistant 사이드바에서 사용하는 완전한 터미널. 팩은 아무것도 묻지 않으며 사용자를 대신해 <b>SSH 키를 추가하지 않습니다</b>."},"configuration_hacs":{"titre":"HACS - GitHub 저장소","resume":"HACS 저장소를 추가하고 업데이트합니다.","descriptif":"원하는 <b>GitHub</b> 저장소를 커뮤니티 스토어 <b>HACS</b>에 추가한 뒤 다운로드합니다 &mdash; 이미 있으면 업데이트합니다. 아래에 저장소 주소와 카테고리를 입력하세요.","inclus":"<b>포함:</b> 오래된 경우 HACS 자체 업데이트, 사용자 지정 저장소 추가, 다운로드, 그리고 카테고리가 요구할 때만 Home Assistant 재시작.<br><br><b>전제 조건:</b> HACS가 인스턴스에서 이미 실행 중이어야 합니다 &mdash; 활성화하려면 개인 GitHub 페어링이 필요하며, 이는 저희가 대신할 수 없습니다.","intro":"원하는 GitHub 저장소를 <b>HACS</b>에 추가한 뒤 다운로드합니다 — 이미 있으면 업데이트합니다. 저장소 주소와 카테고리는 주문할 때 입력합니다."}}},"th":{"fermer":"ปิด","packs":{"configuration_file_editor":{"titre":"File Editor","resume":"ตัวแก้ไขไฟล์ พื้นฐานของทุกแพ็ก","descriptif":"ติดตั้งและกำหนดค่าส่วนเสริมทางการ <b>File editor</b> ซึ่งเป็นตัวแก้ไขไฟล์ที่มีอยู่ใน Home Assistant แพ็กอื่นๆ ทั้งหมดของเราใช้มันเพื่อเขียน <code>configuration.yaml</code> และอัปโหลดภาพพื้นหลัง: ติดตั้งเป็นอันดับแรกบนอินสแตนซ์ใหม่","inclus":"<b>รวมอยู่:</b> การติดตั้งหรืออัปเดตส่วนเสริม และการตั้งค่าสี่รายการที่เปิดใช้ &mdash; เริ่มเมื่อบูต, วอตช์ด็อก, อัปเดตอัตโนมัติ, แสดงในแถบด้านข้าง","intro":"สามขั้นตอนอัตโนมัติทั้งหมด แพ็กไม่ถามอะไรคุณเลย: ส่วนเสริมไม่มีพารามิเตอร์บังคับ เป็นชิ้นส่วนที่ต้องวางเป็นอันดับแรกบนอินสแตนซ์ใหม่ — แพ็กอื่นๆ ทั้งหมดของเราเขียนลงการกำหนดค่าของคุณผ่านมัน"},"configuration_terminal_ssh":{"titre":"Terminal & SSH","resume":"เทอร์มินัลเต็มรูปแบบในแถบด้านข้าง","descriptif":"ติดตั้งและกำหนดค่าส่วนเสริมทางการ <b>Terminal &amp; SSH</b> คุณจะได้เทอร์มินัลเต็มรูปแบบในแถบด้านข้างของ Home Assistant โดยไม่ต้องติดตั้งอะไรบนคอมพิวเตอร์","inclus":"<b>รวมอยู่:</b> การติดตั้งหรืออัปเดตส่วนเสริม และการตั้งค่าสี่รายการที่เปิดใช้ &mdash; เริ่มเมื่อบูต, วอตช์ด็อก, อัปเดตอัตโนมัติ, แสดงในแถบด้านข้าง ไม่มีการเพิ่มคีย์ SSH แทนคุณ: การเข้าถึงระยะไกลจะปิดอยู่จนกว่าคุณจะเพิ่มคีย์ของคุณเอง","intro":"เทอร์มินัลเต็มรูปแบบในแถบด้านข้างของ Home Assistant โดยไม่ต้องติดตั้งอะไรบนคอมพิวเตอร์ แพ็กไม่ถามอะไรคุณและ<b>ไม่เพิ่มคีย์ SSH</b> แทนคุณ"},"configuration_hacs":{"titre":"HACS - คลัง GitHub","resume":"เพิ่มและอัปเดตคลัง HACS","descriptif":"เพิ่มคลัง <b>GitHub</b> ที่คุณเลือกลงใน <b>HACS</b> ร้านค้าชุมชน แล้วดาวน์โหลด &mdash; และอัปเดตหากมีอยู่แล้ว กรอกที่อยู่คลังและหมวดหมู่ด้านล่าง","inclus":"<b>รวมอยู่:</b> อัปเดต HACS เองหากล้าสมัย, เพิ่มคลังแบบกำหนดเอง, ดาวน์โหลด และรีสตาร์ต Home Assistant เฉพาะเมื่อหมวดหมู่ต้องการ<br><br><b>ข้อกำหนดเบื้องต้น:</b> HACS ต้องทำงานอยู่แล้วบนอินสแตนซ์ของคุณ &mdash; การเปิดใช้ต้องจับคู่ GitHub ส่วนตัว ซึ่งเราไม่สามารถทำแทนคุณได้","intro":"เพิ่มคลัง GitHub ที่คุณเลือกลงใน <b>HACS</b> แล้วดาวน์โหลด — และอัปเดตหากมีอยู่แล้ว คุณกรอกที่อยู่คลังและหมวดหมู่ตอนสั่งซื้อ"}}}};/* PACKS_I18N:fin */
+
+  function langueSite() {
+    return document.documentElement.getAttribute('lang') || 'fr';
+  }
+
+  function tablePacks() {
+    const lang = langueSite();
+    if (lang === 'fr' || typeof PACKS_I18N === 'undefined') return null;
+    return PACKS_I18N[lang] || PACKS_I18N.en || null;
+  }
+
+  // Un champ traduit d'une fiche de pack, ou null (la page garde son texte).
+  function traductionPack(cle, champ) {
+    const t = tablePacks();
+    const p = t && t.packs && t.packs[cle];
+    return p && p[champ] !== undefined ? p[champ] : null;
+  }
+
+  function texteCommun(cle, defaut) {
+    const t = tablePacks();
+    return (t && t[cle]) || defaut;
+  }
+
+  /* Les fiches se composent a l'affichage : on les recompose dans la
+     nouvelle langue (catalogue et page de details). */
+  function retraduirePacks() {
+    try {
+      if (typeof categorieCourante !== 'undefined') filterCategory(categorieCourante);
+      const details = document.getElementById('section-details');
+      if (details && details.classList.contains('active')) majDetails();
+      document.querySelectorAll('.btn-fermer-fin .libelle').forEach(el => { el.textContent = texteCommun('fermer', 'Fermer'); });
+    } catch (e) { /* page pas encore initialisee : rien a recomposer */ }
+  }
+
   function selectLang(code, label, flagClass) {
     const flag = document.getElementById('lang-current-flag');
     flag.className = `fi ${flagClass}`;
     flag.parentElement.title = label;
     document.documentElement.lang = code;
     traduireTestGratuit(code);
+    retraduirePacks();
     document.getElementById('lang-dropdown').classList.remove('open');
     // La liste se réordonne APRÈS le changement : la nouvelle langue passe en
     // tête et prend la surbrillance. Sans cet appel, la mise en évidence
@@ -4150,9 +4203,9 @@
        celui dans lequel on les pose sur une instance neuve — File editor
        d'abord, puisque les trois autres s'en servent pour ecrire. */
     configuration: [
-      { name: 'configuration_file_editor', desc: 'Editeur de fichiers Home Assistant' },
-      { name: 'configuration_terminal_ssh', desc: 'Terminal et acces SSH' },
-      { name: 'configuration_hacs', desc: 'Magasin communautaire HACS' },
+      { name: 'configuration_file_editor', desc: 'Éditeur de fichiers Home Assistant' },
+      { name: 'configuration_terminal_ssh', desc: 'Terminal et accès SSH' },
+      { name: 'configuration_hacs', desc: 'Dépôt GitHub dans HACS' },
       { name: 'configuration_duckdns', desc: 'Nom de domaine et acces distant' },
       { name: 'configuration_zigbee2mqtt', desc: 'Reseau Zigbee : Mosquitto et Zigbee2MQTT' },
       { name: 'configuration_backup', desc: 'Sauvegardes automatiques' },
@@ -4227,7 +4280,7 @@
   const MODULE_TITLES = {
     configuration_file_editor: 'File Editor',
     configuration_terminal_ssh: 'Terminal & SSH',
-    configuration_hacs: 'HACS',
+    configuration_hacs: 'HACS - Dépôt GitHub',
     configuration_duckdns: 'DuckDNS',
     configuration_zigbee2mqtt: 'Zigbee2MQTT',
     configuration_backup: 'Backup',
@@ -4384,7 +4437,7 @@
   }
 
   function moduleTitle(rawName) {
-    return MODULE_TITLES[rawName] || cleanTitle(rawName);
+    return traductionPack(rawName, 'titre') || MODULE_TITLES[rawName] || cleanTitle(rawName);
   }
 
   // Modules déjà finalisés en template (GIF de démonstration + descriptif détaillé)
@@ -4525,17 +4578,17 @@
     configuration_file_editor: {
       resume: "L'éditeur de fichiers, base des packs.",
       logo: 'templates/config/file-editor.gif',
-      detail: `Installe et configure l'add-on officiel <b>File editor</b>, l'editeur de fichiers integre a Home Assistant. C'est par lui que passent tous nos autres packs pour ecrire <code>configuration.yaml</code> et deposer leurs fonds d'ecran : posez-le en premier sur une instance neuve. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale.</span>`
+      detail: `Installe et configure l'add-on officiel <b>File editor</b>, l'éditeur de fichiers intégré à Home Assistant. C'est par lui que passent tous nos autres packs pour écrire <code>configuration.yaml</code> et déposer leurs fonds d'écran : posez-le en premier sur une instance neuve. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise à jour de l'add-on, et les quatre réglages activés &mdash; lancement au démarrage, chien de garde, mise à jour automatique, affichage dans la barre latérale.</span>`
     },
     configuration_terminal_ssh: {
       resume: "Un terminal complet dans la barre latérale.",
       logo: 'templates/config/terminal-ssh.gif',
-      detail: `Installe et configure l'add-on officiel <b>Terminal &amp; SSH</b>. Vous obtenez un terminal complet directement dans la barre laterale de Home Assistant, sans rien installer sur votre ordinateur. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise a jour de l'add-on, et les quatre reglages actives &mdash; lancement au demarrage, chien de garde, mise a jour automatique, affichage dans la barre laterale. Aucune cle SSH n'est posee a votre place : l'acces distant reste ferme tant que vous n'avez pas depose la votre.</span>`
+      detail: `Installe et configure l'add-on officiel <b>Terminal &amp; SSH</b>. Vous obtenez un terminal complet directement dans la barre latérale de Home Assistant, sans rien installer sur votre ordinateur. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise à jour de l'add-on, et les quatre réglages activés &mdash; lancement au démarrage, chien de garde, mise à jour automatique, affichage dans la barre latérale. Aucune clé SSH n'est posée à votre place : l'accès distant reste fermé tant que vous n'avez pas déposé la vôtre.</span>`
     },
     configuration_hacs: {
       resume: "Ajoute et met à jour un dépôt HACS.",
       logo: 'templates/config/hacs.gif',
-      detail: `Ajoute un depot <b>GitHub</b> de votre choix a <b>HACS</b>, le magasin communautaire, puis le telecharge &mdash; et le met a jour s'il y est deja. Indiquez l'adresse du depot et sa categorie ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> mise a jour de HACS lui-meme s'il est en retard, ajout du depot personnalise, telechargement, et redemarrage de Home Assistant uniquement si la categorie l'exige. <b>Prerequis :</b> HACS doit deja etre en service sur votre instance &mdash; sa mise en service passe par un appairage GitHub personnel, que nous ne pouvons pas faire a votre place.</span>`
+      detail: `Ajoute un dépôt <b>GitHub</b> de votre choix à <b>HACS</b>, le magasin communautaire, puis le télécharge &mdash; et le met à jour s'il y est déjà. Indiquez l'adresse du dépôt et sa catégorie ci-dessous. <br><br><span class="inclus"><b>Inclus :</b> mise à jour de HACS lui-même s'il est en retard, ajout du dépôt personnalisé, téléchargement, et redémarrage de Home Assistant uniquement si la catégorie l'exige.<br><br><b>Prérequis :</b> HACS doit déjà être en service sur votre instance &mdash; sa mise en service passe par un appairage GitHub personnel, que nous ne pouvons pas faire à votre place.</span>`
     },
     configuration_duckdns: {
       resume: "Adresse fixe et https gratuit.",
@@ -6869,7 +6922,7 @@
                    <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
           </div>
           <div class="detail-colonne-info">
-            <p class="detail-intro">${conf.intro || ''}</p>
+            <p class="detail-intro">${traductionPack(cleModule, 'intro') || conf.intro || ''}</p>
             ${option && option.sous ? `<p class="detail-variante-sous">${option.sous}</p>` : ''}
             <!-- « Inclus » suit le descriptif : c'est la suite de la meme
                  phrase — ce que fait le pack, puis ce qu'il apporte. -->
@@ -7041,6 +7094,11 @@
   /* Descriptif d'un pack, quelle que soit sa forme de fiche : les packs
      détaillés le portent dans MODULE_MEDIA, les autres dans `modulesData`. */
   function descriptifDe(cleModule) {
+    const traduit = traductionPack(cleModule, 'descriptif');
+    if (traduit) {
+      const inclus = traductionPack(cleModule, 'inclus');
+      return traduit + (inclus ? `<br><br><span class="inclus">${inclus}</span>` : '');
+    }
     if (MODULE_MEDIA[cleModule] && MODULE_MEDIA[cleModule].detail) {
       return MODULE_MEDIA[cleModule].detail;
     }
@@ -8204,18 +8262,18 @@
        Terminal & SSH n'ont aucun parametre obligatoire, et n'apparaissent
        donc pas ici. */
     configuration_hacs: [
-      { param: 'HACS_DEPOT', label: 'Depot GitHub', type: 'text', required: true,
+      { param: 'HACS_DEPOT', label: 'Dépôt GitHub', type: 'text', required: true,
         placeholder: 'ex : https://github.com/proprietaire/depot' },
       /* La categorie decide de ce que HACS fait du depot, et un mauvais choix
          donne un telechargement qui ne sert a rien. « Plugin » en tete : c'est
          la seule forme qui sache livrer un tableau de bord, donc celle de nos
          propres depots (cf. le Test Gratuit). */
-      { param: 'HACS_CATEGORIE', label: 'Categorie', type: 'select',
+      { param: 'HACS_CATEGORIE', label: 'Catégorie', type: 'select',
         options: [
           { value: 'plugin', label: 'Carte Lovelace (plugin)' },
-          { value: 'integration', label: 'Integration' },
-          { value: 'theme', label: 'Theme' },
-          { value: 'template', label: 'Modele (template)' },
+          { value: 'integration', label: 'Intégration' },
+          { value: 'theme', label: 'Thème' },
+          { value: 'template', label: 'Modèle (template)' },
           { value: 'python_script', label: 'Script Python' },
           { value: 'appdaemon', label: 'AppDaemon' },
           { value: 'netdaemon', label: 'NetDaemon' }
@@ -21499,8 +21557,8 @@ function dessinSonnette(o) {
       // trois lignes pleines. Le `detail` long, lui, reste pour la page de
       // details. Couper le long a l'affichage donnait une phrase arretee en
       // plein mot, et le visiteur ne savait pas ce qu'il manquait.
-      const detail = detailSepare(media ? media.detail : mod.desc);
-      const resume = (media && media.resume) || detail.descriptif;
+      const detail = detailSepare(media ? descriptifDe(mod.name) : mod.desc);
+      const resume = traductionPack(mod.name, 'resume') || (media && media.resume) || detail.descriptif;
 
       /* CINQ rangees, toujours les memes et toujours dans cet ordre : en-tete,
          media, selecteur de theme, description, action. Le bloc « Inclus » et
@@ -21518,19 +21576,18 @@ function dessinSonnette(o) {
          rangees de grille au lieu de cinq (voir `subgrid`).
          Le selecteur n'ouvre PAS les details : un clic ou une touche dans
          `.pack-selecteur` reste au selecteur. */
-      const dansSelecteur = (e) => !!(e.target && e.target.closest && e.target.closest('.pack-selecteur'));
+      /* Le selecteur de theme a quitte la fiche le 05/10/2026 (demande du
+         client) : il vit sur la page de details, ou il commande l'apercu. La
+         fiche montre l'animation du theme par defaut du pack, et c'est TOUTE
+         la fiche qui ouvre la page de details. Deux rangees de grille. */
       item.className = 'module-item module-item-detailed pack-cliquable';
       item.setAttribute('role', 'link');
       item.setAttribute('tabindex', '0');
       item.setAttribute('title', `Voir le pack ${title}`);
-      item.addEventListener('click', (e) => { if (!dansSelecteur(e)) ouvrirDetails(mod.name); });
+      item.addEventListener('click', () => ouvrirDetails(mod.name));
       item.addEventListener('keydown', (e) => {
-        if (dansSelecteur(e)) return;
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ouvrirDetails(mod.name); }
       });
-      /* Trois rangees, sans cadre interieur (les deux sous-blocs essayes le
-         19/09/2026 ont ete retires le jour meme a la demande du client) :
-         en-tete, animation, selecteur de theme. */
       item.innerHTML = `
         <div class="pack-entete${CATEGORIES_MULTICOLORES.has(categoryKey) ? ' multicolore' : ''}" style="--cat: ${moduleColor(mod.name)};">
           <i class="fa-solid ${moduleIcon(mod.name)}"></i><span>${title}</span>
@@ -21538,7 +21595,6 @@ function dessinSonnette(o) {
         <div class="pack-media module-video" id="apercu-${mod.name}">
           <span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>
         </div>
-        <div class="pack-selecteur" title="">${champsParamsHtml(mod.name, 'theme')}</div>
       `;
 
       container.appendChild(item);
@@ -21886,19 +21942,40 @@ function dessinSonnette(o) {
 
   const PRIX_PACK = 9;
 
+  /* Prix propres a un pack (05/10/2026) : ils PRIMENT sur la gratuite de la
+     phase de test. Les trois briques d'infrastructure les plus simples sont
+     affichees a 0,99 €. Le Worker, lui, ne facture toujours rien tant que
+     le paiement n'est pas branche (`assertPaymentCovers`) : ces packs restent
+     dans son `FREE_MODULES` pour rester deployables pendant la phase de test. */
+  const PRIX_SPECIFIQUES = {
+    configuration_file_editor: 0.99,
+    configuration_terminal_ssh: 0.99,
+    configuration_hacs: 0.99
+  };
+
   function prixDe(rawName) {
+    if (rawName in PRIX_SPECIFIQUES) return PRIX_SPECIFIQUES[rawName];
     return PACKS_GRATUITS.has(rawName) ? 0 : PRIX_PACK;
   }
 
+  /* « 0,99 € », « 9 € » : virgule decimale, et deux decimales seulement
+     quand le montant n'est pas rond. */
+  function euros(montant) {
+    const m = Math.round((montant || 0) * 100) / 100;
+    return m.toLocaleString('fr-FR', { minimumFractionDigits: Number.isInteger(m) ? 0 : 2,
+                                        maximumFractionDigits: 2 }) + ' €';
+  }
+
   function prixLisible(prix) {
-    return prix ? `${prix} €` : 'Gratuit';
+    return prix ? euros(prix) : 'Gratuit';
   }
 
   /* Somme des lignes, et non `cart.length * 9` : avec un tarif uniforme les
      deux se valaient, mais un panier melant packs ouverts et packs payants
-     aurait facture les premiers. */
+     aurait facture les premiers. Arrondie au centime : 3 × 0,99 ne doit pas
+     afficher 2,9699999. */
   function cartTotal() {
-    return cart.reduce((total, item) => total + (item.price || 0), 0);
+    return Math.round(cart.reduce((total, item) => total + (item.price || 0), 0) * 100) / 100;
   }
 
   function updateCartUI() {
@@ -21909,7 +21986,7 @@ function dessinSonnette(o) {
     document.getElementById('nav-cart-badge').innerText = count;
 
     const totalEl = document.getElementById('nav-cart-total');
-    totalEl.innerText = `${total} €`;
+    totalEl.innerText = euros(total);
     totalEl.classList.remove('price-flash');
     void totalEl.offsetWidth;
     totalEl.classList.add('price-flash');
@@ -22245,7 +22322,7 @@ function dessinSonnette(o) {
     return `
       <button class="modal-back" onclick="backToCartListStep()"><i class="fa-solid fa-arrow-left"></i> Retour à la sélection</button>
       <div class="modal-step-title"><i class="fa-solid fa-wallet"></i> Choisissez votre moyen de paiement</div>
-      <div class="cart-total" style="margin-bottom: 18px;">Total à payer : ${cartTotal()} €</div>
+      <div class="cart-total" style="margin-bottom: 18px;">Total à payer : ${euros(cartTotal())}</div>
       <div class="payment-methods">
         ${PAYMENT_METHODS.map(m => `
           <button class="payment-method-btn" onclick="selectPaymentMethod('${m.label}')">
@@ -22269,7 +22346,7 @@ function dessinSonnette(o) {
       <div class="modal-step-title"><i class="fa-solid fa-rocket"></i> Déploiement en cours</div>
       <div class="deploy-log open" id="cart-deploy-log"></div>
       <div class="modal-footer">
-        <button class="btn-pay" id="cart-deploy-close" onclick="closeCartModal()" disabled>Fermer</button>
+        <button class="btn-pay" id="cart-deploy-close" onclick="closeCartModal()" style="display:none" disabled><i class="fa-solid fa-xmark"></i> ${texteCommun('fermer', 'Fermer')}</button>
       </div>
     `;
   }
@@ -22287,7 +22364,7 @@ function dessinSonnette(o) {
   function selectPaymentMethod(methodName) {
     const total = cartTotal();
     closeCartModal();
-    alert(`🚀 Redirection vers ${methodName} pour un paiement sécurisé de ${total} €...`);
+    alert(`🚀 Redirection vers ${methodName} pour un paiement sécurisé de ${euros(total)}...`);
   }
 
   function closeCartModal() {
@@ -23088,8 +23165,41 @@ function dessinSonnette(o) {
     box.scrollTop = box.scrollHeight;
     // Une étape « en cours » prend la main sur le bandeau du bas : c'est elle
     // que le visiteur doit pouvoir suivre même après avoir fait défiler.
-    if (kind === 'run') mirrorSticky(div, boxId, kind, text);
+    // La DERNIÈRE étape aussi (05/10/2026) : elle est posée directement
+    // « terminée », et sans ce reflet le bandeau restait sur « Étape 3/4 »
+    // une fois tout fini.
+    if (kind === 'run' || Number(rang) === ETAPES_DEPLOIEMENT) mirrorSticky(div, boxId, kind, text);
     return div;
+  }
+
+  /* Bouton « Fermer » posé sous le journal une fois le processus terminé
+     (05/10/2026), réussi ou non. Un seul par journal : une relance retire le
+     précédent (`retirerBoutonFermer`). */
+  function retirerBoutonFermer(boxId) {
+    const ancien = document.getElementById(boxId + '-fermer');
+    if (ancien) ancien.remove();
+  }
+
+  function boutonFermerFin(boxId, action) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    retirerBoutonFermer(boxId);
+    const bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.id = boxId + '-fermer';
+    bouton.className = 'btn-fermer-fin';
+    bouton.innerHTML = `<i class="fa-solid fa-xmark"></i> <span class="libelle">${texteCommun('fermer', 'Fermer')}</span>`;
+    bouton.addEventListener('click', () => { hideSticky(0); action(); });
+    box.insertAdjacentElement('afterend', bouton);
+    bouton.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* « Fermer » du Test Gratuit : le journal se replie et la section revient
+     à son état de départ, prête pour un nouvel essai. */
+  function fermerJournalTest() {
+    const box = document.getElementById('test-log');
+    if (box) { box.innerHTML = ''; box.classList.remove('open'); }
+    retirerBoutonFermer('test-log');
   }
 
   function replaceLine(el, kind, text) {
@@ -23268,7 +23378,7 @@ function dessinSonnette(o) {
     const bouton = document.getElementById(mode === 'test' ? 'test-deploy-btn' : 'btn-connecter-ha');
     const zone = document.getElementById('checkout-verif');
     if (zone) zone.innerHTML = '';
-    if (mode === 'test') { const box = document.getElementById('test-log'); if (box) box.innerHTML = ''; }
+    if (mode === 'test') { const box = document.getElementById('test-log'); if (box) box.innerHTML = ''; retirerBoutonFermer('test-log'); }
 
     const cible = checkInstanceUrl(champ ? champ.value : '');
     if (cible.error) { afficherErreurConnexion(mode, cible.error); return; }
@@ -23396,7 +23506,7 @@ function dessinSonnette(o) {
     }
 
     if (mode === 'test') {
-      suivreDeploiement(jobId, { url, boxId: 'test-log', boutonId: 'test-deploy-btn' });
+      suivreDeploiement(jobId, { url, boxId: 'test-log', boutonId: 'test-deploy-btn', fermer: fermerJournalTest });
     } else {
       verrouillerFermeture(true);
       suivreDeploiement(jobId, { url, boxId: 'cart-deploy-log', closeBtnId: 'cart-deploy-close', viderPanier: true });
@@ -23461,6 +23571,7 @@ function dessinSonnette(o) {
     const log = (kind, text) => logLine(boxId, kind, text);
     const bouton = boutonId && document.getElementById(boutonId);
     if (bouton) bouton.disabled = true;
+    retirerBoutonFermer(boxId);
 
     reinitialiserEtapes(boxId);
     // Etape 1/4
@@ -23513,7 +23624,15 @@ function dessinSonnette(o) {
       // Succes, echec ou exception : la tache est close, on rend les sorties.
       if (closeBtnId) verrouillerFermeture(false);
       const btn = closeBtnId && document.getElementById(closeBtnId);
-      if (btn) btn.disabled = false;
+      // Le « Fermer » du panier n'apparait qu'une fois le processus termine
+      // (05/10/2026) : grise pendant tout le deploiement, il passait pour
+      // absent. Celui du Test Gratuit est pose sous le journal.
+      if (btn) {
+        btn.disabled = false;
+        btn.style.display = '';
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      if (opts.fermer) boutonFermerFin(boxId, opts.fermer);
       if (bouton) bouton.disabled = false;
       hideSticky(8000);
     }
@@ -23673,6 +23792,7 @@ function dessinSonnette(o) {
     document.getElementById('desinstall-verif').innerHTML = '';
     const log = document.getElementById('desinstall-log');
     log.innerHTML = ''; log.classList.remove('open');
+    retirerBoutonFermer('desinstall-log');
     majApercuIdentifiant();
     etatBoutonDesinstallation(false);
     document.getElementById('desinstall-modal-overlay').classList.add('active');
@@ -23820,18 +23940,35 @@ function dessinSonnette(o) {
     const overlay = document.getElementById('desinstall-modal-overlay');
     overlay.classList.add('deploiement-en-cours');
     etatBoutonDesinstallation(true, 'Suppression en cours…');
-    logLine(box, 'ok', 'Instance autorisée depuis Home Assistant — aucun jeton saisi, aucun jeton conservé.', 0);
-    let courante = logLine(box, 'run', `Suppression du pack <code>${echapperHtml(identifiant || '')}</code>…`, 0);
+    retirerBoutonFermer(box);
+    /* Quatre etapes numerotees, comme un deploiement (05/10/2026) : la
+       suppression se termine sur « Étape 4/4 ». */
+    reinitialiserEtapes(box);
+    // Etape 1/4
+    logLine(box, 'ok', 'Instance autorisée depuis Home Assistant — aucun jeton saisi, aucun jeton conservé.');
+    // Etape 2/4
+    let courante = logLine(box, 'run', 'Prise en charge par le déployeur…');
+    let suppression = null;
+    const avancer = () => {
+      if (suppression) return;
+      replaceLine(courante, 'ok', 'Demande prise en charge.');
+      // Etape 3/4 — les messages du runner s'y rangent en SOUS-etapes.
+      suppression = logLine(box, 'run', `Suppression du pack <code>${echapperHtml(identifiant || '')}</code> en cours…`);
+      courante = suppression;
+    };
     try {
       const job = await ecouterTache(jobId,
         e => {
+          avancer();
           const kind = e.step === 'error' ? 'err' : /ATTENTION/.test(e.message || '') ? 'warn' : 'ok';
           logLine(box, kind, `<span class="sous-etape">${echapperHtml(e.message)}</span>`, 0);
         },
-        () => {});
+        statut => { if (statut === 'running') avancer(); });
+      avancer();
       if (job.status === 'success') {
-        replaceLine(courante, 'ok', 'Suppression prise en charge sur votre instance.');
-        logLine(box, 'ok', 'Suppression terminée.', 0);
+        replaceLine(courante, 'ok', `Pack <code>${echapperHtml(identifiant || '')}</code> supprimé de votre instance.`);
+        // Etape 4/4
+        logLine(box, 'ok', 'Suppression terminée.');
         afficherToast('succes', `Le pack <b>${echapperHtml(identifiant || '')}</b> a été supprimé de votre Home Assistant.`);
       } else {
         const motif = job.error ? echapperHtml(job.error) : 'La suppression a échoué.';
@@ -23844,6 +23981,7 @@ function dessinSonnette(o) {
     } finally {
       overlay.classList.remove('deploiement-en-cours');
       etatBoutonDesinstallation(false);
+      boutonFermerFin(box, fermerDesinstallation);
       hideSticky(8000);
     }
   }
