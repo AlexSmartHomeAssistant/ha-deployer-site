@@ -2668,6 +2668,16 @@
     /* =========================================================
        PC (≥1024px) : interface plein écran, sans défilement de page
        ========================================================= */
+    /* Test Gratuit : UN GIF par mode de la page (05/10/2026). Cette regle
+       vivait dans la requete media « ordinateur » : sur telephone les deux
+       GIF s'affichaient cote a cote, chacun rogne de moitie (capture du
+       client). Elle vaut donc pour TOUTES les largeurs. */
+    #section-test .apercu-test-gratuit { background: #000; }
+    #section-test .apercu-test-clair { display: none !important; }
+    html[data-theme="light"] #section-test .apercu-test-gratuit { background: #fff; }
+    html[data-theme="light"] #section-test .apercu-test-sombre { display: none !important; }
+    html[data-theme="light"] #section-test .apercu-test-clair { display: block !important; }
+
     @media (min-width: 1024px) {
       body {
         height: 100vh;
@@ -2795,13 +2805,6 @@
          l'ECRAN qui doit borner le carre, pas une largeur de colonne fixee
          au hasard. `min(250px, 30vh)` cede donc la main a `30vh` des que la
          fenetre est trop basse pour les 250px. */
-      /* Cadre de l'animation : noir sous le theme sombre, blanc sous le clair,
-         comme le fond de chacun des deux GIF. */
-      #section-test .apercu-test-gratuit { background: #000; }
-      #section-test .apercu-test-clair { display: none; }
-      html[data-theme="light"] #section-test .apercu-test-gratuit { background: #fff; }
-      html[data-theme="light"] #section-test .apercu-test-sombre { display: none; }
-      html[data-theme="light"] #section-test .apercu-test-clair { display: block; }
       #section-test .module-video {
         /* 200 px / 24vh depuis le 19/09/2026 (250 / 30vh auparavant) : sur
            un portable a 125 % d'echelle la fenetre utile fait ~690 px de
