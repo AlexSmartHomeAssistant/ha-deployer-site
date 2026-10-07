@@ -4279,7 +4279,8 @@
       { name: 'configuration_whisper', desc: 'Reconnaissance vocale locale' },
       { name: 'configuration_spotify_connect', desc: 'Votre Home Assistant devient une enceinte Spotify' },
       { name: 'configuration_music_assistant', desc: 'Toute votre musique sur toutes vos enceintes' },
-      { name: 'configuration_mariadb', desc: 'Historique dans une vraie base de données' }
+      { name: 'configuration_mariadb', desc: 'Historique dans une vraie base de données' },
+      { name: 'configuration_cloudflare_tunnel', desc: 'Accès externe sans ouvrir de port' }
     ],
     lumiere: [
       { name: 'lumiere_lumiere', desc: 'Gestion principale des éclairages' }
@@ -4361,6 +4362,7 @@
     configuration_spotify_connect: 'Spotify Connect',
     configuration_music_assistant: 'Music Assistant',
     configuration_mariadb: 'MariaDB',
+    configuration_cloudflare_tunnel: 'Cloudflare Tunnel + NGINX',
     lumiere_lumiere: 'Lumière',
     ouverture_garage_porte: 'Porte de Garage',
     ouverture_volet: 'Volets Roulants',
@@ -4423,6 +4425,7 @@
     configuration_spotify_connect: 'fa-headphones',
     configuration_music_assistant: 'fa-music',
     configuration_mariadb: 'fa-database',
+    configuration_cloudflare_tunnel: 'fa-cloud',
     lumiere_lumiere: 'fa-lightbulb',
     ouverture_garage_porte: 'fa-warehouse',
     ouverture_volet: 'fa-window-maximize',
@@ -4730,6 +4733,11 @@
       resume: `L'historique de Home Assistant dans une vraie base.`,
       logo: 'templates/config/mariadb.gif',
       detail: `Installe et configure l'add-on officiel <b>MariaDB</b>, puis y branche l'<b>historique</b> de Home Assistant : une base plus robuste que le fichier SQLite par défaut quand l'historique grossit, et plus douce pour une carte SD. <br><br><span class="inclus"><b>Inclus :</b> installation ou mise à jour de l'add-on, la base et son utilisateur, un mot de passe généré (ou le vôtre), rangé dans <code>secrets.yaml</code> et jamais affiché, l'historique branché dans <code>configuration.yaml</code> avec vérification de la configuration, puis un redémarrage. <b>À savoir :</b> la nouvelle base démarre vide (l'ancien fichier reste sur le disque), et un historique déjà branché sur une autre base n'est jamais touché.<br><br><b>Prérequis :</b> le pack <b>File Editor</b>, par lequel la configuration est écrite.</span>`
+    },
+    configuration_cloudflare_tunnel: {
+      resume: `Accès externe en https, sans ouvrir de port.`,
+      logo: 'templates/config/cloudflare.gif',
+      detail: `Rend votre Home Assistant joignable depuis Internet en <b>https</b>, <b>sans ouvrir aucun port</b> sur votre box : un <b>tunnel Cloudflare</b> part de chez vous vers Cloudflare, qui sert votre adresse avec son propre certificat. <b>Nginx Proxy Manager</b> sert de reverse proxy pour publier vos <b>autres services</b> (caméras, NAS…) par le même tunnel. <br><br><span class="inclus"><b>Inclus :</b> création du tunnel chez Cloudflare (tunnel, routage, enregistrements DNS) à partir de votre jeton d'API, installation de l'add-on <b>Cloudflared</b> et de <b>Nginx Proxy Manager</b>, réglage de Home Assistant pour qu'il accepte le proxy, vérification de bout en bout, et adresse externe renseignée. <br><br><b>Prérequis :</b> un domaine géré par Cloudflare (offre gratuite), un jeton d'API Cloudflare, et une machine 64 bits (Raspberry Pi 4/5, mini-PC).</span>`
     },
     service_gestion_dechets: {
       resume: "Poubelles, compte à rebours et déchèterie.",
@@ -6357,6 +6365,36 @@
           elements: [
             { nom: `Aucun compte enregistré`, texte: `le pack ne stocke aucun identifiant de service de musique.` },
             { nom: `Pack Enceinte`, texte: `sa bibliothèque s'ouvre dès que Music Assistant est en place.` }
+          ] }
+      ]
+    },
+
+    configuration_cloudflare_tunnel: {
+      intro: `Le tunnel Cloudflare est la façon la plus sûre de publier Home Assistant : rien n'entre chez vous, c'est votre Home Assistant qui sort vers Cloudflare. Vous fournissez le nom d'hôte voulu et un jeton d'API ; le pack fait tout le reste, chez Cloudflare comme chez vous.<span class="alerte-navigateur"><i class="fa-solid fa-circle-check"></i> <b>Aucun port à ouvrir</b> sur votre box : c'est toute la différence avec DuckDNS.</span><span class="alerte-port"><i class="fa-solid fa-triangle-exclamation"></i> <b>Prérequis :</b> votre domaine doit être <b>géré par Cloudflare</b> (ses serveurs DNS, offre gratuite suffisante). Créez le jeton sur <a href="https://dash.cloudflare.com/profile/api-tokens" target="_blank" rel="noopener noreferrer">dash.cloudflare.com › Mon profil › Jetons d'API</a> › « Créer un jeton » › « Jeton personnalisé », avec trois permissions : <b>Compte › Cloudflare Tunnel › Modifier</b>, <b>Zone › Zone › Lire</b> et <b>Zone › DNS › Modifier</b>.</span><span class="alerte-navigateur"><i class="fa-brands fa-chrome"></i><i class="fa-brands fa-edge"></i> <b>Navigateur requis :</b> Veuillez utiliser Google Chrome ou Microsoft Edge pour effectuer cette configuration. Si votre Home Assistant n'est pas encore joignable depuis Internet, la configuration passe par son adresse locale (<code>http://homeassistant.local:8123</code>) : lancez-la depuis un appareil connecté au <b>même réseau Wi-Fi/local</b>.</span>`,
+      carte: () => 'defaut',
+      onglets: [
+        { titre: `1 — Tunnel Cloudflare`, icone: 'fa-cloud',
+          texte: `Avec votre jeton d'API, le pack crée chez Cloudflare un tunnel « géré à distance » nommé <code>ha-deploy-&lt;votre hôte&gt;</code>, son routage et ses enregistrements DNS. Une relance retrouve et réutilise tout.`,
+          elements: [
+            { nom: `Routage`, texte: `votre hôte → Home Assistant ; tout autre sous-domaine de votre domaine → Nginx Proxy Manager ; le reste → page 404.` },
+            { nom: `DNS`, texte: `votre hôte et <code>*.votre-domaine</code> pointent vers le tunnel (proxifiés). Un enregistrement qui pointe ailleurs — un site existant — n'est <b>jamais écrasé</b> : le pack s'arrête et le dit.` },
+            { nom: `Jeton d'API`, texte: `transmis à Cloudflare le temps de l'installation, jamais enregistré. Vous pouvez le supprimer ensuite.` },
+            { nom: `Tunnel déjà créé ?`, texte: `donnez plutôt son jeton de tunnel : le pack l'installe, et le routage reste à régler dans votre tableau de bord Zero Trust.` }
+          ] },
+        { titre: `2 — Nginx Proxy Manager`, icone: 'fa-network-wired',
+          texte: `Le reverse proxy NGINX, avec une interface : chaque autre service du réseau (caméra, NAS, imprimante…) se publie en ajoutant un « Proxy Host », sans toucher au tunnel.`,
+          elements: [
+            { nom: `Accès`, texte: `<code>http://&lt;adresse-locale&gt;:81</code> — identifiants par défaut <code>admin@example.com</code> / <code>changeme</code>, que Nginx Proxy Manager vous fait changer à la première connexion.` },
+            { nom: `Facultatif`, texte: `choisissez « Non » si vous ne publiez que Home Assistant : ni Nginx Proxy Manager ni sous-domaine joker.` },
+            { nom: `Sécurité`, texte: `protégez ce que vous publiez avec <b>Cloudflare Access</b> (Zero Trust › Access) : une connexion est demandée avant d'atteindre le service.` }
+          ] },
+        { titre: `3 — Home Assistant`, icone: 'fa-house-signal',
+          texte: `Home Assistant est réglé pour accepter le proxy (sans quoi il refuse le tunnel), l'add-on Cloudflared est installé avec le jeton du tunnel, puis le pack vérifie de bout en bout que <b>https://votre-hôte</b> répond.`,
+          elements: [
+            { nom: `Proxy de confiance`, texte: `<code>172.30.33.0/24</code> (le réseau des add-ons) est ajouté aux proxies de confiance — vos réglages existants sont conservés. Home Assistant redémarre, puis la configuration est confirmée automatiquement.` },
+            { nom: `Add-ons`, texte: `Cloudflared et Nginx Proxy Manager démarrent avec Home Assistant, sont relancés s'ils s'arrêtent et se mettent à jour seuls.` },
+            { nom: `Vérification`, texte: `le pack attend que le tunnel soit actif et que Home Assistant réponde à travers lui ; l'adresse externe est renseignée si votre instance n'en avait pas.` },
+            { nom: `Machine`, texte: `64 bits uniquement (aarch64, amd64) : l'add-on Cloudflared n'existe pas en 32 bits.` }
           ] }
       ]
     },
@@ -8674,6 +8712,19 @@
     configuration_spotify_connect: [
       { param: 'SPOTIFY_NOM', label: 'Nom de l\u2019enceinte', type: 'text', required: false,
         placeholder: 'vide : Home Assistant' }
+    ],
+    configuration_cloudflare_tunnel: [
+      { param: 'CLOUDFLARE_HOTE', label: 'Nom d\'hôte public', type: 'text', required: true,
+        placeholder: 'ex : maison.mondomaine.fr' },
+      { param: 'CLOUDFLARE_API', label: 'Jeton d\'API Cloudflare', type: 'password', required: false,
+        placeholder: 'Tunnel : Modifier, Zone : Lire, DNS : Modifier' },
+      { param: 'CLOUDFLARE_NGINX', label: 'Nginx Proxy Manager', type: 'select', required: false,
+        options: [
+          { value: 'oui', label: 'Oui — publier aussi mes autres services' },
+          { value: 'non', label: 'Non — Home Assistant seulement' }
+        ] },
+      { param: 'CLOUDFLARE_TUNNEL', label: 'OU jeton d\'un tunnel déjà créé', type: 'password', required: false,
+        groupe: '🔧 Avancé (facultatif)', placeholder: 'à la place du jeton d\'API' }
     ],
     configuration_mariadb: [
       { param: 'MARIADB_MOTDEPASSE', label: 'Mot de passe de la base', type: 'password', required: false,
@@ -22195,6 +22246,7 @@ function dessinSonnette(o) {
     'configuration_spotify_connect',
     'configuration_music_assistant',
     'configuration_mariadb',
+    'configuration_cloudflare_tunnel',
     'OK_service_meteo', 'OK_service_temps', 'lumiere_lumiere', 'eau_detecteur_fuite',
     'service_boite_aux_lettres', 'chauffage_thermostat', 'ouverture_volet',
     'ouverture_garage_porte',
@@ -22302,7 +22354,8 @@ function dessinSonnette(o) {
     configuration_whisper: 0.99,
     configuration_spotify_connect: 0.99,
     configuration_music_assistant: 0.99,
-    configuration_mariadb: 0.99
+    configuration_mariadb: 0.99,
+    configuration_cloudflare_tunnel: 2.99
   };
 
   function prixDe(rawName) {
@@ -22579,14 +22632,9 @@ function dessinSonnette(o) {
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url', this)" title="Aide">?</button></label>
         <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. Elle doit être joignable depuis Internet, en <b>https</b> avec un certificat valide.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
-        <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required${panierSeulementDuckdns() ? ' value="http://homeassistant.local"' : ''}>
+        <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required${moduleLocal() ? ` value="${adresseLocaleParDefaut()}"` : ''}>
       </div>
-      ${panierSeulementDuckdns() ? `<div class="notice-box" style="margin: 0 0 10px; font-size: 0.8rem; line-height: 1.5;">
-        <i class="fa-solid fa-house-signal" style="color: var(--primary-blue);"></i>
-        <b>DuckDNS se configure depuis chez vous :</b> votre Home Assistant n'est pas encore joignable depuis Internet, c'est donc ce navigateur qui le configure par son adresse locale <b>http://homeassistant.local</b> (ou son adresse IP, ex : http://192.168.1.34). ${RESEAU_LOCAL_CONSEIL} Utilisez <b>Chrome</b> ou <b>Edge</b>, et acceptez l'accès aux <b>appareils du réseau local</b> s'il vous est demandé.
-      </div>
-      <span class="alerte-navigateur${navigateurCompatibleLocal() ? '' : ' navigateur-incompatible'}" style="margin: 0 0 10px;">${navigateurCompatibleLocal() ? '<i class="fa-brands fa-chrome"></i><i class="fa-brands fa-edge"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>'} <b>Navigateur requis :</b> Veuillez utiliser Google Chrome ou Microsoft Edge pour effectuer cette configuration.${navigateurCompatibleLocal() ? '' : ' <b>Ce navigateur ne le permet pas.</b>'}</span>
-      <span class="alerte-port" style="margin: 0 0 10px;"><i class="fa-solid fa-triangle-exclamation"></i> ${AVERTISSEMENT_PORT_DUCKDNS}</span>` : ''}
+      ${encartLocalPanier()}
       <div class="notice-box" style="margin: 0 0 4px; font-size: 0.8rem; line-height: 1.5;">
         <i class="fa-solid fa-shield-halved" style="color: var(--primary-blue);"></i>
         <b>Aucun jeton à créer.</b> Votre Home Assistant va s'ouvrir : connectez-vous avec un compte <b>administrateur</b> et autorisez <b>HA-Deploy</b>. Vous reviendrez ici pour suivre le déploiement en direct. L'accès est <b>révoqué automatiquement</b> dès la fin du déploiement.
@@ -23384,6 +23432,7 @@ function dessinSonnette(o) {
     configuration_spotify_connect: 'config-spotify-connect',
     configuration_music_assistant: 'config-music-assistant',
     configuration_mariadb: 'config-mariadb',
+    configuration_cloudflare_tunnel: 'config-cloudflare',
     OK_service_meteo: 'meteo',
     OK_service_temps: 'temps',
     /* Reecriture du 06/09/2026 : `poubelles`
@@ -23748,11 +23797,12 @@ function dessinSonnette(o) {
     // c'est ce navigateur qui configure l'instance (07/10/2026).
     const locale = mode === 'panier' ? adresseLocale(champ ? champ.value : '') : null;
     if (locale) {
-      if (!panierSeulementDuckdns()) {
-        afficherErreurConnexion(mode, "Une adresse locale ne sert qu'au pack <b>DuckDNS</b>, configuré depuis votre réseau. Déployez DuckDNS seul d'abord, puis les autres packs avec votre adresse https (https://votre-nom.duckdns.org:8123).");
+      const m = moduleLocal();
+      if (!m) {
+        afficherErreurConnexion(mode, "Une adresse locale ne sert qu'aux packs d'accès externe — <b>DuckDNS</b> ou <b>Cloudflare Tunnel</b> —, seuls dans le panier et configurés depuis votre réseau. Déployez-en un d'abord, puis les autres packs avec votre adresse https.");
         return;
       }
-      return connecterLocalDuckdns(locale, cart.filter(i => SERVER_MODULES[i.key]).map(i => ({ module: MODULE_DUCKDNS, params: i.params || {} })), bouton);
+      return connecterLocalDuckdns(locale, cart.filter(i => SERVER_MODULES[i.key]).map(i => ({ module: m, params: i.params || {} })), bouton, m);
     }
 
     const cible = checkInstanceUrl(champ ? champ.value : '');
@@ -23849,9 +23899,39 @@ function dessinSonnette(o) {
     return /Chrome\/|Edg\//.test(navigator.userAgent) && !/Firefox\/|FxiOS|CriOS/.test(navigator.userAgent);
   }
 
-  function panierSeulementDuckdns() {
+  /* Les packs qui savent se configurer par le réseau local, depuis ce
+     navigateur : ceux qui DONNENT l'accès externe (07/10/2026). Le panier
+     doit n'en contenir qu'un, seul. */
+  const MODULE_CLOUDFLARE = 'config-cloudflare';
+  const MODULES_LOCAUX = [MODULE_DUCKDNS, MODULE_CLOUDFLARE];
+  function moduleLocal() {
     const d = cart.filter(i => SERVER_MODULES[i.key]);
-    return d.length > 0 && d.every(i => SERVER_MODULES[i.key] === MODULE_DUCKDNS);
+    if (d.length !== 1) return null;
+    const m = SERVER_MODULES[d[0].key];
+    return MODULES_LOCAUX.includes(m) ? m : null;
+  }
+  function panierSeulementDuckdns() { return moduleLocal() === MODULE_DUCKDNS; }
+
+  /* Encart de l'étape « Connexion » quand le panier ne contient qu'un pack
+     d'accès externe : adresse locale pré-remplie, navigateur requis, et la
+     consigne propre au pack (port à ouvrir pour DuckDNS, aucun pour le tunnel). */
+  function adresseLocaleParDefaut() {
+    const m = moduleLocal();
+    return m === MODULE_DUCKDNS ? 'http://homeassistant.local' : m === MODULE_CLOUDFLARE ? 'http://homeassistant.local:8123' : '';
+  }
+  function encartLocalPanier() {
+    const m = moduleLocal();
+    if (!m) return '';
+    const nom = m === MODULE_DUCKDNS ? 'DuckDNS' : 'Le tunnel Cloudflare';
+    const ok = navigateurCompatibleLocal();
+    return `<div class="notice-box" style="margin: 0 0 10px; font-size: 0.8rem; line-height: 1.5;">
+        <i class="fa-solid fa-house-signal" style="color: var(--primary-blue);"></i>
+        <b>${nom} se configure depuis chez vous</b> si votre Home Assistant n'est pas encore joignable depuis Internet : ce navigateur le configure alors par son adresse locale <b>${adresseLocaleParDefaut()}</b> (ou son adresse IP, ex : http://192.168.1.34${m === MODULE_CLOUDFLARE ? ':8123' : ''}). ${RESEAU_LOCAL_CONSEIL} Acceptez l'accès aux <b>appareils du réseau local</b> s'il vous est demandé.${m === MODULE_CLOUDFLARE ? ' Déjà joignable par une adresse https ? Indiquez-la : le déploiement passe alors par notre serveur.' : ''}
+      </div>
+      <span class="alerte-navigateur${ok ? '' : ' navigateur-incompatible'}" style="margin: 0 0 10px;">${ok ? '<i class="fa-brands fa-chrome"></i><i class="fa-brands fa-edge"></i>' : '<i class="fa-solid fa-triangle-exclamation"></i>'} <b>Navigateur requis :</b> Veuillez utiliser Google Chrome ou Microsoft Edge pour effectuer cette configuration.${ok ? '' : ' <b>Ce navigateur ne le permet pas.</b>'}</span>
+      ${m === MODULE_DUCKDNS
+        ? `<span class="alerte-port" style="margin: 0 0 10px;"><i class="fa-solid fa-triangle-exclamation"></i> ${AVERTISSEMENT_PORT_DUCKDNS}</span>`
+        : `<span class="alerte-navigateur" style="margin: 0 0 10px;"><i class="fa-solid fa-circle-check"></i> <b>Aucun port à ouvrir</b> sur votre box : le tunnel sort de chez vous.</span>`}`;
   }
 
   /* Origine d'une adresse du réseau local, ou null. */
@@ -23957,11 +24037,19 @@ function dessinSonnette(o) {
      appelé depuis un attribut onclick du journal). */
   window.confirmationDuckdnsDeclaree = false;
 
-  async function connecterLocalDuckdns(origine, items, bouton) {
+  async function connecterLocalDuckdns(origine, items, bouton, module) {
+    module = module || MODULE_DUCKDNS;
     const zone = document.getElementById('checkout-verif');
     const dire = (html, echec) => { if (zone) zone.innerHTML = `<div class="verif-antenne ${echec ? 'verif-echec' : ''}"><i class="fa-solid ${echec ? 'fa-triangle-exclamation' : 'fa-spinner fa-spin'}"></i> ${html}</div>`; };
     const p = (items[0] && items[0].params) || {};
-    try { normaliserDomaineDuckdns(p.DUCKDNS_DOMAINE); }
+    try {
+      if (module === MODULE_CLOUDFLARE) {
+        normaliserHoteCloudflare(p.CLOUDFLARE_HOTE);
+        if (!String(p.CLOUDFLARE_API || '').trim() && !String(p.CLOUDFLARE_TUNNEL || '').trim()) {
+          throw new Error("Il faut un <b>jeton d'API Cloudflare</b> (ou, en avancé, le jeton d'un tunnel déjà créé) : retournez aux détails du pack pour le renseigner.");
+        }
+      } else normaliserDomaineDuckdns(p.DUCKDNS_DOMAINE);
+    }
     catch (e) { dire(e.message, true); return; }
     if (bouton) bouton.disabled = true;
     dire(`Recherche de votre Home Assistant sur le réseau local (${origine})… Si votre navigateur demande l'accès aux <b>appareils du réseau local</b>, acceptez-le.`);
@@ -23973,7 +24061,7 @@ function dessinSonnette(o) {
     }
     const state = etatAleatoire();
     try {
-      sessionStorage.setItem(CLE_AUTORISATION_HA, JSON.stringify({ state, mode: 'duckdns-local', url: origine, params: p, depuis: Date.now() }));
+      sessionStorage.setItem(CLE_AUTORISATION_HA, JSON.stringify({ state, mode: module === MODULE_CLOUDFLARE ? 'cloudflare-local' : 'duckdns-local', url: origine, params: p, depuis: Date.now() }));
     } catch (e) {
       dire("Le stockage de session de votre navigateur est indisponible : la connexion ne peut pas être sécurisée.", true);
       if (bouton) bouton.disabled = false;
@@ -23993,7 +24081,7 @@ function dessinSonnette(o) {
     if (!code && !erreur) return false;
     let attendu = null;
     try { attendu = JSON.parse(sessionStorage.getItem(CLE_AUTORISATION_HA) || 'null'); } catch (e) { attendu = null; }
-    if (!attendu || attendu.mode !== 'duckdns-local') return false;
+    if (!attendu || !['duckdns-local', 'cloudflare-local'].includes(attendu.mode)) return false;
     try { sessionStorage.removeItem(CLE_AUTORISATION_HA); } catch (e) { /* ignore */ }
     ['code', 'state', 'error', 'error_description'].forEach(k => params.delete(k));
     const reste = params.toString();
@@ -24009,7 +24097,8 @@ function dessinSonnette(o) {
       return true;
     }
     verrouillerFermeture(true);
-    deployerDuckdnsLocal(attendu, code);
+    if (attendu.mode === 'cloudflare-local') deployerCloudflareLocal(attendu, code);
+    else deployerDuckdnsLocal(attendu, code);
     return true;
   }
 
@@ -24236,6 +24325,225 @@ function dessinSonnette(o) {
     L('warn', AVERTISSEMENT_PORT_DUCKDNS + ` Votre adresse : <b>${urlExterne}</b>. Un rappel est déposé dans les notifications de Home Assistant.`);
     L('ok', `DuckDNS installé pour <b>${domaineComplet}</b>.`, 4);
     terminer(true);
+  }
+
+  /* =====================================================================
+     PACK CLOUDFLARE TUNNEL + NGINX EN MODE LOCAL (07/10/2026)
+
+     Même socle que DuckDNS : autorisation par le réseau local, puis tout par
+     WebSocket. Ce qui se passe CHEZ CLOUDFLARE (tunnel, routage, DNS) passe
+     par le Worker (backend/src/cloudflare.js) : l'API de Cloudflare n'accepte
+     pas les appels d'un navigateur, et le runner appelle la même route.
+     Contrairement à DuckDNS, Home Assistant ne change ni de port ni de
+     schéma : après le redémarrage qu'impose la confiance au proxy, on le
+     retrouve à la MÊME adresse et l'on confirme soi-même.
+     ===================================================================== */
+  const SLUG_NPM = 'a0d7b954_nginxproxymanager';
+  const RESEAU_ADDONS = '172.30.33.0/24';
+
+  function normaliserHoteCloudflare(brut) {
+    const h = String(brut || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').split('/')[0].split(':')[0].replace(/\.+$/, '');
+    if (!/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/.test(h)) {
+      throw new Error(`Nom d'hôte invalide : « ${brut || ''} ». Attendu : par exemple maison.mondomaine.fr`);
+    }
+    return h;
+  }
+
+  async function assurerDepotLocal(ha, url, motif) {
+    let depots = (await ha.superviseur('/store/repositories')).result || [];
+    if (!depots.some(d => (d.source || '').includes(motif))) {
+      const r = await ha.superviseur('/store/repositories', 'post', { repository: url }, 120);
+      if (!r.success) throw new Error(`Ajout du dépôt d'add-ons refusé : ${(r.error && r.error.message) || 'erreur inconnue'}`);
+      depots = (await ha.superviseur('/store/repositories')).result || [];
+    }
+    const d = depots.find(x => (x.source || '').includes(motif));
+    if (!d) throw new Error("Le dépôt d'add-ons n'apparaît pas dans la boutique après son ajout.");
+    return d.slug;
+  }
+
+  /* Installe, met à jour, règle (options fusionnées) et démarre un add-on. */
+  async function assurerAddonLocal(ha, slug, nom, options) {
+    const lire = async () => {
+      const r = await ha.superviseur(`/addons/${slug}/info`);
+      const f = r.success ? (r.result || {}) : null;
+      return f && f.installed !== false && f.version ? f : null;
+    };
+    let fiche = await lire(), installe = false;
+    if (!fiche) {
+      const r = await ha.superviseur(`/store/addons/${slug}/install`, 'post', null, 600);
+      if (!r.success && r.error && r.error.message) throw new Error(`Installation de ${nom} refusée : ${r.error.message}`);
+      for (let i = 0; i < 120 && !fiche; i++) { await pause(5000); fiche = await lire(); }
+      if (!fiche) throw new Error(`${nom} ne s'est pas installé dans les dix minutes.`);
+      installe = true;
+    } else if (fiche.update_available) {
+      await ha.superviseur(`/store/addons/${slug}/update`, 'post', null, 600);
+      fiche = (await lire()) || fiche;
+    }
+    const actuelles = fiche.options || {};
+    const voulues = options ? Object.assign({}, actuelles, options) : actuelles;
+    const change = JSON.stringify(voulues) !== JSON.stringify(actuelles)
+      || fiche.boot !== 'auto' || !fiche.watchdog || !fiche.auto_update;
+    if (change) {
+      let o = await ha.superviseur(`/addons/${slug}/options`, 'post', { options: voulues, boot: 'auto', watchdog: true, auto_update: true });
+      if (!o.success) o = await ha.superviseur(`/addons/${slug}/options`, 'post', { options: voulues });
+      if (!o.success) throw new Error(`Réglages de ${nom} refusés : ${(o.error && o.error.message) || 'erreur inconnue'}`);
+    }
+    if (fiche.state !== 'started') await ha.superviseur(`/addons/${slug}/start`, 'post', null, 120);
+    else if (options && JSON.stringify(voulues) !== JSON.stringify(actuelles)) await ha.superviseur(`/addons/${slug}/restart`, 'post', null, 120);
+    return { installe, version: fiche.version };
+  }
+
+  async function deployerCloudflareLocal(attendu, code) {
+    const BOITE = 'cart-deploy-log';
+    const L = (genre, texte, etape) => logLine(BOITE, genre, texte, etape === undefined ? 0 : etape);
+    const terminer = (ok) => {
+      verrouillerFermeture(false);
+      const b = document.getElementById('cart-deploy-close');
+      if (b) { b.style.display = ''; b.disabled = false; }
+      if (ok) { cart.length = 0; updateCartUI(); sauverPanier(); }
+    };
+    const origine = attendu.url;
+    let jetons = null, ha = null;
+    const revoquer = async () => {
+      if (!jetons || !jetons.refresh_token) return;
+      try {
+        await fetch(origine + '/auth/revoke', { method: 'POST', body: new URLSearchParams({ token: jetons.refresh_token }), targetAddressSpace: 'local' });
+        L('ok', "Accès de HA-Deploy révoqué sur votre Home Assistant.");
+      } catch (e) { /* best effort */ }
+    };
+    const echouer = async (texte) => { L('err', texte); if (ha) ha.fermer(); await revoquer(); terminer(false); };
+    const p = attendu.params || {};
+    let hote;
+    try { hote = normaliserHoteCloudflare(p.CLOUDFLARE_HOTE); } catch (e) { return echouer(e.message); }
+    const api = String(p.CLOUDFLARE_API || '').trim();
+    let jetonTunnel = String(p.CLOUDFLARE_TUNNEL || '').trim();
+    const nginx = p.CLOUDFLARE_NGINX !== 'non';
+
+    /* --- Étape 1 : connexion locale et prérequis -------------------- */
+    L('run', `Connexion à votre Home Assistant par le réseau local (${origine})…`, 1);
+    try {
+      const rep = await fetch(origine + '/auth/token', {
+        method: 'POST', targetAddressSpace: 'local',
+        body: new URLSearchParams({ grant_type: 'authorization_code', code, client_id: clientLocal() })
+      });
+      jetons = await rep.json().catch(() => ({}));
+      if (!rep.ok || !jetons.access_token) return echouer("Home Assistant a refusé le code d'autorisation : relancez la connexion.");
+      ha = new HaLocal(origine, jetons.access_token);
+      await ha.connecter();
+    } catch (e) {
+      return echouer(`Connexion locale impossible (${e.message}). ${RESEAU_LOCAL_CONSEIL} Acceptez l'accès aux appareils du réseau local si votre navigateur le demande.`);
+    }
+    const moi = await ha.appeler({ type: 'auth/current_user' });
+    if (moi.success && moi.result && moi.result.is_admin === false) return echouer("Le compte utilisé n'est pas <b>administrateur</b> : reconnectez-vous avec un compte administrateur.");
+    const info = await ha.superviseur('/info');
+    if (!info.success) return echouer("Cette installation n'a pas de Supervisor : les add-ons exigent Home Assistant OS ou Supervised.");
+    const arch = (info.result || {}).arch;
+    if (!['aarch64', 'amd64'].includes(arch)) return echouer(`L'add-on Cloudflared n'existe qu'en 64 bits (aarch64, amd64) ; cette machine est en « ${arch} ». Rien n'a été installé.`);
+    const h = await ha.appeler({ type: 'http/config' });
+    if (!h.success) return echouer("Configuration réseau de Home Assistant illisible : Home Assistant 2026.x requis.");
+    const stable = (h.result || {}).stable || {};
+    const serviceHa = `${stable.ssl_certificate ? 'https' : 'http'}://homeassistant:${stable.server_port || 8123}`;
+    L('ok', `Connecté à votre Home Assistant (${arch}) par le réseau local.`, 1);
+
+    /* --- Étape 2 : tunnel chez Cloudflare, puis les add-ons --------- */
+    let prep = {};
+    if (api) {
+      L('run', 'Création du tunnel chez Cloudflare…', 2);
+      try {
+        const r = await api_('/api/cloudflare/tunnel', { hote, api, nginx, service_ha: serviceHa });
+        if (r.statut !== 'ok') return echouer(`${r.message || 'Cloudflare a refusé la préparation du tunnel.'} Rien n'a été installé sur votre Home Assistant.`);
+        prep = r;
+        (r.actions || []).forEach(a => L('ok', a));
+        jetonTunnel = r.token;
+      } catch (e) { return echouer("Notre serveur n'a pas pu joindre Cloudflare : réessayez dans un instant."); }
+    } else {
+      L('warn', `Jeton de tunnel fourni : dans votre tableau de bord Zero Trust, ajoutez le « Public Hostname » <b>${hote}</b> → <code>${serviceHa}</code>${nginx ? ' (et <code>*.votre-domaine</code> → <code>http://a0d7b954-nginxproxymanager:80</code>)' : ''}.`);
+    }
+    try {
+      if (nginx) {
+        L('run', 'Installation de Nginx Proxy Manager…');
+        const pre = await assurerDepotLocal(ha, 'https://github.com/hassio-addons/repository', 'hassio-addons/repository');
+        const r = await assurerAddonLocal(ha, `${pre}_nginxproxymanager`, 'Nginx Proxy Manager', null);
+        L('ok', `Nginx Proxy Manager ${r.installe ? 'installé' : 'déjà en place'} et démarré.`);
+      }
+      L('run', "Installation de l'add-on Cloudflared…");
+      const pre = await assurerDepotLocal(ha, 'https://github.com/brenner-tobias/ha-addons', 'brenner-tobias/ha-addons');
+      const r = await assurerAddonLocal(ha, `${pre}_cloudflared`, 'Cloudflared', { tunnel_token: jetonTunnel });
+      L('ok', `Cloudflared ${r.installe ? 'installé' : 'déjà en place'} et démarré avec le jeton du tunnel.`, 2);
+    } catch (e) { return echouer(e.message); }
+
+    /* --- Étape 3 : Home Assistant accepte le proxy ------------------- */
+    const voulu = {};
+    Object.keys(stable).forEach(k => { if (!['created_at', 'error', 'error_message'].includes(k)) voulu[k] = stable[k]; });
+    const proxies = (voulu.trusted_proxies || []).slice();
+    const aChanger = !proxies.includes(RESEAU_ADDONS) || !voulu.use_x_forwarded_for;
+    if (!proxies.includes(RESEAU_ADDONS)) proxies.push(RESEAU_ADDONS);
+    Object.assign(voulu, { trusted_proxies: proxies, use_x_forwarded_for: true });
+    if (!aChanger) {
+      L('ok', `Home Assistant accepte déjà le proxy (${RESEAU_ADDONS}).`, 3);
+    } else {
+      const ligne = L('run', `Home Assistant accepte le proxy (${RESEAU_ADDONS}) : il redémarre…`, 3);
+      const r = await ha.appeler({ type: 'http/config/configure', config: voulu }, 60000);
+      if (!r.success) return echouer(`Home Assistant a refusé la confiance au proxy : ${(r.error && r.error.message) || 'erreur inconnue'}.`);
+      for (let i = 0; i < 45 && !ha.ferme; i++) { await pause(2000); await ha.appeler({ type: 'ping' }, 4000); }
+      ha.fermer();
+      // Même port, même schéma : Home Assistant revient à la MÊME adresse.
+      let retour = null;
+      const debut = Date.now();
+      await pause(10000);
+      while (!retour && Date.now() - debut < 300000) {
+        const s = Math.round((Date.now() - debut) / 1000);
+        if (ligne) ligne.querySelector('span').innerHTML = `<b class="etape-num">Étape 3/${ETAPES_DEPLOIEMENT}</b> Home Assistant redémarre pour accepter le proxy… (${Math.floor(s / 60)} min ${String(s % 60).padStart(2, '0')} s)`;
+        try { const n = new HaLocal(origine, jetons.access_token); await n.connecter(); retour = n; }
+        catch (e) { await pause(5000); }
+      }
+      if (!retour) return echouer(`Home Assistant n'a pas répondu à ${origine} dans les cinq minutes suivant son redémarrage. Il reviendra seul à sa configuration précédente s'il ne démarre pas.`);
+      ha = retour;
+      const c = (await ha.appeler({ type: 'http/config' })).result || {};
+      if (c.active_config_type !== 'pending' || (c.pending && c.pending.error)) {
+        return echouer(`Home Assistant est revenu à sa configuration précédente (${(c.pending && c.pending.error_message) || c.active_config_type}).`);
+      }
+      const pr = await ha.appeler({ type: 'http/config/promote' });
+      if (!pr.success) return echouer(`Confirmation refusée par Home Assistant : ${(pr.error && pr.error.message) || 'erreur inconnue'}.`);
+      L('ok', `Home Assistant accepte le proxy (${RESEAU_ADDONS}) — confirmé automatiquement.`, 3);
+    }
+
+    /* --- Étape 4 : de bout en bout, puis bilan ----------------------- */
+    const ligne = L('run', `Vérification : https://${hote} doit répondre…`);
+    let etat = {};
+    const debut = Date.now();
+    while (Date.now() - debut < 240000) {
+      try { etat = await api_('/api/cloudflare/etat', { hote, api, compte: prep.compte, tunnel_id: prep.tunnel_id }); } catch (e) { etat = {}; }
+      if (etat.joignable) break;
+      const s = Math.round((Date.now() - debut) / 1000);
+      if (ligne) ligne.querySelector('span').innerHTML = `Vérification : https://${hote} doit répondre… (tunnel : ${etat.tunnel || 'en attente'}, ${s} s)`;
+      await pause(10000);
+    }
+    if (ligne) ligne.remove();
+    if (etat.joignable) L('ok', `<a href="https://${hote}" target="_blank" rel="noopener">https://${hote}</a> répond : votre Home Assistant est joignable par le tunnel.`);
+    else L('warn', `https://${hote} ne répond pas encore (tunnel : ${etat.tunnel || 'inconnu'}, http ${etat.http || '—'}). Le DNS peut mettre quelques minutes ; sinon, consultez le journal de l'add-on Cloudflared.`);
+    const cfg = await ha.appeler({ type: 'get_config' });
+    const externe = ((cfg.result || {}).external_url || '').trim();
+    if (!externe) {
+      const u = await ha.appeler({ type: 'config/core/update', external_url: `https://${hote}` });
+      if (u.success) L('ok', `Adresse externe de Home Assistant posée : https://${hote}`);
+    } else if (externe.replace(/\/+$/, '') !== `https://${hote}`) L('ok', `Adresse externe déjà renseignée (${externe}) : elle est conservée.`);
+    const message = `Votre Home Assistant est joignable à https://${hote} — sans port ouvert sur votre box.`
+      + (nginx ? `\n\nNginx Proxy Manager publie vos autres services par le même tunnel : ouvrez-le à http://<adresse-locale>:81 (identifiants par défaut admin@example.com / changeme, à changer à la première connexion) et ajoutez un « Proxy Host » par service.` : '')
+      + `\n\nConseil : protégez l'accès avec Cloudflare Access (Zero Trust › Access) si vous publiez autre chose que Home Assistant.`;
+    await ha.appeler({ type: 'call_service', domain: 'persistent_notification', service: 'create', service_data: {
+      title: 'Cloudflare Tunnel — accès externe prêt', notification_id: 'ha_deploy_cloudflare', message } });
+    if (nginx) L('ok', `Nginx Proxy Manager : <code>http://&lt;adresse-locale&gt;:81</code> — identifiants par défaut <code>admin@example.com</code> / <code>changeme</code>, à changer à la première connexion. Publiez-y vos autres services (« Proxy Host »).`);
+    ha.fermer();
+    await revoquer();
+    L('ok', `Cloudflare Tunnel installé : <b>https://${hote}</b>${etat.joignable ? '' : ' (vérification à refaire dans quelques minutes)'}. Aucun port à ouvrir sur votre box.`, 4);
+    terminer(true);
+  }
+
+  /* POST JSON vers le Worker ; rend la réponse JSON même en erreur 4xx. */
+  async function api_(chemin, corps) {
+    const r = await api(chemin, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corps) });
+    return r.json().catch(() => ({ statut: 'erreur', message: `Réponse inattendue du serveur (${r.status}).` }));
   }
 
   /* Ce que le serveur peut répondre au retour de l'instance (?ha_erreur=…). */
@@ -24476,7 +24784,8 @@ function dessinSonnette(o) {
     'config-whisper': 'config_whisper',
     'config-spotify-connect': 'config_spotify_connect',
     'config-music-assistant': 'config_music_assistant',
-    'config-mariadb': 'config_mariadb'
+    'config-mariadb': 'config_mariadb',
+    'config-cloudflare': 'config_cloudflare'
   };
   /* Ce que la suppression retire et garde, pack par pack -- le miroir de
      FICHES (desinstaller_pack.py). `numerote` vaut pour tous les packs
@@ -24506,7 +24815,8 @@ function dessinSonnette(o) {
     config_whisper: { retire: "l'add-on Whisper et son entrée Wyoming", garde: "vos assistants vocaux et les autres services Wyoming" },
     config_spotify_connect: { retire: "l'add-on Spotify Connect", garde: "le dépôt d'add-ons communautaire" },
     config_music_assistant: { retire: "l'add-on Music Assistant et son intégration", garde: "vos enceintes et vos comptes de musique" },
-    config_mariadb: { retire: "le branchement de l'historique (redémarrage, retour à SQLite) et l'add-on MariaDB", garde: "l'ancien historique SQLite" }
+    config_mariadb: { retire: "le branchement de l'historique (redémarrage, retour à SQLite) et l'add-on MariaDB", garde: "l'ancien historique SQLite" },
+    config_cloudflare: { retire: "l'add-on Cloudflared (votre Home Assistant n'est plus joignable par le tunnel)", garde: "le tunnel et ses DNS chez Cloudflare, Nginx Proxy Manager et vos réglages de proxy" }
   };
   const IDS_FIXES = new Set(Object.values(IDENTIFIANTS_UNIQUES));
   let packDesinstallation = null;
