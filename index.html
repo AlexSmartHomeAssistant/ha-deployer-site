@@ -1234,6 +1234,22 @@
       padding: 8px 10px;
     }
 
+    /* Consigne qu'aucun pack ne peut remplir a la place du client (pack
+       DuckDNS : ouvrir le port sur la box). Teinte d'alerte de la palette. */
+    .alerte-port {
+      display: block;
+      margin-top: 10px;
+      font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text-main);
+      background: rgba(236, 112, 99, 0.12);
+      border-left: 3px solid #EC7063;
+      border-radius: 0 6px 6px 0;
+      padding: 8px 10px;
+    }
+    .alerte-port .fa-triangle-exclamation { color: #EC7063; }
+
     /* Paramètres saisis, rappelés dans le panier */
     .cart-param {
       display: block;
@@ -4638,7 +4654,7 @@
     configuration_duckdns: {
       resume: "Adresse fixe et https gratuit.",
       logo: 'templates/config/duckdns.gif',
-      detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), declaration de l'integration dans <code>configuration.yaml</code>, et adresse externe renseignee dans Home Assistant. <b>Il vous restera une etape :</b> ouvrir le port 8123 sur votre box &mdash; le pack vous le rappelle par une notification qui reste dans Home Assistant.</span>`
+      detail: `Donne a votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit, via <a href="https://www.duckdns.org/" target="_blank" rel="noopener noreferrer">DuckDNS</a>. C'est l'une des quatre voies d'acces distant que nos packs payants savent utiliser. <br><br><span class="inclus"><b>Inclus :</b> verification prealable de votre domaine et de votre jeton aupres de DuckDNS, installation et configuration de l'add-on (domaine, jeton, Let's Encrypt), creation de l'integration DuckDNS, passage de Home Assistant en <b>https sur le port 8123</b>, et adresse externe renseignee dans Home Assistant. <br><br><b>Connexion locale :</b> votre Home Assistant n'etant pas encore joignable depuis Internet, la configuration se fait par son adresse locale <code>http://homeassistant.local</code> &mdash; l'appareil qui lance la configuration doit etre connecte au <b>meme reseau Wi-Fi/local</b> que votre Home Assistant. Une fois termine, l'adresse locale devient <code>https://homeassistant.local:8123</code>.</span>`
     },
     configuration_zigbee2mqtt: {
       resume: "Réseau Zigbee prêt à appairer.",
@@ -6118,7 +6134,7 @@
     },
 
     configuration_duckdns: {
-      intro: 'Donne à votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit. C\'est l\'une des quatre voies d\'accès distant que nos packs payants savent utiliser. Vous fournissez votre domaine et votre jeton DuckDNS.',
+      intro: 'Donne à votre Home Assistant une <b>adresse fixe sur Internet</b> et un certificat <b>https</b> gratuit. C\'est l\'une des quatre voies d\'accès distant que nos packs payants savent utiliser. Vous fournissez votre domaine et votre jeton DuckDNS. La configuration passe par l\'adresse locale <code>http://homeassistant.local</code> : lancez-la depuis un appareil connecté au <b>même réseau Wi-Fi/local</b> que votre Home Assistant.<span class="alerte-port"><i class="fa-solid fa-triangle-exclamation"></i> <b>Attention :</b> il est indispensable d\'ouvrir le port correspondant (généralement <b>8123</b> ou <b>443</b>) dans l\'interface de gestion de votre box internet/routeur pour que l\'accès externe fonctionne.</span>',
       carte: () => 'defaut',
       onglets: [
         { titre: '1 — Domaine et jeton', icone: 'fa-globe',
@@ -6131,17 +6147,17 @@
           ] },
         { titre: '2 — Certificat https', icone: 'fa-lock',
           capture: 'templates/config/duckdns-2.webp',
-          texte: 'Let\'s Encrypt est activé : c\'est lui qui donne le « https » sans lequel un navigateur refuse l\'accès distant. L\'intégration est déclarée dans votre configuration, et l\'adresse externe renseignée si vous n\'en aviez pas déjà une.',
+          texte: 'Let\'s Encrypt est activé : c\'est lui qui donne le « https » sans lequel un navigateur refuse l\'accès distant. L\'intégration DuckDNS est créée, Home Assistant passe en https sur le port 8123, et l\'adresse externe est renseignée si vous n\'en aviez pas déjà une.',
           elements: [
             { nom: `Let's Encrypt`, texte: `activé dans l'add-on : c'est lui qui délivre le certificat https.` },
-            { nom: `Configuration`, texte: `l'intégration DuckDNS est déclarée dans configuration.yaml, validée avant tout redémarrage.` },
+            { nom: `Intégration et https`, texte: `l'intégration DuckDNS est créée, puis Home Assistant passe en https sur le port 8123 — il revient seul à sa configuration précédente si le https ne démarre pas.` },
             { nom: `Adresse externe`, texte: `renseignée seulement si votre instance n'en avait pas déjà une — un accès Nabu Casa ou Cloudflare existant n'est jamais écrasé.` }
           ] },
         { titre: '3 — Le port de votre box', icone: 'fa-network-wired',
           capture: 'templates/config/duckdns-3.webp',
-          texte: 'La dernière étape vous revient : rediriger le port 8123 sur votre box. Aucune interface ne permet de le faire à votre place. Le pack vous le rappelle par une notification qui <b>reste dans Home Assistant</b>, bien après la fermeture de cette page.',
+          texte: '<b>Attention : il est indispensable d\'ouvrir le port correspondant (généralement 8123 ou 443) dans l\'interface de gestion de votre box internet/routeur pour que l\'accès externe fonctionne.</b> Aucune interface ne permet de le faire à votre place. Le pack vous le rappelle par une notification qui <b>reste dans Home Assistant</b>, bien après la fermeture de cette page.',
           elements: [
-            { nom: `Redirection de port`, texte: `le port 8123 à rediriger sur votre box : la seule étape que personne ne peut faire à votre place.` },
+            { nom: `Redirection de port`, texte: `port externe 8123 (ou 443, pour une adresse sans numéro de port) vers le port 8123 de votre Home Assistant, en TCP : la seule étape que personne ne peut faire à votre place.` },
             { nom: `Notification`, texte: `un rappel persistant dans Home Assistant, qui survit à la fermeture de cette page.` },
             { nom: `Journal`, texte: `le même rappel dans le journal de déploiement.` }
           ] }
@@ -22544,8 +22560,13 @@ function dessinSonnette(o) {
       <div class="form-group">
         <label for="ha-url"><i class="fa-solid fa-link"></i> URL Home Assistant <button type="button" class="help-icon" onclick="toggleFieldHelp('help-url', this)" title="Aide">?</button></label>
         <div class="field-help" id="help-url">Copiez l'adresse complète affichée dans la barre du navigateur lorsque vous êtes connecté à votre Home Assistant (ex : https://votre-instance.duckdns.org:8123), puis collez-la ici. Elle doit être joignable depuis Internet, en <b>https</b> avec un certificat valide.<br><b>Si elle n'est joignable que chez vous</b>, configurez d'abord un accès distant — cliquez sur « ? » pour le guide de chacun :<br><span data-acces-portee="panier" style="display:block; margin-top:6px;"></span></div>
-        <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required>
+        <input type="url" id="ha-url" class="field-required" placeholder="https://votre-instance.duckdns.org:8123" required${panierSeulementDuckdns() ? ' value="http://homeassistant.local"' : ''}>
       </div>
+      ${panierSeulementDuckdns() ? `<div class="notice-box" style="margin: 0 0 10px; font-size: 0.8rem; line-height: 1.5;">
+        <i class="fa-solid fa-house-signal" style="color: var(--primary-blue);"></i>
+        <b>DuckDNS se configure depuis chez vous :</b> votre Home Assistant n'est pas encore joignable depuis Internet, c'est donc ce navigateur qui le configure par son adresse locale <b>http://homeassistant.local</b> (ou son adresse IP, ex : http://192.168.1.34). ${RESEAU_LOCAL_CONSEIL} Utilisez <b>Chrome</b> ou <b>Edge</b>, et acceptez l'accès aux <b>appareils du réseau local</b> s'il vous est demandé.
+      </div>
+      <span class="alerte-port" style="margin: 0 0 10px;"><i class="fa-solid fa-triangle-exclamation"></i> ${AVERTISSEMENT_PORT_DUCKDNS}</span>` : ''}
       <div class="notice-box" style="margin: 0 0 4px; font-size: 0.8rem; line-height: 1.5;">
         <i class="fa-solid fa-shield-halved" style="color: var(--primary-blue);"></i>
         <b>Aucun jeton à créer.</b> Votre Home Assistant va s'ouvrir : connectez-vous avec un compte <b>administrateur</b> et autorisez <b>HA-Deploy</b>. Vous reviendrez ici pour suivre le déploiement en direct. L'accès est <b>révoqué automatiquement</b> dès la fin du déploiement.
@@ -23703,6 +23724,17 @@ function dessinSonnette(o) {
     if (zone) zone.innerHTML = '';
     if (mode === 'test') { const box = document.getElementById('test-log'); if (box) box.innerHTML = ''; retirerBoutonFermer('test-log'); }
 
+    // Adresse du réseau local : seul le pack DuckDNS sait s'en servir, et
+    // c'est ce navigateur qui configure l'instance (07/10/2026).
+    const locale = mode === 'panier' ? adresseLocale(champ ? champ.value : '') : null;
+    if (locale) {
+      if (!panierSeulementDuckdns()) {
+        afficherErreurConnexion(mode, "Une adresse locale ne sert qu'au pack <b>DuckDNS</b>, configuré depuis votre réseau. Déployez DuckDNS seul d'abord, puis les autres packs avec votre adresse https (https://votre-nom.duckdns.org:8123).");
+        return;
+      }
+      return connecterLocalDuckdns(locale, cart.filter(i => SERVER_MODULES[i.key]).map(i => ({ module: MODULE_DUCKDNS, params: i.params || {} })), bouton);
+    }
+
     const cible = checkInstanceUrl(champ ? champ.value : '');
     if (cible.error) { afficherErreurConnexion(mode, cible.error); return; }
 
@@ -23757,6 +23789,362 @@ function dessinSonnette(o) {
       afficherErreurConnexion(mode, e.message || 'La connexion a échoué.');
       if (bouton) bouton.disabled = false;
     }
+  }
+
+  /* =====================================================================
+     PACK DUCKDNS EN MODE LOCAL (07/10/2026)
+
+     Une instance qui n'a pas encore d'accès externe n'est joignable que
+     depuis chez le client — c'est précisément ce que ce pack lui donne. Notre
+     serveur ne peut donc pas la joindre : c'est CE NAVIGATEUR qui la configure,
+     par son adresse locale (http://homeassistant.local).
+
+     Ce qui le rend possible, mesuré le 07/10/2026 sur Chrome 151 :
+       - Chrome autorise une page https à joindre ws:// et http:// d'une
+         adresse du réseau local, une fois que le visiteur a accepté l'accès
+         « aux appareils du réseau local » (sans lui : ERR_BLOCKED_BY_LOCAL_NETWORK) ;
+       - le WebSocket de Home Assistant n'est pas soumis à CORS, et
+         /auth/token et /auth/revoke répondent à toute origine.
+     L'autorisation suit le flux officiel de Home Assistant, avec CE SITE comme
+     identifiant client : le code revient ici et est échangé par le navigateur.
+     Aucun jeton n'est collé, aucun ne quitte le réseau local.
+
+     Le passage en https est confirmé par Home Assistant lui-même : la
+     configuration est posée « en attente », HA redémarre, et si personne ne
+     la confirme il revient seul à l'ancienne. Une fois passé en https, le
+     navigateur ne peut plus le joindre (certificat émis pour le domaine
+     DuckDNS, pas pour homeassistant.local) : c'est le client qui ouvre la
+     nouvelle adresse, où HA lui demande de confirmer.
+     ===================================================================== */
+  const MODULE_DUCKDNS = 'config-duckdns';
+  const RESEAU_LOCAL_CONSEIL = "Assurez-vous d'être sur le même réseau Wi-Fi/local que votre Home Assistant.";
+  const AVERTISSEMENT_PORT_DUCKDNS = "<b>Attention :</b> il est indispensable d'ouvrir le port correspondant (généralement <b>8123</b> ou <b>443</b>) dans l'interface de gestion de votre box internet/routeur pour que l'accès externe fonctionne.";
+
+  function panierSeulementDuckdns() {
+    const d = cart.filter(i => SERVER_MODULES[i.key]);
+    return d.length > 0 && d.every(i => SERVER_MODULES[i.key] === MODULE_DUCKDNS);
+  }
+
+  /* Origine d'une adresse du réseau local, ou null. */
+  function adresseLocale(brut) {
+    const v = String(brut || '').trim();
+    if (!v) return null;
+    let u;
+    try { u = new URL(/^[a-z]+:\/\//i.test(v) ? v : 'http://' + v); } catch (e) { return null; }
+    const h = u.hostname.toLowerCase();
+    if (h === 'homeassistant' || h.endsWith('.local')
+        || /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h)) return u.origin;
+    return null;
+  }
+
+  /* L'identifiant client IndieAuth : la page du site elle-même. Même hôte que
+     l'adresse de retour, donc accepté par Home Assistant sans lire la page. */
+  function clientLocal() { return new URL('.', location.href).href; }
+
+  function wsDe(origine) { return origine.replace(/^http/, 'ws') + '/api/websocket'; }
+
+  /* Sonde AVANT l'autorisation : le nom se résout-il, l'instance répond-elle,
+     Chrome laisse-t-il passer ? C'est aussi elle qui fait apparaître la
+     demande d'accès au réseau local, au bon moment. */
+  function sonderInstanceLocale(origine, delai) {
+    return new Promise(resoudre => {
+      let ws;
+      const fin = (ok, detail) => { try { ws && ws.close(); } catch (e) { /* ignore */ } resoudre({ ok, detail }); };
+      const minuteur = setTimeout(() => fin(false, 'delai'), delai || 20000);
+      try { ws = new WebSocket(wsDe(origine)); }
+      catch (e) { clearTimeout(minuteur); return fin(false, e.message); }
+      ws.onmessage = ev => {
+        clearTimeout(minuteur);
+        let m = {};
+        try { m = JSON.parse(ev.data); } catch (e) { /* ignore */ }
+        fin(m.type === 'auth_required', m.ha_version || '');
+      };
+      ws.onerror = () => { clearTimeout(minuteur); fin(false, 'erreur'); };
+    });
+  }
+
+  /* Client WebSocket minimal de Home Assistant. */
+  class HaLocal {
+    constructor(origine, jeton) { this.origine = origine; this.jeton = jeton; this.id = 0; this.attente = new Map(); this.ferme = true; }
+    connecter() {
+      return new Promise((resoudre, rejeter) => {
+        const ws = new WebSocket(wsDe(this.origine));
+        this.ws = ws;
+        const minuteur = setTimeout(() => rejeter(new Error('délai de connexion dépassé')), 20000);
+        ws.onmessage = ev => {
+          const m = JSON.parse(ev.data);
+          if (m.type === 'auth_required') ws.send(JSON.stringify({ type: 'auth', access_token: this.jeton }));
+          else if (m.type === 'auth_ok') { clearTimeout(minuteur); this.ferme = false; resoudre(m.ha_version); }
+          else if (m.type === 'auth_invalid') { clearTimeout(minuteur); rejeter(new Error('autorisation refusée par Home Assistant')); }
+          else if (m.type === 'result' && this.attente.has(m.id)) { this.attente.get(m.id)(m); this.attente.delete(m.id); }
+        };
+        ws.onerror = () => { clearTimeout(minuteur); rejeter(new Error('connexion impossible')); };
+        ws.onclose = () => {
+          this.ferme = true;
+          for (const r of this.attente.values()) r({ success: false, error: { code: 'ferme', message: 'connexion fermée' } });
+          this.attente.clear();
+        };
+      });
+    }
+    appeler(charge, delai) {
+      if (this.ferme) return Promise.resolve({ success: false, error: { code: 'ferme', message: 'connexion fermée' } });
+      const id = ++this.id;
+      return new Promise(resoudre => {
+        const minuteur = setTimeout(() => { this.attente.delete(id); resoudre({ success: false, error: { code: 'delai', message: 'délai dépassé' } }); }, delai || 30000);
+        this.attente.set(id, m => { clearTimeout(minuteur); resoudre(m); });
+        this.ws.send(JSON.stringify(Object.assign({ id }, charge)));
+      });
+    }
+    superviseur(endpoint, methode, donnees, delaiS) {
+      const c = { type: 'supervisor/api', endpoint, method: methode || 'get' };
+      if (donnees) c.data = donnees;
+      if (delaiS) c.timeout = delaiS;
+      return this.appeler(c, ((delaiS || 30) + 15) * 1000);
+    }
+    fermer() { try { this.ws && this.ws.close(); } catch (e) { /* ignore */ } }
+  }
+
+  function normaliserDomaineDuckdns(brut) {
+    let v = String(brut || '').trim().replace(/^[a-z]+:\/\//i, '').split('/')[0].split(':')[0].replace(/^\.+|\.+$/g, '').toLowerCase();
+    if (v.endsWith('.duckdns.org')) v = v.slice(0, -'.duckdns.org'.length);
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(v)) throw new Error(`Domaine DuckDNS invalide : « ${brut || ''} ». Attendu : le sous-domaine seul (ex : mon-nom).`);
+    return v;
+  }
+
+  function optionsDuckdns(actuelles, domaineComplet, jeton) {
+    const le = Object.assign({}, actuelles.lets_encrypt || {});
+    if (!le.algo) le.algo = 'secp384r1';
+    if (!le.certfile) le.certfile = 'fullchain.pem';
+    if (!le.keyfile) le.keyfile = 'privkey.pem';
+    le.accept_terms = true;
+    const domaines = (actuelles.domains || []).filter(Boolean);
+    if (!domaines.includes(domaineComplet)) domaines.push(domaineComplet);
+    return Object.assign({}, actuelles, { lets_encrypt: le, token: jeton, domains: domaines });
+  }
+
+  const pause = ms => new Promise(r => setTimeout(r, ms));
+
+  async function connecterLocalDuckdns(origine, items, bouton) {
+    const zone = document.getElementById('checkout-verif');
+    const dire = (html, echec) => { if (zone) zone.innerHTML = `<div class="verif-antenne ${echec ? 'verif-echec' : ''}"><i class="fa-solid ${echec ? 'fa-triangle-exclamation' : 'fa-spinner fa-spin'}"></i> ${html}</div>`; };
+    const p = (items[0] && items[0].params) || {};
+    try { normaliserDomaineDuckdns(p.DUCKDNS_DOMAINE); }
+    catch (e) { dire(e.message, true); return; }
+    if (bouton) bouton.disabled = true;
+    dire(`Recherche de votre Home Assistant sur le réseau local (${origine})… Si votre navigateur demande l'accès aux <b>appareils du réseau local</b>, acceptez-le.`);
+    const s = await sonderInstanceLocale(origine);
+    if (!s.ok) {
+      dire(`Impossible de joindre <b>${origine}</b> depuis ce navigateur. ${RESEAU_LOCAL_CONSEIL} Si votre navigateur vous a demandé l'accès aux appareils du réseau local, acceptez-le (icône à gauche de l'adresse du site), puis réessayez. Ce mode exige <b>Chrome</b> ou <b>Edge</b> récent. Si le nom n'est pas trouvé, indiquez plutôt l'adresse IP de votre Home Assistant (ex : http://192.168.1.34).`, true);
+      if (bouton) bouton.disabled = false;
+      return;
+    }
+    const state = etatAleatoire();
+    try {
+      sessionStorage.setItem(CLE_AUTORISATION_HA, JSON.stringify({ state, mode: 'duckdns-local', url: origine, params: p, depuis: Date.now() }));
+    } catch (e) {
+      dire("Le stockage de session de votre navigateur est indisponible : la connexion ne peut pas être sécurisée.", true);
+      if (bouton) bouton.disabled = false;
+      return;
+    }
+    sauverPanier();
+    const q = new URLSearchParams({ response_type: 'code', client_id: clientLocal(), redirect_uri: clientLocal(), state });
+    location.assign(`${origine}/auth/authorize?${q.toString()}`);
+  }
+
+  /* Retour de l'instance locale (?code=…&state=…), au chargement. */
+  function reprendreRetourLocal() {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    const etatRecu = params.get('state');
+    const erreur = params.get('error');
+    if (!code && !erreur) return false;
+    let attendu = null;
+    try { attendu = JSON.parse(sessionStorage.getItem(CLE_AUTORISATION_HA) || 'null'); } catch (e) { attendu = null; }
+    if (!attendu || attendu.mode !== 'duckdns-local') return false;
+    try { sessionStorage.removeItem(CLE_AUTORISATION_HA); } catch (e) { /* ignore */ }
+    ['code', 'state', 'error', 'error_description'].forEach(k => params.delete(k));
+    const reste = params.toString();
+    history.replaceState(history.state, '', location.pathname + (reste ? '?' + reste : '') + location.hash);
+
+    ouvrirPanierA(erreur || attendu.state !== etatRecu ? 'checkout' : 'deploy', attendu.url);
+    if (attendu.state !== etatRecu) {
+      afficherErreurConnexion('panier', "Ce retour ne correspond à aucune connexion lancée depuis cet onglet : il a été ignoré par sécurité. Relancez la connexion.");
+      return true;
+    }
+    if (erreur) {
+      afficherErreurConnexion('panier', "Vous avez refusé l'autorisation dans Home Assistant : rien n'a été installé.");
+      return true;
+    }
+    verrouillerFermeture(true);
+    deployerDuckdnsLocal(attendu, code);
+    return true;
+  }
+
+  async function deployerDuckdnsLocal(attendu, code) {
+    const BOITE = 'cart-deploy-log';
+    const L = (genre, texte, etape) => logLine(BOITE, genre, texte, etape === undefined ? 0 : etape);
+    const terminer = (ok) => {
+      verrouillerFermeture(false);
+      const b = document.getElementById('cart-deploy-close');
+      if (b) { b.style.display = ''; b.disabled = false; }
+      if (ok) { cart.length = 0; updateCartUI(); sauverPanier(); }
+    };
+    const origine = attendu.url;
+    const hote = new URL(origine).hostname;
+    let jetons = null, ha = null;
+    const revoquer = async () => {
+      if (!jetons || !jetons.refresh_token) return;
+      try {
+        await fetch(origine + '/auth/revoke', { method: 'POST', body: new URLSearchParams({ token: jetons.refresh_token }), targetAddressSpace: 'local' });
+        L('ok', "Accès de HA-Deploy révoqué sur votre Home Assistant.");
+      } catch (e) { /* best effort */ }
+    };
+    const echouer = async (texte) => { L('err', texte); if (ha) ha.fermer(); await revoquer(); terminer(false); };
+
+    let sousDomaine, jetonDuck;
+    try {
+      sousDomaine = normaliserDomaineDuckdns(attendu.params.DUCKDNS_DOMAINE);
+      jetonDuck = String(attendu.params.DUCKDNS_TOKEN || '').trim();
+      if (!jetonDuck || /[\s/]/.test(jetonDuck)) throw new Error("Jeton DuckDNS absent ou invalide (il ne contient ni espace ni « / »).");
+    } catch (e) { return echouer(e.message); }
+    const domaineComplet = `${sousDomaine}.duckdns.org`;
+    const urlExterne = `https://${domaineComplet}:8123`;
+
+    /* --- Étape 1 : connexion locale ----------------------------------- */
+    L('run', `Connexion à votre Home Assistant par le réseau local (${origine})…`, 1);
+    try {
+      const rep = await fetch(origine + '/auth/token', {
+        method: 'POST', targetAddressSpace: 'local',
+        body: new URLSearchParams({ grant_type: 'authorization_code', code, client_id: clientLocal() })
+      });
+      jetons = await rep.json().catch(() => ({}));
+      if (!rep.ok || !jetons.access_token) return echouer("Home Assistant a refusé le code d'autorisation : relancez la connexion.");
+      ha = new HaLocal(origine, jetons.access_token);
+      await ha.connecter();
+    } catch (e) {
+      return echouer(`Connexion locale impossible (${e.message}). ${RESEAU_LOCAL_CONSEIL} Acceptez l'accès aux appareils du réseau local si votre navigateur le demande.`);
+    }
+    const moi = await ha.appeler({ type: 'auth/current_user' });
+    if (moi.success && moi.result && moi.result.is_admin === false) {
+      return echouer("Le compte utilisé n'est pas <b>administrateur</b> : les add-ons ne lui sont pas accessibles. Reconnectez-vous avec un compte administrateur.");
+    }
+    if (!(await ha.superviseur('/info')).success) {
+      return echouer("Cette installation n'a pas de Supervisor (Home Assistant Container ou Core) : DuckDNS est un add-on, il exige Home Assistant OS ou Supervised.");
+    }
+    let ip = '';
+    const reseau = await ha.superviseur('/network/info');
+    ((reseau.result || {}).interfaces || []).forEach(i => {
+      if (i.primary && i.ipv4 && (i.ipv4.address || []).length) ip = i.ipv4.address[0].split('/')[0];
+    });
+    L('ok', `Connecté à votre Home Assistant${ip ? ' (' + ip + ')' : ''} par le réseau local.`, 1);
+    const dns = await ha.superviseur('/dns/info');
+    if (dns.success && dns.result && !(dns.result.servers || []).length) {
+      L('warn', "Le DNS de votre Home Assistant n'a aucun serveur explicite (seulement votre box) : cela a déjà empêché l'add-on de joindre DuckDNS et Let's Encrypt. Si le certificat n'arrive pas, ajoutez <code>1.1.1.1</code> et <code>8.8.8.8</code> dans Paramètres › Système › Réseau, puis relancez.");
+    }
+    try {
+      const r = await api('/api/duckdns/verifier', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domaine: sousDomaine, jeton: jetonDuck }) });
+      const d = await r.json().catch(() => ({}));
+      if (d.statut === 'refuse' || d.statut === 'invalide') {
+        return echouer(`DuckDNS refuse le domaine « ${sousDomaine} » avec ce jeton : vérifiez les deux sur duckdns.org (le domaine doit apparaître dans votre liste, le jeton est affiché en haut de la page). Rien n'a été installé.`);
+      }
+      if (d.statut === 'ok') L('ok', `Domaine et jeton DuckDNS acceptés (${domaineComplet} → ${d.ip}).`);
+      else L('warn', 'Jeton DuckDNS non vérifié à l\'avance : l\'add-on le vérifiera.');
+    } catch (e) { L('warn', 'Jeton DuckDNS non vérifié à l\'avance : l\'add-on le vérifiera.'); }
+
+    /* --- Étape 2 : add-on DuckDNS ------------------------------------ */
+    L('run', "Installation et configuration de l'add-on DuckDNS…", 2);
+    const SLUG = 'core_duckdns';
+    const lireFiche = async () => {
+      const r = await ha.superviseur(`/addons/${SLUG}/info`);
+      const f = r.success ? (r.result || {}) : null;
+      return f && f.installed !== false && f.version ? f : null;
+    };
+    let fiche = await lireFiche();
+    if (!fiche) {
+      const r = await ha.superviseur(`/store/addons/${SLUG}/install`, 'post', null, 600);
+      if (!r.success && r.error && r.error.message) return echouer(`Installation de l'add-on refusée : ${r.error.message}`);
+      for (let i = 0; i < 120 && !fiche; i++) { await pause(5000); fiche = await lireFiche(); }
+      if (!fiche) return echouer("L'add-on DuckDNS ne s'est pas installé dans les dix minutes.");
+      L('ok', `Add-on DuckDNS installé (${fiche.version}).`);
+    } else if (fiche.update_available) {
+      await ha.superviseur(`/store/addons/${SLUG}/update`, 'post', null, 600);
+      fiche = (await lireFiche()) || fiche;
+    }
+    const options = optionsDuckdns(fiche.options || {}, domaineComplet, jetonDuck);
+    let o = await ha.superviseur(`/addons/${SLUG}/options`, 'post', { options, boot: 'auto', watchdog: true, auto_update: true });
+    if (!o.success) o = await ha.superviseur(`/addons/${SLUG}/options`, 'post', { options });
+    if (!o.success) return echouer(`Réglages de l'add-on refusés : ${(o.error && o.error.message) || 'erreur inconnue'}`);
+    await ha.superviseur(`/addons/${SLUG}/${fiche.state === 'started' ? 'restart' : 'start'}`, 'post', null, 120);
+    const cfg = await ha.appeler({ type: 'get_config' });
+    const externe = ((cfg.result || {}).external_url || '').trim();
+    if (!externe) {
+      const u = await ha.appeler({ type: 'config/core/update', external_url: urlExterne });
+      if (u.success) L('ok', `Adresse externe de Home Assistant posée : ${urlExterne}`);
+    } else if (externe.replace(/\/+$/, '') !== urlExterne) {
+      L('ok', `Adresse externe déjà renseignée (${externe}) : elle est conservée.`);
+    }
+    await ha.appeler({ type: 'call_service', domain: 'persistent_notification', service: 'create', service_data: {
+      title: 'DuckDNS — une dernière étape chez vous', notification_id: 'ha_deployer_duckdns',
+      message: `Attention : Il est indispensable d'ouvrir le port correspondant (généralement 8123 ou 443) dans l'interface de gestion de votre box internet/routeur pour que l'accès externe fonctionne.\n\nVotre adresse DuckDNS est ${urlExterne}\n\nDans votre box, redirigez le port externe 8123 (TCP) vers l'adresse locale de votre Home Assistant${ip ? ' (' + ip + ')' : ''}, port 8123 — ou le port externe 443 vers le port 8123, pour une adresse sans numéro de port (https://${domaineComplet}).`
+    } });
+    L('ok', `Add-on DuckDNS configuré et démarré pour <b>${domaineComplet}</b>. (L'intégration DuckDNS facultative n'est pas créée en mode local : l'add-on tient déjà l'adresse à jour.)`, 2);
+
+    /* --- Étape 3 : https --------------------------------------------- */
+    const h = await ha.appeler({ type: 'http/config' });
+    if (!h.success) return echouer(`Configuration réseau de Home Assistant illisible (${(h.error && h.error.message) || 'commande inconnue'}) : cette version de Home Assistant n'est pas prise en charge en mode local.`);
+    const stable = (h.result || {}).stable || {};
+    let bascule = false;
+    if (stable.ssl_certificate === '/ssl/fullchain.pem' && (stable.server_port || 8123) === 8123) {
+      L('ok', 'Home Assistant sert déjà en https sur le port 8123.', 3);
+    } else {
+      const voulu = {};
+      Object.keys(stable).forEach(k => { if (!['created_at', 'error', 'error_message'].includes(k)) voulu[k] = stable[k]; });
+      Object.assign(voulu, { ssl_certificate: '/ssl/fullchain.pem', ssl_key: '/ssl/privkey.pem', server_port: 8123 });
+      const ligne = L('run', 'Obtention du certificat Let\'s Encrypt par l\'add-on (environ 2 minutes)…', 3);
+      await pause(120000);
+      for (let essai = 1; essai <= 4 && !bascule; essai++) {
+        if (ligne) ligne.querySelector('span').innerHTML = `<b class="etape-num">Étape 3/${ETAPES_DEPLOIEMENT}</b> Passage de Home Assistant en https sur le port 8123 (essai ${essai}/4)…`;
+        const r = await ha.appeler({ type: 'http/config/configure', config: voulu }, 60000);
+        if (!r.success) {
+          const m = (r.error && r.error.message) || '';
+          if (essai < 4 && /file|ssl|cert|pem|exist/i.test(m)) { L('warn', `Certificat pas encore disponible (${m}) : nouvel essai dans une minute.`); await pause(60000); continue; }
+          return echouer(`Home Assistant a refusé le https : ${m || 'erreur inconnue'}.`);
+        }
+        // Home Assistant redémarre de lui-même. On attend que l'ancienne
+        // instance tombe, puis on regarde si elle revient à l'ancienne adresse.
+        for (let i = 0; i < 45 && !ha.ferme; i++) { await pause(2000); await ha.appeler({ type: 'ping' }, 4000); }
+        ha.fermer();
+        let retour = null;
+        const limite = Date.now() + 300000;
+        await pause(15000);
+        while (Date.now() < limite && !retour) {
+          try { const n = new HaLocal(origine, jetons.access_token); await n.connecter(); retour = n; }
+          catch (e) { await pause(6000); }
+        }
+        if (!retour) { bascule = true; break; }
+        // Revenu à l'ancienne adresse : la nouvelle configuration a échoué.
+        ha = retour;
+        const apres = (await ha.appeler({ type: 'http/config' })).result || {};
+        const att = apres.pending || {};
+        const motif = att.error_message || att.error || 'inconnu';
+        if (essai < 4) { L('warn', `Le https n'a pas démarré (${motif}) : Home Assistant est revenu seul à sa configuration précédente. Nouvel essai dans une minute.`); await pause(60000); continue; }
+        return echouer(`Le https n'a pas pu démarrer (${motif}) : Home Assistant est revenu à sa configuration précédente. Vérifiez le journal de l'add-on DuckDNS (certificat), puis relancez.`);
+      }
+    }
+
+    /* --- Étape 4 : bilan --------------------------------------------- */
+    if (bascule) {
+      const nouvelle = `https://${hote}:8123`;
+      L('ok', `https activé sur le port 8123 : Home Assistant attend <b>votre confirmation</b>.`, 3);
+      L('warn', `<b>À faire maintenant :</b> ouvrez <a href="${nouvelle}" target="_blank" rel="noopener">${nouvelle}</a>, acceptez l'avertissement de certificat (il est émis pour ${domaineComplet}, pas pour ${hote}), connectez-vous : Home Assistant vous demande de <b>confirmer les nouveaux réglages réseau</b>. Sans confirmation, il revient seul à ${origine}. Ensuite, votre adresse locale devient ${nouvelle}.`);
+      L('ok', `L'accès accordé à HA-Deploy reste listé dans votre profil Home Assistant (Sécurité › Jetons d'actualisation) : supprimez-le une fois la confirmation faite.`);
+    } else {
+      if (ha) ha.fermer();
+      await revoquer();
+    }
+    L('warn', AVERTISSEMENT_PORT_DUCKDNS + ` Votre adresse : <b>${urlExterne}</b>. Un rappel est déposé dans les notifications de Home Assistant.`);
+    L('ok', `DuckDNS installé pour <b>${domaineComplet}</b>.`, 4);
+    terminer(true);
   }
 
   /* Ce que le serveur peut répondre au retour de l'instance (?ha_erreur=…). */
@@ -24771,7 +25159,8 @@ function dessinSonnette(o) {
 
     // Retour de l'instance du visiteur apres son autorisation (?ha_job=… ou
     // ?ha_erreur=…) : on verifie le `state`, puis on suit le deploiement.
-    reprendreRetourHomeAssistant();
+    // Pack DuckDNS en mode local : le code revient ici (?code=…&state=…).
+    if (!reprendreRetourLocal()) reprendreRetourHomeAssistant();
   };
 </script>
 
