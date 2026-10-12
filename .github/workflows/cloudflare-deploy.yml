@@ -1,0 +1,170 @@
+# =============================================================================
+# Deploiement du site HA-Deploy sur Cloudflare Pages (12/10/2026)
+# =============================================================================
+#
+# OU CE FICHIER S'EXECUTE
+#   Il est versionne ici, dans `ha-deployer` (prive), et RECOPIE par
+#   `python publier_site.py --publier` dans `ha-deployer-site` (public) : c'est
+#   la-bas que vivent les fichiers publies (index.html et ses medias), et c'est
+#   la-bas qu'il s'execute, a chaque poussee sur la branche du site. Ici, la
+#   condition `if:` du job le laisse inerte : il n'y a pas de site construit.
+#   (Le site n'a pas d'etape de construction : le « dossier de build » est le
+#   depot du site lui-meme, sans son `.git` ni son `.github`.)
+#
+# LES TROIS SECRETS A CREER -- sur le depot ha-deployer-site, PAS sur celui-ci :
+#   GitHub > AlexSmartHomeAssistant/ha-deployer-site > Settings
+#     > Secrets and variables > Actions > « New repository secret »
+#
+#     CLOUDFLARE_ACCOUNT_ID    = 88a1c77f40d57b787b449be6e95d1657
+#     CLOUDFLARE_PROJECT_NAME  = ha-deploy
+#     CLOUDFLARE_API_TOKEN     = le jeton « cfat_... » cree dans le tableau de
+#                                bord Cloudflare. Il ne s'ecrit JAMAIS dans ce
+#                                fichier ni dans aucun autre : ce depot est
+#                                recopie dans un depot PUBLIC.
+#
+#   Ou, en ligne de commande (gh connecte au compte) :
+#     gh secret set CLOUDFLARE_ACCOUNT_ID   --repo AlexSmartHomeAssistant/ha-deployer-site --body 88a1c77f40d57b787b449be6e95d1657
+#     gh secret set CLOUDFLARE_PROJECT_NAME --repo AlexSmartHomeAssistant/ha-deployer-site --body ha-deploy
+#     gh secret set CLOUDFLARE_API_TOKEN    --repo AlexSmartHomeAssistant/ha-deployer-site
+#   (sans --body pour le jeton : gh le demande, il n'entre pas dans
+#   l'historique du terminal).
+#
+#   Permissions du jeton : « Account > Cloudflare Pages > Edit », rien d'autre.
+#   Le projet Pages est cree par ce workflow s'il n'existe pas encore.
+#
+# POURQUOI wrangler-action ET NON pages-action
+#   `cloudflare/pages-action` n'existe plus : son depot repond 404 (releve le
+#   12/10/2026), et la documentation Cloudflare (« Use Direct Upload with
+#   continuous integration ») prescrit `cloudflare/wrangler-action` avec la
+#   commande `pages deploy`. Meme resultat, action maintenue.
+#
+# BRANCHE
+#   Le depot du site publie sur `master` (c'est la que pousse publier_site.py) ;
+#   `main` est accepte aussi, pour le jour ou la branche serait renommee. Une
+#   poussee sur la branche PAR DEFAUT du depot part en PRODUCTION, quelle que
+#   soit la branche de production enregistree chez Cloudflare ; toute autre
+#   branche (lancement manuel) donne un deploiement d'apercu.
+#
+# LIMITES DE CLOUDFLARE PAGES (plan gratuit) : 20 000 fichiers par
+# deploiement, 25 Mio par fichier -- controlees avant l'envoi, avec un message
+# qui dit lequel depasse plutot qu'un echec de Wrangler a interpreter.
+# =============================================================================
+name: Deploiement Cloudflare Pages
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+# Une publication va toujours au bout ; la suivante attend son tour.
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deployer:
+    if: github.repository == 'AlexSmartHomeAssistant/ha-deployer-site'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CF_PROJET: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}
+    steps:
+      - name: Secrets Cloudflare presents
+        env:
+          CF_COMPTE: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_JETON: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          manque=""
+          [ -n "$CF_COMPTE" ] || manque="$manque CLOUDFLARE_ACCOUNT_ID"
+          [ -n "$CF_PROJET" ] || manque="$manque CLOUDFLARE_PROJECT_NAME"
+          [ -n "$CF_JETON" ]  || manque="$manque CLOUDFLARE_API_TOKEN"
+          if [ -n "$manque" ]; then
+            echo "::error::Secret(s) absent(s) sur ce depot :$manque (voir l'en-tete du workflow)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Dossier publie (sans .git ni .github) et limites de Pages
+        run: |
+          dossier="$RUNNER_TEMP/site"
+          mkdir -p "$dossier"
+          # Les seuls fichiers VERSIONNES : rien de ce que l'execution aurait
+          # pu laisser dans l'arbre de travail.
+          git archive HEAD | tar -x -C "$dossier"
+          rm -rf "$dossier/.github"
+          n=$(find "$dossier" -type f | wc -l)
+          poids=$(du -sh "$dossier" | cut -f1)
+          echo "Site : $n fichier(s), $poids."
+          if [ "$n" -gt 20000 ]; then
+            echo "::error::$n fichiers : Cloudflare Pages en accepte 20 000 par deploiement."
+            exit 1
+          fi
+          gros=$(find "$dossier" -type f -size +25M)
+          if [ -n "$gros" ]; then
+            echo "::error::Fichier(s) de plus de 25 Mio, refuses par Cloudflare Pages :"
+            echo "$gros"
+            exit 1
+          fi
+          [ -f "$dossier/index.html" ] || { echo "::error::index.html absent du depot du site."; exit 1; }
+          echo "DOSSIER=$dossier" >> "$GITHUB_ENV"
+
+      - name: Projet Cloudflare Pages (cree s'il manque)
+        env:
+          CF_COMPTE: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_JETON: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BRANCHE_DEFAUT: ${{ github.event.repository.default_branch }}
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/$CF_COMPTE/pages/projects"
+          code=$(curl -sS -o projet.json -w '%{http_code}' -H "Authorization: Bearer $CF_JETON" "$api/$CF_PROJET")
+          if [ "$code" = "404" ]; then
+            echo "Projet « $CF_PROJET » absent : creation (branche de production $BRANCHE_DEFAUT)."
+            code=$(curl -sS -o projet.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $CF_JETON" -H "Content-Type: application/json" \
+              --data "{\"name\": \"$CF_PROJET\", \"production_branch\": \"$BRANCHE_DEFAUT\"}" "$api")
+          fi
+          if [ "$code" != "200" ]; then
+            echo "::error::Cloudflare a repondu $code. Jeton sans la permission « Cloudflare Pages: Edit », ou compte errone ?"
+            jq -c '.errors' projet.json || cat projet.json
+            exit 1
+          fi
+          prod=$(jq -r '.result.production_branch' projet.json)
+          sous_domaine=$(jq -r '.result.subdomain' projet.json)
+          # La branche par defaut du depot part en PRODUCTION, quel que soit le
+          # nom que Cloudflare a enregistre ; toute autre en apercu.
+          if [ "$GITHUB_REF_NAME" = "$BRANCHE_DEFAUT" ]; then branche="$prod"; else branche="$GITHUB_REF_NAME"; fi
+          echo "BRANCHE=$branche" >> "$GITHUB_ENV"
+          echo "SOUS_DOMAINE=$sous_domaine" >> "$GITHUB_ENV"
+          echo "Projet : https://$sous_domaine (production : $prod ; ce deploiement : $branche)."
+
+      - name: Deploiement
+        id: deploiement
+        uses: cloudflare/wrangler-action@v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.141.0"
+          command: pages deploy "${{ env.DOSSIER }}" --project-name="${{ env.CF_PROJET }}" --branch="${{ env.BRANCHE }}" --commit-hash="${{ github.sha }}" --commit-dirty=true
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bilan
+        if: always()
+        env:
+          URL: ${{ steps.deploiement.outputs.deployment-url }}
+          ALIAS: ${{ steps.deploiement.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "### Cloudflare Pages"
+            echo ""
+            echo "- Site : https://$SOUS_DOMAINE"
+            [ -n "$URL" ] && echo "- Ce deploiement : $URL"
+            [ -n "$ALIAS" ] && echo "- Alias de branche : $ALIAS"
+            echo ""
+            echo "Le Worker (backend/wrangler.toml) doit autoriser https://$SOUS_DOMAINE dans ALLOWED_ORIGINS et SITE_URLS."
+          } >> "$GITHUB_STEP_SUMMARY"

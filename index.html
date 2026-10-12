@@ -1433,7 +1433,7 @@
        tombait a zero et le GIF disparaissait. */
     .logo-boite { position: relative; display: block; container-type: inline-size;
       width: min(300px, 100%); aspect-ratio: 1 / 1; line-height: 0; margin: auto; }
-    .logo-boite img { width: 100%; height: 100%; object-fit: contain; }
+    .logo-boite img, .logo-boite video { width: 100%; height: 100%; object-fit: contain; display: block; }
     .logo-legende { position: absolute; left: 50%; top: 74%; transform: translateX(-50%);
       background: #232a33; color: #c9d4e0; border-radius: 2.7cqw; padding: 1.6cqw 4cqw;
       font: 600 5.6cqw/1.2 system-ui, sans-serif; white-space: nowrap; max-width: 86%;
@@ -1988,7 +1988,11 @@
        plafonnait en definition sur les ecrans d'ordinateur. Meme boite que
        l'image qu'ils remplacent. */
     .module-video video { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
-    .detail-swipe video { width: 100%; height: auto; display: block; border-radius: 8px; }
+    .detail-swipe video { width: 100%; height: auto; display: block; border-radius: 8px;
+      /* Chargement differe (12/10/2026) : sans dimensions avant ses
+         metadonnees, la video naitrait en 300 x 150 et ferait sauter la
+         colonne. Les cartes filmees sont carrees. */
+      aspect-ratio: 1 / 1; object-fit: contain; }
     /* Bloc « Automatismes inclus » (17/09/2026) */
     .detail-sous-titre {
       font-size: 1.05rem; margin: 0 0 6px 0; color: var(--text-main);
@@ -3483,8 +3487,8 @@
              du theme courant (html[data-theme]) ; les deux chemins sont ecrits
              en toutes lettres pour que publier_site.py les releve. -->
         <div class="module-video apercu-test-gratuit">
-          <video class="apercu-test-sombre" src="templates/apercus/test-gratuit/sombre.mp4" data-media="templates/apercus/test-gratuit/sombre.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Démonstration animée du Pack Découverte" data-i18n-test-attr="aria-label=alt"><img src="templates/apercus/test-gratuit/sombre.gif" alt=""></video>
-          <video class="apercu-test-clair" src="templates/apercus/test-gratuit/clair.mp4" data-media="templates/apercus/test-gratuit/clair.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Démonstration animée du Pack Découverte" data-i18n-test-attr="aria-label=alt"><img src="templates/apercus/test-gratuit/clair.gif" alt=""></video>
+          <video class="apercu-test-sombre" data-media="templates/apercus/test-gratuit/sombre.mp4" autoplay loop muted playsinline loading="lazy" preload="none" data-paresseux aria-label="Démonstration animée du Pack Découverte" data-i18n-test-attr="aria-label=alt"><source data-src="templates/apercus/test-gratuit/sombre.mp4" type="video/mp4"></video>
+          <video class="apercu-test-clair" data-media="templates/apercus/test-gratuit/clair.mp4" autoplay loop muted playsinline loading="lazy" preload="none" data-paresseux aria-label="Démonstration animée du Pack Découverte" data-i18n-test-attr="aria-label=alt"><source data-src="templates/apercus/test-gratuit/clair.mp4" type="video/mp4"></video>
         </div>
       </div>
 
@@ -4134,14 +4138,164 @@
     return variantes[lang] || variantes.en || chemin;
   }
 
+  /* ---------- MEDIAS DU SITE : CLOUDINARY OU LOCAL (12/10/2026) ----------
+     DEUX ROUTAGES, ET ILS NE SE MELENT JAMAIS :
+       - ce que le site AFFICHE (apercus des packs, captures, logos animes des
+         packs Configuration, vignettes de themes et d'avatars) est servi par
+         Cloudinary des qu'il y a ete envoye (scripts/upload-cloudinary.js) ;
+       - ce que le site DEPOSE chez le client (les textures du Test Gratuit,
+         `TEST_TEXTURES`, embarquees en data-URI dans sa configuration) ne
+         passe JAMAIS par ici : elles restent lues sur le site lui-meme, en
+         qualite d'origine. Le runner, lui, ne lit que le depot.
+     La table est ECRITE par scripts/upload-cloudinary.js, entre les deux
+     marqueurs. Un chemin qui n'y figure pas est servi en local : un media
+     pas encore envoye ne casse rien, il est seulement plus lent.
+     Format : { "<dossier sous templates/>": { "<fichier>": version } }, ou
+     [version, public_id] quand l'identifiant n'est pas celui qui se deduit
+     du chemin (deux fichiers de meme nom, extensions differentes). */
+  /* MEDIAS_CLOUDINARY:debut */
+  const MEDIA_BASE_URL = 'https://res.cloudinary.com/ibd0zsov/image/upload/';
+  const MEDIA_PREFIXE = 'ha-deploy/';
+  const MEDIAS_CLOUDINARY = {};
+  /* MEDIAS_CLOUDINARY:fin */
+
+  const EXT_VIDEO = /\.(mp4|webm|mov)$/i;
+  const TYPES_VIDEO = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' };
+
+  function attrHtml(v) {
+    return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+
+  // Ce que Cloudinary sait de ce chemin local, ou null s'il n'y est pas.
+  function mediaHeberge(chemin) {
+    if (typeof chemin !== 'string' || !chemin.startsWith('templates/')) return null;
+    const relatif = chemin.slice('templates/'.length);
+    const coupe = relatif.lastIndexOf('/');
+    const dossier = relatif.slice(0, coupe + 1), fichier = relatif.slice(coupe + 1);
+    const entree = (MEDIAS_CLOUDINARY[dossier] || {})[fichier];
+    if (entree === undefined) return null;
+    const [version, id] = Array.isArray(entree) ? entree : [entree, null];
+    const point = fichier.lastIndexOf('.');
+    return {
+      video: EXT_VIDEO.test(fichier),
+      ext: point < 0 ? '' : fichier.slice(point + 1).toLowerCase(),
+      v: version,
+      id: id || (MEDIA_PREFIXE + dossier + (point < 0 ? fichier : fichier.slice(0, point)))
+    };
+  }
+
+  // Une video envoyee comme video se lit sous /video/upload/ : c'est la meme
+  // racine que MEDIA_BASE_URL, au type de ressource pres.
+  function urlCloudinary(h, ext) {
+    const base = h.video ? MEDIA_BASE_URL.replace('/image/upload/', '/video/upload/') : MEDIA_BASE_URL;
+    return base + (h.v ? 'v' + h.v + '/' : '') + h.id + '.' + (ext || h.ext);
+  }
+
+  // L'adresse d'un media AFFICHE : Cloudinary s'il y est, le site sinon.
+  function urlMedia(chemin) {
+    const h = mediaHeberge(chemin);
+    return h ? urlCloudinary(h) : chemin;
+  }
+
+  /* Les sources d'une video, ou null si le media ne se lit pas en video.
+     - Video envoyee : l'ORIGINAL d'abord (servi tel quel, sans transformation
+       facturee) ; l'autre format en second, que Cloudinary ne transcode que
+       pour le navigateur qui ne lit pas le premier.
+     - GIF envoye : Cloudinary le convertit a la volee en WebM puis MP4 — ce
+       que le site affichait en GIF devient une video.
+     - Video locale : le fichier lui-meme. Un GIF local reste une image. */
+  function sourcesVideo(chemin) {
+    const h = mediaHeberge(chemin);
+    if (h && h.video) {
+      const autre = h.ext === 'webm' ? 'mp4' : 'webm';
+      return [{ src: urlCloudinary(h), type: TYPES_VIDEO[h.ext] || 'video/mp4' },
+              { src: urlCloudinary(h, autre), type: TYPES_VIDEO[autre] }];
+    }
+    if (h && h.ext === 'gif') {
+      return [{ src: urlCloudinary(h, 'webm'), type: 'video/webm' },
+              { src: urlCloudinary(h, 'mp4'), type: 'video/mp4' }];
+    }
+    if (typeof chemin === 'string' && EXT_VIDEO.test(chemin)) {
+      return [{ src: chemin, type: TYPES_VIDEO[chemin.split('.').pop().toLowerCase()] || 'video/mp4' }];
+    }
+    return null;
+  }
+
+  /* La balise video du site. `loading="lazy"` n'a d'effet que sur les images
+     et les iframes : le vrai chargement differe tient a `preload="none"` et a
+     des sources en `data-src`, posees par `observerVideos` quand la video
+     approche de l'ecran (et mise en pause quand elle en sort). */
+  function videoHtml(chemin, o = {}) {
+    const sources = sourcesVideo(chemin);
+    if (!sources) return '';
+    const poster = o.poster && !/\.gif$/i.test(o.poster) ? ` poster="${attrHtml(urlMedia(o.poster))}"` : '';
+    return `<video${o.classe ? ` class="${o.classe}"` : ''} autoplay loop muted playsinline loading="lazy"`
+      + ` preload="none" data-paresseux${o.controles ? ' controls' : ''}${poster}`
+      + `${o.titre ? ` title="${attrHtml(o.titre)}"` : ''}>`
+      + sources.map(s => `<source data-src="${attrHtml(s.src)}" type="${s.type}">`).join('')
+      + '</video>';
+  }
+
+  // Un media affiche : en video quand il se lit en video, en image sinon.
+  function mediaHtml(chemin, o = {}) {
+    if (sourcesVideo(chemin)) return videoHtml(chemin, o);
+    return `<img src="${attrHtml(urlMedia(chemin))}" alt="${attrHtml(o.alt || '')}" loading="lazy">`;
+  }
+
+  function armerVideo(v) {
+    if (v.dataset.arme) return;
+    v.dataset.arme = '1';
+    v.querySelectorAll('source[data-src]').forEach(s => {
+      s.setAttribute('src', s.dataset.src);
+      s.removeAttribute('data-src');
+    });
+    v.load();
+  }
+  const observateurVideos = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entrees => entrees.forEach(e => {
+        const v = e.target;
+        if (e.isIntersecting) {
+          armerVideo(v);
+          if (v.dataset.pauseAuto) { delete v.dataset.pauseAuto; v.play().catch(() => {}); }
+        } else if (v.dataset.arme && !v.paused) {
+          v.dataset.pauseAuto = '1';
+          v.pause();
+        }
+      }), { rootMargin: '300px 0px' })
+    : null;
+  function observerVideos(racine) {
+    (racine || document).querySelectorAll('video[data-paresseux]:not([data-observe])').forEach(v => {
+      v.dataset.observe = '1';
+      if (observateurVideos) observateurVideos.observe(v); else armerVideo(v);
+    });
+  }
+  // Les fiches et les pages de details se composent a l'affichage : toute
+  // video inseree plus tard est prise en charge sans qu'on ait a y penser.
+  new MutationObserver(() => observerVideos()).observe(document.documentElement, { childList: true, subtree: true });
+
+  function poserSources(v, chemin) {
+    const sources = sourcesVideo(chemin) || [];
+    const arme = !!v.dataset.arme;
+    v.innerHTML = sources.map(s =>
+      `<source ${arme ? 'src' : 'data-src'}="${attrHtml(s.src)}" type="${s.type}">`).join('');
+    if (arme) { v.load(); v.play().catch(() => {}); }
+  }
+
+  /* Animation du Test Gratuit : la langue du visiteur, puis Cloudinary s'il
+     y est (mediaLocalise rend un chemin local, urlMedia le route). */
   function localiserMediasTest() {
     document.querySelectorAll('#section-test [data-media]').forEach(el => {
       const voulu = mediaLocalise(el.dataset.media);
-      if (el.getAttribute('src') !== voulu) {
-        el.setAttribute('src', voulu);
-        if (el.tagName === 'VIDEO') { el.load(); el.play().catch(() => {}); }
-      }
+      if (el.dataset.courant === voulu) return;
+      el.dataset.courant = voulu;
+      if (el.tagName === 'VIDEO') poserSources(el, voulu);
+      else el.setAttribute('src', urlMedia(voulu));
     });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { localiserMediasTest(); observerVideos(); });
+  } else {
+    localiserMediasTest(); observerVideos();
   }
   function langueSite() {
     return document.documentElement.getAttribute('lang') || 'fr';
@@ -4208,7 +4362,8 @@
   };
   function logoHtml(cle, src) {
     const legende = traductionPack(cle, 'logo') || LEGENDES_LOGO[cle] || '';
-    return `<span class="logo-boite"><img src="${src}" alt="${moduleTitle(cle)}" loading="lazy">${
+    // Le logo est un GIF : une fois sur Cloudinary, il se lit en VIDEO.
+    return `<span class="logo-boite">${mediaHtml(src, { alt: moduleTitle(cle), titre: moduleTitle(cle) })}${
       legende ? `<span class="logo-legende">${legende}</span>` : ''}</span>`;
   }
   /* Les deux boutons « Retour aux packs », statiques dans la page. */
@@ -7329,15 +7484,14 @@
           <div class="detail-colonne-media">
             ${videoEnTete
               ? `<div class="module-video detail-gif detail-video" style="background: ${cadre};">
-                   <video src="${videoEnTete}" ${animation ? `poster="${animation}"` : ''}
-                          autoplay muted loop playsinline controls preload="metadata"
-                          title="Démonstration ${titre} : tableau de bord, automatismes et installation"></video></div>`
+                   ${videoHtml(videoEnTete, { controles: true, poster: animation,
+                       titre: `Démonstration ${titre} : tableau de bord, automatismes et installation` })}</div>`
               : animation && logo && animation === logo
               ? `<div class="module-video detail-gif" style="background: ${cadre};">${logoHtml(cleModule, logo)}</div>`
               : animation
               ? `<div class="module-video detail-gif" style="background: ${cadre};">
-                   <img src="${animation}" alt="Aperçu ${titre}${
-                     aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}" loading="lazy">${
+                   ${mediaHtml(animation, { alt: `Aperçu ${titre}${
+                     aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}`, titre: `Aperçu ${titre}` })}${
                    animationEstTexture ? `<span class="apercu-texture-note${
                      (themeSite(cleTheme) || {}).clair ? ' clair' : ''}">Texture du thème — animation à venir</span>` : ''}</div>`
               : `<div class="detail-attente">
@@ -7384,10 +7538,9 @@
       // (le 3e du pack Temps) : il remplace alors l'annotation générique.
       const texte = (sel && sel.onglet === numero && option && option.texte) ? option.texte : o.texte;
       const visuel = video
-        ? `<video src="${video}" ${images[i] ? `poster="${images[i]}"` : ''} autoplay muted loop playsinline preload="metadata"
-                  title="${titre} — ${o.titre}"></video>`
+        ? videoHtml(video, { poster: images[i], titre: `${titre} — ${o.titre}` })
         : img
-        ? `<img src="${img}" alt="${titre} — ${o.titre}" loading="lazy">`
+        ? mediaHtml(img, { alt: `${titre} — ${o.titre}`, titre: `${titre} — ${o.titre}` })
         : (o.icone
             ? `<div class="detail-swipe-icone"><i class="fa-solid ${o.icone}"></i></div>`
             : `<div class="detail-attente" style="padding: 40px 12px;">
@@ -21710,7 +21863,7 @@ function dessinSonnette(o) {
         + ETATS.map(e => bouton(e[0], e[1], e[0] === etat, a.teinte)).join('') + '</div>'
         + '<div class="apercu-av-grille">' + AVATARS.map(x => '<button type="button" class="apercu-av-tuile" data-id="'
         + x.id + '" title="' + x.nom + '" aria-pressed="' + (x.id === a.id) + '" style="--t:' + x.teinte + '">'
-        + '<img loading="lazy" alt="" src="' + x.pv + '"><span>' + x.court + '</span></button>').join('') + '</div></div>';
+        + '<img loading="lazy" alt="" src="' + urlMedia(x.pv) + '"><span>' + x.court + '</span></button>').join('') + '</div></div>';
       charger().then(() => {
         const D = window.AvatarIADessin, scene = cible.querySelector('.apercu-av-scene');
         if (!D || !scene) return;
@@ -21861,10 +22014,12 @@ function dessinSonnette(o) {
     const fiche = apercuDuTheme(modName, cle);
     cadre.style.background = cadreDuTheme(cle, fiche);
     if (fiche && fiche.video) {
-      cadre.innerHTML = `<video src="${fiche.video}" ${fiche.gif ? `poster="${fiche.gif}"` : ''}
-        autoplay muted loop playsinline preload="metadata" title="Démonstration ${moduleTitle(modName)}"></video>`;
+      cadre.innerHTML = videoHtml(fiche.video, { titre: `Démonstration ${moduleTitle(modName)}` });
     } else if (fiche && fiche.gif) {
-      cadre.innerHTML = `<img src="${fiche.gif}" alt="Démonstration ${moduleTitle(modName)}" loading="lazy">`;
+      // Un theme encore sans video : son GIF, lu en video des qu'il est sur
+      // Cloudinary (conversion a la volee), en image tant qu'il est local.
+      cadre.innerHTML = mediaHtml(fiche.gif, { alt: `Démonstration ${moduleTitle(modName)}`,
+                                               titre: `Démonstration ${moduleTitle(modName)}` });
     } else {
       cadre.innerHTML = apercuTexture(cle, moduleTitle(modName));
     }
@@ -21879,7 +22034,7 @@ function dessinSonnette(o) {
     if (!t || !t.fond) {
       return `<span class="module-video-vide"><i class="fa-solid fa-image"></i> Aperçu à venir</span>`;
     }
-    return `<img src="${t.fond}" alt="Fond ${t.label} — ${titre}" loading="lazy">
+    return `<img src="${attrHtml(urlMedia(t.fond))}" alt="Fond ${t.label} — ${titre}" loading="lazy">
       <span class="apercu-texture-note${t.clair ? ' clair' : ''}">${t.label} — texture du thème, animation à venir</span>`;
   }
 
@@ -23084,7 +23239,10 @@ function dessinSonnette(o) {
     // Navigation pleine page, et non un appel XHR : le fournisseur doit
     // afficher SON écran de consentement dans la barre d'adresse du visiteur,
     // c'est ce qui lui permet de vérifier à qui il confie son compte.
-    location.href = BACKEND_URL.replace(/\/+$/, '') + '/api/auth/oauth/' + fournisseur + '/start';
+    // `site` : le Worker ramene le visiteur sur CE site au retour de Google
+    // (deux sites coexistent pendant la bascule vers Cloudflare Pages).
+    location.href = BACKEND_URL.replace(/\/+$/, '') + '/api/auth/oauth/' + fournisseur + '/start'
+      + '?site=' + encodeURIComponent(location.origin + location.pathname);
   }
 
   function champMotDePasse(id, placeholder, autocomplete, action) {
