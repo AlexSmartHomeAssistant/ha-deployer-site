@@ -113,6 +113,11 @@
 
       --nav-bg: rgba(31, 35, 41, 0.86);
       --input-bg: rgba(0, 0, 0, 0.22);
+      /* Fond des SELECTEURS (22/10/2026) : opaque, contrairement a
+         --input-bg. La liste deroulante native ne voit pas la carte sous le
+         champ : un fond translucide y devenait du blanc, sous un texte
+         presque blanc. #1c2129 sous #F2F4F7 : contraste 15:1. */
+      --select-bg: #1c2129;
       --hover-bg: rgba(255, 255, 255, 0.08);
       /* Fond de la langue active du selecteur. Une teinte par theme : la
          meme valeur serait invisible sur l un des deux fonds. */
@@ -169,6 +174,7 @@
 
       --nav-bg: rgba(255, 255, 255, 0.78);
       --input-bg: rgba(255, 255, 255, 0.92);
+      --select-bg: #ffffff;
       --hover-bg: rgba(0, 0, 0, 0.055);
       --lang-active-bg: rgba(31, 111, 165, 0.13);
       --modal-bg: #ffffff;
@@ -1327,46 +1333,6 @@
       cursor: pointer;
     }
 
-    /* Selecteur VISUEL (21/10/2026, types de porte du pack Porte de Garage) :
-       une vignette a cote du nom de chaque option. Le <select> reste la
-       saisie (collecte, restauration, traduction des options) ; les tuiles
-       le commandent et suivent sa valeur (`refleterCouleur`). */
-    .param-vignettes {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 4px;
-      margin-top: 4px;
-    }
-    .param-vignette {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-      padding: 3px 6px 3px 3px;
-      border: 2px solid var(--card-border);
-      border-radius: 9px;
-      background: var(--input-bg);
-      color: var(--text-main);
-      font: inherit;
-      font-size: 0.72rem;
-      line-height: 1.15;
-      text-align: left;
-      cursor: pointer;
-    }
-    .param-vignette img {
-      width: 30px;
-      height: 28px;
-      flex: none;
-      border-radius: 6px;
-    }
-    .param-vignette span { min-width: 0; overflow-wrap: anywhere; }
-    .param-vignette:hover { background: var(--hover-bg); }
-    .param-vignette.actif {
-      border-color: var(--col-ouverture);
-      background: var(--hover-bg);
-      font-weight: 700;
-    }
-
     /* Catégorie encore vide : on le dit, plutôt que d'afficher une page blanche */
     .categorie-vide {
       text-align: center;
@@ -1812,28 +1778,13 @@
     }
     .detail-commande-theme .param-label i { margin-right: 4px; }
 
-    /* ===== TROIS BLOCS DE LA PAGE DETAILS (03/09/2026, remplace les deux
-       blocs du 02/09/2026) =====
-       Zone 1 : le GIF seul. Zone 2 : le descriptif detaille et « Inclus ».
-       Zone 3 : les entites (obligatoires/optionnelles), les eventuels autres
-       selecteurs, et le bouton « Ajouter ». Le selecteur de THEME, lui, reste
-       au-dessus des trois zones (`.detail-commandes`) : il commande l'apercu
-       des trois zones a la fois, il ne peut pas appartenir a une seule. */
-    /* DEUX ZONES EN HAUT, UNE EN BAS SUR TOUTE LA LARGEUR (07/09/2026,
-       demande du client) : le GIF a gauche, le descriptif et « Inclus » a
-       droite, puis les entites a renseigner sous les deux. Les trois colonnes
-       cote a cote du 03/09 serraient trop les saisies -- et un pack a vingt et
-       un champs, comme Dechets, y devenait illisible. */
-    .detail-trois-blocs {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-    }
-    .detail-colonne-action { grid-column: 1 / -1; }
-    .detail-colonne-media, .detail-colonne-info, .detail-colonne-action {
-      display: flex;
-      flex-direction: column;
+    /* ===== LE HAUT DE LA PAGE DETAILS : TROIS SOUS-BLOCS EMPILES
+       (22/10/2026, demande du client) =====
+       La video, puis le descriptif et « Inclus », puis le selecteur de theme,
+       les autres saisies et les boutons « Ajouter » / « Supprimer ». Chacun
+       est un `.detail-sous-bloc` (colonne flex, trait de separation) ; seul
+       l'ecart interne est propre a ces trois-la. */
+    .detail-sous-bloc-media, .detail-sous-bloc-info, .detail-sous-bloc-action {
       gap: 12px;
       min-width: 0;
     }
@@ -1907,15 +1858,8 @@
     }
     .detail-ajouter { margin-top: 6px; justify-self: start; }
 
-    /* Sous 980px les trois colonnes serrent trop le descriptif et les champs
-       de saisie : la zone media garde sa largeur propre (elle est bornee a
-       400px par `.detail-gif` de toute facon) pendant que l'info et l'action
-       se partagent la ligne suivante. Sur telephone (780px), tout s'empile —
-       media, puis descriptif, puis saisies — dans l'ordre de lecture. */
-    /* Sur telephone tout s'empile dans l'ordre de lecture : l'animation,
-       puis le descriptif, puis les saisies. */
+    /* Sur telephone les saisies passent sur une seule colonne. */
     @media (max-width: 780px) {
-      .detail-trois-blocs { grid-template-columns: 1fr; }
       .detail-champs, .detail-champs-ligne { grid-template-columns: 1fr; }
     }
     @media (min-width: 861px) and (max-width: 1200px) {
@@ -3252,6 +3196,26 @@
   .grille-entites th, .grille-entites td { border: 1px solid rgba(128,128,128,.35); padding: 6px 8px;
     vertical-align: top; text-align: left; }
   .grille-entites th { background: rgba(82,190,128,.15); }
+
+  /* TOUS LES SELECTEURS DU SITE (22/10/2026) : un fond opaque, le champ ET
+     sa liste deroulante. Les regles par zone (`.detail-champs select`,
+     `.form-group select`...) posent un `background` translucide plus
+     specifique : seul `!important` passe par-dessus toutes a la fois. Il ne
+     touche que la COULEUR de fond -- la vignette ou le rectangle de couleur
+     que `refleterCouleur` pose en ligne (`background-image`) reste visible.
+     `color-scheme` donne a la liste native les teintes du theme du site, et
+     non celles du systeme. Les <option> a teinte propre (`color` en ligne)
+     gardent leur couleur. */
+  select {
+    background-color: var(--select-bg) !important;
+    color: var(--text-main);
+    color-scheme: dark;
+  }
+  html[data-theme="light"] select { color-scheme: light; }
+  select option, select optgroup {
+    background-color: var(--select-bg);
+    color: var(--text-main);
+  }
 </style>
 </head>
 <body>
@@ -7531,10 +7495,7 @@
     const option = sel ? (sel.options.find(o => o.value === etatDetails[sel.cle])
                           || sel.options[0]) : null;
 
-    // --- Sous-bloc 1 : commandes, animation, descriptif.
-    //     Les sélecteurs sont EN TÊTE : ce sont eux qui commandent et
-    //     l'animation et les trois captures. Les poser dessous laisserait
-    //     croire qu'ils s'appliquent à ce qui suit.
+    // --- Le selecteur de theme, en tete du sous-bloc des saisies (22/10/2026).
     const commandes = (aTheme || sel) ? `
       <div class="detail-commandes">
         ${aTheme ? `
@@ -7556,54 +7517,49 @@
 
     const cadre = aTheme ? cadreDuTheme(cleTheme, fiche) : '#14181d';
 
-    /* TROIS ZONES COTE A COTE (03/09/2026, remplace les deux colonnes du
-       02/09/2026) : le GIF seul, le descriptif detaille suivi de « Inclus »,
-       puis les entites a renseigner et le bouton d'ajout. Trois blocs bien
-       distincts se reperent d'un coup d'oeil, la ou deux blocs melaient
-       encore descriptif et « Inclus » a l'animation. Le selecteur de theme
-       (`commandes`) reste au-dessus, inchange : il commande l'apercu des
-       trois zones a la fois. */
+    /* TROIS SOUS-BLOCS EMPILES (22/10/2026, demande du client ; remplacent
+       le selecteur de theme pose au-dessus de trois zones cote a cote) :
+       1. la video ; 2. le descriptif et « Inclus » ; 3. le selecteur de
+       theme, les autres saisies, puis « Ajouter » et « Supprimer ». Chacun
+       est un `.detail-sous-bloc` : le meme trait les separe que celui qui
+       precede les trois captures. */
     const presentation = `
-      <div class="detail-sous-bloc">
+      <div class="detail-sous-bloc detail-sous-bloc-media">
+        ${videoEnTete
+          ? `<div class="module-video detail-gif detail-video" style="background: ${cadre};">
+               ${videoHtml(videoEnTete, { controles: true, poster: animation,
+                   titre: `Démonstration ${titre} : tableau de bord, automatismes et installation` })}</div>`
+          : animation && logo && animation === logo
+          ? `<div class="module-video detail-gif" style="background: ${cadre};">${logoHtml(cleModule, logo)}</div>`
+          : animation
+          ? `<div class="module-video detail-gif" style="background: ${cadre};">
+               ${mediaHtml(animation, { alt: `Aperçu ${titre}${
+                 aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}`, titre: `Aperçu ${titre}` })}${
+               animationEstTexture ? `<span class="apercu-texture-note${
+                 (themeSite(cleTheme) || {}).clair ? ' clair' : ''}">Texture du thème — animation à venir</span>` : ''}</div>`
+          : `<div class="detail-attente">
+               <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
+      </div>
+      <div class="detail-sous-bloc detail-sous-bloc-info">
+        <p class="detail-intro">${traductionPack(cleModule, 'intro') || conf.intro || ''}</p>
+        ${option && option.sous ? `<p class="detail-variante-sous">${
+          /* Sous-titre de la variante dans la langue du visiteur (19/10/2026,
+             pack Lumiere) : `selecteur.options.<valeur>.sous` de la fiche. */
+          (((traductionPack(cleModule, 'selecteur') || {}).options || {})[option.value] || {}).sous
+          || option.sous}</p>` : ''}
+        <!-- « Inclus » suit le descriptif : c'est la suite de la meme
+             phrase — ce que fait le pack, puis ce qu'il apporte. -->
+        ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
+      </div>
+      <div class="detail-sous-bloc detail-sous-bloc-action">
         ${commandes}
-        <div class="detail-trois-blocs">
-          <div class="detail-colonne-media">
-            ${videoEnTete
-              ? `<div class="module-video detail-gif detail-video" style="background: ${cadre};">
-                   ${videoHtml(videoEnTete, { controles: true, poster: animation,
-                       titre: `Démonstration ${titre} : tableau de bord, automatismes et installation` })}</div>`
-              : animation && logo && animation === logo
-              ? `<div class="module-video detail-gif" style="background: ${cadre};">${logoHtml(cleModule, logo)}</div>`
-              : animation
-              ? `<div class="module-video detail-gif" style="background: ${cadre};">
-                   ${mediaHtml(animation, { alt: `Aperçu ${titre}${
-                     aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}`, titre: `Aperçu ${titre}` })}${
-                   animationEstTexture ? `<span class="apercu-texture-note${
-                     (themeSite(cleTheme) || {}).clair ? ' clair' : ''}">Texture du thème — animation à venir</span>` : ''}</div>`
-              : `<div class="detail-attente">
-                   <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
-          </div>
-          <div class="detail-colonne-info">
-            <p class="detail-intro">${traductionPack(cleModule, 'intro') || conf.intro || ''}</p>
-            ${option && option.sous ? `<p class="detail-variante-sous">${
-              /* Sous-titre de la variante dans la langue du visiteur (19/10/2026,
-                 pack Lumiere) : `selecteur.options.<valeur>.sous` de la fiche. */
-              (((traductionPack(cleModule, 'selecteur') || {}).options || {})[option.value] || {}).sous
-              || option.sous}</p>` : ''}
-            <!-- « Inclus » suit le descriptif : c'est la suite de la meme
-                 phrase — ce que fait le pack, puis ce qu'il apporte. -->
-            ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
-          </div>
-          <div class="detail-colonne-action">
-            ${champsDetailHtml(cleModule)}
-            <div class="detail-actions">
-              <button class="btn-add-big detail-ajouter"
-                      onclick="addModuleToCart('${cleModule}', this)">
-                <i class="fa-solid fa-cart-plus"></i> ${texteCommun('ajouter', 'Ajouter')} (${prixLisible(prixDe(cleModule))})
-              </button>
-              ${boutonSupprimerHtml(cleModule)}
-            </div>
-          </div>
+        ${champsDetailHtml(cleModule)}
+        <div class="detail-actions">
+          <button class="btn-add-big detail-ajouter"
+                  onclick="addModuleToCart('${cleModule}', this)">
+            <i class="fa-solid fa-cart-plus"></i> ${texteCommun('ajouter', 'Ajouter')} (${prixLisible(prixDe(cleModule))})
+          </button>
+          ${boutonSupprimerHtml(cleModule)}
         </div>
       </div>`;
 
@@ -8065,14 +8021,6 @@
       + 'background-repeat:no-repeat;padding-left:36px;';
   }
 
-  /* Une tuile du selecteur visuel : pose la valeur sur le <select> et declenche
-     son `onchange` (apercu, reflet, tuile active), comme un choix au clavier. */
-  function choisirVignette(id, valeur) {
-    const select = document.getElementById(id);
-    if (!select) return;
-    select.value = valeur;
-    select.dispatchEvent(new Event('change'));
-  }
 
   /* Les sept jours. Le CODE est celui qu'attend `waste_collection_schedule`
      (`TU`, `premier-TU`, `dernier-WE`) : il traverse le Worker et le runner
@@ -8237,16 +8185,6 @@
      visible en permanence. */
   function refleterCouleur(select) {
     if (!select) return;
-    // Selecteur visuel : la tuile active suit la valeur du <select>, qu'elle
-    // vienne d'une tuile, du clavier ou d'une saisie restauree.
-    const tuiles = select.parentElement && select.parentElement.querySelector('.param-vignettes');
-    if (tuiles) {
-      tuiles.querySelectorAll('[data-valeur]').forEach(b => {
-        const actif = b.dataset.valeur === select.value;
-        b.classList.toggle('actif', actif);
-        b.setAttribute('aria-checked', String(actif));
-      });
-    }
     const o = select.options[select.selectedIndex];
     if (!o || !o.style.backgroundImage) return;
     select.style.backgroundImage = o.style.backgroundImage;
@@ -9998,22 +9936,16 @@
       const apres = c.pilote
         ? ` majJoursCollecte('${modName}', '${c.param}', '${c.pilote}');` : '';
       // `vignette` : l'option porte un petit visuel, montre dans le <select>
-      // pour l'option choisie (`refleterCouleur`) et dans une grille de
-      // tuiles qui commandent le <select> (types de porte, 21/10/2026).
-      const vignettes = c.type === 'select' && c.options.some(o => o.vignette)
-        ? `<div class="param-vignettes" role="radiogroup" aria-label="${attrHtml(c.label)}">${c.options.map(o =>
-             `<button type="button" class="param-vignette${o.value === parDefaut ? ' actif' : ''}"
-                role="radio" aria-checked="${o.value === parDefaut}" data-valeur="${o.value}"
-                onclick="choisirVignette('${id}', '${o.value}')"><img src="${attrHtml(urlMedia(o.vignette))}"
-                alt="" loading="lazy"><span>${o.label}</span></button>`).join('')}</div>`
-        : '';
+      // pour l'option choisie (`refleterCouleur`). La grille de tuiles qui le
+      // doublait sous le <select> (21/10/2026) est retiree le 22/10/2026 a la
+      // demande du client : le selecteur seul suffit.
       const saisie = c.type === 'select'
         ? `<select id="${id}" onchange="refleterCouleur(this);majApercu('${modName}');${apres}">${c.options.map(o =>
              `<option value="${o.value}"${o.value === parDefaut ? ' selected' : ''}${
                o.rectangle ? ` style="${rectangleCouleur(o.rectangle)}"`
                            : (o.vignette ? ` style="${vignetteOption(o.vignette)}"`
                            : (o.couleur ? ` style="color:${o.couleur}"` : ''))
-             }${estChampTheme(c) ? titreOptionTheme(o) : ''}>${estChampTheme(c) ? libelleTheme(o) : o.label}</option>`).join('')}</select>${vignettes}`
+             }${estChampTheme(c) ? titreOptionTheme(o) : ''}>${estChampTheme(c) ? libelleTheme(o) : o.label}</option>`).join('')}</select>`
         : `<input type="${c.type === 'date' ? 'date' : (c.type === 'password' ? 'password' : 'text')}" autocomplete="off"
                   class="${c.required === false ? 'field-optional' : 'field-required'}"
                   id="${id}" placeholder="${c.placeholder || ''}">`;
