@@ -1778,16 +1778,40 @@
     }
     .detail-commande-theme .param-label i { margin-right: 4px; }
 
-    /* ===== LE HAUT DE LA PAGE DETAILS : TROIS SOUS-BLOCS EMPILES
+    /* ===== LE HAUT DE LA PAGE DETAILS : TROIS SOUS-BLOCS COTE A COTE
        (22/10/2026, demande du client) =====
-       La video, puis le descriptif et « Inclus », puis le selecteur de theme,
-       les autres saisies et les boutons « Ajouter » / « Supprimer ». Chacun
-       est un `.detail-sous-bloc` (colonne flex, trait de separation) ; seul
-       l'ecart interne est propre a ces trois-la. */
+       La video, le descriptif et « Inclus », puis le selecteur de theme, les
+       autres saisies et les boutons « Ajouter » / « Supprimer ». Un trait
+       VERTICAL les separe, la ou le trait horizontal de `.detail-sous-bloc`
+       separe le haut des trois captures. Sous 900 px trois colonnes ne
+       tiennent plus : la rangee s'empile, avec le trait horizontal habituel. */
+    .detail-haut { gap: 22px; }
     .detail-sous-bloc-media, .detail-sous-bloc-info, .detail-sous-bloc-action {
       gap: 12px;
       min-width: 0;
     }
+    @media (min-width: 901px) {
+      .detail-haut {
+        display: grid;
+        /* La colonne de la video un peu plus large : la carte y est bornee a
+           400 px (`.detail-gif`), et gagne ce qu'elle peut avant cette borne. */
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+        gap: 0 18px;
+        align-items: start;
+      }
+      .detail-haut > .detail-sous-bloc + .detail-sous-bloc {
+        border-top: 0;
+        padding-top: 0;
+        border-left: 1px solid var(--card-border);
+        padding-left: 18px;
+        align-self: stretch;
+      }
+    }
+    /* Les saisies du 3e sous-bloc, UNE PAR LIGNE (22/10/2026), quel que soit
+       le nombre de colonnes que leur donnerait ailleurs `.detail-champs` ou
+       `--cols` : la colonne est trop etroite pour en aligner deux. */
+    .detail-sous-bloc-action .detail-champs,
+    .detail-sous-bloc-action .detail-champs-ligne { grid-template-columns: minmax(0, 1fr); }
     /* LES SAISIES EN GRILLE, et non en colonne unique. Le pack Dechets en
        porte vingt et une (cinq bacs x trois champs, plus la piece, les
        encombrants, l'heure, la langue et le theme) : empilees, elles faisaient
@@ -7517,49 +7541,51 @@
 
     const cadre = aTheme ? cadreDuTheme(cleTheme, fiche) : '#14181d';
 
-    /* TROIS SOUS-BLOCS EMPILES (22/10/2026, demande du client ; remplacent
-       le selecteur de theme pose au-dessus de trois zones cote a cote) :
-       1. la video ; 2. le descriptif et « Inclus » ; 3. le selecteur de
-       theme, les autres saisies, puis « Ajouter » et « Supprimer ». Chacun
-       est un `.detail-sous-bloc` : le meme trait les separe que celui qui
-       precede les trois captures. */
+    /* TROIS SOUS-BLOCS COTE A COTE (22/10/2026, demande du client ; ils
+       etaient empiles le matin meme) : 1. la video ; 2. le descriptif et
+       « Inclus » ; 3. le selecteur de theme, les autres saisies une par
+       ligne, puis « Ajouter » et « Supprimer » sur la meme ligne. La rangee
+       `.detail-haut` est elle-meme un `.detail-sous-bloc` : le trait qui
+       precede les trois captures reste donc celui d'avant. */
     const presentation = `
-      <div class="detail-sous-bloc detail-sous-bloc-media">
-        ${videoEnTete
-          ? `<div class="module-video detail-gif detail-video" style="background: ${cadre};">
-               ${videoHtml(videoEnTete, { controles: true, poster: animation,
-                   titre: `Démonstration ${titre} : tableau de bord, automatismes et installation` })}</div>`
-          : animation && logo && animation === logo
-          ? `<div class="module-video detail-gif" style="background: ${cadre};">${logoHtml(cleModule, logo)}</div>`
-          : animation
-          ? `<div class="module-video detail-gif" style="background: ${cadre};">
-               ${mediaHtml(animation, { alt: `Aperçu ${titre}${
-                 aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}`, titre: `Aperçu ${titre}` })}${
-               animationEstTexture ? `<span class="apercu-texture-note${
-                 (themeSite(cleTheme) || {}).clair ? ' clair' : ''}">Texture du thème — animation à venir</span>` : ''}</div>`
-          : `<div class="detail-attente">
-               <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
-      </div>
-      <div class="detail-sous-bloc detail-sous-bloc-info">
-        <p class="detail-intro">${traductionPack(cleModule, 'intro') || conf.intro || ''}</p>
-        ${option && option.sous ? `<p class="detail-variante-sous">${
-          /* Sous-titre de la variante dans la langue du visiteur (19/10/2026,
-             pack Lumiere) : `selecteur.options.<valeur>.sous` de la fiche. */
-          (((traductionPack(cleModule, 'selecteur') || {}).options || {})[option.value] || {}).sous
-          || option.sous}</p>` : ''}
-        <!-- « Inclus » suit le descriptif : c'est la suite de la meme
-             phrase — ce que fait le pack, puis ce qu'il apporte. -->
-        ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
-      </div>
-      <div class="detail-sous-bloc detail-sous-bloc-action">
-        ${commandes}
-        ${champsDetailHtml(cleModule)}
-        <div class="detail-actions">
-          <button class="btn-add-big detail-ajouter"
-                  onclick="addModuleToCart('${cleModule}', this)">
-            <i class="fa-solid fa-cart-plus"></i> ${texteCommun('ajouter', 'Ajouter')} (${prixLisible(prixDe(cleModule))})
-          </button>
-          ${boutonSupprimerHtml(cleModule)}
+      <div class="detail-sous-bloc detail-haut">
+        <div class="detail-sous-bloc detail-sous-bloc-media">
+          ${videoEnTete
+            ? `<div class="module-video detail-gif detail-video" style="background: ${cadre};">
+                 ${videoHtml(videoEnTete, { controles: true, poster: animation,
+                     titre: `Démonstration ${titre} : tableau de bord, automatismes et installation` })}</div>`
+            : animation && logo && animation === logo
+            ? `<div class="module-video detail-gif" style="background: ${cadre};">${logoHtml(cleModule, logo)}</div>`
+            : animation
+            ? `<div class="module-video detail-gif" style="background: ${cadre};">
+                 ${mediaHtml(animation, { alt: `Aperçu ${titre}${
+                   aTheme ? ' — ' + ((themeSite(cleTheme) || {}).label || '') : ''}`, titre: `Aperçu ${titre}` })}${
+                 animationEstTexture ? `<span class="apercu-texture-note${
+                   (themeSite(cleTheme) || {}).clair ? ' clair' : ''}">Texture du thème — animation à venir</span>` : ''}</div>`
+            : `<div class="detail-attente">
+                 <i class="fa-solid fa-film"></i> L'animation de ce thème est en cours de préparation.</div>`}
+        </div>
+        <div class="detail-sous-bloc detail-sous-bloc-info">
+          <p class="detail-intro">${traductionPack(cleModule, 'intro') || conf.intro || ''}</p>
+          ${option && option.sous ? `<p class="detail-variante-sous">${
+            /* Sous-titre de la variante dans la langue du visiteur (19/10/2026,
+               pack Lumiere) : `selecteur.options.<valeur>.sous` de la fiche. */
+            (((traductionPack(cleModule, 'selecteur') || {}).options || {})[option.value] || {}).sous
+            || option.sous}</p>` : ''}
+          <!-- « Inclus » suit le descriptif : c'est la suite de la meme
+               phrase — ce que fait le pack, puis ce qu'il apporte. -->
+          ${inclusHtml(cleModule, detailSepare(descriptifDe(cleModule)).inclus)}
+        </div>
+        <div class="detail-sous-bloc detail-sous-bloc-action">
+          ${commandes}
+          ${champsDetailHtml(cleModule)}
+          <div class="detail-actions">
+            <button class="btn-add-big detail-ajouter"
+                    onclick="addModuleToCart('${cleModule}', this)">
+              <i class="fa-solid fa-cart-plus"></i> ${texteCommun('ajouter', 'Ajouter')} (${prixLisible(prixDe(cleModule))})
+            </button>
+            ${boutonSupprimerHtml(cleModule)}
+          </div>
         </div>
       </div>`;
 
