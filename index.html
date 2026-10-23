@@ -2011,6 +2011,11 @@
       display: flex; align-items: center; gap: 8px;
     }
     .detail-sous-titre i { color: var(--primary-blue); }
+    /* Les quatre titres de sous-bloc (« Visuel », « Description »,
+       « Configuration », « Détails ») un cran au-dessus (23/10/2026, demande
+       du client) : ils doivent ressortir du texte qu'ils introduisent.
+       « Automatismes inclus » garde sa taille. */
+    .detail-titre-bloc { font-size: 1.2rem; }
     .detail-automatismes-grille {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 12px; margin-top: 12px;
@@ -7672,7 +7677,7 @@
      « Automatismes inclus » ; le libelle suit la langue du site par
      `texteCommun` (fiches `i18n/packs_config/<langue>.json`, cle `commun`). */
   function titreSousBloc(cle, defaut, icone) {
-    return `<h2 class="detail-sous-titre"><i class="fa-solid ${icone}"></i> ${texteCommun(cle, defaut)}</h2>`;
+    return `<h2 class="detail-sous-titre detail-titre-bloc"><i class="fa-solid ${icone}"></i> ${texteCommun(cle, defaut)}</h2>`;
   }
 
   /* La video de demonstration d'un pack : `MODULE_MEDIA[pack].video`, un
