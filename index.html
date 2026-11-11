@@ -4578,7 +4578,7 @@
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
       { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
-      { name: 'appareil_enceinte', desc: 'Barre de son, enceinte connectée ou portable : radios, bibliothèque et ondes vivantes' },
+      { name: 'appareil_enceinte', desc: 'Barre de son, enceinte connectée ou portable : source en cours, radios, bibliothèque, consommation et coût' },
       { name: 'appareil_imprimante', desc: 'Impression, cartouches et durée de vie' },
       { name: 'appareil_raspberry', desc: 'Charge, température, disque, Zigbee, Wi-Fi et Bluetooth de votre Raspberry' },
       { name: 'appareil_aspirateur', desc: 'Robot vivant dans sa pièce, pièces, profils, consommables et alertes' },
@@ -4863,8 +4863,8 @@
       apercu: {}
     },
     appareil_enceinte: {
-      resume: `Votre enceinte vivante : son afficheur montre ce qui joue, ses haut-parleurs battent. Quinze radios de votre pays, votre bibliothèque Music Assistant, et une alerte quand elle joue trop longtemps.`,
-      detail: `Le pilotage complet de votre <b>enceinte</b> &mdash; barre de son, enceinte connectée, haut-parleur ou enceinte portable. Vous ne saisissez que le <b>nom de l'appareil</b> : le pack reconnaît son type d'après le modèle, retrouve le lecteur Music Assistant qui lui correspond, sa batterie et la prise connectée qui l'alimente. Le premier onglet montre l'enceinte <b>vivante</b> : son afficheur montre ce qui joue &mdash; la pochette de l'album, la télévision, la radio, un livre audio &mdash;, ses haut-parleurs <b>battent</b> et des ondes vertes s'en échappent tant que la musique joue. Dessous, la pochette tourne comme un vinyle et un égaliseur aux cinq couleurs danse. Le deuxième onglet ouvre votre <b>bibliothèque</b> : les <b>quinze radios les plus écoutées de votre pays</b> (ou les vôtres), vos playlists, albums, artistes, titres, podcasts et livres audio, et une <b>recherche</b> &mdash; tout passe par Music Assistant. Le troisième trace le temps d'écoute et, avec une prise, la consommation.`,
+      resume: `Votre enceinte en direct : l'icône de la source sur son afficheur, ses commandes, vos radios et votre bibliothèque, l'allumage, la consommation et le coût.`,
+      detail: `Le pilotage complet de votre <b>enceinte</b> &mdash; barre de son, enceinte connectée, haut-parleur ou enceinte portable &mdash;, aux couleurs et à l'écriture du thème choisi : les mêmes que le pack Lave-linge. Vous ne saisissez que la <b>pièce</b>, l'<b>entité de l'enceinte</b> (media_player) et son <b>type</b> : le pack retrouve seul son appareil, sa batterie, son lecteur Music Assistant et la <b>prise connectée</b> qui l'alimente. Le premier onglet montre votre enceinte avec, sur son afficheur, l'<b>icône de la source en cours</b> (Spotify, TV, radio, livre audio...) ; juste dessous, ses <b>commandes</b> ; et, au-dessus d'une barre de son ou à côté des autres, l'icône animée et le <b>titre</b> de ce qui joue. Le deuxième ouvre vos <b>radios</b> et votre <b>bibliothèque</b> en huit sous-onglets. Le troisième trace l'<b>allumage</b>, la <b>consommation</b> et le <b>coût</b> (tarif de votre tableau Énergie). Enceinte allumée : <b>serpentin vert</b> et fond qui bat ; éteinte ou en veille : image et bordure fixes. Une durée d'allumage facultative déclenche une <b>notification</b> sur vos mobiles.`,
       apercu: {}
     },
     appareil_television: {
@@ -5435,9 +5435,9 @@
         action: `Notification sur tous vos mobiles, qui dit la puissance ou les kWh mesur\u00e9s et le seuil franchi. Les deux seuils sont des entr\u00e9es que vous r\u00e9glez depuis Home Assistant sans red\u00e9ploiement ; la carte passe au rouge au m\u00eame moment.` }
     ],
     appareil_enceinte: [
-      { titre: `Enceinte qui joue trop longtemps`, icone: 'fa-hourglass-half',
-        declencheur: `L'enceinte joue sans s'arrêter plus longtemps que le seuil que vous avez réglé (4 heures par défaut). Changer de morceau ne remet pas le compte à zéro ; seul un arrêt ou une pause le fait.`,
-        action: `Notification sur tous vos mobiles, qui dit depuis combien de temps elle joue et ce qui passe. Le seuil est une entrée que vous réglez depuis Home Assistant, sans redéploiement.` }
+      { titre: `Enceinte allumée trop longtemps`, icone: 'fa-hourglass-half',
+        declencheur: `L'enceinte reste allumée <b>sans interruption</b> plus longtemps que la durée que vous avez saisie sur le site. Changer de morceau, de radio ou de source ne remet pas le compte à zéro ; seule une mise en veille ou une extinction le fait.`,
+        action: `Notification sur <b>tous vos mobiles</b>, dans la langue de votre instance, qui nomme la pièce et l'enceinte et dit depuis combien de temps elle est allumée. Sans durée saisie, aucun automatisme n'est créé.` }
     ],
     appareil_television: [
       { titre: `Téléviseur allumé trop longtemps`, icone: 'fa-hourglass-half',
@@ -6082,38 +6082,35 @@
       ]
     },
     appareil_enceinte: {
-      intro: `Trois onglets : indicateur, bibliothèque, historique. Vous ne saisissez que le <b>nom de votre enceinte</b> &mdash; le pack reconnaît son <b>type</b> (barre de son, enceinte connectée, haut-parleur, enceinte portable) d'après son modèle, et c'est lui qui décide de son image et de la place de ses ondes. <b>Music Assistant fait la bibliothèque</b> : s'il est installé, les sept onglets de musique apparaissent ; sinon il reste les quinze radios, et le déploiement vous le dit. Sans prise connectée, le graphe de consommation disparaît ; sans batterie, son badge aussi.`,
+      intro: `Trois onglets : indicateur, bibliothèque, historique, dans la police et les couleurs du pack Lave-linge pour le thème choisi. L'<b>enceinte</b> (son entité media_player) sert de pivot : le pack interroge Home Assistant pour retrouver son appareil, sa batterie, son lecteur Music Assistant, ce qu'elle sait faire et la prise connectée qui l'alimente. Le <b>type</b> choisi décide de l'image et de la disposition du premier onglet.`,
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Indicateur', icone: 'fa-volume-high',
-          texte: `Deux capsules en haut : <b>Source</b> (musique, radio, télévision, podcast, livre audio &mdash; sa couleur change avec elle et sa note danse) et <b>Son</b> (le niveau, corail et clignotant quand le son est coupé). Au centre, votre enceinte <b>vivante</b> : son afficheur montre ce qui joue, ses haut-parleurs battent et des ondes vertes s'en échappent. Dessous, la <b>pochette tourne comme un vinyle</b>, le titre et l'artiste défilent, et un <b>égaliseur aux cinq couleurs</b> danse. En bas : veille, volume, pistes, lecture et sourdine.`,
+        { titre: '1 \u2014 Indicateur', icone: 'fa-volume-high',
+          texte: `Une seule image : votre enceinte, et sur son <b>afficheur</b> l'icône de la source en cours. Juste dessous, ses commandes. L'icône animée et le titre de ce qui joue se placent au-dessus d'une barre de son, à côté des autres types.`,
           elements: [
-            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
-            { nom: `Capsule Source`, texte: `ce qui joue, à sa couleur : vert pour la musique, ambre pour la radio, bleu pour la télévision, violet pour les podcasts.` },
-            { nom: `Capsule Son`, texte: `le niveau sonore ; son icône suit le volume, et clignote en corail quand le son est coupé.` },
-            { nom: `L'enceinte`, texte: `l'image de votre type d'enceinte ; son AFFICHEUR montre la pochette de l'album, ou le pictogramme de la source (télévision, radio, livre audio, veille).` },
-            { nom: `Haut-parleurs qui battent`, texte: `un cône vert pulse sur chaque haut-parleur, et trois anneaux s'en échappent ; sur une enceinte connectée, ce sont des arcs qui partent de ses flancs et son anneau lumineux s'allume aux cinq couleurs.` },
-            { nom: `Batterie`, texte: `sur une enceinte portable, un badge avec son niveau, corail sous 20 %.` },
-            { nom: `Pochette vinyle`, texte: `elle tourne tant que la musique joue et s'arrête à la pause.` },
-            { nom: `Égaliseur`, texte: `cinq barres aux couleurs de la palette, qui dansent à contretemps.` },
-            { nom: `Commandes`, texte: `veille, volume moins, piste précédente, lecture / pause (verte, au centre), piste suivante, volume plus, sourdine ; celles que votre enceinte ne sait pas faire sont retirées.` },
-            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé dès que l'enceinte joue ; au repos un filet gris de même épaisseur. Rien ne bouge de place.` }
+            { nom: `Titre`, texte: `la pièce et le pack, l'onglet à la ligne, dans la police et la couleur du thème ; deux lignes au plus.` },
+            { nom: `L'enceinte`, texte: `l'image de votre type d'enceinte ; ses haut-parleurs battent et des ondes vertes s'en échappent tant qu'elle joue.` },
+            { nom: `Icône de la source`, texte: `sur l'afficheur : Spotify, YouTube, télévision, radio, livre audio, podcast, AirPlay, Bluetooth... ; une note de musique si la source est inconnue ; le pictogramme de veille quand elle est éteinte.` },
+            { nom: `Ce qui joue`, texte: `la pochette qui tourne comme un vinyle (ou l'icône de la source, en couleur, qui danse), le titre, l'artiste et un égaliseur ; tout s'arrête à la pause.` },
+            { nom: `Commandes`, texte: `veille, volume moins, piste précédente, lecture / pause, piste suivante, volume plus, couper le son ; au style des boutons inactifs du thème ; celles que votre enceinte ne sait pas faire sont retirées.` },
+            { nom: `Bordure et fond`, texte: `enceinte allumée : serpentin vert et fond qui bat ; éteinte ou en veille : bordure verte fixe ; prise injoignable : gris clair.` }
           ] },
-        { titre: '2 — Bibliothèque', icone: 'fa-compact-disc',
-          texte: `Huit pastilles, une couleur chacune. <b>Radios</b> : les quinze stations les plus écoutées de votre pays, relevées sur Radio Browser au déploiement &mdash; ou celles que vous avez nommées &mdash;, leur logo dans une pastille ronde ; celle qui joue est cerclée de vert et pulse. <b>Playlists, Albums, Artistes, Titres, Podcasts, Livres audio</b> : votre bibliothèque Music Assistant, six tuiles avec leur pochette. <b>Recherche</b> : tapez un titre ou un artiste, les résultats s'affichent en tuiles. Un appui lance la lecture sur l'enceinte.`,
+        { titre: '2 \u2014 Bibliothèque', icone: 'fa-compact-disc',
+          texte: `Huit sous-onglets, choisis par huit pastilles en bas, au style des sélecteurs du Lave-linge. <b>Radios</b> : les quinze stations les plus écoutées de votre pays (ou les vôtres). <b>Playlists, Albums, Artistes, Titres, Podcasts, Livres audio</b> et <b>Recherche</b> : votre bibliothèque Music Assistant. Un appui lance la lecture sur l'enceinte.`,
           elements: [
-            { nom: `Pastilles`, texte: `huit onglets à icône, chacun à sa couleur ; la pastille active prend la sienne.` },
-            { nom: `Radios`, texte: `quinze pastilles rondes avec le logo de la station, déposé sur votre instance ; la radio qui joue est cerclée de vert et pulse.` },
-            { nom: `Tuiles de bibliothèque`, texte: `la pochette, le nom et l'artiste ; ce qui joue est bordé de vert et sa pochette tourne.` },
+            { nom: `Pastilles`, texte: `huit icônes ; celle du sous-onglet ouvert passe au vert sur un voile vert et bat.` },
+            { nom: `Radios`, texte: `quinze logos ronds, déposés sur votre instance ; la radio qui joue prend le style du sélecteur actif.` },
+            { nom: `Bibliothèque`, texte: `la pochette, le nom et l'artiste ; ce qui joue est cerclé de vert et sa pochette tourne.` },
             { nom: `Recherche`, texte: `un appui sur la barre ouvre la saisie ; les six premiers résultats de Music Assistant s'affichent.` },
-            { nom: `Sans Music Assistant`, texte: `seules les radios restent, et le déploiement le dit.` }
+            { nom: `Sans Music Assistant`, texte: `les radios fonctionnent ; les sous-onglets de la bibliothèque le disent (« installez Music Assistant »).` }
           ] },
-        { titre: '3 — Historique', icone: 'fa-chart-column',
-          texte: `Le <b>temps d'écoute</b> par heure, par jour ou par mois &mdash; sans aucun capteur à installer, le pack le lit directement sur l'état de l'enceinte (la pause ne compte pas). Avec une prise connectée, une seconde métrique trace la <b>consommation</b> en kWh.`,
+        { titre: '3 \u2014 Historique', icone: 'fa-chart-column',
+          texte: `Le graphe du pack Lave-linge : <b>allumage</b>, <b>consommation</b> et <b>coût</b> par heure, jour ou mois, avec une ligne de seuil rouge ; quand la barre en cours l'atteint, serpentin vert et fond qui bat.`,
           elements: [
-            { nom: `Périodes`, texte: `jour, semaine, mois, année ; la pastille active est verte.` },
-            { nom: `Temps d'écoute`, texte: `en minutes par heure sur la journée, en heures par jour ensuite.` },
-            { nom: `Consommation`, texte: `en kWh, si une prise connectée alimente l'enceinte.` }
+            { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
+            { nom: `Allumage`, texte: `le temps d'allumage, lu sur l'état de l'enceinte : aucun capteur à installer.` },
+            { nom: `Consommation et coût`, texte: `seulement avec une prise connectée (saisie ou retrouvée) ; le coût au tarif de votre tableau Énergie, ou au prix du kWh saisi. Sans prise, seul l'Allumage reste.` },
+            { nom: `Seuil`, texte: `la moyenne de vos périodes d'utilisation ; la ligne apparaît dès qu'il y a de quoi la calculer.` }
           ] }
       ]
     },
@@ -8818,39 +8815,41 @@
       champThemeSite('COMPTEUR_THEME', 'urban-factory', `\ud83c\udfa8 Apparence`)
     ],
     appareil_enceinte: [
-      { param: 'ENCEINTE_APPAREIL', label: `Nom de l'enceinte`, type: 'text',
-        required: true, groupe: `🔊 Enceinte`,
-        placeholder: `ex : salon_barre_son — le nom de l'appareil dans Home Assistant` },
-      { param: 'ENCEINTE_PIECE', label: `Pièce`, type: 'text', required: false,
-        groupe: `🔊 Enceinte`, placeholder: `vide : déduite de l'appareil` },
+      /* Refonte du 11/11/2026 (alignement sur le Lave-linge, comme le
+         Televiseur) : la PIECE, l'ENTITE de l'enceinte (media_player) et son
+         TYPE sont obligatoires ; l'entite sert de pivot au script, qui en
+         deduit l'appareil, la batterie, Music Assistant et la prise. Le
+         theme n'a PAS de `groupe` : il occupe sa propre rangee, une seule
+         fois sur la page (avec un groupe, il etait rendu deux fois). */
+      { param: 'ENCEINTE_PIECE', label: `Pièce`, type: 'text', required: true,
+        groupe: `🔊 Enceinte`, placeholder: `ex : Salon` },
+      { param: 'ENCEINTE_ENTITE', label: `Entité de l'enceinte`, type: 'text', required: true,
+        groupe: `🔊 Enceinte`,
+        placeholder: `ex : media_player.salon_barre_son — appareil, batterie, Music Assistant et prise en sont déduits` },
       { param: 'ENCEINTE_TYPE', label: `Type d'enceinte`, type: 'select',
-        required: false, groupe: `🔊 Enceinte`, defaut: '',
+        required: true, groupe: `🔊 Enceinte`, defaut: 'barre_de_son',
         options: [
-          { value: '', label: `Automatique (d'après le modèle)` },
           { value: 'barre_de_son', label: `Barre de son` },
           { value: 'enceinte_connectee', label: `Enceinte connectée` },
           { value: 'haut_parleur', label: `Haut-parleur` },
           { value: 'enceinte_portable', label: `Enceinte portable` }
         ] },
-      { param: 'ENCEINTE_ALERTE', label: `Alerte après (heures d'écoute)`, type: 'text',
-        required: false, groupe: `🔊 Enceinte`,
-        placeholder: `vide : 4 h — réglable ensuite sans redéploiement` },
-      { param: 'ENCEINTE_PAYS', label: `Pays des radios`, type: 'text',
+      { param: 'ENCEINTE_PRISE', label: `Interrupteur de la prise (facultatif)`, type: 'text',
+        required: false, groupe: `\u26a1 Consommation et alerte`,
+        placeholder: `ex : switch.barre_son_prise_main_channel — vide : la prise dont le nom cite l'enceinte, s'il y en a une` },
+      { param: 'ENCEINTE_TARIF', label: `Prix du kWh (facultatif)`, type: 'text', required: false,
+        groupe: `\u26a1 Consommation et alerte`,
+        placeholder: `ex : 0.25 — vide : repris de votre tableau de bord Énergie` },
+      { param: 'ENCEINTE_ALERTE', label: `Durée d'alerte (notification mobile)`, type: 'text',
+        required: false, groupe: `\u26a1 Consommation et alerte`,
+        placeholder: `ex : 4 (heures), 2h30, 90 min — vide : aucune notification` },
+      { param: 'ENCEINTE_PAYS', label: `Pays des radios (facultatif)`, type: 'text',
         required: false, groupe: `📻 Radios`,
         placeholder: `vide : celui de votre Home Assistant (ex : FR, BE, CH)` },
-      { param: 'ENCEINTE_RADIOS', label: `Vos radios favorites`, type: 'text',
+      { param: 'ENCEINTE_RADIOS', label: `Vos radios favorites (facultatif)`, type: 'text',
         required: false, groupe: `📻 Radios`,
         placeholder: `vide : les 15 plus écoutées du pays — ou : FIP, RTL, Nova…` },
-      { param: 'ENCEINTE_MA', label: `Lecteur Music Assistant`, type: 'text',
-        required: false, groupe: `🔧 Corrections (rarement utiles)`,
-        placeholder: `vide : déduit — celui qui porte le nom de l'enceinte` },
-      { param: 'ENCEINTE_PRISE', label: `Prise connectée (capteur de puissance)`,
-        type: 'text', required: false, groupe: `🔧 Corrections (rarement utiles)`,
-        placeholder: `vide : la prise dont le nom cite l'enceinte, si elle existe` },
-      { param: 'ENCEINTE_BATTERIE', label: `Batterie`, type: 'text', required: false,
-        groupe: `🔧 Corrections (rarement utiles)`,
-        placeholder: `vide : déduite de l'appareil (enceintes portables)` },
-      champThemeSite('ENCEINTE_THEME', 'urban-factory', `🎨 Apparence`)
+      champThemeSite('ENCEINTE_THEME', { sombre: 'noir-naturel', clair: 'blanc-naturel' })
     ],
     appareil_television: [
       /* Refonte du 11/11/2026 (alignement sur le Lave-linge) : la PIECE et
@@ -9713,13 +9712,14 @@
       + `et les cartes personnalis\u00e9es requises (button-card, apexcharts-card, `
       + `swipe-card, stack-in-card, card-mod).`,
     appareil_enceinte:
-      `la vue et ses trois onglets, le capteur de lecture, les sélecteurs `
-      + `d'onglet, de période et de métrique, la recherche, le seuil d'alerte `
-      + `réglable, l'automatisation qui prévient vos mobiles, les quinze radios `
-      + `de votre pays et leurs logos, l'image de votre enceinte, l'intégration `
-      + `Radio Browser, la bibliothèque Music Assistant si elle est installée, `
-      + `ainsi que HACS et les cartes personnalisées requises (button-card, `
-      + `apexcharts-card, swipe-card, stack-in-card, card-mod).`,
+      `la vue et ses trois onglets (une par thème choisi), l'add-on <b>File editor</b> installé s'il manque, `
+      + `le capteur d'allumage et le capteur de lecture de l'enceinte, les compteurs d'allumage et d'énergie `
+      + `et le capteur de seuils du troisième onglet, les sélecteurs de sous-onglet, de période et de grandeur, `
+      + `le prix du kWh, la recherche, l'automatisation qui prévient tous vos mobiles quand l'enceinte reste `
+      + `allumée (si vous avez saisi une durée), les quinze radios de votre pays et leurs logos, l'image de `
+      + `votre enceinte, l'intégration Radio Browser, la bibliothèque Music Assistant si elle est installée, `
+      + `ainsi que HACS et les cartes personnalisées requises (button-card, mushroom, swipe-card, `
+      + `stack-in-card, plotly-graph, card-mod).`,
     appareil_television:
       `la vue et ses trois onglets (une par thème choisi), l'add-on <b>File editor</b> installé s'il manque, `
       + `le capteur d'allumage du téléviseur, les compteurs d'allumage et d'énergie et le capteur de seuils `
