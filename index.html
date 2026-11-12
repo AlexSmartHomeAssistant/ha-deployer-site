@@ -4908,8 +4908,8 @@
       detail: `Suivi complet de l'appareil depuis la <b>prise connectée</b> qui l'alimente : vous ne saisissez que son <b>interrupteur</b>, sa puissance et son énergie sont retrouvées automatiquement, quelle que soit la marque. Le premier onglet montre l'appareil en direct, sa phase et le <b>temps restant</b> : une bordure <b>verte</b> fixe à l'arrêt, un <b>serpentin vert</b> et un fond qui bat en marche, une bordure gris clair si la prise ne répond plus, le dessin grisé marqué « Éteint » quand elle est coupée. Le deuxième compte les cycles jusqu'à l'<b>entretien</b> &mdash; la carte bat quand il est dû &mdash; et liste les sept derniers avec leur durée, leur consommation et leur coût. Le troisième trace l'<b>allumage</b>, la <b>consommation</b> ou le <b>coût</b> par heure, par jour ou par mois, avec une <b>ligne de seuil</b> rouge.<br><br>Vos <b>mobiles</b> sont prévenus quand le micro-ondes s'arrête et quand la cavité réclame son nettoyage. Les seuils de puissance qui distinguent les phases ne sont pas devinés : le pack <b>mesure l'historique de votre prise</b> au déploiement et les en déduit &mdash; un micro-ondes de 800 W et un de 1 800 W sont suivis aussi justement l'un que l'autre.`
     },
     appareil_refrigerateur: {
-      resume: "Froid en direct, porte, temperature et degivrage temporise.",
-      detail: `Suivi complet d'un refrigerateur ou d'un congelateur depuis la <b>prise connectee</b> qui l'alimente. Vous choisissez d'abord le <b>type d'appareil</b> &mdash; refrigerateur, congelateur, mini, <b>americain</b>, <b>refrigerateur/congelateur</b> ou <b>multi-portes</b> &mdash; et la carte dessine le votre, avec ses vraies portes. Le premier onglet le montre en direct : il <b>change d'aspect</b> des que le froid tourne, le palier s'inscrit dans son <b>ecran</b>, et une <b>icone de refroidissement</b> s'anime au milieu de chaque porte &mdash; en <b>bleu</b> au regime normal du compresseur, en <b>vert</b> au froid intense.<br><br>Le deuxieme coupe l'appareil pour une duree choisie, de quinze minutes a douze heures &mdash; le temps d'un <b>degivrage</b> &mdash; et le <b>remet sous tension tout seul</b> a la fin. Toute desactivation demande une <b>confirmation</b> : on ne coupe pas un congelateur plein d'un clic malencontreux. Le troisieme trace la consommation par heure, par jour ou par mois.<br><br>Les deux seuils de puissance qui separent la veille, le froid normal et le froid intense ne sont pas devines : le pack <b>mesure l'historique de votre prise</b> au deploiement et les en deduit. Et une <b>alerte part sur vos mobiles</b> des que la consommation tombe a zero, que la prise est coupee ou qu'elle ne repond plus &mdash; un appareil qui ne refroidit plus met son contenu en danger.`
+      resume: `Votre réfrigérateur ou congélateur en direct : froid, portes et températures, dégivrage temporisé, allumage, consommation et coût.`,
+      detail: `Le suivi complet d'un <b>réfrigérateur</b> ou d'un <b>congélateur</b>, aux couleurs et à l'écriture du thème choisi &mdash; les mêmes que le pack Lave-linge. Vous saisissez la <b>pièce</b>, le <b>type d'appareil</b> &mdash; réfrigérateur, congélateur, mini, <b>américain</b>, <b>réfrigérateur/congélateur</b> ou <b>multi-portes</b> &mdash; et l'<b>interrupteur de sa prise connectée</b> : sa puissance et son énergie sont retrouvées automatiquement. Le premier onglet montre l'appareil en direct : le palier de froid dans son écran, une icône de refroidissement sur chaque porte, et de chaque côté vos <b>capteurs de porte</b> et de <b>température</b>. Quand le compresseur refroidit, <b>serpentin vert</b> et fond qui bat ; en veille, image et bordure fixes ; <b>porte ouverte</b> ou <b>température anormale</b> : serpentin et battement <b>rouges</b>.<br><br>Le deuxième onglet coupe l'appareil pour une durée choisie &mdash; le temps d'un <b>dégivrage</b> &mdash; et le <b>remet sous tension tout seul</b> à la fin, après une <b>confirmation</b>. Le troisième trace l'<b>allumage</b> du compresseur, la <b>consommation</b> et le <b>coût</b> (au tarif de votre tableau Énergie ou au prix saisi), avec une ligne de seuil rouge. Si vous nommez un capteur de porte ou de température, vos <b>mobiles</b> sont prévenus quand une porte reste ouverte ou que la température sort des seuils.`
     },
     appareil_seche_linge: {
       resume: `Phase du séchage en direct, temps restant, coût et consommation, alertes sur vos mobiles.`,
@@ -5586,12 +5586,15 @@
         action: `Notification sur <b>tous vos mobiles</b> : nettoyez l'intérieur et le plateau tournant ; l'icône d'entretien de la carte passe en alerte jusqu'à sa remise à zéro.` }
     ],
     appareil_refrigerateur: [
-      { titre: 'Alerte de l\'appareil', icone: 'fa-triangle-exclamation',
-        declencheur: `Trois situations : consommation à zéro depuis un quart d'heure, prise coupée, ou prise qui ne répond plus.`,
-        action: `Notification sur vos mobiles, qui distingue une coupure programmée (dégivrage en cours) d'une coupure subie. Un seul avis, remplacé à chaque rappel.` },
+      { titre: `Porte restée ouverte`, icone: 'fa-door-open',
+        declencheur: `Une porte (ou un tiroir) dont vous avez nommé le capteur reste ouverte plus longtemps que le délai saisi sur le site &mdash; 2 minutes par défaut.`,
+        action: `Notification sur <b>tous vos mobiles</b>, dans la langue de votre instance, qui nomme la pièce, l'appareil et la porte. Sans capteur de porte ni de température, aucun automatisme n'est créé.` },
+      { titre: `Température anormale`, icone: 'fa-temperature-high',
+        declencheur: `Pendant dix minutes, la température dépasse le seuil du compartiment &mdash; <b>8 °C</b> au réfrigérateur, <b>−12 °C</b> au congélateur, modifiables sur le site &mdash; ou descend sous <b>0 °C</b> au réfrigérateur.`,
+        action: `Notification sur tous vos mobiles avec la température relevée et le seuil franchi ; la carte passe au serpentin rouge dès le franchissement.` },
       { titre: 'Fin du dégivrage', icone: 'fa-hourglass-end',
-        declencheur: `Le minuteur de désactivation se termine ou est annulé à la main.`,
-        action: `Remet la prise dans l'état qu'elle avait avant — jamais un appareil laissé hors tension indéfiniment.` }
+        declencheur: `Le minuteur de dégivrage se termine ou est annulé à la main.`,
+        action: `Remet la prise dans l'état qu'elle avait avant &mdash; jamais un appareil laissé hors tension indéfiniment.` }
     ],
     appareil_aspirateur: [
       { titre: `Robot bloqué ou en erreur`, icone: 'fa-triangle-exclamation',
@@ -6876,37 +6879,35 @@
     },
 
     appareil_refrigerateur: {
-      intro: `Trois onglets : indicateur, désactivation, historique. Tout est lu sur la <b>prise connectée</b> qui alimente l'appareil. Vous choisissez le <b>type</b> qui correspond au vôtre parmi six, et la carte dessine celui-là. Le pack apprend de lui-même à quoi ressemble son fonctionnement : il <b>mesure l'historique de la prise</b> et en déduit les seuils qui séparent la veille, le froid normal et le froid intense.`,
+      intro: `Trois onglets : indicateur, minuteur, historique, dans la police et les couleurs du pack Lave-linge pour le thème choisi. Tout est lu sur la <b>prise connectée</b> qui alimente l'appareil : vous ne saisissez que son interrupteur, sa puissance et son énergie sont retrouvées automatiquement. Le pack <b>mesure l'historique de la prise</b> pour séparer la veille, le froid et le froid intense. Les textes suivent la langue de votre instance.`,
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Indicateur', icone: 'fa-snowflake',
-          texte: `L'appareil en direct : il <b>change d'aspect</b> dès que le froid tourne, le palier s'inscrit dans son <b>écran</b>, et une <b>icône de refroidissement</b> s'anime au milieu de chaque porte &mdash; <b>bleu</b> au régime du compresseur, <b>vert</b> au froid intense, rien en veille. À gauche, la <b>détection d'ouverture</b> : le battant s'anime en vert tant que la porte est ouverte. À droite, la <b>température intérieure</b>, qui passe du bleu à l'orange puis au corail selon qu'elle reste normale, tiède ou franchement chaude &mdash; les seuils suivent le type d'appareil, un congélateur n'ayant rien de normal à 4 °C. Porte ouverte ou froid en marche, la bordure s'anime et le fond s'allume &mdash; sans qu'aucun élément ne bouge de place.`,
+        { titre: '1 \u2014 Indicateur', icone: 'fa-snowflake',
+          texte: `Une seule image : votre appareil, selon son type, le palier de froid dans son écran et une icône de refroidissement sur chaque porte. De chaque côté, vos <b>capteurs de porte et de température</b>, rangés à la hauteur de la porte qu'ils décrivent, en boutons ronds au style des boutons inactifs du thème.`,
           elements: [
-            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne, dans la police et la couleur du thème choisi.` },
-            { nom: `Appareil`, texte: `le dessin du type que vous avez choisi ; le palier — Veille, Froid, Intense — s'inscrit dans son écran.` },
-            { nom: `Icônes de froid`, texte: `au milieu de chaque porte : bleu au régime du compresseur, violet au froid intense, rien en veille.` },
-            { nom: `Portes`, texte: `une pastille par porte réelle du type, du côté de la porte qu'elle décrit : rouge et animée ouverte, gris clair fermée.` },
-            { nom: `Températures`, texte: `une pastille par compartiment, avec ses propres seuils : bleu normal, orange tiède, corail chaud.` },
-            { nom: `Alimentation`, texte: `à droite de l'appareil, le bouton de la prise : rouge sous tension, gris coupée ; couper demande confirmation.` },
-            { nom: `Bordure et fond`, texte: `un filet gris fixe au repos ; porte ouverte, un serpentin rouge ; froid en marche, un serpentin vert en rotation et le fond de la carte s'allume en fondu. Rien ne bouge de place entre les deux états.` }
+            { nom: `Titre`, texte: `la pièce et le pack, l'onglet à la ligne, dans la police et la couleur du thème ; deux lignes au plus.` },
+            { nom: `Appareil`, texte: `le dessin de votre type ; le palier &mdash; Veille, Froid, Intense &mdash; s'inscrit dans son écran, le voyant clignote en froid.` },
+            { nom: `Icônes de froid`, texte: `sur chaque porte : bleu au régime du compresseur, violet au froid intense, rien en veille.` },
+            { nom: `Portes`, texte: `un bouton par porte renseignée : à la couleur neutre du thème fermée, rouge et animé ouverte ; un appui ouvre la fiche du capteur.` },
+            { nom: `Températures`, texte: `un bouton par compartiment, la valeur dessous ; rouge et animé hors seuil.` },
+            { nom: `Bordure et fond`, texte: `compresseur en marche : serpentin vert et fond qui bat ; veille : image et bordure fixes ; prise injoignable : gris clair ; porte ouverte ou température anormale : serpentin et battement rouges, prioritaires.` }
           ] },
-        { titre: '2 — Désactivation', icone: 'fa-power-off',
-          texte: `Le <b>dégivrage temporisé</b> : vous choisissez une durée de quinze minutes à douze heures, la prise se coupe, et le courant <b>revient tout seul</b> à la fin. Un appui bref met en pause, un appui long annule et remet immédiatement sous tension. Toute désactivation passe par une <b>confirmation</b> : couper un congélateur plein par mégarde ne se rattrape pas. Le compte à rebours reste affiché, et l'état réel de la prise &mdash; sous tension ou hors tension &mdash; est écrit au-dessus.`,
+        { titre: '2 \u2014 Minuteur', icone: 'fa-power-off',
+          texte: `Le minuteur du pack Lumière : vous choisissez une durée de quinze minutes à douze heures, la prise se coupe pour le <b>dégivrage</b>, et le courant <b>revient tout seul</b> à la fin, dans l'état d'avant. Toute coupure demande une <b>confirmation</b>. Sans interrupteur de prise, l'onglet n'est pas posé.`,
           elements: [
-            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne, dans la police et la couleur du thème choisi.` },
-            { nom: `Durées`, texte: `six boutons — 15 min, 30 min, 1 h, 2 h, 6 h, 12 h — qui fixent la durée ; le bouton choisi s'allume à la couleur du pack.` },
-            { nom: `Bouton de veille`, texte: `lance le décompte ; pendant qu'il court, un appui bref le met en pause ou le reprend, un appui long l'annule.` },
-            { nom: `Statut de la prise`, texte: `une grande icône : prise grise sous tension, prise barrée en couleur et animée pendant la désactivation.` },
-            { nom: `Compte à rebours`, texte: `le temps restant, à la seconde, dans une pastille qui affiche « Prêt » au repos et garde sa place dans les deux états.` },
-            { nom: `Fin du décompte`, texte: `le courant revient tout seul, dans l'état où il était avant ; un décompte annulé le rétablit aussi.` }
+            { nom: `Alimentation`, texte: `une pastille : Sous tension, Hors tension ou Dégivrage en cours (verte et animée).` },
+            { nom: `Durées`, texte: `six durées &mdash; 15 min, 30 min, 1 h, 3 h, 6 h, 12 h ; la durée choisie au style de la pastille active.` },
+            { nom: `Bouton du minuteur`, texte: `lance le dégivrage (après confirmation) ; un appui bref met en pause ou reprend, un appui long annule et rend le courant.` },
+            { nom: `Compte à rebours`, texte: `le temps restant, encadré de deux icônes qui s'animent ; « Prêt » au repos.` },
+            { nom: `Bordure et fond`, texte: `minuteur en cours : serpentin vert et fond qui bat ; sinon bordure verte fixe.` }
           ] },
-        { titre: '3 — Historique', icone: 'fa-chart-column',
-          texte: `La consommation cumulée en kWh, par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie sur votre prise, l'onglet trace la <b>puissance moyenne</b> à la place &mdash; la seule grandeur qu'elle sache alors fournir.`,
+        { titre: '3 \u2014 Historique', icone: 'fa-chart-column',
+          texte: `Le graphe du pack Lave-linge : <b>allumage</b> du compresseur, <b>consommation</b> et <b>coût</b> par heure, jour ou mois, avec une ligne de seuil rouge ; quand la barre en cours l'atteint, serpentin vert et fond qui bat.`,
           elements: [
-            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne, dans la police et la couleur du thème choisi.` },
-            { nom: `Périodes`, texte: `quatre pastilles — jour, semaine, mois, année — qui choisissent la fenêtre du graphe ; la pastille active est en couleur.` },
-            { nom: `Graphe`, texte: `des barres d'énergie cumulée en kWh : par heure sur la journée, par jour sur la semaine et le mois, par mois sur l'année. Sans capteur d'énergie, la puissance moyenne en watts.` },
-            { nom: `Axes`, texte: `axes, graduations et lignes de repère en blanc (gris foncé sur les thèmes clairs) ; la période entière est tracée, même ce qui n'est pas encore écoulé.` }
+            { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
+            { nom: `Allumage`, texte: `le temps de fonctionnement du compresseur, mesuré sur la puissance de la prise.` },
+            { nom: `Consommation et coût`, texte: `dès que la prise mesure la puissance ou l'énergie ; le coût au tarif de votre tableau Énergie, ou au prix du kWh saisi. Sans mesure, seul l'allumage est tracé.` },
+            { nom: `Seuil`, texte: `la moyenne de vos périodes de fonctionnement ; la ligne apparaît dès qu'il y a de quoi la calculer.` }
           ] }
       ]
     },
@@ -9275,35 +9276,39 @@
       { param: 'DUCKDNS_TOKEN', label: 'Jeton DuckDNS', type: 'text', required: true,
         placeholder: 'le token affiche en haut de duckdns.org' }
     ],
-    /* Pack Refrigerateur — LA VARIANTE EST LE TYPE D'APPAREIL.
-       Six types, choisis dans une liste : un type libre n'aurait aucune image
-       a afficher. Le decompte d'entites, lui, reste une variante a part et se
-       DEDUIT de ce que le client fournit :
-         puissance seule   -> synoptique, 3e onglet sur la puissance moyenne
-         + energie         -> 3e onglet sur l'energie cumulee en kWh
-         + interrupteur    -> 2e onglet (desactivation pour degivrage)
-         + porte           -> pastille de gauche
-         + temperature     -> pastille de droite
-       En pratique le client n'a a saisir ni l'energie ni l'interrupteur : sur
-       une prise connectee ils vivent sur le MEME appareil que la puissance, et
-       le pack les y retrouve. Le capteur de porte et celui de temperature, eux,
-       vivent ailleurs et ne se devinent pas. */
+    /* Pack Refrigerateur (refonte du 12/11/2026, alignement sur le
+       Lave-linge) : PIECE, TYPE et INTERRUPTEUR de la prise obligatoires --
+       puissance et energie en sont deduites ; prix du kWh facultatif (tableau
+       Energie sinon). Capteurs de porte et de temperature FACULTATIFS : sans
+       eux, aucun automatisme d'alerte. Le theme n'a PAS de `groupe` : une
+       seule rangee sur la page. */
     appareil_refrigerateur: [
-      { param: 'FRIGO_PIECE', label: 'Pièce', type: 'text', required: true,
-        placeholder: 'ex : Cuisine' },
-      { param: 'FRIGO_TYPE', label: 'Type d\u2019appareil', type: 'select', required: true,
-        defaut: 'refrigerateur', options: FRIGO_TYPES },
-      { param: 'FRIGO_PUISSANCE', label: 'Capteur de puissance de la prise', type: 'text', required: true,
-        placeholder: 'ex : sensor.refrigerateur_mss310_power_w_main_channel' },
-      { param: 'FRIGO_PORTE', label: 'Capteur(s) d\u2019ouverture de porte', type: 'text', required: false,
-        placeholder: 'ex : binary_sensor.frigo_porte, binary_sensor.congel_porte — une entité par porte, dans l\u2019ordre des portes, séparées par des virgules ; vide : pas de pastille' },
-      { param: 'FRIGO_TEMPERATURE', label: 'Capteur(s) de température', type: 'text', required: false,
-        placeholder: 'ex : sensor.frigo_temp, sensor.congel_temp — réfrigérateur puis congélateur, séparés par une virgule ; vide : pas de pastille' },
-      { param: 'FRIGO_ENERGIE', label: 'Capteur d\u2019énergie de la prise', type: 'text', required: false,
-        placeholder: 'ex : sensor.refrigerateur_mss310_energy_kwh — vide : déduit de la prise' },
-      { param: 'FRIGO_PRISE', label: 'Interrupteur de la prise', type: 'text', required: false,
-        placeholder: 'ex : switch.refrigerateur_mss310_main_channel — vide : déduit de la prise' },
-      champThemeSite('FRIGO_THEME', 'urban-factory')
+      { param: 'FRIGO_PIECE', label: `Pièce`, type: 'text', required: true,
+        groupe: `\u2744\ufe0f Appareil`, placeholder: `ex : Cuisine` },
+      { param: 'FRIGO_TYPE', label: `Type d'appareil`, type: 'select', required: true,
+        groupe: `\u2744\ufe0f Appareil`, defaut: 'refrigerateur', options: FRIGO_TYPES },
+      { param: 'FRIGO_PRISE', label: `Interrupteur de la prise`, type: 'text', required: true,
+        groupe: `\u26a1 Consommation`,
+        placeholder: `ex : switch.refrigerateur_mss310_main_channel — puissance et énergie sont déduites de la prise` },
+      { param: 'FRIGO_TARIF', label: `Prix du kWh (facultatif)`, type: 'text', required: false,
+        groupe: `\u26a1 Consommation`,
+        placeholder: `ex : 0.25 — vide : repris de votre tableau de bord Énergie` },
+      { param: 'FRIGO_PORTE', label: `Capteur(s) d'ouverture de porte (facultatif)`, type: 'text',
+        required: false, groupe: `\ud83d\udeaa Porte (facultatif)`,
+        placeholder: `ex : binary_sensor.frigo_porte — une entité par porte, dans l'ordre des portes, séparées par des virgules ; vide : ni bouton ni alerte` },
+      { param: 'FRIGO_DELAI_PORTE', label: `Délai avant notification`, type: 'text',
+        required: false, groupe: `\ud83d\udeaa Porte (facultatif)`,
+        placeholder: `ex : 2 (minutes), 90 s, 5 min — vide : 2 minutes` },
+      { param: 'FRIGO_TEMPERATURE', label: `Capteur(s) de température (facultatif)`, type: 'text',
+        required: false, groupe: `\ud83c\udf21\ufe0f Température (facultatif)`,
+        placeholder: `ex : sensor.frigo_temp, sensor.congel_temp — réfrigérateur puis congélateur ; vide : ni bouton ni alerte` },
+      { param: 'FRIGO_SEUIL_FRIGO', label: `Alerte réfrigérateur au-dessus de (°C)`, type: 'text',
+        required: false, groupe: `\ud83c\udf21\ufe0f Température (facultatif)`,
+        placeholder: `vide : 8 °C (et sous 0 °C)` },
+      { param: 'FRIGO_SEUIL_CONGELATEUR', label: `Alerte congélateur au-dessus de (°C)`, type: 'text',
+        required: false, groupe: `\ud83c\udf21\ufe0f Température (facultatif)`,
+        placeholder: `vide : −12 °C` },
+      champThemeSite('FRIGO_THEME', { sombre: 'noir-naturel', clair: 'blanc-naturel' })
     ],
     appareil_lave_vaisselle: [
       { param: 'VAISSELLE_PIECE', label: `Pièce`, type: 'text', required: true,
@@ -9825,14 +9830,14 @@
     chauffage_thermostat:
       `la vue et ses trois onglets, l'add-on <b>File editor</b> installé s'il manque, la consigne temporisée (scripts, automatisations et helpers), le capteur de température extérieure de repli si la pièce n'a pas de capteur, deux automatisations d'alerte qui préviennent tous vos mobiles (température élevée ou consigne non atteinte ; thermostat injoignable), le tout dans la langue de votre instance, ainsi que HACS et les cartes personnalisées requises (better-thermostat-ui-card, button-card, mushroom, swipe-card, stack-in-card, plotly-graph, card-mod).`,
     appareil_refrigerateur:
-      'la vue et ses trois onglets, les deux visuels du type d\u2019appareil '
-      + 'choisi, le capteur de froid et celui du palier, la désactivation '
-      + 'temporisée pour dégivrage (deux scripts, deux automatisations et cinq '
-      + 'helpers), l\u2019automatisation d\u2019alerte qui prévient tous vos '
-      + 'mobiles quand la consommation tombe à zéro, que la prise est coupée ou '
-      + 'qu\u2019elle ne répond plus, ainsi que HACS et les cartes '
-      + 'personnalisées requises (button-card, mushroom, swipe-card, '
-      + 'stack-in-card, apexcharts-card, card-mod).',
+      `la vue et ses trois onglets (une par thème choisi), l'add-on <b>File editor</b> installé s'il manque, `
+      + `le visuel du type d'appareil choisi, le capteur de froid et celui du palier, les compteurs d'allumage `
+      + `et d'énergie et le capteur de seuils du troisième onglet, le dégivrage temporisé (deux scripts, deux `
+      + `automatisations et quatre helpers), les sélecteurs de période et de grandeur, le prix du kWh, `
+      + `l'automatisation qui prévient tous vos mobiles quand une porte reste ouverte ou que la température sort `
+      + `des seuils (si vous avez nommé un capteur), le tout dans la langue de votre instance, ainsi que HACS et `
+      + `les cartes personnalisées requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, `
+      + `card-mod).`,
     appareil_micro_onde:
       `la vue et ses trois onglets, l'add-on <b>File editor</b> installé s'il manque, le capteur de marche qui découpe le flux de puissance en cuissons, le capteur de phase et l'estimation du temps restant, le suivi des cuissons (automatisations, scripts d'entretien et de la prise, helpers), deux automatisations d'alerte qui préviennent tous vos mobiles (fin de cuisson, nettoyage de la cavité), le tout dans la langue de votre instance, ainsi que HACS et les cartes personnalisées requises (button-card, mushroom, swipe-card, stack-in-card, plotly-graph, card-mod). S'y ajoutent les compteurs d'allumage et d'énergie et le capteur de seuils du troisième onglet.`,
     appareil_seche_linge:
