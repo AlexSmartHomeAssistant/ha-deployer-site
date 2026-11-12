@@ -6883,13 +6883,13 @@
       carte: () => 'defaut',
       onglets: [
         { titre: '1 \u2014 Indicateur', icone: 'fa-snowflake',
-          texte: `Une seule image : votre appareil, selon son type, le palier de froid dans son écran et une icône de refroidissement sur chaque porte. À gauche vos <b>températures</b>, à droite vos <b>portes</b>, chaque colonne centrée verticalement et rangée dans l'ordre des portes de l'appareil, en indicateurs ronds au style des boutons inactifs du thème.`,
+          texte: `Une seule image : votre appareil, selon son type, le palier de froid dans son écran et une icône de refroidissement sur chaque porte. À gauche vos <b>températures</b>, à droite vos <b>portes</b>, chaque colonne centrée verticalement et rangée dans l'ordre des portes de l'appareil, en indicateurs (une icône et sa valeur, sans cercle ni fond, à la couleur des boutons inactifs du thème).`,
           elements: [
             { nom: `Titre`, texte: `la pièce et le pack, l'onglet à la ligne, dans la police et la couleur du thème ; deux lignes au plus.` },
-            { nom: `Appareil`, texte: `le dessin de votre type ; le palier &mdash; Veille, Froid, Intense &mdash; s'inscrit dans son écran, le voyant clignote en froid.` },
+            { nom: `Appareil`, texte: `le dessin de votre type ; le palier &mdash; Veille, Froid, Intense &mdash; s'inscrit dans son écran, et son voyant se couvre de bleu (froid) ou de violet (intense) et pulse.` },
             { nom: `Icônes de froid`, texte: `sur chaque porte : bleu au régime du compresseur, violet au froid intense, rien en veille.` },
-            { nom: `Portes`, texte: `à droite, un indicateur par porte renseignée : à la couleur neutre du thème fermée, rouge et animé ouverte.` },
-            { nom: `Températures`, texte: `à gauche, un indicateur par compartiment, la valeur dessous, face à la porte de son compartiment ; rouge et animé hors seuil. Les indicateurs se lisent, ils ne sont pas cliquables.` },
+            { nom: `Portes`, texte: `à droite, un indicateur par porte renseignée : à la couleur neutre du thème fermée, icône et intitulé rouges, battant animé, ouverte.` },
+            { nom: `Températures`, texte: `à gauche, un indicateur par compartiment, la valeur dessous, face à la porte de son compartiment ; icône et valeur rouges, icône animée, hors seuil. Les indicateurs se lisent, ils ne sont pas cliquables.` },
             { nom: `Bordure et fond`, texte: `compresseur en marche : serpentin vert et fond qui bat ; veille : image et bordure fixes ; prise injoignable : gris clair ; porte ouverte ou température anormale : serpentin et battement rouges, prioritaires.` }
           ] },
         { titre: '2 \u2014 Minuteur', icone: 'fa-power-off',
