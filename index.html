@@ -4576,7 +4576,7 @@
       { name: 'appareil_seche_linge', desc: 'Suivi cycle sèche-linge' },
       { name: 'appareil_lave_vaisselle', desc: 'Suivi cycle lave-vaisselle' },
       { name: 'appareil_micro_onde', desc: 'Suivi cuisson micro-ondes' },
-      { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température et appareils connectés de votre box' },
+      { name: 'appareil_box_internet', desc: 'Internet, Wi-Fi, débits, température, disque, appareils connectés, consommation et coût de votre box' },
       { name: 'appareil_television', desc: 'Téléviseur, sources et télécommande' },
       { name: 'appareil_enceinte', desc: 'Barre de son, enceinte connectée ou portable : source en cours, radios, bibliothèque, consommation et coût' },
       { name: 'appareil_imprimante', desc: 'Impression, cartouches et durée de vie' },
@@ -4874,8 +4874,9 @@
       apercu: {}
     },
     appareil_box_internet: {
-      resume: "Internet et Wi-Fi d'un coup d'œil, débits, température, appareils connectés par pièce, six alertes sur vos mobiles.",
-      detail: `La surveillance complète de votre <b>box Internet</b> &mdash; vous ne saisissez que le <b>nom de l'appareil</b>, le pack retrouve seul tout ce que la box publie : état d'Internet, interrupteur Wi-Fi, débits, température, disque, temps de fonctionnement, adresse IP publique, ventilateur, bouton de redémarrage, et même la prise connectée qui l'alimente. Le premier onglet montre la box <b>vivante</b> : son voyant respire en vert quand tout va bien, deux ondes montent des antennes tant que le Wi-Fi émet, et une « box » d'indicateurs affiche réception, émission, nombre d'appareils connectés et température, chacun avec son icône animée. Dès qu'Internet fonctionne et que le Wi-Fi est actif, la carte prend sa <b>bordure animée verte</b> et son fond s'allume ; que l'un des deux manque, bordure et fond passent au <b>rouge</b>. Le bouton vert d'alimentation devient un <b>bouton de redémarrage</b> à confirmation, dont le glyphe tourne tant qu'Internet est coupé. Le deuxième onglet détaille en quatre sous-onglets : système, une seule température &mdash; celle du processeur &mdash; en jauge, disque en anneau, et les <b>appareils Wi-Fi de votre maison, pièce par pièce</b>, lus sur votre instance et jamais écrits en dur. Le troisième trace le débit sur le jour, la semaine, le mois ou l'année, et l'énergie consommée si la box a sa prise. Six alertes préviennent tous vos mobiles : plus d'Internet, plus de Wi-Fi, température, disque ou débit au-dessus d'un seuil que vous réglez, et nouvel appareil sur le réseau.`
+      resume: `Votre box Internet, vivante et aux couleurs de votre thème : Internet, Wi-Fi, débits, température, disque, appareils connectés, consommation, coût et alertes.`,
+      detail: `La surveillance complète de votre <b>box Internet</b>, aux couleurs et à l'écriture du thème choisi &mdash; les mêmes que le pack Lave-linge. Vous ne saisissez que la <b>pièce</b> : le pack interroge Home Assistant pour retrouver votre box (Freebox, Livebox, Bbox, SFR, Fritz!Box, UPnP&hellip;) et toutes ses entités &mdash; état d'Internet, Wi-Fi, débits, température, disque, temps de fonctionnement, adresse IP publique, ventilateur, bouton de redémarrage &mdash; ainsi que la prise connectée qui l'alimente. Le premier onglet montre <b>une seule image de votre box</b> avec, sur son écran, des icônes rangées de la plus importante (à gauche) à la moins importante (à droite) : Internet, Wi-Fi, débit descendant, débit montant, température, disque, ventilateur &mdash; <b>vertes</b> tant que tout va bien, <b>rouges</b> au-delà de leur seuil ; en bas, « En marche depuis » à gauche et le bouton <b>Redémarrer</b> à droite. Quand tout est normal, la carte porte le <b>serpentin vert</b> et son fond bat ; Internet ou Wi-Fi coupé, ou un seuil franchi, et serpentin, battement et icône passent au <b>rouge</b> ; box éteinte, image et bordure fixes. Le deuxième onglet détaille en sous-onglets : système, débit, température, disque et Wi-Fi avec la liste de vos appareils connectés. Le troisième reprend le graphe du Lave-linge : <b>débit, disque, température, allumage</b> et, avec une prise, <b>consommation et coût</b> au tarif de votre tableau Énergie, avec une ligne de seuil. Si vous saisissez une durée d'alerte, vos mobiles sont prévenus quand la box reste coupée ou au-delà d'un seuil plus longtemps.`,
+      apercu: {}
     },
     securite_alarme: {
       resume: "Armement, caméras en direct, capteurs de la maison et journal des alertes.",
@@ -5446,9 +5447,9 @@
         action: `Notification sur <b>tous vos mobiles</b>, dans la langue de votre instance, qui nomme la pièce et le téléviseur et dit depuis combien de temps il est allumé. Sans durée saisie, aucun automatisme n'est créé.` }
     ],
     appareil_box_internet: [
-      { titre: 'Six alertes de la box', icone: 'fa-bell',
-        declencheur: `Plus d'Internet depuis deux minutes, Wi-Fi désactivé depuis une minute, température au-dessus du seuil pendant cinq minutes, disque rempli au-delà du seuil, débit (réception ou émission) au-dessus du seuil pendant une minute, ou un nouvel appareil qui apparaît sur le réseau.`,
-        action: `Notification sur tous vos mobiles qui <b>nomme la cause</b> et sa valeur (température, pourcentage du disque, débit converti en Mo/s, nom du nouvel appareil). Les trois seuils sont des entrées que vous réglez sans redéploiement ; une même cause remplace son avis précédent, deux causes distinctes se cumulent.` }
+      { titre: `Box coupée ou au-dessus d'un seuil`, icone: 'fa-bell',
+        declencheur: `Internet ou le Wi-Fi reste <b>coupé</b>, ou le débit descendant, le débit montant, la température ou le disque reste <b>au-dessus de son seuil</b> (50 Mo/s, 20 Mo/s, 70 °C, 90 % par défaut, ou ceux saisis sur le site), plus longtemps que la <b>durée d'alerte</b> que vous avez saisie.`,
+        action: `Notification sur <b>tous vos mobiles</b>, dans la langue de votre instance, qui nomme la pièce et la box, la mesure et son seuil. Une même cause remplace son avis précédent. Sans durée saisie, aucun automatisme n'est créé.` }
     ],
     OK_service_meteo: [
       { titre: 'Alerte météo', icone: 'fa-triangle-exclamation',
@@ -6146,35 +6147,32 @@
       ]
     },
     appareil_box_internet: {
-      intro: `Trois onglets : indicateur, détails, historique. Vous ne saisissez que le <b>nom de votre box</b> &mdash; le pack retrouve seul tout ce qu'elle publie, y compris quand plusieurs intégrations la voient (Freebox, UPnP, ping), et la prise connectée qui l'alimente. <b>C'est ce que la box publie qui fait la variante</b> : sans température ni disque, les sous-onglets correspondants disparaissent ; sans prise, le bouton de prise et le graphe d'énergie aussi. Sans capteur de connexion, le pack installe lui-même un test de joignabilité vers 1.1.1.1.`,
+      intro: `Trois onglets : indicateur, détails, historique, dans la police et les couleurs du pack Lave-linge pour le thème choisi. Vous ne saisissez que la <b>pièce</b> : le script interroge Home Assistant pour retrouver votre box et toutes ses entités, même quand plusieurs intégrations la voient (Freebox et UPnP), et la prise connectée qui l'alimente. Sans capteur de connexion, il installe un test de joignabilité vers 1.1.1.1. Nom de la box, prise, prix du kWh, durée d'alerte et seuils sont facultatifs.`,
       carte: () => 'defaut',
       onglets: [
-        { titre: '1 — Indicateur', icone: 'fa-router',
-          texte: `Deux capsules en haut : <b>Internet</b> (un globe qui tourne quand la connexion est établie, rouge et clignotant quand elle est coupée) et <b>Wi-Fi</b> (ondes qui respirent quand il émet ; un appui le coupe ou le rallume, avec confirmation avant la coupure). Au centre, le visuel de la box, <b>vivant</b> : son voyant prend la couleur de l'état, deux jeux d'ondes montent des antennes tant que le Wi-Fi est actif. À droite, la « box » des indicateurs indispensables : réception et émission (flèches qui défilent dès qu'il y a du trafic), appareils connectés (comptés sur votre instance), température (verte, ambre puis rouge selon vos seuils). En bas, le temps de fonctionnement, le <b>bouton de redémarrage</b> corail à confirmation &mdash; il tourne tant qu'Internet est coupé &mdash; et, si la box a sa prise connectée, un bouton de coupure (appui long : redémarrage électrique).`,
+        { titre: '1 \u2014 Indicateur', icone: 'fa-wifi',
+          texte: `<b>Une seule image</b> de votre box et, sur son écran, une icône par mesure, de la plus importante (à gauche) à la moins importante (à droite) : <b>verte</b> sous son seuil, <b>rouge</b> au-delà ou coupée. En bas, « En marche depuis » à gauche et le bouton <b>Redémarrer</b> à droite.`,
           elements: [
-            { nom: `Titre`, texte: `le nom de la pièce et du pack, l'onglet à la ligne.` },
-            { nom: `Internet et Wi-Fi`, texte: `deux capsules d'état animées ; la capsule Wi-Fi bascule l'interrupteur de la box.` },
-            { nom: `Visuel de la box`, texte: `voyant vert qui respire ou rouge qui clignote, ondes des antennes tant que le Wi-Fi émet.` },
-            { nom: `Box d'indicateurs`, texte: `réception, émission, appareils connectés, température &mdash; chacun avec son icône animée.` },
-            { nom: `Temps de fonctionnement`, texte: `depuis le dernier redémarrage, en jours et heures.` },
-            { nom: `Redémarrage et prise`, texte: `bouton rond corail à confirmation ; bouton de prise vert quand la box est alimentée.` },
-            { nom: `Bordure et fond`, texte: `serpentin vert et fond allumé quand Internet et le Wi-Fi fonctionnent ; rouge dès que l'un manque. Rien ne bouge de place.` }
+            { nom: `Titre`, texte: `la pièce et le pack, l'onglet à la ligne, dans la police et la couleur du thème ; deux lignes au plus.` },
+            { nom: `La box`, texte: `Internet, Wi-Fi, débit descendant, débit montant, température, disque, ventilateur : une icône par mesure présente ; deux voyants au bout des antennes.` },
+            { nom: `En marche depuis`, texte: `le temps de fonctionnement de la box, au style des sélecteurs inactifs du thème.` },
+            { nom: `Redémarrer`, texte: `bouton rond au style des boutons inactifs du thème, à confirmation : le bouton de redémarrage de la box, sinon une coupure de dix secondes de sa prise.` },
+            { nom: `Bordure et fond`, texte: `tout est normal : serpentin vert et fond qui bat ; Internet ou Wi-Fi coupé, ou un seuil franchi : serpentin et battement rouges ; box éteinte : image et bordure fixes.` }
           ] },
-        { titre: '2 — Détails', icone: 'fa-sliders',
-          texte: `Quatre sous-onglets, choisis par les pastilles du bas. <b>Système</b> : temps de fonctionnement, adresse IP publique, ventilateur (dont l'icône tourne à la vitesse réelle). <b>Performance</b> : <b>une seule température</b>, la plus parlante &mdash; celle du processeur &mdash; en jauge à aiguille, verte, ambre puis rouge. <b>Disque</b> : l'espace utilisé en anneau, rouge au-delà du seuil. <b>Wi-Fi</b> : <b>les appareils de votre maison, pièce par pièce</b> &mdash; un sélecteur de pièce relevé sur votre instance, une liste lue à l'exécution (un appareil qui apparaît demain y est demain), les appareils connectés en vert avec leur icône qui respire, leur adresse IP à côté.`,
+        { titre: '2 \u2014 Détails', icone: 'fa-sliders',
+          texte: `Des sous-onglets choisis par des pastilles au style des sélecteurs du thème : <b>Système</b> (modèle, Internet, IP externe, temps de fonctionnement, ventilateur), <b>Débit</b> (descendant, montant et leurs seuils), <b>Température</b>, <b>Disque</b> (utilisé, libre) et <b>Wi-Fi</b> (état, à couper ou rallumer, puis la liste de vos appareils connectés, lue sur votre instance).`,
           elements: [
-            { nom: `Système`, texte: `temps de fonctionnement, adresse IP publique, ventilateur animé.` },
-            { nom: `Performance`, texte: `la température du processeur en jauge, avec vos seuils.` },
-            { nom: `Disque`, texte: `l'espace utilisé en anneau, vert puis ambre puis rouge.` },
-            { nom: `Wi-Fi`, texte: `sélecteur de pièce et liste des appareils, jamais écrits en dur.` },
-            { nom: `Pastilles`, texte: `quatre boutons de sous-onglet ; celui du sous-onglet actif est en vert.` }
+            { nom: `Sous-onglets`, texte: `Température, Disque et Wi-Fi n'apparaissent que si votre box les publie.` },
+            { nom: `Jauges`, texte: `vertes sous le seuil, rouges au-delà.` },
+            { nom: `Bordure et fond`, texte: `jugés sur le sous-onglet affiché : seuil atteint ou coupure, serpentin et battement rouges ; sinon serpentin et battement verts ; box éteinte, vert fixe.` }
           ] },
-        { titre: '3 — Historique', icone: 'fa-chart-line',
-          texte: `Le <b>débit</b> en réception et en émission, en Mo/s, sur le jour, la semaine, le mois ou l'année &mdash; et, si la box a sa prise connectée, l'<b>énergie consommée</b> en kWh sur les mêmes périodes, choisie par deux pastilles en bas.`,
+        { titre: '3 \u2014 Historique', icone: 'fa-chart-column',
+          texte: `Le graphe du pack Lave-linge : <b>débit</b> (descendant et montant, en Mo/s), <b>disque</b>, <b>température</b>, <b>allumage</b> et, avec une prise connectée, <b>consommation</b> et <b>coût</b>, par heure, jour ou mois, avec une ligne de seuil rouge ; quand la grandeur affichée atteint son seuil, serpentin vert et fond qui bat.`,
           elements: [
             { nom: `Périodes`, texte: `jour, semaine, mois, année.` },
-            { nom: `Graphe`, texte: `deux courbes de débit (réception en vert, émission en bleu), ou des barres d'énergie.` },
-            { nom: `Métrique`, texte: `Débit ou Énergie, quand la box a sa prise.` }
+            { nom: `Grandeurs`, texte: `Débit, Disque (si la box en a un), Température, Allumage ; Consommation et Coût seulement avec une prise (saisie ou retrouvée).` },
+            { nom: `Coût`, texte: `au tarif de votre tableau Énergie, ou au prix du kWh saisi.` },
+            { nom: `Seuil`, texte: `celui que vous avez réglé pour le débit, le disque et la température ; la moyenne de vos périodes pour l'allumage et la consommation.` }
           ] }
       ]
     },
@@ -8896,28 +8894,42 @@
       champThemeSite('TV_THEME', { sombre: 'noir-naturel', clair: 'blanc-naturel' })
     ],
     appareil_box_internet: [
-      { param: 'BOX_APPAREIL', label: 'Nom de la box', type: 'text', required: true,
-        groupe: '📡 Box',
-        placeholder: 'ex : Freebox v8 (r1) — le nom de l\'appareil dans Home Assistant' },
-      { param: 'BOX_PIECE', label: 'Pièce', type: 'text', required: false,
-        groupe: '📡 Box',
-        placeholder: 'vide : déduite de l\'appareil' },
-      { param: 'BOX_SEUILS', label: 'Seuils d\'alerte : température, disque, débit', type: 'text', required: false,
-        groupe: '📡 Box',
-        placeholder: 'ex : 70,90,50 — °C, % utilisé, Mo/s ; vide : ces valeurs' },
-      { param: 'BOX_INTERNET', label: 'Capteur de connexion Internet', type: 'text', required: false,
-        groupe: '🔧 Corrections (rarement utiles)',
-        placeholder: 'vide : déduit, sinon un ping vers 1.1.1.1 est installé' },
-      { param: 'BOX_WIFI', label: 'Interrupteur Wi-Fi', type: 'text', required: false,
-        groupe: '🔧 Corrections (rarement utiles)',
-        placeholder: 'vide : déduit de l\'appareil' },
-      { param: 'BOX_TEMPERATURE', label: 'Capteur de température', type: 'text', required: false,
-        groupe: '🔧 Corrections (rarement utiles)',
-        placeholder: 'vide : celle du processeur, sinon la première' },
-      { param: 'BOX_PRISE', label: 'Prise connectée (capteur de puissance)', type: 'text', required: false,
-        groupe: '🔧 Corrections (rarement utiles)',
-        placeholder: 'vide : la prise dont le nom cite la box, si elle existe' },
-      champThemeSite('BOX_THEME', 'urban-factory', '🎨 Apparence')
+      /* Refonte du 13/11/2026 (alignement sur le Lave-linge, comme le
+         Raspberry) : la PIECE est obligatoire ; la box et ses entites sont
+         retrouvees par le script. Nom de la box, prise, prix du kWh, duree
+         d'alerte et seuils sont facultatifs. Le theme n'a PAS de `groupe` : il
+         occupe sa propre rangee, une seule fois sur la page. */
+      { param: 'BOX_PIECE', label: `Pièce`, type: 'text', required: true,
+        groupe: `📡 Box`, placeholder: `ex : Entrée` },
+      { param: 'BOX_APPAREIL', label: `Nom de la box (facultatif)`, type: 'text', required: false,
+        groupe: `📡 Box`,
+        placeholder: `ex : Freebox v8 (r1) — vide : retrouvée seule sur votre instance` },
+      { param: 'BOX_PRISE', label: `Interrupteur de la prise (facultatif)`, type: 'text',
+        required: false, groupe: `⚡ Consommation et alerte`,
+        placeholder: `ex : switch.box_prise_main_channel — vide : la prise dont le nom cite la box, s'il y en a une` },
+      { param: 'BOX_TARIF', label: `Prix du kWh (facultatif)`, type: 'text', required: false,
+        groupe: `⚡ Consommation et alerte`,
+        placeholder: `ex : 0.25 — vide : repris de votre tableau de bord Énergie` },
+      { param: 'BOX_ALERTE', label: `Durée d'alerte (notification mobile)`, type: 'text',
+        required: false, groupe: `⚡ Consommation et alerte`,
+        placeholder: `ex : 10 (minutes), 15 min, 1h — vide : aucune notification` },
+      { param: 'BOX_SEUIL_DESCENDANT', label: `Seuil du débit descendant (Mo/s)`, type: 'text',
+        required: false, groupe: `⚡ Consommation et alerte`, placeholder: `vide : 50` },
+      { param: 'BOX_SEUIL_MONTANT', label: `Seuil du débit montant (Mo/s)`, type: 'text',
+        required: false, groupe: `⚡ Consommation et alerte`, placeholder: `vide : 20` },
+      { param: 'BOX_SEUIL_DISQUE', label: `Seuil du disque (%)`, type: 'text', required: false,
+        groupe: `⚡ Consommation et alerte`, placeholder: `vide : 90` },
+      { param: 'BOX_SEUIL_TEMP', label: `Seuil de température (°C)`, type: 'text', required: false,
+        groupe: `⚡ Consommation et alerte`, placeholder: `vide : 70` },
+      { param: 'BOX_INTERNET', label: `Capteur de connexion Internet`, type: 'text', required: false,
+        groupe: `🔧 Corrections (rarement utiles)`,
+        placeholder: `vide : déduit, sinon un ping vers 1.1.1.1 est installé` },
+      { param: 'BOX_WIFI', label: `Interrupteur Wi-Fi`, type: 'text', required: false,
+        groupe: `🔧 Corrections (rarement utiles)`, placeholder: `vide : déduit de la box` },
+      { param: 'BOX_TEMPERATURE', label: `Capteur de température`, type: 'text', required: false,
+        groupe: `🔧 Corrections (rarement utiles)`,
+        placeholder: `vide : celle du processeur, sinon la première` },
+      champThemeSite('BOX_THEME', { sombre: 'noir-naturel', clair: 'blanc-naturel' })
     ],
     securite_alarme: [
       { param: 'ALARME_APPAREIL', label: 'Nom de la centrale', type: 'text', required: true,
@@ -9745,14 +9757,14 @@
       + `personnalisées requises (button-card, android-tv-card, mushroom, swipe-card, stack-in-card, `
       + `plotly-graph, card-mod).`,
     appareil_box_internet:
-      'la vue et ses trois onglets, les s\u00e9lecteurs et les trois seuils '
-      + 'r\u00e9glables, l\u2019automatisation aux six alertes (Internet, '
-      + 'Wi-Fi, temp\u00e9rature, disque, d\u00e9bit, nouvel appareil) qui '
-      + 'pr\u00e9vient tous vos mobiles, les scripts de la prise connect\u00e9e '
-      + 'quand elle existe, un test de joignabilit\u00e9 (ping) si la box '
-      + 'n\u2019a pas de capteur d\u2019Internet, ainsi que HACS et les cartes '
-      + 'personnalis\u00e9es requises (button-card, apexcharts-card, '
-      + 'swipe-card, stack-in-card, card-mod).',
+      `la vue et ses trois onglets (une par thème choisi), l'add-on <b>File editor</b> installé s'il manque, `
+      + `le capteur de marche de la box, avec une prise les compteurs d'énergie et le capteur de seuils du `
+      + `troisième onglet, les sélecteurs de sous-onglet, de période et de grandeur, les quatre seuils réglables `
+      + `(débits, disque, température), le prix du kWh, le script de redémarrage, un test de joignabilité `
+      + `(ping) si la box n'a pas de capteur d'Internet, l'automatisation qui prévient tous vos mobiles quand `
+      + `la box reste coupée ou au-delà d'un seuil (si vous avez saisi une durée), le visuel de la box, ainsi `
+      + `que HACS et les cartes personnalisées requises (button-card, mushroom, swipe-card, stack-in-card, `
+      + `plotly-graph, card-mod).`,
     securite_alarme:
       'la vue et ses quatre onglets, le journal des dix derniers '
       + '\u00e9v\u00e9nements, l\u2019automatisation qui le tient \u00e0 jour '
