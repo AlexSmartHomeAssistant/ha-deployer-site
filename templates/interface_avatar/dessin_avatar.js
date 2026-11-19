@@ -36,13 +36,15 @@
 (function (G) {
   'use strict';
 
-  var VERSION = '2026.10.04';
+  var VERSION = '2026.11.19';
   var ORDRE = ['jarvis', 'vision', 'skynet', 'hal_9000', 'c3po', 'baymax', 'glados', 'robocop',
     'agent_smith', 'samantha', 'cortana', 'walle', 'daft_punk', 'ava', 'tars', 'wopr', 'm3gan',
     'viki', 'muthur', 'sonny', 'tron'];
   var ETATS = ['idle', 'listening', 'processing', 'speaking'];
   /* palette officielle du pack */
   var BL = '#FFFFFF', VE = '#52BE80', JA = '#F8C471', RO = '#EC7063', CY = '#5DADE2', VI = '#BF71B2', GR = '#333333';
+  /* le vert phosphore de la pluie de code (Agent Smith) : son serpentin et sa lueur le reprennent */
+  var MX = '#00FF41', MX2 = '#03A062';
 
   /* ------------------------------------------------------------------ outils */
   function f(v) { var r = Math.round(v * 10) / 10; return String(r === 0 ? 0 : r); }
@@ -649,15 +651,16 @@
       var defs = v.defs +
         k.lg('verre', ' x2="0" y2="1"', [[0, '#0d1a12'], [.6, '#030805'], [1, '#0a1f12']]) +
         k.lg('veste', ' x2="0" y2="1"', [[0, '#1c1f22'], [1, '#050607']]) +
-        k.lg('pluie', ' x2="0" y2="1"', [[0, VE, 0], [.85, VE, .8], [1, '#d9ffe6', 1]]) +
+        k.lg('pluie', ' x2="0" y2="1"', [[0, MX2, 0], [.85, MX, .8], [1, '#d9ffe6', 1]]) +
         k.clip('lunettes', '<path d="M100 79H140V94Q138 99 128 99H108Q101 98 100 92ZM150 79H190V92Q189 98 182 99H162Q152 99 150 94Z"/>');
       /* pluie de code : colonnes de caracteres qui tombent */
-      var GLY = '01ABCDEFHKLMNRTXZ2345789';
+      /* chiffres, capitales et katakana demi-chasse : les glyphes de la pluie de code */
+      var GLY = '0123456789ABCDEFHKLMNRTXZ\uFF8A\uFF90\uFF8B\uFF70\uFF73\uFF7C\uFF85\uFF93\uFF86\uFF7B\uFF9C\uFF82\uFF75\uFF98\uFF71\uFF8E\uFF83\uFF8F\uFF79\uFF92\uFF74\uFF76\uFF77\uFF91\uFF95\uFF97\uFF7E\uFF88\uFF7D\uFF80\uFF87\uFF8D';
       var pluie = '', pluie2 = '';
       for (i = 0; i < 26; i++) {
         var x = 6 + i * 15.4, col = '', n = 10 + Math.floor(R() * 14);
         for (j = 0; j < n; j++) col += texte(x, -j * 16, GLY.charAt(Math.floor(R() * GLY.length)),
-          { fill: j === 0 ? '#d9ffe6' : VE, 'fill-opacity': f(Math.max(.12, 1 - j / n)) });
+          { fill: j === 0 ? '#d9ffe6' : (j < 4 ? MX : MX2), 'fill-opacity': f(Math.max(.14, 1 - j / n)) });
         var d = (4 + R() * 6).toFixed(1), dl = (R() * 8).toFixed(1);
         pluie += g({ 'class': 'av-tombe', style: '--d:' + d + 's;--h:' + (420 + n * 16) + 'px;animation-delay:-' + dl + 's' }, col);
         if (i % 2 === 0) pluie2 += g({ 'class': 'av-tombe', style: '--d:' + (d / 2.5).toFixed(1) + 's;--h:' + (420 + n * 16) + 'px;animation-delay:-' + dl + 's' }, col);
@@ -692,7 +695,7 @@
             '<path d="M104 82H124" stroke="#9fffc2" stroke-opacity=".35" stroke-width="1"/>' +
             /* oreillette */
             '<path d="M196 92Q203 94 201 102' + spirale + '" fill="none" stroke="#c9d1cf" stroke-width="1.3" stroke-opacity=".9"/>')) +
-        g({ 'class': 'av-calc smith-dissout' }, rect(80, 0, 130, 250, { fill: VE, 'fill-opacity': '.12' })));
+        g({ 'class': 'av-calc smith-dissout' }, rect(80, 0, 130, 250, { fill: MX, 'fill-opacity': '.12' })));
       return { defs: defs, fond: fond, corps: corps };
     },
     css: function (S) {
@@ -1809,6 +1812,45 @@
   function cssCommun(S) {
     return [
       '.av-svg{display:block;width:100%;height:100%}',
+      /* PORTRAIT DETOURE (photo du catalogue) pose sur le fond anime dessine : il remplace le
+         personnage dessine des qu'il est charge ; sans lui (fichier absent, rendu « Vectoriel »)
+         le dessin reste. Le cadrage (echelle, decalage) vient du catalogue. */
+      '.av-portrait{position:absolute;inset:0;z-index:1;pointer-events:none;transform-origin:50% 100%;'
+        + 'transform:translateY(var(--pdy,0%)) scale(var(--pech,1))}',
+      '.av-portrait[data-ko]{display:none}',
+      /* un cadre CARRE, cale en bas : l'image, ses reflets et sa bouche y partagent le meme repere */
+      '.av-portrait-in{position:absolute;left:0;right:0;bottom:0;aspect-ratio:1/1;transform-origin:50% 72%;'
+        + 'will-change:transform;animation:avc-psouffle 5.6s ease-in-out infinite}',
+      '.av-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;'
+        + 'opacity:0;transition:opacity .35s ease;-webkit-user-drag:none;user-select:none;'
+        + 'filter:drop-shadow(0 0 7px var(--av-lueur-portrait,rgba(0,0,0,0)))}',
+      /* SYNTHESE LABIALE : un canevas pose sur la bouche de la photo, redessine a chaque image
+         pendant que l'avatar parle (voir `animerLevres`). Ses bords se fondent : il ne montre
+         que ce qui bouge. */
+      '.av-levres{position:absolute;pointer-events:none;opacity:0;'
+        + '-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 46%,#000 82%,transparent 100%);'
+        + 'mask-image:radial-gradient(ellipse 50% 50% at 50% 46%,#000 82%,transparent 100%)}',
+      '.av-portrait[data-pret] .av-levres{opacity:1}',
+      '.av-portrait[data-pret] img{opacity:1}',
+      '.av-portrait svg{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s ease}',
+      '.av-portrait[data-pret] svg{opacity:.55}', S.ACT + '.av-portrait[data-pret] svg{opacity:.95}',
+      '.av-scene:has(.av-portrait[data-pret]) .av-svg .av-corps,.av-scene:has(.av-portrait[data-pret]) .av-svg .av-dessus{visibility:hidden}',
+      '@keyframes avc-psouffle{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1.6px) scale(1.006)}}',
+      S.L + '.av-portrait-in{animation:avc-pecoute 2.6s ease-in-out infinite}',
+      '@keyframes avc-pecoute{0%,100%{transform:scale(1.014)}50%{transform:scale(1.022)}}',
+      S.PR + '.av-portrait-in{animation:avc-pcalcul .9s steps(1,end) infinite}',
+      '@keyframes avc-pcalcul{0%,100%{opacity:1;transform:translateX(0)}22%{opacity:.66;transform:translateX(-2px)}'
+        + '24%{opacity:1;transform:translateX(0)}61%{opacity:.78;transform:translateX(1.5px)}63%{opacity:1;transform:translateX(0)}}',
+      S.S + '.av-portrait-in{animation:avc-pparle 1.1s ease-in-out infinite}',
+      '@keyframes avc-pparle{0%,100%{transform:scale(1)}30%{transform:scale(1.009)}55%{transform:scale(1.003)}80%{transform:scale(1.011)}}',
+      S.AU + '.av-portrait-in{animation:none;transform:scale(calc(1 + var(--bouche,0) * .005))}',
+      /* LE CORPS (`animerCorps`) pilote le cadre a l'horloge : plus d'animation CSS (repli seulement
+         sans script) ; en reflexion, le seul scintillement « calcul » reste en CSS (opacite). */
+      '.av-portrait[data-corps] .av-portrait-in{animation:none!important;transform-origin:0 0!important}',
+      S.PR + '.av-portrait[data-corps] .av-portrait-in{animation:avc-pcalcul-o .9s steps(1,end) infinite!important}',
+      '@keyframes avc-pcalcul-o{0%,100%{opacity:1}22%{opacity:.7}24%{opacity:1}61%{opacity:.82}63%{opacity:1}}',
+      '.av-sourcils{position:absolute;pointer-events:none;opacity:0}',
+      '.av-portrait[data-pret] .av-sourcils{opacity:1}',
       '.av-corps{transform-box:view-box;animation:avc-souffle 5.2s ease-in-out infinite}',
       '@keyframes avc-souffle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.8px)}}',
       '.av-pose{transform-box:view-box;transition:transform .8s cubic-bezier(.25,.8,.3,1)}',
@@ -1899,6 +1941,494 @@
   /* Le contenu d'une scene : la feuille de l'avatar, son dessin, et SES quatre videos (si le
      deploiement en a trouve : `v` est leur version, « 0 » = aucune). Seule leur OPACITE
      changera ensuite : la carte bascule d'etat sans recharger une source. */
+  /* Le portrait detoure d'un avatar : l'image, et les reflets de son fond anime dans ses verres
+     (`lun` : polygones releves sur la photo, en fractions de l'image). `p` = { u: adresse, ech, dy,
+     lun, teinte } -- pose par le deploiement dans le catalogue de la carte. */
+  function portrait(id, p, prefixe) {
+    if (!p || !p.u) return '';
+    var P = String(prefixe || 'avp').replace(/[^A-Za-z0-9_-]/g, '') + '-' + id + '-';
+    var R = graine(hash(id + 'portrait') || 1);
+    var reflets = '';
+    var lun = p.lun || [];
+    if (lun.length) {
+      var clips = '', x0 = 1, x1 = 0, y0 = 1, y1 = 0;
+      lun.forEach(function (poly) {
+        clips += '<polygon points="' + poly.map(function (q) {
+          x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]);
+          return f(q[0] * 1000) + ',' + f(q[1] * 1000);
+        }).join(' ') + '"/>';
+      });
+      var haut = (y1 - y0) * 1000, traits = '', n = Math.max(6, Math.round((x1 - x0) * 46));
+      for (var i = 0; i < n; i++) {
+        var x = x0 * 1000 + (i + .5) * (x1 - x0) * 1000 / n + (R() - .5) * 6;
+        traits += rect(x, y0 * 1000 - 46, 3.2, 40, { fill: 'url(#' + P + 'trait)', 'class': 'av-tombe',
+          style: '--d:' + (1.1 + R() * 1.7).toFixed(1) + 's;--h:' + Math.round(haut + 60) + 'px;animation-delay:-' + (R() * 2.4).toFixed(1) + 's' });
+      }
+      reflets = '<svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">' +
+        '<defs><linearGradient id="' + P + 'trait" x2="0" y2="1">' + stops([[0, p.teinte || MX, 0], [.8, p.teinte || MX, .75], [1, '#eafff0', 1]]) +
+        '</linearGradient><clipPath id="' + P + 'verres">' + clips + '</clipPath></defs>' +
+        '<g clip-path="url(#' + P + 'verres)">' + traits + '</g></svg>';
+    }
+    /* la bouche : un canevas cale sur la zone relevee (`bouche` du catalogue, en fractions de l'image) */
+    var levres = '', b = p.bouche;
+    if (b && b.ligne && b.ligne.length > 2) {
+      levres = '<canvas class="av-levres" width="2" height="2" style="left:' + f2(b.gauche * 100) + '%;top:' + f2(b.haut * 100) +
+        '%;width:' + f2((b.droite - b.gauche) * 100) + '%;height:' + f2((b.bas - b.haut) * 100) + '%" data-bouche="' +
+        JSON.stringify(b).replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></canvas>';
+    }
+    /* les sourcils : un canevas sur le front, du haut de la zone au haut des verres (`sourcils`) */
+    var sourcils = '', so = p.sourcils;
+    if (so && so.ligne > so.haut && so.bas > so.ligne && so.droite > so.gauche) {
+      sourcils = '<canvas class="av-sourcils" width="2" height="2" style="left:' + f2(so.gauche * 100) + '%;top:' + f2(so.haut * 100) +
+        '%;width:' + f2((so.droite - so.gauche) * 100) + '%;height:' + f2((so.bas - so.haut) * 100) + '%" data-sourcils="' +
+        JSON.stringify(so).replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></canvas>';
+    }
+    return '<div class="av-portrait" style="--pdy:' + f((p.dy || 0) * 100) + '%;--pech:' + f1(p.ech || 1) + '">' +
+      '<div class="av-portrait-in"><img alt="" decoding="async" draggable="false" src="' + p.u + '"' +
+      ' onload="this.parentNode.parentNode.setAttribute(\'data-pret\', \'\')"' +
+      ' onerror="this.parentNode.parentNode.setAttribute(\'data-ko\', \'\')">' + sourcils + reflets + levres + '</div></div>';
+  }
+  function f2(v) { return String(Math.round(v * 100) / 100); }
+
+  /* =====================================================================
+   *  SYNTHESE LABIALE SUR UN PORTRAIT (photo detouree)
+   *  La bouche de la photo s'OUVRE le long de sa propre ligne des levres (relevee sur l'image :
+   *  `portrait.bouche.ligne`). A chaque image, le canevas redessine le bas du visage colonne par
+   *  colonne : au-dessus de la ligne, la levre superieure remonte un peu ; au-dessous, la levre
+   *  inferieure, le menton et la machoire descendent (le deplacement s'eteint au bas de la zone,
+   *  dans l'ombre du cou) ; entre les deux, l'interieur de la bouche (cavite, dents du haut,
+   *  langue quand elle s'ouvre grand) aux couleurs MESUREES sur la photo. L'ouverture suit
+   *  l'amplitude REELLE de la voix (`--bouche`, posee par le pilote) ; sans son dans la carte
+   *  (satellite, enceinte), un profil de parole. Ferme, le canevas est vide : la photo seule.
+   *  Ce pilote d'animation lit l'horloge (requestAnimationFrame) : il ne produit aucune chaine,
+   *  la regle « deterministe » des scenes ne le concerne pas.
+   * ===================================================================== */
+  function preparerLevres(cv, img) {
+    var B;
+    try { B = JSON.parse(cv.getAttribute('data-bouche')); } catch (e) { return null; }
+    var N = img.naturalWidth, M = img.naturalHeight;
+    if (!N || !M) return null;
+    var x0 = Math.round(B.gauche * N), y0 = Math.round(B.haut * M);
+    var W = Math.max(2, Math.round((B.droite - B.gauche) * N)), H = Math.max(2, Math.round((B.bas - B.haut) * M));
+    cv.width = W;
+    cv.height = H;
+    var pts = B.ligne.map(function (q) { return [q[0] * N - x0, q[1] * M - y0]; });
+    var xa = pts[0][0], xb = pts[pts.length - 1][0], cx = (xa + xb) / 2, hw = (xb - xa) / 2;
+    var L = new Float32Array(W), P = new Float32Array(W);
+    for (var c = 0; c < W; c++) {
+      var y;
+      if (c <= xa) y = pts[0][1];
+      else if (c >= xb) y = pts[pts.length - 1][1];
+      else {
+        var i = 0;
+        while (pts[i + 1][0] < c) i++;
+        y = pts[i][1] + (c - pts[i][0]) / (pts[i + 1][0] - pts[i][0]) * (pts[i + 1][1] - pts[i][1]);
+      }
+      L[c] = y;
+      var u = (c - cx) / hw;
+      P[c] = Math.abs(u) < 1 ? Math.pow(1 - u * u, 0.85) : 0;      /* ouverture en amande, nulle aux commissures */
+    }
+    return { B: B, x0: x0, y0: y0, W: W, H: H, L: L, P: P, xa: xa, xb: xb, cx: cx, hw: hw, G: B.ouverture * M,
+      ctx: cv.getContext('2d') };
+  }
+
+  /* La forme de la bouche : { o: ouverture 0..1, w: largeur (1 = naturelle, < 1 arrondie, > 1
+     etiree), tu / td : dents du haut / du bas visibles 0..1, la : langue 0..1 }. Un nombre seul
+     est une ouverture (dents et langue en suivent l'ampleur : l'ancienne bouche). */
+  function parametresLevres(q) {
+    if (typeof q === 'number' || q == null) {
+      var a = Math.max(0, Math.min(1, +q || 0));
+      return { o: a, w: 1, tu: a > 0.06 ? 0.75 : 0, td: 0, la: a > 0.45 ? Math.min(1, (a - 0.45) * 2.2) : 0 };
+    }
+    return { o: Math.max(0, Math.min(1, +q.o || 0)), w: Math.max(0.6, Math.min(1.1, +q.w || 1)),
+      tu: Math.max(0, Math.min(1, +q.tu || 0)), td: Math.max(0, Math.min(1, +q.td || 0)), la: Math.max(0, Math.min(1, +q.la || 0)) };
+  }
+
+  /* Dessine la bouche de la photo dans la forme `q` (voir `parametresLevres`).
+     - LARGEUR : les colonnes du bas du visage sont deplacees horizontalement vers le centre (bouche
+       arrondie, lèvres en avant) ou vers l'exterieur (bouche etiree) ; le deplacement s'eteint aux
+       bords de la zone (`k(u) = (1 - u²)²`, toujours croissant pour une largeur > 0,45) ;
+     - OUVERTURE : la levre superieure remonte un peu, la levre inferieure, le menton et la machoire
+       descendent, le long de la ligne des levres de la photo ; plus la bouche s'arrondit, plus
+       l'ouverture prend la forme d'un ovale (exposant du profil de 0,85 vers 0,5) ;
+     - l'interieur : la cavite, les dents du haut (sous la levre superieure), du bas (sur la levre
+       inferieure : dents serrees des consonnes), la langue (au fond, ou levee pour un L), aux
+       couleurs relevees sur la photo. Fermee et a sa largeur naturelle, la bouche est la photo
+       seule (canevas vide). */
+  function dessinerLevres(g, img, q) {
+    var ctx = g.ctx, W = g.W, H = g.H, B = g.B, pas = 2, c, i;
+    var p = parametresLevres(q);
+    ctx.clearRect(0, 0, W, H);
+    if (!(p.o > 0.015) && Math.abs(p.w - 1) < 0.02) return;
+    var G = g.G * p.o, alpha = 1 / p.w - 1, R = Math.max(g.cx, W - g.cx);
+    var gam = Math.max(0.5, 0.85 - (1 - Math.min(1, p.w)) * 1.15);
+    var source = function (x) {
+      var u = (x - g.cx) / R, k = Math.abs(u) < 1 ? (1 - u * u) * (1 - u * u) : 0;
+      return x + (x - g.cx) * alpha * k;
+    };
+    var ligne = function (s) {
+      var a = Math.max(0, Math.min(W - 1, Math.floor(s))), b = Math.min(W - 1, a + 1), f = s - a;
+      return g.L[a] * (1 - f) + g.L[b] * f;
+    };
+    var profil = function (s) {
+      var u = (s - g.cx) / g.hw;
+      return Math.abs(u) < 1 ? Math.pow(1 - u * u, gam) : 0;
+    };
+    /* les colonnes : source, ligne des levres, ouverture */
+    var cols = [];
+    for (c = 0; c <= W; c += pas) {
+      var s0 = source(c), s1 = source(Math.min(W, c + pas));
+      cols.push({ c: c, s: s0, sw: Math.max(0.5, s1 - s0), L: ligne(s0), o: G * profil(s0) });
+    }
+    var ouv = cols.filter(function (x) { return x.o > 0.05; });
+    if (ouv.length > 1) {
+      var mil = ouv[Math.floor(ouv.length / 2)];
+      var haut = function (x) { return x.L - 0.16 * x.o; };
+      var bas = function (x) { return x.L + x.o; };
+      /* 1. la cavite */
+      ctx.beginPath();
+      ctx.moveTo(ouv[0].c, haut(ouv[0]));
+      for (i = 0; i < ouv.length; i++) ctx.lineTo(ouv[i].c, haut(ouv[i]) - 1);
+      for (i = ouv.length - 1; i >= 0; i--) ctx.lineTo(ouv[i].c, bas(ouv[i]) + 1);
+      ctx.closePath();
+      var cav = ctx.createLinearGradient(0, haut(mil), 0, bas(mil));
+      cav.addColorStop(0, B.trait || '#551108');
+      cav.addColorStop(0.4, B.cavite || '#3a0f08');
+      cav.addColorStop(1, B.cavite || '#3a0f08');
+      ctx.fillStyle = cav;
+      ctx.fill();
+      if (G > 1.2) {
+        ctx.save();
+        ctx.clip();
+        var dents = function (part, epais, du_bas) {
+          var sel = ouv.filter(function (x) { return Math.abs(x.s - g.cx) < g.hw * part; });
+          if (sel.length < 2 || !(epais > 0.05)) return;
+          ctx.beginPath();
+          for (i = 0; i < sel.length; i++) {
+            var y = du_bas ? bas(sel[i]) : haut(sel[i]);
+            if (i === 0) ctx.moveTo(sel[i].c, y); else ctx.lineTo(sel[i].c, y);
+          }
+          for (i = sel.length - 1; i >= 0; i--) {
+            var r = (sel[i].s - g.cx) / (g.hw * part), h = Math.min(sel[i].o, epais) * Math.sqrt(Math.max(0, 1 - r * r));
+            ctx.lineTo(sel[i].c, du_bas ? bas(sel[i]) - h : haut(sel[i]) + h);
+          }
+          ctx.closePath();
+          ctx.fill();
+        };
+        ctx.fillStyle = B.dents || '#d9d5cf';
+        /* 2. les dents du haut, sous la levre superieure */
+        if (p.tu > 0.03) {
+          ctx.globalAlpha = Math.min(0.94, p.tu * Math.min(1, G / (g.G * 0.18)));
+          dents(0.62, Math.min(G * 0.58 * Math.max(0.4, p.tu), g.G * 0.3), false);
+        }
+        /* 3. les dents du bas, sur la levre inferieure (dents serrees) */
+        if (p.td > 0.03) {
+          ctx.globalAlpha = Math.min(0.88, p.td);
+          dents(0.5, Math.min(G * 0.36 * p.td, g.G * 0.2), true);
+        }
+        /* 4. la langue : au fond (bouche grande ouverte) ou levee derriere les dents (L) */
+        if (p.la > 0.05 && G > 2.5) {
+          ctx.globalAlpha = Math.min(0.85, p.la);
+          ctx.fillStyle = B.langue || '#8f6053';
+          ctx.beginPath();
+          if (p.tu > 0.4 && p.la > 0.8 && p.o < 0.7) {
+            ctx.ellipse(mil.c, haut(mil) + mil.o * 0.42, g.hw * 0.34 * p.w, mil.o * 0.3, 0, 0, 2 * Math.PI);
+          } else {
+            ctx.ellipse(mil.c, bas(mil) + 1, g.hw * 0.46 * p.w, mil.o * 0.42, 0, Math.PI, 2 * Math.PI);
+          }
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+    /* 5. les levres et le bas du visage, colonne par colonne (un demi-pixel de recouvrement) */
+    for (i = 0; i < cols.length; i++) {
+      var x = cols[i];
+      if (x.c >= W) break;
+      if (x.o < 0.05) { ctx.drawImage(img, g.x0 + x.s, g.y0, x.sw, H, x.c, 0, pas + 0.5, H); continue; }
+      ctx.drawImage(img, g.x0 + x.s, g.y0, x.sw, x.L, x.c, 0, pas + 0.5, x.L - 0.16 * x.o);
+      ctx.drawImage(img, g.x0 + x.s, g.y0 + x.L, x.sw, H - x.L, x.c, x.L + x.o, pas + 0.5, H - x.L - x.o);
+    }
+  }
+
+  /* Profil de parole quand la voix ne passe pas par la carte : cinq syllabes par seconde,
+     l'intensite d'une phrase, des respirations. */
+  function paroleSynthetique(t) {
+    var syllabe = Math.abs(Math.sin(t * 15.7));
+    var phrase = 0.55 + 0.45 * Math.sin(t * 2.1 + 0.7);
+    return Math.sin(t * 0.9) > -0.75 ? Math.max(0, syllabe * phrase * 0.9) : 0;
+  }
+
+  /* L'ouverture de la bouche pour une enveloppe de voix (0..1) : la parole courante ouvre a
+     demi, seule une syllabe appuyee ouvre en grand. */
+  function ouvertureLevres(voix) { return Math.min(1, Math.pow(Math.max(0, voix), 1.2) * 0.9); }
+
+  /* La forme de la bouche a chaque image. Source, par ordre de preference :
+     1. `hote.__avViseme`, pose par le pilote : reperes de Rhubarb de la replique jouee (son en
+        memoire), ou estimation temps reel sur le spectre de la voix (reponses libres) ;
+     2. sinon, voix jouee par la carte sans forme (ancien pilote) : l'enveloppe `--levres` ;
+     3. sinon (satellite, enceinte : le son ne passe pas par la carte) : un profil de parole.
+     Chaque parametre rejoint sa cible a sa vitesse (l'ouverture vite, la largeur plus lentement :
+     les levres s'arrondissent moins vite qu'elles ne s'ouvrent). */
+  var VITESSES_LEVRES = { o: [0.62, 0.45], w: [0.32, 0.32], tu: [0.5, 0.4], td: [0.5, 0.4], la: [0.4, 0.3] };
+
+  function cibleLevres(hote, t) {
+    var v = hote.__avViseme;
+    if (v && G.performance && G.performance.now() - (v.t || 0) < 250) return v;
+    if (hote.hasAttribute('data-audio')) {
+      var lu = hote.style.getPropertyValue('--levres');
+      return parametresLevres(ouvertureLevres(parseFloat(lu !== '' ? lu : hote.style.getPropertyValue('--bouche')) || 0));
+    }
+    var o = ouvertureLevres(paroleSynthetique(t / 1000));
+    return { o: o, w: o > 0.2 ? 1 - 0.22 * Math.max(0, Math.sin(t / 1000 * 3.3)) : 1, tu: o > 0.1 ? 0.7 : 0, td: 0,
+      la: o > 0.6 ? 0.5 : 0 };
+  }
+
+  function animerLevres(hote) {
+    if (!hote || hote.__avLevres || typeof MutationObserver !== 'function' || !G.requestAnimationFrame) return;
+    var e = hote.__avLevres = { g: null, q: { o: 0, w: 1, tu: 0, td: 0, la: 0 }, a: 0, tourne: false, img: null, cv: null };
+    var pas = function (t) {
+      var racine = hote.shadowRoot || hote;
+      var cv = racine.querySelector('.av-levres');
+      if (!cv) { e.tourne = false; e.cv = null; e.g = null; return; }
+      if (cv !== e.cv) { e.cv = cv; e.g = null; e.img = cv.parentNode.querySelector('img'); }
+      if (!e.g && e.img && e.img.naturalWidth) e.g = preparerLevres(cv, e.img);
+      var parle = hote.getAttribute('data-etat') === 'speaking';
+      var cible = parle ? cibleLevres(hote, t) : { o: 0, w: 1, tu: 0, td: 0, la: 0 };
+      for (var k in VITESSES_LEVRES) {
+        var v = VITESSES_LEVRES[k], d = (cible[k] == null ? (k === 'w' ? 1 : 0) : cible[k]) - e.q[k];
+        e.q[k] += d * (d > 0 ? v[0] : v[1]);
+      }
+      e.a = e.q.o;
+      if (e.g) dessinerLevres(e.g, e.img, e.q);
+      var repos = e.q.o < 0.012 && Math.abs(e.q.w - 1) < 0.01;
+      if (parle || !repos) G.requestAnimationFrame(pas);
+      else {
+        e.tourne = false;
+        e.q = { o: 0, w: 1, tu: 0, td: 0, la: 0 };
+        e.a = 0;
+        if (e.g) dessinerLevres(e.g, e.img, 0);
+      }
+    };
+    e.lancer = function () {
+      if (!e.tourne && hote.getAttribute('data-etat') === 'speaking') { e.tourne = true; G.requestAnimationFrame(pas); }
+    };
+    new MutationObserver(e.lancer).observe(hote, { attributes: true, attributeFilter: ['data-etat'] });
+    e.lancer();
+  }
+  /* =====================================================================
+   *  LE CORPS D'UN PORTRAIT (19/11/2026) : respiration, posture, visage
+   *  La photo detouree respire et bouge EN PERMANENCE, selon l'etat de l'avatar :
+   *    - RESPIRATION, toujours : un cycle asymetrique (inspiration 38 %, apnee 7 %, expiration
+   *      43 %, pause 12 %) qui souleve les epaules et la tete (echelle depuis le bas du cadre :
+   *      la tete monte de 1,6 px, les epaules s'elargissent de 0,8 %). Sa periode change sans
+   *      a-coup (phase integree) : repos 5,8 s (10 respirations par minute) ; ecoute 6,6 s,
+   *      souffle retenu ; reflexion 5,0 s ; parole 4,4 s, un peu plus vite ;
+   *    - REPOS : un balancement a peine visible (quatre oscillateurs de 7 a 17 s : jamais deux
+   *      fois le meme mouvement) et, toutes les 6 a 14 s, un petit reajustement de la tete ;
+   *    - ECOUTE : il se penche vers vous (+2,2 %), incline la tete, LEVE LES SOURCILS, se fige
+   *      (balancement divise par trois) et acquiesce imperceptiblement sur votre voix (`--micro`) ;
+   *    - REFLEXION : menton un peu baisse, tete inclinee de l'autre cote, sourcils fronces ;
+   *    - PAROLE : respiration plus rapide, balancement plus vif, et la tete marque les accents de
+   *      sa voix (enveloppe `--bouche` : hochement, sourcils sur les syllabes fortes).
+   *  Chaque grandeur rejoint sa cible par un ressort critique : aucun rebond, aucun saut d'un etat
+   *  a l'autre. Le modele est PUR (`modeleCorps`, hasard a graine) ; `animerCorps` le fait tourner
+   *  a l'horloge (30 images/s au repos, a l'arret quand la page est cachee) et pose la matrice du
+   *  cadre `.av-portrait-in` : la photo, ses reflets, sa bouche et ses sourcils bougent ensemble.
+   *  Mouvements reduits au tiers si le systeme le demande (prefers-reduced-motion).
+   * ===================================================================== */
+  var CORPS = {
+    repos: { periode: 5.8, souffle: 1, balance: 1, vitesse: 1, penche: 1, incline: 0, baisse: 0, sourcils: 0 },
+    listening: { periode: 6.6, souffle: 0.6, balance: 0.35, vitesse: 0.7, penche: 1.022, incline: -1.1, baisse: 0.6, sourcils: 0.006 },
+    processing: { periode: 5.0, souffle: 0.8, balance: 0.5, vitesse: 1, penche: 1.008, incline: 0.7, baisse: 1, sourcils: -0.003 },
+    speaking: { periode: 4.4, souffle: 0.75, balance: 1.35, vitesse: 1.35, penche: 1.01, incline: 0, baisse: 0, sourcils: 0 }
+  };
+  var BALANCE = [13.1, 7.7, 17.3, 9.4];          /* periodes (s) des oscillateurs du balancement */
+
+  /* La forme d'un cycle de respiration, 0..1, a la phase `phi` (0..1). PURE. */
+  function souffleForme(phi) {
+    phi -= Math.floor(phi);
+    if (phi < 0.38) return 0.5 - 0.5 * Math.cos(Math.PI * phi / 0.38);
+    if (phi < 0.45) return 1;
+    if (phi < 0.88) return 0.5 + 0.5 * Math.cos(Math.PI * (phi - 0.45) / 0.43);
+    return 0;
+  }
+
+  /* Ressort critique integre EXACTEMENT sur dt (stable a tout pas) : r.x rejoint `cible` en
+     ~tau secondes, sans rebond. */
+  function ressort(r, cible, dt, tau) {
+    var w = 4.6 / tau, y = r.x - cible, c2 = r.v + w * y, e = Math.exp(-w * dt);
+    r.x = cible + (y + c2 * dt) * e;
+    r.v = (r.v - w * c2 * dt) * e;
+  }
+
+  /* Le modele : `m.pas(dt, etat, bouche, micro)` -> la pose de l'instant { souffle 0..1,
+     echelle (respiration, depuis le bas), rotation (degres, balancement autour du bassin),
+     decalage (px), penche (echelle autour du cou), tete (inclinaison, degres), baisse (px),
+     sourcils (fraction de la hauteur de l'image, + = leves) }. Les px valent pour un cadre de
+     300 px (`matriceCorps` les met a l'echelle). PUR (hasard a graine). */
+  function modeleCorps(germe) {
+    var R = graine(germe || 7), r = {};
+    ['souffle', 'balance', 'vitesse', 'penche', 'incline', 'baisse', 'sourcils', 'hoche', 'flash'].forEach(function (k) {
+      r[k] = { x: CORPS.repos[k] == null ? 0 : CORPS.repos[k], v: 0 };
+    });
+    var m = { phi: R(), periode: CORPS.repos.periode, osc: [R(), R(), R(), R()], r: r,
+      vite: 0, lent: 0, microV: 0, microL: 0, ajuste: 0, prochain: 3 + R() * 6 };
+    m.pas = function (dt, etat, bouche, micro) {
+      dt = Math.max(0, Math.min(0.05, +dt || 0));
+      if (!CORPS[etat]) etat = 'repos';
+      var c = CORPS[etat], i;
+      m.periode += (c.periode - m.periode) * Math.min(1, dt / 1.5);
+      m.phi = (m.phi + dt / m.periode) % 1;
+      for (i = 0; i < 4; i++) m.osc[i] = (m.osc[i] + dt * r.vitesse.x / BALANCE[i]) % 1;
+      m.prochain -= dt;
+      if (m.prochain <= 0) { m.ajuste = (R() * 2 - 1) * 0.45; m.prochain = 6 + R() * 8; }
+      bouche = Math.max(0, Math.min(1, +bouche || 0));
+      micro = Math.max(0, Math.min(1, +micro || 0));
+      m.vite += (bouche - m.vite) * Math.min(1, dt / (bouche > m.vite ? 0.03 : 0.12));
+      m.lent += (bouche - m.lent) * Math.min(1, dt / 0.45);
+      m.microV += (micro - m.microV) * Math.min(1, dt / (micro > m.microV ? 0.04 : 0.15));
+      m.microL += (micro - m.microL) * Math.min(1, dt / 0.6);
+      var accent = etat === 'speaking' ? Math.min(1, Math.max(0, m.vite - m.lent) * 3) : 0;
+      var acquiesce = etat === 'listening' ? Math.min(1, Math.max(0, m.microV - m.microL) * 3) : 0;
+      var libre = etat === 'repos' || etat === 'speaking';
+      ressort(r.souffle, c.souffle, dt, 1.2);
+      ressort(r.balance, c.balance, dt, 1);
+      ressort(r.vitesse, c.vitesse, dt, 1);
+      ressort(r.penche, c.penche, dt, 0.7);
+      ressort(r.incline, c.incline + (libre ? m.ajuste : 0), dt, 0.9);
+      ressort(r.baisse, c.baisse, dt, 0.7);
+      ressort(r.sourcils, c.sourcils, dt, 0.5);
+      ressort(r.hoche, accent * 0.6 + acquiesce * 0.3, dt, 0.18);
+      ressort(r.flash, accent > 0.35 ? 0.003 : 0, dt, 0.25);
+      var b = souffleForme(m.phi) * r.souffle.x, bal = r.balance.x, P2 = 2 * Math.PI;
+      return {
+        souffle: b,
+        echelle: 1 + 0.008 * b,
+        rotation: bal * 0.3 * (0.62 * Math.sin(P2 * m.osc[0]) + 0.38 * Math.sin(P2 * m.osc[1])),
+        decalage: bal * 0.6 * (0.55 * Math.sin(P2 * m.osc[2]) + 0.45 * Math.sin(P2 * m.osc[3])),
+        penche: r.penche.x + r.hoche.x * 0.004,
+        tete: r.incline.x,
+        baisse: r.baisse.x + r.hoche.x * 1.3,
+        sourcils: r.sourcils.x + r.flash.x
+      };
+    };
+    return m;
+  }
+
+  /* La pose attenuee (mouvements reduits). PURE. */
+  function attenuerCorps(s, k) {
+    return { souffle: s.souffle * k, echelle: 1 + (s.echelle - 1) * k, rotation: s.rotation * k, decalage: s.decalage * k,
+      penche: 1 + (s.penche - 1) * k, tete: s.tete * k, baisse: s.baisse * k, sourcils: s.sourcils * k };
+  }
+
+  /* La matrice CSS du cadre (repere : son coin haut-gauche, cote W px) : balancement autour d'un
+     pivot sous le cadre (le bassin), respiration depuis le bas (les epaules), la tete autour du
+     cou (inclinaison, penche), puis le hochement. PURE. */
+  function matriceCorps(s, W) {
+    W = W || 300;
+    var k = W / 300, M = [1, 0, 0, 1, 0, 0];
+    function fois(B) {
+      M = [M[0] * B[0] + M[2] * B[1], M[1] * B[0] + M[3] * B[1], M[0] * B[2] + M[2] * B[3], M[1] * B[2] + M[3] * B[3],
+        M[0] * B[4] + M[2] * B[5] + M[4], M[1] * B[4] + M[3] * B[5] + M[5]];
+    }
+    function autour(px, py, B) { fois([1, 0, 0, 1, px, py]); fois(B); fois([1, 0, 0, 1, -px, -py]); }
+    function rot(deg) { var a = deg * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a); return [c, sn, -sn, c, 0, 0]; }
+    fois([1, 0, 0, 1, (s.decalage || 0) * k, 0]);
+    autour(W / 2, 1.6 * W, rot(s.rotation || 0));
+    autour(W / 2, W, [s.echelle || 1, 0, 0, s.echelle || 1, 0, 0]);
+    autour(W / 2, 0.78 * W, rot(s.tete || 0));
+    autour(W / 2, 0.78 * W, [s.penche || 1, 0, 0, s.penche || 1, 0, 0]);
+    fois([1, 0, 0, 1, 0, (s.baisse || 0) * k]);
+    return M;
+  }
+
+  /* LES SOURCILS d'un portrait (`portrait.sourcils` : `haut` du front, `ligne` des sourcils, `bas`
+     = haut des verres, en fractions de l'image ; `gauche`..`droite`) : un canevas redessine le
+     front colonne par colonne quand les sourcils se levent (> 0) ou se froncent (< 0) -- le front
+     se tasse au-dessus, la peau s'etire sous les sourcils ; les verres ne bougent jamais. Au repos,
+     le canevas est vide : la photo seule. */
+  function preparerSourcils(cv, img) {
+    var B;
+    try { B = JSON.parse(cv.getAttribute('data-sourcils')); } catch (e) { return null; }
+    var N = img.naturalWidth, M = img.naturalHeight;
+    if (!N || !M || !B) return null;
+    var x0 = Math.round(B.gauche * N), y0 = Math.round(B.haut * M);
+    var W = Math.max(2, Math.round((B.droite - B.gauche) * N)), H = Math.max(2, Math.round((B.bas - B.haut) * M));
+    cv.width = W;
+    cv.height = H;
+    var rampe = Math.max(1, 0.05 * N), P = new Float32Array(W);
+    for (var c = 0; c < W; c++) {
+      var u = Math.min(1, c / rampe, (W - 1 - c) / rampe);
+      P[c] = u <= 0 ? 0 : u * u * (3 - 2 * u);
+    }
+    return { x0: x0, y0: y0, W: W, H: H, L: Math.round((B.ligne - B.haut) * M), M: M, P: P, ctx: cv.getContext('2d') };
+  }
+  function dessinerSourcils(g, img, delta) {
+    var ctx = g.ctx, n = 0;
+    ctx.clearRect(0, 0, g.W, g.H);
+    var d0 = (+delta || 0) * g.M;                         /* en pixels de l'image, + = leves */
+    if (Math.abs(d0) < 0.05) return 0;
+    for (var c = 0; c < g.W; c++) {
+      var d = d0 * g.P[c];
+      if (Math.abs(d) < 0.05) continue;
+      ctx.drawImage(img, g.x0 + c, g.y0, 1, g.L, c, 0, 1, g.L - d);
+      ctx.drawImage(img, g.x0 + c, g.y0 + g.L, 1, g.H - g.L, c, g.L - d, 1, g.H - g.L + d);
+      n++;
+    }
+    return n;
+  }
+
+  function animerCorps(hote) {
+    if (!hote || !G.requestAnimationFrame) return;
+    if (hote.__avCorps) { hote.__avCorps.lancer(); return; }
+    var reduit = false;
+    try { reduit = !!(G.matchMedia && G.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { /* */ }
+    var c = hote.__avCorps = { m: modeleCorps(hash('corps|' + (hote.getAttribute('data-skin') || ''))), dernier: 0,
+      cadre: null, cv: null, g: null, img: null, delta: 0, tourne: false, sortie: null, images: 0 };
+    var cachee = function () { return !!(G.document && G.document.hidden); };
+    var pas = function (t) {
+      if (!hote.isConnected || cachee()) { c.tourne = false; return; }
+      var racine = hote.shadowRoot || hote;
+      if (!c.cadre || !c.cadre.isConnected) {
+        c.cadre = racine.querySelector('.av-portrait[data-pret] .av-portrait-in');
+        c.cv = c.g = c.img = null;
+        c.delta = 0;
+        if (c.cadre) {
+          c.cadre.parentNode.setAttribute('data-corps', '');
+          c.img = c.cadre.querySelector('img');
+          c.cv = c.cadre.querySelector('.av-sourcils');
+        }
+      }
+      if (!c.cadre) { c.tourne = false; G.setTimeout(c.lancer, 600); return; }
+      var etat = hote.getAttribute('data-etat');
+      if (!CORPS[etat]) etat = 'repos';
+      var dt = c.dernier ? (t - c.dernier) / 1000 : 1 / 30;
+      /* au repos, 30 images par seconde suffisent a une respiration */
+      if (c.dernier && etat === 'repos' && dt < 0.03) { G.requestAnimationFrame(pas); return; }
+      c.dernier = t;
+      var st = hote.style;
+      var s = c.m.pas(dt, etat, parseFloat(st.getPropertyValue('--bouche')) || 0, parseFloat(st.getPropertyValue('--micro')) || 0);
+      if (reduit) s = attenuerCorps(s, 0.35);
+      c.sortie = s;
+      c.images++;
+      c.cadre.style.transform = 'matrix(' + matriceCorps(s, c.cadre.offsetWidth || 300).map(function (v) {
+        return Math.round(v * 1e5) / 1e5;
+      }).join(',') + ')';
+      if (c.cv && c.img && c.img.naturalWidth) {
+        if (!c.g) c.g = preparerSourcils(c.cv, c.img);
+        if (c.g && Math.abs(s.sourcils - c.delta) > 0.00002) { dessinerSourcils(c.g, c.img, s.sourcils); c.delta = s.sourcils; }
+      }
+      G.requestAnimationFrame(pas);
+    };
+    c.lancer = function () {
+      if (!c.tourne && hote.isConnected && !cachee()) { c.tourne = true; c.dernier = 0; G.requestAnimationFrame(pas); }
+    };
+    if (G.document && G.document.addEventListener) G.document.addEventListener('visibilitychange', c.lancer);
+    c.lancer();
+  }
+  function f1(v) { return String(Math.round(v * 1000) / 1000); }
+
   function scene(id, o) {
     o = o || {};
     id = idValide(id);
@@ -1913,7 +2443,7 @@
       });
     }
     return '<style>' + css(id, o.ancetre) + '</style>' + svg(id, o.prefixe || 'avs') +
-      '<div class="av-videos">' + vids + '</div>';
+      portrait(id, o.portrait, (o.prefixe || 'avs') + 'p') + '<div class="av-videos">' + vids + '</div>';
   }
 
   /* Remplit la scene d'une carte. Le champ « scene » de la carte est une chaine FIGEE : button-card
@@ -1934,10 +2464,19 @@
     hote.__avEssais = 0;
     var id = idValide(hote.getAttribute('data-skin'));
     var a = (cfg.avatars || {})[id] || {};
-    var cle = id + '|' + (a.v || '0') + '|' + VERSION;
+    var p = a.portrait && a.portrait.v && a.portrait.v !== '0' ? {
+      u: '/local/avatars/' + id + '/' + (a.portrait.f || 'portrait.webp') + '?v=' + encodeURIComponent(a.portrait.v),
+      ech: a.portrait.ech, dy: a.portrait.dy, lun: a.portrait.lun, bouche: a.portrait.bouche, sourcils: a.portrait.so,
+      teinte: a.teinte } : null;
+    var cle = id + '|' + (a.v || '0') + '|' + (p ? a.portrait.v : '-') + '|' + VERSION;
+    /* le corps d'un portrait respire en permanence (relance s'il s'etait arrete : carte cachee) */
+    if (p) animerCorps(hote);
     if (zone.getAttribute('data-monte') === cle) return;
     zone.setAttribute('data-monte', cle);
-    zone.innerHTML = scene(id, { v: a.v, fusion: a.fusion });
+    zone.innerHTML = scene(id, { v: a.v, fusion: a.fusion, portrait: p });
+    /* un PORTRAIT est une photo : la carte ne le teinte pas (voir `[data-portrait]` de sa feuille) */
+    if (p) hote.setAttribute('data-portrait', ''); else hote.removeAttribute('data-portrait');
+    if (p && p.bouche) animerLevres(hote);
     if (G.AvatarIA && G.AvatarIA.attacher) {
       try { G.AvatarIA.attacher(hote).videos(id, hote.getAttribute('data-rendu') || 'Auto'); } catch (e) { /* */ }
     }
@@ -1946,7 +2485,13 @@
   G.AvatarIADessin = {
     version: VERSION, ids: ORDRE.slice(), etats: ETATS.slice(),
     existe: function (id) { return !!DESSINS[id]; },
-    svg: svg, css: css, scene: scene, monter: monter
+    svg: svg, css: css, scene: scene, portrait: portrait, monter: monter,
+    /* synthese labiale d'un portrait : `animerLevres(hote)` (carte), et de quoi la dessiner a la main */
+    animerLevres: animerLevres, preparerLevres: preparerLevres, dessinerLevres: dessinerLevres,
+    /* le corps d'un portrait : respiration, posture, sourcils (`animerCorps(hote)` : carte) */
+    animerCorps: animerCorps, modeleCorps: modeleCorps, matriceCorps: matriceCorps, souffleForme: souffleForme,
+    attenuerCorps: attenuerCorps, preparerSourcils: preparerSourcils, dessinerSourcils: dessinerSourcils, corps: CORPS,
+    parametresLevres: parametresLevres, ouvertureLevres: ouvertureLevres, paroleSynthetique: paroleSynthetique
   };
   try {
     if (G.dispatchEvent && typeof G.CustomEvent === 'function') {
